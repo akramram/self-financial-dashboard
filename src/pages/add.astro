@@ -2,6 +2,8 @@
 import Layout from '../layouts/Layout.astro';
 import AddTransactionForm from '../components/AddTransactionForm';
 import AddNetworthForm from '../components/AddNetworthForm';
+import { Button } from '../components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 ---
 
 <Layout title="Add Data">
@@ -21,18 +23,20 @@ import AddNetworthForm from '../components/AddNetworthForm';
     </div>
   </div>
 
-  <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
-    <h2 class="text-lg font-semibold mb-4">Data Management</h2>
-    <div class="flex flex-col sm:flex-row gap-3">
-      <a
-        href="/api/export"
-        class="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition text-center"
-      >
-        Export All Data (JSON)
-      </a>
-    </div>
-    <p class="text-xs text-slate-500 dark:text-slate-400 mt-3">
-      Data is stored in a local SQLite database. Export to back up your changes.
-    </p>
-  </div>
+  <Card>
+    <CardHeader>
+      <CardTitle>Data Management</CardTitle>
+      <CardDescription>Export or back up your financial data</CardDescription>
+    </CardHeader>
+    <CardContent>
+      <div class="flex flex-col sm:flex-row gap-3">
+        <Button asChild>
+          <a href="/api/export">Export All Data (JSON)</a>
+        </Button>
+      </div>
+      <p class="text-xs text-muted-foreground mt-3">
+        Data is stored in a local SQLite database. Export to back up your changes.
+      </p>
+    </CardContent>
+  </Card>
 </Layout>
