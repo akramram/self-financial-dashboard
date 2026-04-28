@@ -1,3 +1,10 @@
+import { type ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
 export function formatIdr(n: number | undefined | null): string {
   if (n == null) return 'IDR 0';
   return 'IDR ' + Math.round(n).toLocaleString('id-ID');
