@@ -2,8 +2,7 @@ import React, { useState, useMemo } from 'react';
 import type { Transaction, NetworthRecord, MonthlySummary } from '../lib/data';
 import { formatIdr } from '../lib/utils';
 import { updateTransactionApi, deleteTransactionApi } from '../lib/api';
-import CashOutcomeChart from './CashOutcomeChart';
-import CreditPaymentChart from './CreditPaymentChart';
+import OutcomeChart from './OutcomeChart';
 import NetworthChart from './NetworthChart';
 import CategoryChart from './CategoryChart';
 
@@ -144,16 +143,10 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
         </div>
       </div>
 
-      {/* Charts Row 1 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
-          <h2 className="text-lg font-semibold mb-4">Cash Outcome by Month</h2>
-          <CashOutcomeChart data={filteredSummaries} />
-        </div>
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
-          <h2 className="text-lg font-semibold mb-4">Credit Payment by Month</h2>
-          <CreditPaymentChart data={filteredSummaries} />
-        </div>
+      {/* Outcome Chart */}
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+        <h2 className="text-lg font-semibold mb-4">Cash Outcome vs Credit Payment by Month</h2>
+        <OutcomeChart data={filteredSummaries} />
       </div>
 
       {/* Charts Row 2 */}
