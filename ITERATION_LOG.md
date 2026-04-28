@@ -97,3 +97,28 @@
 
 ### What's next
 FIN-016: Refactor existing tables and forms to shadcn/ui components
+
+---
+
+## Iteration 4 — FIN-016
+**Date:** 2025-04-28
+**Issue:** #2
+**Branch:** `feat/FIN-016`
+**PR:** (Pending — branch pushed, GitHub token not available for API creation)
+
+### What changed
+- **TransactionTable.tsx**: Migrated raw `<table>` to shadcn/ui `Table`, `TableHeader`, `TableBody`, `TableRow`, `TableHead`, `TableCell`. Replaced native `<input>`, `<select>`, `<button>` with shadcn `Input`, `Select`, `Button`, `Badge`.
+- **Dashboard.tsx**: Refactored inline transaction table with same shadcn/ui components. Replaced month filter `<select>` with shadcn `Select`.
+- **AddTransactionForm.tsx**: Wrapped in `Card`. Replaced all native inputs/selects/buttons with shadcn `Input`, `Select`, `Button`, `Label`, `Badge`.
+- **AddNetworthForm.tsx**: Wrapped in `Card`. Replaced all native inputs/selects/buttons with shadcn `Input`, `Select`, `Button`, `Label`, `Badge`.
+- **NetworthEditForm.tsx**: Wrapped in `Card`. Replaced all native inputs/buttons with shadcn `Input`, `Button`, `Label`, `Badge`.
+- **NetworthTable.tsx**: New component extracted from `networth.astro` server-rendered table, now using shadcn `Table` + `Button`.
+- **networth.astro**: Replaced raw HTML table with `<NetworthTable client:load />`.
+- **add.astro**: Removed redundant wrapper divs since forms now self-wrap in `Card`.
+- Installed additional shadcn components: `label`, `badge`.
+
+### Build status
+✅ Passes — live at `http://192.168.0.6:4321`
+
+### What's next
+FIN-017: Build Category Settings Module
