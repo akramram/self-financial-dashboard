@@ -1,8 +1,11 @@
 # Dependencies
 node_modules/
+jspm_packages/
+web_modules/
 
 # Build output
-astro-app/dist/
+dist/
+.astro/
 
 # Database
 data/*.db
@@ -14,6 +17,98 @@ data/*.db
 .DS_Store
 
 # Logs
+logs
+*.log
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Diagnostic reports
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage
+lib-cov
+coverage
+*.lcov
+.nyc_output
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Optional cache directories
+.npm
+.eslintcache
+.stylelintcache
+
+# dotenv environment variable files
+.env
+.env.*
+!.env.example
+
+# parcel-bundler cache
+.cache
+.parcel-cache
+
+# Next.js / Nuxt.js / Vuepress / Sveltekit / Vitepress / Docusaurus
+.next
+out
+.nuxt
+.output
+.cache/
+.vuepress/dist
+.temp
+.svelte-kit/
+**/.vitepress/dist
+**/.vitepress/cache
+.docusaurus
+
+# Serverless directories
+.serverless/
+
+# Compiled binary addons
+build/Release
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# pnpm
+.pnpm-store
+
+# yarn v3
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# Vite files
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+.vite/
+
+# VSCode testing
+.vscode-test
+
+# Firebase / DynamoDB / TernJS / FuseBox
+.firebase/
+.dynamodb/
+.tern-port
+.fusebox/
+
+# REPL history
+.node_repl_history
+
+# Documentation
 /docs
-.astro
