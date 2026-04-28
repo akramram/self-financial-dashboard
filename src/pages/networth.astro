@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import NetworthChart from '../components/NetworthChart';
+import NetworthTable from '../components/NetworthTable';
 import { getNetworth } from '../lib/db';
 import { formatIdr } from '../lib/utils';
 
@@ -47,51 +48,7 @@ const networthReversed = [...networth].reverse();
       <h2 class="text-lg font-semibold">Monthly History</h2>
     </div>
     <div class="overflow-x-auto">
-      <table class="w-full text-sm text-left">
-        <thead class="bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 uppercase text-xs">
-          <tr>
-            <th class="px-6 py-3 font-medium">Month</th>
-            <th class="px-6 py-3 font-medium text-right">Total</th>
-            <th class="px-6 py-3 font-medium text-right">MoM Change</th>
-            <th class="px-6 py-3 font-medium text-right">MoM %</th>
-            <th class="px-6 py-3 font-medium"></th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
-          {networthReversed.map((row) => (
-            <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/30">
-              <td class="px-6 py-3 font-medium">{row.month}</td>
-              <td class="px-6 py-3 font-medium text-right">{formatIdr(row.total)}</td>
-              <td class="px-6 py-3 text-right">
-                {row.month_over_month_change != null ? (
-                  <span class={row.month_over_month_change >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}>
-                    {row.month_over_month_change >= 0 ? '+' : ''}{formatIdr(row.month_over_month_change)}
-                  </span>
-                ) : (
-                  <span class="text-slate-400">-</span>
-                )}
-              </td>
-              <td class="px-6 py-3 text-right">
-                {row.month_over_month_pct != null ? (
-                  <span class={row.month_over_month_pct >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}>
-                    {row.month_over_month_pct >= 0 ? '+' : ''}{row.month_over_month_pct}%
-                  </span>
-                ) : (
-                  <span class="text-slate-400">-</span>
-                )}
-              </td>
-              <td class="px-6 py-3">
-                <a
-                  href={`/networth/edit?month=${encodeURIComponent(row.month)}`}
-                  class="text-blue-500 hover:text-blue-700 text-xs font-medium"
-                >
-                  Edit
-                </a>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <NetworthTable networth={networth} client:load />
     </div>
   </div>
 </Layout>

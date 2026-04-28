@@ -2,6 +2,24 @@ import React, { useState, useMemo } from 'react';
 import type { Transaction } from '../lib/data';
 import { updateTransactionApi, deleteTransactionApi, toggleTransactionDoneApi } from '../lib/api';
 import { formatIdr } from '../lib/utils';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface Props {
   transactions: Transaction[];
@@ -81,40 +99,41 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
   return (
     <div>
       <div className="flex flex-col sm:flex-row gap-3 mb-4">
-        <input
+        <Input
           type="text"
           placeholder="Search title or category..."
           value={search}
           onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-          className="px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm flex-1"
+          className="flex-1"
         />
-        <select
-          value={filterType}
-          onChange={(e) => { setFilterType(e.target.value); setPage(1); }}
-          className="px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm"
-        >
-          <option value="all">All Types</option>
-          <option value="cash">Cash</option>
-          <option value="credit_expense">Credit Expense</option>
-          <option value="credit_payment">Credit Payment</option>
-        </select>
+        <Select value={filterType} onValueChange={(v) => { setFilterType(v); setPage(1); }}>
+          <SelectTrigger className="w-[160px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Types</SelectItem>
+            <SelectItem value="cash">Cash</SelectItem>
+            <SelectItem value="credit_expense">Credit Expense</SelectItem>
+            <SelectItem value="credit_payment">Credit Payment</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700">
-        <table className="w-full text-sm text-left">
-          <thead className="bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 uppercase text-xs">
-            <tr>
-              <th className="px-4 py-3 font-medium">Paid</th>
-              {showMonth && <th className="px-4 py-3 font-medium">Month</th>}
-              <th className="px-4 py-3 font-medium">Title</th>
-              <th className="px-4 py-3 font-medium">Category</th>
-              <th className="px-4 py-3 font-medium">Date</th>
-              <th className="px-4 py-3 font-medium text-right">Amount</th>
-              <th className="px-4 py-3 font-medium">Type</th>
-              <th className="px-4 py-3 font-medium"></th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+      <div className="rounded-xl border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Paid</TableHead>
+              {showMonth && <TableHead>Month</TableHead>}
+              <TableHead>Title</TableHead>
+              <TableHead>Category</TableHead>
+              <TableHead>Date</TableHead>
+              <TableHead className="text-right">Amount</TableHead>
+              <TableHead>Type</TableHead>
+              <TableHead></TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {pageRows.map((row) => {
               const isEditing = editingId === row.id;
               const createdDate = parseCreatedTime(row);
@@ -124,89 +143,84 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
 
               if (isEditing) {
                 return (
-                  <tr key={row.id} className="bg-slate-50 dark:bg-slate-700/30">
-                    <td className="px-4 py-2">
-                      <label className="inline-flex items-center cursor-pointer">
+                  <TableRow key={row.id} className="bg-muted/30">
+                    <TableCell>
+                      <label className="inline-flex items-center cursor-pointer gap-2">
                         <input
                           type="checkbox"
                           checked={!!editForm.done}
                           onChange={(e) => handleChange('done', e.target.checked)}
                           className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
                         />
-                        <span className="ml-2 text-xs">{editForm.done ? 'Paid' : 'Unpaid'}</span>
+                        <span className="text-xs">{editForm.done ? 'Paid' : 'Unpaid'}</span>
                       </label>
-                    </td>
+                    </TableCell>
                     {showMonth && (
-                      <td className="px-4 py-2">
-                        <input
+                      <TableCell>
+                        <Input
                           type="text"
                           value={editForm.month ?? ''}
                           onChange={(e) => handleChange('month', e.target.value)}
-                          className="w-full px-2 py-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs"
+                          className="h-8 text-xs"
                         />
-                      </td>
+                      </TableCell>
                     )}
-                    <td className="px-4 py-2">
-                      <input
+                    <TableCell>
+                      <Input
                         type="text"
                         value={editForm.title ?? ''}
                         onChange={(e) => handleChange('title', e.target.value)}
-                        className="w-full px-2 py-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs"
+                        className="h-8 text-xs"
                       />
-                    </td>
-                    <td className="px-4 py-2">
-                      <input
+                    </TableCell>
+                    <TableCell>
+                      <Input
                         type="text"
                         value={editForm.category ?? ''}
                         onChange={(e) => handleChange('category', e.target.value)}
-                        className="w-full px-2 py-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs"
+                        className="h-8 text-xs"
                       />
-                    </td>
-                    <td className="px-4 py-2">
-                      <input
+                    </TableCell>
+                    <TableCell>
+                      <Input
                         type="text"
                         value={editForm.created_time ?? ''}
                         onChange={(e) => handleChange('created_time', e.target.value)}
                         placeholder="Created time"
-                        className="w-full px-2 py-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs"
+                        className="h-8 text-xs"
                       />
-                    </td>
-                    <td className="px-4 py-2">
-                      <input
+                    </TableCell>
+                    <TableCell>
+                      <Input
                         type="number"
                         value={editForm.amount ?? 0}
                         onChange={(e) => handleChange('amount', Number(e.target.value))}
-                        className="w-full px-2 py-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs text-right"
+                        className="h-8 text-xs text-right"
                       />
-                    </td>
-                    <td className="px-4 py-2">
-                      <select
-                        value={editForm.type ?? 'cash'}
-                        onChange={(e) => handleChange('type', e.target.value)}
-                        className="w-full px-2 py-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs"
-                      >
-                        {TYPE_OPTIONS.map((opt) => (
-                          <option key={opt.value} value={opt.value}>{opt.label}</option>
-                        ))}
-                      </select>
-                    </td>
-                    <td className="px-4 py-2">
+                    </TableCell>
+                    <TableCell>
+                      <Select value={editForm.type ?? 'cash'} onValueChange={(v) => handleChange('type', v)}>
+                        <SelectTrigger className="h-8 text-xs">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {TYPE_OPTIONS.map((opt) => (
+                            <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </TableCell>
+                    <TableCell>
                       <div className="flex gap-1">
-                        <button
-                          onClick={saveEdit}
-                          className="px-2 py-1 rounded bg-emerald-600 text-white text-xs hover:bg-emerald-700"
-                        >
+                        <Button size="sm" className="h-7 text-xs" onClick={saveEdit}>
                           Save
-                        </button>
-                        <button
-                          onClick={cancelEdit}
-                          className="px-2 py-1 rounded bg-slate-300 dark:bg-slate-600 text-xs hover:bg-slate-400 dark:hover:bg-slate-500"
-                        >
+                        </Button>
+                        <Button size="sm" variant="secondary" className="h-7 text-xs" onClick={cancelEdit}>
                           Cancel
-                        </button>
+                        </Button>
                       </div>
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 );
               }
 
@@ -220,77 +234,75 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
                 row.type === 'cash' ? 'Cash' : row.type === 'credit_payment' ? 'Credit Pay' : 'Credit';
 
               return (
-                <tr key={row.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/30">
-                  <td className="px-4 py-3">
-                    <button
+                <TableRow key={row.id}>
+                  <TableCell>
+                    <Button
+                      size="sm"
+                      variant="ghost"
                       onClick={async () => {
                         await toggleTransactionDoneApi(row.id, !row.done);
                         window.location.reload();
                       }}
-                      className={`px-2 py-1 rounded text-xs font-semibold transition-colors ${
+                      className={`h-7 text-xs font-semibold px-2 py-0 ${
                         row.done
                           ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400'
                           : 'bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400'
                       }`}
                     >
                       {row.done ? 'Paid' : 'Unpaid'}
-                    </button>
-                  </td>
-                  {showMonth && <td className="px-4 py-3 font-medium">{row.month}</td>}
-                  <td className="px-4 py-3">{row.title}</td>
-                  <td className="px-4 py-3">
-                    <span className="px-2 py-1 rounded-full text-xs bg-slate-100 dark:bg-slate-700">{row.category}</span>
-                  </td>
-                  <td className="px-4 py-3 text-slate-500 dark:text-slate-400 text-xs">{dateStr}</td>
-                  <td className="px-4 py-3 font-medium text-right">{formatIdr(row.amount)}</td>
-                  <td className={`px-4 py-3 ${typeClass} text-xs font-semibold uppercase`}>{typeLabel}</td>
-                  <td className="px-4 py-3">
+                    </Button>
+                  </TableCell>
+                  {showMonth && <TableCell className="font-medium">{row.month}</TableCell>}
+                  <TableCell>{row.title}</TableCell>
+                  <TableCell>
+                    <Badge variant="secondary">{row.category}</Badge>
+                  </TableCell>
+                  <TableCell className="text-muted-foreground text-xs">{dateStr}</TableCell>
+                  <TableCell className="font-medium text-right">{formatIdr(row.amount)}</TableCell>
+                  <TableCell className={`${typeClass} text-xs font-semibold uppercase`}>{typeLabel}</TableCell>
+                  <TableCell>
                     <div className="flex gap-2">
-                      <button
-                        onClick={() => startEdit(row)}
-                        className="text-blue-500 hover:text-blue-700 text-xs"
-                      >
+                      <Button variant="ghost" size="sm" className="h-7 text-xs text-blue-500 hover:text-blue-700" onClick={() => startEdit(row)}>
                         Edit
-                      </button>
-                      <button
-                        onClick={async () => {
-                          if (confirm('Delete this transaction?')) {
-                            await deleteTransactionApi(row.id);
-                            window.location.reload();
-                          }
-                        }}
-                        className="text-red-500 hover:text-red-700 text-xs"
-                      >
+                      </Button>
+                      <Button variant="ghost" size="sm" className="h-7 text-xs text-red-500 hover:text-red-700" onClick={async () => {
+                        if (confirm('Delete this transaction?')) {
+                          await deleteTransactionApi(row.id);
+                          window.location.reload();
+                        }
+                      }}>
                         Delete
-                      </button>
+                      </Button>
                     </div>
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               );
             })}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
 
       <div className="flex justify-between items-center mt-4">
-        <span className="text-xs text-slate-500 dark:text-slate-400">
+        <span className="text-xs text-muted-foreground">
           Showing {start + 1}-{Math.min(start + rowsPerPage, filtered.length)} of {filtered.length}
         </span>
         <div className="flex gap-2">
-          <button
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="px-3 py-1 rounded bg-slate-200 dark:bg-slate-700 text-xs hover:bg-slate-300 dark:hover:bg-slate-600 disabled:opacity-50"
           >
             Prev
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
-            className="px-3 py-1 rounded bg-slate-200 dark:bg-slate-700 text-xs hover:bg-slate-300 dark:hover:bg-slate-600 disabled:opacity-50"
           >
             Next
-          </button>
+          </Button>
         </div>
       </div>
     </div>

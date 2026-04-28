@@ -1,10 +1,11 @@
 /* empty css                                  */
 import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../../chunks/astro/server_BVE5k6Zu.mjs';
 import 'kleur/colors';
-import { f as formatIdr, $ as $$Layout } from '../../chunks/utils_BtLgDIxw.mjs';
+import { B as Button, f as formatIdr, $ as $$Layout } from '../../chunks/button_B8ZIUF-N.mjs';
 import { jsx, jsxs } from 'react/jsx-runtime';
 import { useState, useEffect } from 'react';
-import { f as fetchNetworth, u as updateNetworthApi } from '../../chunks/api_DIaGD6bk.mjs';
+import { f as fetchNetworth, B as Badge, I as Input, u as updateNetworthApi } from '../../chunks/badge_DBAg2bc-.mjs';
+import { C as Card, a as CardHeader, b as CardTitle, c as CardContent, L as Label } from '../../chunks/label_DLTnRics.mjs';
 export { renderers } from '../../renderers.mjs';
 
 function NetworthEditForm() {
@@ -52,86 +53,69 @@ function NetworthEditForm() {
   if (!loaded) {
     return /* @__PURE__ */ jsx("p", { className: "text-slate-500 text-sm", children: "Loading..." });
   }
-  return /* @__PURE__ */ jsxs("form", { onSubmit: handleSubmit, className: "space-y-4 max-w-xl", children: [
-    message && /* @__PURE__ */ jsx("div", { className: "p-3 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-200 text-sm", children: message }),
-    /* @__PURE__ */ jsxs("div", { children: [
-      /* @__PURE__ */ jsx("label", { className: "block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1", children: "Month" }),
-      /* @__PURE__ */ jsx(
-        "input",
-        {
-          type: "text",
-          value: month,
-          readOnly: true,
-          className: "w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-100 dark:bg-slate-700/50"
-        }
-      )
-    ] }),
-    /* @__PURE__ */ jsxs("div", { children: [
-      /* @__PURE__ */ jsxs("div", { className: "flex justify-between items-center mb-2", children: [
-        /* @__PURE__ */ jsx("label", { className: "block text-xs font-medium text-slate-500 dark:text-slate-400", children: "Breakdown" }),
+  return /* @__PURE__ */ jsxs(Card, { className: "max-w-xl", children: [
+    /* @__PURE__ */ jsx(CardHeader, { children: /* @__PURE__ */ jsx(CardTitle, { children: "Edit Networth" }) }),
+    /* @__PURE__ */ jsx(CardContent, { children: /* @__PURE__ */ jsxs("form", { onSubmit: handleSubmit, className: "space-y-4", children: [
+      message && /* @__PURE__ */ jsx(Badge, { variant: "outline", className: "w-full justify-start px-3 py-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-200 border-emerald-200 dark:border-emerald-800", children: message }),
+      /* @__PURE__ */ jsxs("div", { className: "space-y-1.5", children: [
+        /* @__PURE__ */ jsx(Label, { children: "Month" }),
         /* @__PURE__ */ jsx(
-          "button",
+          Input,
           {
-            type: "button",
-            onClick: addItem,
-            className: "text-xs px-2 py-1 rounded bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600",
-            children: "+ Add Item"
+            type: "text",
+            value: month,
+            readOnly: true,
+            className: "bg-muted"
           }
         )
       ] }),
-      /* @__PURE__ */ jsx("div", { className: "space-y-2", children: Object.entries(breakdown).map(([key, value]) => /* @__PURE__ */ jsxs("div", { className: "flex gap-2 items-center", children: [
-        /* @__PURE__ */ jsx(
-          "input",
-          {
-            type: "text",
-            value: key,
-            readOnly: true,
-            className: "flex-1 px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-100 dark:bg-slate-700/50 text-sm"
-          }
-        ),
-        /* @__PURE__ */ jsx(
-          "input",
-          {
-            type: "number",
-            value,
-            onChange: (e) => handleChange(key, e.target.value),
-            placeholder: "0",
-            className: "w-40 px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm"
-          }
-        ),
-        /* @__PURE__ */ jsx(
-          "button",
-          {
-            type: "button",
-            onClick: () => removeItem(key),
-            className: "text-red-500 hover:text-red-700 text-xs px-2",
-            children: "Remove"
-          }
-        )
-      ] }, key)) })
-    ] }),
-    /* @__PURE__ */ jsx("div", { className: "p-3 rounded-lg bg-slate-100 dark:bg-slate-700/50", children: /* @__PURE__ */ jsxs("p", { className: "text-sm font-medium", children: [
-      "Total: ",
-      formatIdr(total)
-    ] }) }),
-    /* @__PURE__ */ jsxs("div", { className: "flex gap-3", children: [
-      /* @__PURE__ */ jsx(
-        "button",
-        {
-          type: "submit",
-          className: "px-4 py-2 rounded-lg bg-violet-600 text-white font-medium hover:bg-violet-700 transition",
-          children: "Save Changes"
-        }
-      ),
-      /* @__PURE__ */ jsx(
-        "a",
-        {
-          href: "/networth",
-          className: "px-4 py-2 rounded-lg bg-slate-200 dark:bg-slate-700 text-sm font-medium hover:bg-slate-300 dark:hover:bg-slate-600 transition",
-          children: "Cancel"
-        }
-      )
-    ] })
+      /* @__PURE__ */ jsxs("div", { children: [
+        /* @__PURE__ */ jsxs("div", { className: "flex justify-between items-center mb-2", children: [
+          /* @__PURE__ */ jsx(Label, { children: "Breakdown" }),
+          /* @__PURE__ */ jsx(Button, { type: "button", variant: "outline", size: "sm", onClick: addItem, children: "+ Add Item" })
+        ] }),
+        /* @__PURE__ */ jsx("div", { className: "space-y-2", children: Object.entries(breakdown).map(([key, value]) => /* @__PURE__ */ jsxs("div", { className: "flex gap-2 items-center", children: [
+          /* @__PURE__ */ jsx(
+            Input,
+            {
+              type: "text",
+              value: key,
+              readOnly: true,
+              className: "flex-1 bg-muted"
+            }
+          ),
+          /* @__PURE__ */ jsx(
+            Input,
+            {
+              type: "number",
+              value,
+              onChange: (e) => handleChange(key, e.target.value),
+              placeholder: "0",
+              className: "w-40"
+            }
+          ),
+          /* @__PURE__ */ jsx(
+            Button,
+            {
+              type: "button",
+              variant: "ghost",
+              size: "sm",
+              onClick: () => removeItem(key),
+              className: "text-red-500 hover:text-red-700",
+              children: "Remove"
+            }
+          )
+        ] }, key)) })
+      ] }),
+      /* @__PURE__ */ jsx("div", { className: "p-3 rounded-lg bg-muted", children: /* @__PURE__ */ jsxs("p", { className: "text-sm font-medium", children: [
+        "Total: ",
+        formatIdr(total)
+      ] }) }),
+      /* @__PURE__ */ jsxs("div", { className: "flex gap-3", children: [
+        /* @__PURE__ */ jsx(Button, { type: "submit", children: "Save Changes" }),
+        /* @__PURE__ */ jsx(Button, { variant: "secondary", asChild: true, children: /* @__PURE__ */ jsx("a", { href: "/networth", children: "Cancel" }) })
+      ] })
+    ] }) })
   ] });
 }
 
