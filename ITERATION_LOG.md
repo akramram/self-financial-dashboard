@@ -52,16 +52,13 @@
 ### Build status
 ✅ Passes
 
-### What's next
-FIN-016: Refactor existing tables and forms to shadcn/ui components
-
 ---
 
 ## Iteration 2 — FIN-021 (Manual Trigger)
 **Date:** 2025-04-28
 **Issue:** #7 (created manually)
 **Branch:** `feat/FIN-021-outcome-breakdown-income-budget`
-**PR:** Opened via push (gh CLI unavailable)
+**PR:** Merged to main
 
 ### What changed
 - Added **Total Income** line to Outcome Breakdown card on Dashboard
@@ -70,6 +67,30 @@ FIN-016: Refactor existing tables and forms to shadcn/ui components
 - Shows "X spent of Y" detail text under the bar
 - Works for both All-time (latest month) and filtered month views
 - No DB/schema changes — uses existing MonthlySummary data
+
+### Build status
+✅ Passes — live at `http://192.168.0.6:4321`
+
+---
+
+## Iteration 3 — FIN-022 (Manual Trigger)
+**Date:** 2025-04-28
+**Issue:** User request
+**Branch:** `feat/FIN-022-paid-toggle-outcome-filter`
+**PR:** Merged to main
+
+### What changed
+- **Outcome Breakdown** now only includes **paid transactions** (`done = 1`) in all calculations
+  - Updated `getMonthlySummary()` in `src/lib/db.ts` to filter `WHERE done = 1`
+- Added **Paid/Unpaid toggle button** as the **first column** in transaction tables:
+  - `Dashboard.tsx` inline transaction table
+  - `TransactionTable.tsx` (used on `/transactions` page)
+- Toggle button styling:
+  - Green badge for **Paid** transactions
+  - Red badge for **Unpaid** transactions
+- Clicking the badge toggles the `done` status via API and refreshes the page
+- Also added `done` checkbox to the inline **Edit** row in both tables
+- Added `toggleTransactionDoneApi()` helper to `src/lib/api.ts`
 
 ### Build status
 ✅ Passes — live at `http://192.168.0.6:4321`
