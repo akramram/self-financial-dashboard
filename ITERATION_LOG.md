@@ -29,3 +29,28 @@
 ---
 
 (Iterations will be appended below)
+
+---
+
+## Iteration 1 — FIN-015
+**Date:** 2025-04-28
+**Issue:** #1
+**Branch:** `feat/FIN-015`
+**PR:** #7
+
+### What changed
+- Installed shadcn/ui React ecosystem (`tailwindcss-animate`, `tailwind-merge`, `class-variance-authority`)
+- Configured `tailwind.config.mjs` with shadcn theme tokens
+- Created `src/lib/utils.ts` with `cn()` helper
+- Created `src/styles/globals.css` with CSS variables
+- Created `components.json`
+- Updated `tsconfig.json` with `@/*` path alias
+- Imported globals.css in `Layout.astro`
+- Installed core components: Button, Input, Card, Table, Dialog, Select
+- Added demo usage on `add.astro` (Card + Button)
+
+### Build status
+✅ Passes
+
+### What's next
+FIN-016: Refactor existing tables and forms to shadcn/ui components
