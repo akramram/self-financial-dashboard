@@ -1,13 +1,13 @@
 /* empty css                               */
 import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BVE5k6Zu.mjs';
 import 'kleur/colors';
-import { f as formatIdr, $ as $$Layout } from '../chunks/utils_Bx4nDzFr.mjs';
+import { f as formatIdr, $ as $$Layout } from '../chunks/utils_BtLgDIxw.mjs';
 import { jsx, jsxs } from 'react/jsx-runtime';
 import { useMemo, useState } from 'react';
 import { t as toggleTransactionDoneApi, d as deleteTransactionApi, b as updateTransactionApi } from '../chunks/api_DIaGD6bk.mjs';
 import { Chart, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
 import { Bar, Doughnut } from 'react-chartjs-2';
-import { N as NetworthChart } from '../chunks/NetworthChart_BOiwreRL.mjs';
+import { N as NetworthChart } from '../chunks/NetworthChart_CXZABOwu.mjs';
 import { g as getTransactions, a as getNetworth, b as getMonthlySummary, d as db } from '../chunks/db_BnTmBRTu.mjs';
 export { renderers } from '../renderers.mjs';
 
@@ -168,6 +168,22 @@ function Dashboard({ transactions, networth, summaries }) {
   const savingsRate = latest?.income > 0 ? Math.max(0, Math.min(100, (latest.income - latest.outcome.total) / latest.income * 100)) : 0;
   const cashPct = latest?.outcome.total > 0 ? Math.round(latest.outcome.cash / latest.outcome.total * 100) : 0;
   const creditPct = latest?.outcome.total > 0 ? Math.round(latest.outcome.credit_payment / latest.outcome.total * 100) : 0;
+  const [txPage, setTxPage] = useState(1);
+  const txPerPage = 10;
+  const sortedTransactions = useMemo(() => {
+    return [...filteredTransactions].sort(
+      (a, b) => parseCreatedTime(b).getTime() - parseCreatedTime(a).getTime()
+    );
+  }, [filteredTransactions]);
+  const totalTxPages = Math.max(1, Math.ceil(sortedTransactions.length / txPerPage));
+  const pagedTransactions = sortedTransactions.slice(
+    (txPage - 1) * txPerPage,
+    txPage * txPerPage
+  );
+  const goToPage = (page) => {
+    const clamped = Math.max(1, Math.min(totalTxPages, page));
+    setTxPage(clamped);
+  };
   return /* @__PURE__ */ jsxs("div", { className: "space-y-6", children: [
     /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3", children: [
       /* @__PURE__ */ jsx("label", { className: "text-sm font-medium text-slate-600 dark:text-slate-300", children: "Period:" }),
@@ -175,7 +191,10 @@ function Dashboard({ transactions, networth, summaries }) {
         "select",
         {
           value: filterMonth,
-          onChange: (e) => setFilterMonth(e.target.value),
+          onChange: (e) => {
+            setFilterMonth(e.target.value);
+            setTxPage(1);
+          },
           className: "px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm",
           children: [
             /* @__PURE__ */ jsx("option", { value: "all", children: "All-time" }),
@@ -183,55 +202,6 @@ function Dashboard({ transactions, networth, summaries }) {
           ]
         }
       )
-    ] }),
-    /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4", children: [
-      /* @__PURE__ */ jsxs("div", { className: "bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6", children: [
-        /* @__PURE__ */ jsxs("p", { className: "text-sm font-medium text-slate-500 dark:text-slate-400", children: [
-          "Total Income ",
-          isAllTime ? "(Latest)" : `(${latest.month})`
-        ] }),
-        /* @__PURE__ */ jsx("p", { className: "text-2xl font-bold mt-2", children: formatIdr(latest?.income ?? 0) })
-      ] }),
-      /* @__PURE__ */ jsxs("div", { className: "bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6", children: [
-        /* @__PURE__ */ jsxs("p", { className: "text-sm font-medium text-slate-500 dark:text-slate-400", children: [
-          "Total Outcome ",
-          isAllTime ? "(Latest)" : `(${latest.month})`
-        ] }),
-        /* @__PURE__ */ jsx("p", { className: "text-2xl font-bold mt-2", children: formatIdr(latest?.outcome.total ?? 0) }),
-        /* @__PURE__ */ jsx("p", { className: "text-xs text-slate-400 mt-1", children: "Cash + Credit Payment" })
-      ] }),
-      /* @__PURE__ */ jsxs("div", { className: "bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6", children: [
-        /* @__PURE__ */ jsxs("p", { className: "text-sm font-medium text-slate-500 dark:text-slate-400", children: [
-          "Net Worth ",
-          isAllTime ? "(Latest)" : `(${latestNetworth?.month ?? ""})`
-        ] }),
-        /* @__PURE__ */ jsx("p", { className: "text-2xl font-bold mt-2", children: formatIdr(latestNetworth?.total ?? 0) })
-      ] }),
-      /* @__PURE__ */ jsxs("div", { className: "bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6", children: [
-        /* @__PURE__ */ jsxs("p", { className: "text-sm font-medium text-slate-500 dark:text-slate-400", children: [
-          "Savings Rate ",
-          isAllTime ? "(Latest)" : `(${latest.month})`
-        ] }),
-        /* @__PURE__ */ jsxs("p", { className: "text-2xl font-bold mt-2", children: [
-          savingsRate.toFixed(1),
-          "%"
-        ] }),
-        /* @__PURE__ */ jsx("div", { className: "w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 mt-3", children: /* @__PURE__ */ jsx("div", { className: "bg-emerald-500 h-2 rounded-full transition-all", style: { width: `${Math.min(100, savingsRate)}%` } }) })
-      ] })
-    ] }),
-    /* @__PURE__ */ jsxs("div", { className: "bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6", children: [
-      /* @__PURE__ */ jsx("h2", { className: "text-lg font-semibold mb-4", children: "Cash Outcome vs Credit Payment by Month" }),
-      /* @__PURE__ */ jsx(OutcomeChart, { data: filteredSummaries })
-    ] }),
-    /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-2 gap-6", children: [
-      /* @__PURE__ */ jsxs("div", { className: "bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6", children: [
-        /* @__PURE__ */ jsx("h2", { className: "text-lg font-semibold mb-4", children: "Networth Trend" }),
-        /* @__PURE__ */ jsx(NetworthChart, { data: filteredNetworth })
-      ] }),
-      /* @__PURE__ */ jsxs("div", { className: "bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6", children: [
-        /* @__PURE__ */ jsx("h2", { className: "text-lg font-semibold mb-4", children: isAllTime ? "Latest Month Categories" : `${latest.month} Categories` }),
-        latest?.category_totals && Object.keys(latest.category_totals).length > 0 ? /* @__PURE__ */ jsx(CategoryChart, { data: latest.category_totals }) : /* @__PURE__ */ jsx("p", { className: "text-slate-500 text-sm", children: "No category data available." })
-      ] })
     ] }),
     /* @__PURE__ */ jsxs("div", { className: "bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6", children: [
       /* @__PURE__ */ jsxs("h2", { className: "text-lg font-semibold mb-4", children: [
@@ -309,7 +279,7 @@ function Dashboard({ transactions, networth, summaries }) {
           /* @__PURE__ */ jsx("th", { className: "px-4 py-3 font-medium", children: "Type" }),
           /* @__PURE__ */ jsx("th", { className: "px-4 py-3 font-medium" })
         ] }) }),
-        /* @__PURE__ */ jsx("tbody", { className: "divide-y divide-slate-200 dark:divide-slate-700", children: filteredTransactions.sort((a, b) => parseCreatedTime(b).getTime() - parseCreatedTime(a).getTime()).slice(0, 10).map((row) => {
+        /* @__PURE__ */ jsx("tbody", { className: "divide-y divide-slate-200 dark:divide-slate-700", children: pagedTransactions.map((row) => {
           const isEditing = editingId === row.id;
           const typeClass = row.type === "cash" ? "text-blue-600 dark:text-blue-400" : row.type === "credit_payment" ? "text-amber-600 dark:text-amber-400" : "text-purple-600 dark:text-purple-400";
           const typeLabel = row.type === "cash" ? "Cash" : row.type === "credit_payment" ? "Credit Pay" : "Credit";
@@ -415,7 +385,91 @@ function Dashboard({ transactions, networth, summaries }) {
             ] }) })
           ] }, row.id);
         }) })
-      ] }) })
+      ] }) }),
+      sortedTransactions.length > txPerPage && /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between mt-4", children: [
+        /* @__PURE__ */ jsxs("p", { className: "text-xs text-slate-500 dark:text-slate-400", children: [
+          "Showing ",
+          (txPage - 1) * txPerPage + 1,
+          "–",
+          Math.min(txPage * txPerPage, sortedTransactions.length),
+          " of ",
+          sortedTransactions.length
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
+          /* @__PURE__ */ jsx(
+            "button",
+            {
+              onClick: () => goToPage(txPage - 1),
+              disabled: txPage <= 1,
+              className: "px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-700",
+              children: "Previous"
+            }
+          ),
+          /* @__PURE__ */ jsxs("span", { className: "text-xs text-slate-500 dark:text-slate-400 min-w-[3rem] text-center", children: [
+            txPage,
+            " / ",
+            totalTxPages
+          ] }),
+          /* @__PURE__ */ jsx(
+            "button",
+            {
+              onClick: () => goToPage(txPage + 1),
+              disabled: txPage >= totalTxPages,
+              className: "px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-700",
+              children: "Next"
+            }
+          )
+        ] })
+      ] })
+    ] }),
+    /* @__PURE__ */ jsxs("div", { className: "bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6", children: [
+      /* @__PURE__ */ jsx("h2", { className: "text-lg font-semibold mb-4", children: "Cash Outcome vs Credit Payment by Month" }),
+      /* @__PURE__ */ jsx(OutcomeChart, { data: filteredSummaries })
+    ] }),
+    /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-2 gap-6", children: [
+      /* @__PURE__ */ jsxs("div", { className: "bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6", children: [
+        /* @__PURE__ */ jsx("h2", { className: "text-lg font-semibold mb-4", children: "Networth Trend" }),
+        /* @__PURE__ */ jsx(NetworthChart, { data: filteredNetworth })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6", children: [
+        /* @__PURE__ */ jsx("h2", { className: "text-lg font-semibold mb-4", children: isAllTime ? "Latest Month Categories" : `${latest.month} Categories` }),
+        latest?.category_totals && Object.keys(latest.category_totals).length > 0 ? /* @__PURE__ */ jsx(CategoryChart, { data: latest.category_totals }) : /* @__PURE__ */ jsx("p", { className: "text-slate-500 text-sm", children: "No category data available." })
+      ] })
+    ] }),
+    /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4", children: [
+      /* @__PURE__ */ jsxs("div", { className: "bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6", children: [
+        /* @__PURE__ */ jsxs("p", { className: "text-sm font-medium text-slate-500 dark:text-slate-400", children: [
+          "Total Income ",
+          isAllTime ? "(Latest)" : `(${latest.month})`
+        ] }),
+        /* @__PURE__ */ jsx("p", { className: "text-2xl font-bold mt-2", children: formatIdr(latest?.income ?? 0) })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6", children: [
+        /* @__PURE__ */ jsxs("p", { className: "text-sm font-medium text-slate-500 dark:text-slate-400", children: [
+          "Total Outcome ",
+          isAllTime ? "(Latest)" : `(${latest.month})`
+        ] }),
+        /* @__PURE__ */ jsx("p", { className: "text-2xl font-bold mt-2", children: formatIdr(latest?.outcome.total ?? 0) }),
+        /* @__PURE__ */ jsx("p", { className: "text-xs text-slate-400 mt-1", children: "Cash + Credit Payment" })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6", children: [
+        /* @__PURE__ */ jsxs("p", { className: "text-sm font-medium text-slate-500 dark:text-slate-400", children: [
+          "Net Worth ",
+          isAllTime ? "(Latest)" : `(${latestNetworth?.month ?? ""})`
+        ] }),
+        /* @__PURE__ */ jsx("p", { className: "text-2xl font-bold mt-2", children: formatIdr(latestNetworth?.total ?? 0) })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6", children: [
+        /* @__PURE__ */ jsxs("p", { className: "text-sm font-medium text-slate-500 dark:text-slate-400", children: [
+          "Savings Rate ",
+          isAllTime ? "(Latest)" : `(${latest.month})`
+        ] }),
+        /* @__PURE__ */ jsxs("p", { className: "text-2xl font-bold mt-2", children: [
+          savingsRate.toFixed(1),
+          "%"
+        ] }),
+        /* @__PURE__ */ jsx("div", { className: "w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 mt-3", children: /* @__PURE__ */ jsx("div", { className: "bg-emerald-500 h-2 rounded-full transition-all", style: { width: `${Math.min(100, savingsRate)}%` } }) })
+      ] })
     ] })
   ] });
 }

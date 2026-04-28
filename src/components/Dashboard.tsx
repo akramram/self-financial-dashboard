@@ -94,6 +94,27 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
     ? Math.round((latest.outcome.credit_payment / latest.outcome.total) * 100)
     : 0;
 
+  // Pagination state for transactions
+  const [txPage, setTxPage] = useState(1);
+  const txPerPage = 10;
+
+  const sortedTransactions = useMemo(() => {
+    return [...filteredTransactions].sort(
+      (a, b) => parseCreatedTime(b).getTime() - parseCreatedTime(a).getTime()
+    );
+  }, [filteredTransactions]);
+
+  const totalTxPages = Math.max(1, Math.ceil(sortedTransactions.length / txPerPage));
+  const pagedTransactions = sortedTransactions.slice(
+    (txPage - 1) * txPerPage,
+    txPage * txPerPage
+  );
+
+  const goToPage = (page: number) => {
+    const clamped = Math.max(1, Math.min(totalTxPages, page));
+    setTxPage(clamped);
+  };
+
   return (
     <div className="space-y-6">
       {/* Month Filter */}
@@ -101,7 +122,10 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
         <label className="text-sm font-medium text-slate-600 dark:text-slate-300">Period:</label>
         <select
           value={filterMonth}
-          onChange={(e) => setFilterMonth(e.target.value)}
+          onChange={(e) => {
+            setFilterMonth(e.target.value);
+            setTxPage(1);
+          }}
           className="px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm"
         >
           <option value="all">All-time</option>
@@ -111,63 +135,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
         </select>
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
-          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
-            Total Income {isAllTime ? '(Latest)' : `(${latest.month})`}
-          </p>
-          <p className="text-2xl font-bold mt-2">{formatIdr(latest?.income ?? 0)}</p>
-        </div>
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
-          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
-            Total Outcome {isAllTime ? '(Latest)' : `(${latest.month})`}
-          </p>
-          <p className="text-2xl font-bold mt-2">{formatIdr(latest?.outcome.total ?? 0)}</p>
-          <p className="text-xs text-slate-400 mt-1">Cash + Credit Payment</p>
-        </div>
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
-          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
-            Net Worth {isAllTime ? '(Latest)' : `(${latestNetworth?.month ?? ''})`}
-          </p>
-          <p className="text-2xl font-bold mt-2">{formatIdr(latestNetworth?.total ?? 0)}</p>
-        </div>
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
-          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
-            Savings Rate {isAllTime ? '(Latest)' : `(${latest.month})`}
-          </p>
-          <p className="text-2xl font-bold mt-2">{savingsRate.toFixed(1)}%</p>
-          <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 mt-3">
-            <div className="bg-emerald-500 h-2 rounded-full transition-all" style={{ width: `${Math.min(100, savingsRate)}%` }} />
-          </div>
-        </div>
-      </div>
-
-      {/* Outcome Chart */}
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
-        <h2 className="text-lg font-semibold mb-4">Cash Outcome vs Credit Payment by Month</h2>
-        <OutcomeChart data={filteredSummaries} />
-      </div>
-
-      {/* Charts Row 2 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
-          <h2 className="text-lg font-semibold mb-4">Networth Trend</h2>
-          <NetworthChart data={filteredNetworth} />
-        </div>
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
-          <h2 className="text-lg font-semibold mb-4">
-            {isAllTime ? 'Latest Month Categories' : `${latest.month} Categories`}
-          </h2>
-          {latest?.category_totals && Object.keys(latest.category_totals).length > 0 ? (
-            <CategoryChart data={latest.category_totals} />
-          ) : (
-            <p className="text-slate-500 text-sm">No category data available.</p>
-          )}
-        </div>
-      </div>
-
-      {/* Outcome Breakdown */}
+      {/* Outcome Breakdown — TOP */}
       <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
         <h2 className="text-lg font-semibold mb-4">Outcome Breakdown ({latest?.month})</h2>
         <div className="space-y-4 max-w-xl">
@@ -236,7 +204,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
         </div>
       </div>
 
-      {/* Recent Transactions */}
+      {/* Recent Transactions — TOP (paginated) */}
       <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold">Transactions ({latest?.month})</h2>
@@ -256,136 +224,217 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
-              {filteredTransactions
-                .sort((a, b) => parseCreatedTime(b).getTime() - parseCreatedTime(a).getTime())
-                .slice(0, 10)
-                .map((row) => {
-                  const isEditing = editingId === row.id;
-                  const typeClass =
-                    row.type === 'cash'
-                      ? 'text-blue-600 dark:text-blue-400'
-                      : row.type === 'credit_payment'
-                      ? 'text-amber-600 dark:text-amber-400'
-                      : 'text-purple-600 dark:text-purple-400';
-                  const typeLabel =
-                    row.type === 'cash' ? 'Cash' : row.type === 'credit_payment' ? 'Credit Pay' : 'Credit';
-                  const createdDate = parseCreatedTime(row);
-                  const dateStr = isNaN(createdDate.getTime())
-                    ? row.date
-                    : createdDate.toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' });
+              {pagedTransactions.map((row) => {
+                const isEditing = editingId === row.id;
+                const typeClass =
+                  row.type === 'cash'
+                    ? 'text-blue-600 dark:text-blue-400'
+                    : row.type === 'credit_payment'
+                    ? 'text-amber-600 dark:text-amber-400'
+                    : 'text-purple-600 dark:text-purple-400';
+                const typeLabel =
+                  row.type === 'cash' ? 'Cash' : row.type === 'credit_payment' ? 'Credit Pay' : 'Credit';
+                const createdDate = parseCreatedTime(row);
+                const dateStr = isNaN(createdDate.getTime())
+                  ? row.date
+                  : createdDate.toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' });
 
-                  if (isEditing) {
-                    return (
-                      <tr key={row.id} className="bg-slate-50 dark:bg-slate-700/30">
-                        <td className="px-4 py-2">
-                          <label className="inline-flex items-center cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={!!editForm.done}
-                              onChange={(e) => handleChange('done', e.target.checked)}
-                              className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
-                            />
-                            <span className="ml-2 text-xs">{editForm.done ? 'Paid' : 'Unpaid'}</span>
-                          </label>
-                        </td>
-                        <td className="px-4 py-2">
-                          <input
-                            type="text"
-                            value={editForm.title ?? ''}
-                            onChange={(e) => handleChange('title', e.target.value)}
-                            className="w-full px-2 py-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs"
-                          />
-                        </td>
-                        <td className="px-4 py-2">
-                          <input
-                            type="text"
-                            value={editForm.category ?? ''}
-                            onChange={(e) => handleChange('category', e.target.value)}
-                            className="w-full px-2 py-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs"
-                          />
-                        </td>
-                        <td className="px-4 py-2">
-                          <input
-                            type="text"
-                            value={editForm.created_time ?? ''}
-                            onChange={(e) => handleChange('created_time', e.target.value)}
-                            className="w-full px-2 py-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs"
-                          />
-                        </td>
-                        <td className="px-4 py-2">
-                          <input
-                            type="number"
-                            value={editForm.amount ?? 0}
-                            onChange={(e) => handleChange('amount', Number(e.target.value))}
-                            className="w-full px-2 py-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs text-right"
-                          />
-                        </td>
-                        <td className="px-4 py-2">
-                          <select
-                            value={editForm.type ?? 'cash'}
-                            onChange={(e) => handleChange('type', e.target.value)}
-                            className="w-full px-2 py-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs"
-                          >
-                            {TYPE_OPTIONS.map((opt) => (
-                              <option key={opt.value} value={opt.value}>{opt.label}</option>
-                            ))}
-                          </select>
-                        </td>
-                        <td className="px-4 py-2">
-                          <div className="flex gap-1">
-                            <button onClick={saveEdit} className="px-2 py-1 rounded bg-emerald-600 text-white text-xs hover:bg-emerald-700">Save</button>
-                            <button onClick={cancelEdit} className="px-2 py-1 rounded bg-slate-300 dark:bg-slate-600 text-xs hover:bg-slate-400 dark:hover:bg-slate-500">Cancel</button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  }
-
+                if (isEditing) {
                   return (
-                    <tr key={row.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/30">
-                      <td className="px-4 py-3">
-                        <button
-                          onClick={async () => {
-                            await toggleTransactionDoneApi(row.id, !row.done);
-                            window.location.reload();
-                          }}
-                          className={`px-2 py-1 rounded text-xs font-semibold transition-colors ${
-                            row.done
-                              ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400'
-                              : 'bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400'
-                          }`}
+                    <tr key={row.id} className="bg-slate-50 dark:bg-slate-700/30">
+                      <td className="px-4 py-2">
+                        <label className="inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={!!editForm.done}
+                            onChange={(e) => handleChange('done', e.target.checked)}
+                            className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                          />
+                          <span className="ml-2 text-xs">{editForm.done ? 'Paid' : 'Unpaid'}</span>
+                        </label>
+                      </td>
+                      <td className="px-4 py-2">
+                        <input
+                          type="text"
+                          value={editForm.title ?? ''}
+                          onChange={(e) => handleChange('title', e.target.value)}
+                          className="w-full px-2 py-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs"
+                        />
+                      </td>
+                      <td className="px-4 py-2">
+                        <input
+                          type="text"
+                          value={editForm.category ?? ''}
+                          onChange={(e) => handleChange('category', e.target.value)}
+                          className="w-full px-2 py-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs"
+                        />
+                      </td>
+                      <td className="px-4 py-2">
+                        <input
+                          type="text"
+                          value={editForm.created_time ?? ''}
+                          onChange={(e) => handleChange('created_time', e.target.value)}
+                          className="w-full px-2 py-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs"
+                        />
+                      </td>
+                      <td className="px-4 py-2">
+                        <input
+                          type="number"
+                          value={editForm.amount ?? 0}
+                          onChange={(e) => handleChange('amount', Number(e.target.value))}
+                          className="w-full px-2 py-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs text-right"
+                        />
+                      </td>
+                      <td className="px-4 py-2">
+                        <select
+                          value={editForm.type ?? 'cash'}
+                          onChange={(e) => handleChange('type', e.target.value)}
+                          className="w-full px-2 py-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs"
                         >
-                          {row.done ? 'Paid' : 'Unpaid'}
-                        </button>
+                          {TYPE_OPTIONS.map((opt) => (
+                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                          ))}
+                        </select>
                       </td>
-                      <td className="px-4 py-3">{row.title}</td>
-                      <td className="px-4 py-3">
-                        <span className="px-2 py-1 rounded-full text-xs bg-slate-100 dark:bg-slate-700">{row.category}</span>
-                      </td>
-                      <td className="px-4 py-3 text-slate-500 dark:text-slate-400 text-xs">{dateStr}</td>
-                      <td className="px-4 py-3 font-medium text-right">{formatIdr(row.amount)}</td>
-                      <td className={`px-4 py-3 ${typeClass} text-xs font-semibold uppercase`}>{typeLabel}</td>
-                      <td className="px-4 py-3">
-                        <div className="flex gap-2">
-                          <button onClick={() => startEdit(row)} className="text-blue-500 hover:text-blue-700 text-xs">Edit</button>
-                          <button
-                            onClick={async () => {
-                              if (confirm('Delete this transaction?')) {
-                                await deleteTransactionApi(row.id);
-                                window.location.reload();
-                              }
-                            }}
-                            className="text-red-500 hover:text-red-700 text-xs"
-                          >
-                            Delete
-                          </button>
+                      <td className="px-4 py-2">
+                        <div className="flex gap-1">
+                          <button onClick={saveEdit} className="px-2 py-1 rounded bg-emerald-600 text-white text-xs hover:bg-emerald-700">Save</button>
+                          <button onClick={cancelEdit} className="px-2 py-1 rounded bg-slate-300 dark:bg-slate-600 text-xs hover:bg-slate-400 dark:hover:bg-slate-500">Cancel</button>
                         </div>
                       </td>
                     </tr>
                   );
-                })}
+                }
+
+                return (
+                  <tr key={row.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/30">
+                    <td className="px-4 py-3">
+                      <button
+                        onClick={async () => {
+                          await toggleTransactionDoneApi(row.id, !row.done);
+                          window.location.reload();
+                        }}
+                        className={`px-2 py-1 rounded text-xs font-semibold transition-colors ${
+                          row.done
+                            ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400'
+                            : 'bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400'
+                        }`}
+                      >
+                        {row.done ? 'Paid' : 'Unpaid'}
+                      </button>
+                    </td>
+                    <td className="px-4 py-3">{row.title}</td>
+                    <td className="px-4 py-3">
+                      <span className="px-2 py-1 rounded-full text-xs bg-slate-100 dark:bg-slate-700">{row.category}</span>
+                    </td>
+                    <td className="px-4 py-3 text-slate-500 dark:text-slate-400 text-xs">{dateStr}</td>
+                    <td className="px-4 py-3 font-medium text-right">{formatIdr(row.amount)}</td>
+                    <td className={`px-4 py-3 ${typeClass} text-xs font-semibold uppercase`}>{typeLabel}</td>
+                    <td className="px-4 py-3">
+                      <div className="flex gap-2">
+                        <button onClick={() => startEdit(row)} className="text-blue-500 hover:text-blue-700 text-xs">Edit</button>
+                        <button
+                          onClick={async () => {
+                            if (confirm('Delete this transaction?')) {
+                              await deleteTransactionApi(row.id);
+                              window.location.reload();
+                            }
+                          }}
+                          className="text-red-500 hover:text-red-700 text-xs"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
+        </div>
+
+        {/* Pagination controls */}
+        {sortedTransactions.length > txPerPage && (
+          <div className="flex items-center justify-between mt-4">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Showing {(txPage - 1) * txPerPage + 1}–{Math.min(txPage * txPerPage, sortedTransactions.length)} of {sortedTransactions.length}
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => goToPage(txPage - 1)}
+                disabled={txPage <= 1}
+                className="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-700"
+              >
+                Previous
+              </button>
+              <span className="text-xs text-slate-500 dark:text-slate-400 min-w-[3rem] text-center">
+                {txPage} / {totalTxPages}
+              </span>
+              <button
+                onClick={() => goToPage(txPage + 1)}
+                disabled={txPage >= totalTxPages}
+                className="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-700"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Outcome Chart */}
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+        <h2 className="text-lg font-semibold mb-4">Cash Outcome vs Credit Payment by Month</h2>
+        <OutcomeChart data={filteredSummaries} />
+      </div>
+
+      {/* Charts Row 2 */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+          <h2 className="text-lg font-semibold mb-4">Networth Trend</h2>
+          <NetworthChart data={filteredNetworth} />
+        </div>
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+          <h2 className="text-lg font-semibold mb-4">
+            {isAllTime ? 'Latest Month Categories' : `${latest.month} Categories`}
+          </h2>
+          {latest?.category_totals && Object.keys(latest.category_totals).length > 0 ? (
+            <CategoryChart data={latest.category_totals} />
+          ) : (
+            <p className="text-slate-500 text-sm">No category data available.</p>
+          )}
+        </div>
+      </div>
+
+      {/* Summary Cards — BOTTOM */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+            Total Income {isAllTime ? '(Latest)' : `(${latest.month})`}
+          </p>
+          <p className="text-2xl font-bold mt-2">{formatIdr(latest?.income ?? 0)}</p>
+        </div>
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+            Total Outcome {isAllTime ? '(Latest)' : `(${latest.month})`}
+          </p>
+          <p className="text-2xl font-bold mt-2">{formatIdr(latest?.outcome.total ?? 0)}</p>
+          <p className="text-xs text-slate-400 mt-1">Cash + Credit Payment</p>
+        </div>
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+            Net Worth {isAllTime ? '(Latest)' : `(${latestNetworth?.month ?? ''})`}
+          </p>
+          <p className="text-2xl font-bold mt-2">{formatIdr(latestNetworth?.total ?? 0)}</p>
+        </div>
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+            Savings Rate {isAllTime ? '(Latest)' : `(${latest.month})`}
+          </p>
+          <p className="text-2xl font-bold mt-2">{savingsRate.toFixed(1)}%</p>
+          <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 mt-3">
+            <div className="bg-emerald-500 h-2 rounded-full transition-all" style={{ width: `${Math.min(100, savingsRate)}%` }} />
+          </div>
         </div>
       </div>
     </div>
