@@ -1,0 +1,22 @@
+---
+import Layout from '../layouts/Layout.astro';
+import TransactionTable from '../components/TransactionTable';
+import { getTransactions } from '../lib/db';
+
+const transactions = getTransactions();
+---
+
+<Layout title="Transactions">
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold">Transactions</h1>
+    <p class="text-slate-500 dark:text-slate-400 text-sm">All cash and credit expenses</p>
+  </div>
+
+  <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+    <TransactionTable
+      transactions={transactions}
+      showMonth={true}
+      client:load
+    />
+  </div>
+</Layout>

@@ -1,0 +1,38 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Dashboard from '../components/Dashboard';
+import { getTransactions, getNetworth, getMonthlySummary, db } from '../lib/db';
+
+const transactions = getTransactions();
+const networth = getNetworth();
+const summaries = getMonthlySummary();
+
+// Enrich summaries with income from DB
+const incomeRows = db.prepare('SELECT month, income FROM monthly_income').all() as any[];
+const incomeMap = new Map(incomeRows.map((r) => [r.month, r.income]));
+for (const s of summaries) {
+  const income = incomeMap.get(s.month) || 0;
+  s.income = income;
+  s.savings = income - s.outcome.total;
+  s.savings_rate_pct = income > 0 ? Number(((s.savings / income) * 100).toFixed(2)) : 0;
+}
+---
+
+<Layout title="Financial Dashboard">
+  <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div>
+      <h1 class="text-2xl font-bold">Dashboard</h1>
+      <p class="text-slate-500 dark:text-slate-400 text-sm">Overview of income, outcome, and networth</p>
+    </div>
+    <a href="/add" class="px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-700 transition">
+      + Add Data
+    </a>
+  </div>
+
+  <Dashboard
+    transactions={transactions}
+    networth={networth}
+    summaries={summaries}
+    client:load
+  />
+</Layout>

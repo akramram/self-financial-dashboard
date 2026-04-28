@@ -1,0 +1,66 @@
+import type { Transaction, NetworthRecord, MonthlySummary } from './data';
+
+export async function fetchTransactions(filters?: { month?: string; type?: string; search?: string }): Promise<Transaction[]> {
+  const params = new URLSearchParams();
+  if (filters?.month) params.set('month', filters.month);
+  if (filters?.type) params.set('type', filters.type);
+  if (filters?.search) params.set('search', filters.search);
+  const res = await fetch(`/api/transactions?${params.toString()}`);
+  return res.json();
+}
+
+export async function fetchTransaction(id: number): Promise<Transaction> {
+  const res = await fetch(`/api/transactions/${id}`);
+  return res.json();
+}
+
+export async function createTransaction(tx: Omit<Transaction, 'id'>): Promise<Transaction> {
+  const res = await fetch('/api/transactions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(tx),
+  });
+  return res.json();
+}
+
+export async function updateTransactionApi(id: number, tx: Partial<Transaction>): Promise<void> {
+  await fetch(`/api/transactions/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(tx),
+  });
+}
+
+export async function deleteTransactionApi(id: number): Promise<void> {
+  await fetch(`/api/transactions/${id}`, { method: 'DELETE' });
+}
+
+export async function fetchNetworth(): Promise<NetworthRecord[]> {
+  const res = await fetch('/api/networth');
+  return res.json();
+}
+
+export async function createNetworth(record: NetworthRecord): Promise<void> {
+  await fetch('/api/networth', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(record),
+  });
+}
+
+export async function updateNetworthApi(month: string, record: Partial<NetworthRecord>): Promise<void> {
+  await fetch(`/api/networth/${encodeURIComponent(month)}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(record),
+  });
+}
+
+export async function deleteNetworthApi(month: string): Promise<void> {
+  await fetch(`/api/networth/${encodeURIComponent(month)}`, { method: 'DELETE' });
+}
+
+export async function fetchSummaries(): Promise<MonthlySummary[]> {
+  const res = await fetch('/api/summary');
+  return res.json();
+}

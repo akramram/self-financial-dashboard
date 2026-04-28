@@ -1,0 +1,97 @@
+---
+import Layout from '../layouts/Layout.astro';
+import NetworthChart from '../components/NetworthChart';
+import { getNetworth } from '../lib/db';
+import { formatIdr } from '../lib/utils';
+
+const networth = getNetworth();
+const networthReversed = [...networth].reverse();
+---
+
+<Layout title="Networth">
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold">Networth</h1>
+    <p class="text-slate-500 dark:text-slate-400 text-sm">Assets and investments over time</p>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+      <h2 class="text-lg font-semibold mb-4">Networth Trend</h2>
+      <NetworthChart data={networth} client:load />
+    </div>
+    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+      <h2 class="text-lg font-semibold mb-4">Latest Breakdown</h2>
+      {networth.length > 0 ? (
+        <div class="space-y-3">
+          {Object.entries(networth[networth.length - 1].breakdown).map(([key, value]) => (
+            <div class="flex justify-between items-center p-3 rounded-lg bg-slate-50 dark:bg-slate-700/50">
+              <span class="text-sm font-medium">{key}</span>
+              <span class="text-sm font-bold">{formatIdr(value)}</span>
+            </div>
+          ))}
+          <div class="pt-3 border-t border-slate-200 dark:border-slate-700 flex justify-between items-center">
+            <span class="text-sm font-semibold">Total</span>
+            <span class="text-lg font-bold text-violet-600 dark:text-violet-400">
+              {formatIdr(networth[networth.length - 1].total)}
+            </span>
+          </div>
+        </div>
+      ) : (
+        <p class="text-slate-500 text-sm">No networth data available.</p>
+      )}
+    </div>
+  </div>
+
+  <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+    <div class="p-6 border-b border-slate-200 dark:border-slate-700">
+      <h2 class="text-lg font-semibold">Monthly History</h2>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm text-left">
+        <thead class="bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 uppercase text-xs">
+          <tr>
+            <th class="px-6 py-3 font-medium">Month</th>
+            <th class="px-6 py-3 font-medium text-right">Total</th>
+            <th class="px-6 py-3 font-medium text-right">MoM Change</th>
+            <th class="px-6 py-3 font-medium text-right">MoM %</th>
+            <th class="px-6 py-3 font-medium"></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
+          {networthReversed.map((row) => (
+            <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/30">
+              <td class="px-6 py-3 font-medium">{row.month}</td>
+              <td class="px-6 py-3 font-medium text-right">{formatIdr(row.total)}</td>
+              <td class="px-6 py-3 text-right">
+                {row.month_over_month_change != null ? (
+                  <span class={row.month_over_month_change >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}>
+                    {row.month_over_month_change >= 0 ? '+' : ''}{formatIdr(row.month_over_month_change)}
+                  </span>
+                ) : (
+                  <span class="text-slate-400">-</span>
+                )}
+              </td>
+              <td class="px-6 py-3 text-right">
+                {row.month_over_month_pct != null ? (
+                  <span class={row.month_over_month_pct >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}>
+                    {row.month_over_month_pct >= 0 ? '+' : ''}{row.month_over_month_pct}%
+                  </span>
+                ) : (
+                  <span class="text-slate-400">-</span>
+                )}
+              </td>
+              <td class="px-6 py-3">
+                <a
+                  href={`/networth/edit?month=${encodeURIComponent(row.month)}`}
+                  class="text-blue-500 hover:text-blue-700 text-xs font-medium"
+                >
+                  Edit
+                </a>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</Layout>
