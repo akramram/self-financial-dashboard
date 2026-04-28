@@ -1,0 +1,114 @@
+[
+  {
+    "month": "October 2025",
+    "date": "2025-10-01",
+    "total": 16986000.0,
+    "currency": "IDR",
+    "month_over_month_change": null,
+    "month_over_month_pct": null,
+    "breakdown": {
+      "CashCow Jenius": 2700000.0,
+      "Saham": 13404000.0,
+      "Saham Luar": 333000.0,
+      "Reksa Dana": 549000.0
+    }
+  },
+  {
+    "month": "November 2025",
+    "date": "2025-11-01",
+    "total": 18554892.71,
+    "currency": "IDR",
+    "month_over_month_change": 1568892.71,
+    "month_over_month_pct": 9.24,
+    "breakdown": {
+      "Saham Luar": 480440.71,
+      "Reksa Dana": 669151.0,
+      "CashCow Jenius": 2771801.0,
+      "Saham": 14633500.0
+    }
+  },
+  {
+    "month": "December 2025",
+    "date": "2025-12-01",
+    "total": 18747758.88,
+    "currency": "IDR",
+    "month_over_month_change": 192866.17,
+    "month_over_month_pct": 1.04,
+    "breakdown": {
+      "CashCow Jenius": 3500000.0,
+      "Saham": 13959000.0,
+      "Saham Luar": 528264.88,
+      "Reksa Dana": 760494.0
+    }
+  },
+  {
+    "month": "January 2026",
+    "date": "2026-01-01",
+    "total": 22215309.0,
+    "currency": "IDR",
+    "month_over_month_change": 3467550.12,
+    "month_over_month_pct": 18.5,
+    "breakdown": {
+      "CashCow Jenius": 5019000.0,
+      "Saham": 15265500.0,
+      "Saham Luar": 615153.0,
+      "Reksa Dana": 1315656.0
+    }
+  },
+  {
+    "month": "February 2026",
+    "date": "2026-02-01",
+    "total": 30112401.0,
+    "currency": "IDR",
+    "month_over_month_change": 7897092.0,
+    "month_over_month_pct": 35.55,
+    "breakdown": {
+      "CashCow Jenius": 5355989.0,
+      "Saham": 21014000.0,
+      "Saham Luar": 630594.0,
+      "Reksa Dana": 3111818.0
+    }
+  },
+  {
+    "month": "March 2026",
+    "date": "2026-03-01",
+    "total": 31034640.0,
+    "currency": "IDR",
+    "month_over_month_change": 922239.0,
+    "month_over_month_pct": 3.06,
+    "breakdown": {
+      "CashCow Jenius": 5960042.0,
+      "Saham": 21241400.0,
+      "Saham Luar": 596912.0,
+      "Reksa Dana": 3236286.0
+    }
+  },
+  {
+    "month": "April 2026",
+    "date": "2026-04-01",
+    "total": 29091781.0,
+    "currency": "IDR",
+    "month_over_month_change": -1942859.0,
+    "month_over_month_pct": -6.26,
+    "breakdown": {
+      "CashCow Jenius": 0.0,
+      "Saham": 26025600.0,
+      "Saham Luar": 458928.0,
+      "Reksa Dana": 2607253.0
+    }
+  },
+  {
+    "month": "May 2026",
+    "date": "2026-05-01",
+    "total": 27234740.0,
+    "currency": "IDR",
+    "month_over_month_change": -1857041.0,
+    "month_over_month_pct": -6.38,
+    "breakdown": {
+      "CashCow Jenius": 266101.0,
+      "Saham": 23755000.0,
+      "Saham Luar": 488687.0,
+      "Reksa Dana": 2724952.0
+    }
+  }
+]

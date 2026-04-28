@@ -1,0 +1,1029 @@
+[
+  {
+    "month": "September 2023",
+    "date": "2023-09-01",
+    "income": 10900000.0,
+    "outcome": {
+      "cash": 4089000.0,
+      "credit_payment": 4100000.0,
+      "credit_expenses": 2200000.0,
+      "total": 8189000.0
+    },
+    "savings": 2711000.0,
+    "savings_rate_pct": 24.87,
+    "networth": 0.0,
+    "category_totals": {
+      "🌱 Invest": 1000000.0,
+      "👰 ‍♀️ Marriage": 1000000.0,
+      "🐄 Qurban": 200000.0,
+      "👨 ‍👩‍👧 Family": 1500000.0,
+      "🏠 Kontrakan": 1000000.0,
+      "🌐 Internet": 375000.0,
+      "⚡ Listrik": 200000.0,
+      "🎗 ️ Zakat": 190000.0,
+      "🐈 Pets": 500000.0,
+      "⛽ Bensin": 160000.0,
+      "📺 Youtube": 100000.0,
+      "🍿 Netflix": 45000.0,
+      "🎶 Spotify": 19000.0
+    }
+  },
+  {
+    "month": "October 2023",
+    "date": "2023-10-01",
+    "income": 9100000.0,
+    "outcome": {
+      "cash": 4108651.0,
+      "credit_payment": 4000000.0,
+      "credit_expenses": 2860000.0,
+      "total": 8108651.0
+    },
+    "savings": 991349.0,
+    "savings_rate_pct": 10.89,
+    "networth": 0.0,
+    "category_totals": {
+      "🐈 Pets": 500000.0,
+      "⛽ Bensin": 160000.0,
+      "🌱 Invest": 1000000.0,
+      "👰 ‍♀️ Marriage": 1000000.0,
+      "🐄 Qurban": 200000.0,
+      "👨 ‍👩‍👧 Family": 1500000.0,
+      "🏠 Kontrakan": 1000000.0,
+      "🌐 Internet": 420000.0,
+      "⚡ Listrik": 200000.0,
+      "🎗 ️ Zakat": 190000.0,
+      "🎈 Modal Usaha Balon": 611651.0,
+      "💡 Listrik 2": 100000.0,
+      "🍿 Netflix": 45000.0,
+      "📺 Youtube": 23000.0,
+      "🎶 Spotify": 19000.0
+    }
+  },
+  {
+    "month": "November 2023",
+    "date": "2023-11-01",
+    "income": 8900000.0,
+    "outcome": {
+      "cash": 5256250.0,
+      "credit_payment": 5636194.0,
+      "credit_expenses": 2200000.0,
+      "total": 10892444.0
+    },
+    "savings": -1992444.0,
+    "savings_rate_pct": -22.39,
+    "networth": 0.0,
+    "category_totals": {
+      "🌱 Invest": 1000000.0,
+      "👰 ‍♀️ Marriage": 1000000.0,
+      "🐄 Qurban": 200000.0,
+      "🙇 Utang": 2000000.0,
+      "🏠 Kontrakan": 1000000.0,
+      "👨 ‍👩‍👧 Family": 700000.0,
+      "🌐 Internet": 419250.0,
+      "⚡ Listrik": 200000.0,
+      "🎗 ️ Zakat": 190000.0,
+      "🐈 Pets": 500000.0,
+      "⛽ Bensin": 160000.0,
+      "🍿 Netflix": 45000.0,
+      "📺 Youtube": 23000.0,
+      "🎶 Spotify": 19000.0
+    }
+  },
+  {
+    "month": "December 2023",
+    "date": "2023-12-01",
+    "income": 8900000.0,
+    "outcome": {
+      "cash": 4037725.0,
+      "credit_payment": 4500000.0,
+      "credit_expenses": 2200000.0,
+      "total": 8537725.0
+    },
+    "savings": 362275.0,
+    "savings_rate_pct": 4.07,
+    "networth": 0.0,
+    "category_totals": {
+      "🌱 Invest": 1000000.0,
+      "👰 ‍♀️ Marriage": 1000000.0,
+      "🐄 Qurban": 200000.0,
+      "👨 ‍👩‍👧 Family": 1500000.0,
+      "🏠 Kontrakan": 1000000.0,
+      "🌐 Internet": 378225.0,
+      "🎗 ️ Zakat": 212500.0,
+      "⚡ Listrik": 200000.0,
+      "🐈 Pets": 500000.0,
+      "⛽ Bensin": 160000.0,
+      "🍿 Netflix": 45000.0,
+      "📺 Youtube": 23000.0,
+      "🎶 Spotify": 19000.0
+    }
+  },
+  {
+    "month": "January 2024",
+    "date": "2024-01-01",
+    "income": 25400000.0,
+    "outcome": {
+      "cash": 3890500.0,
+      "credit_payment": 5951955.0,
+      "credit_expenses": 2560000.0,
+      "total": 9842455.0
+    },
+    "savings": 15557545.0,
+    "savings_rate_pct": 61.25,
+    "networth": 0.0,
+    "category_totals": {
+      "⚡ Listrik": 200000.0,
+      "⛽ Bensin": 160000.0,
+      "👰 ‍♀️ Marriage": 1000000.0,
+      "🌱 Invest": 1000000.0,
+      "🐄 Qurban": 200000.0,
+      "👨 ‍👩‍👧 Family": 1500000.0,
+      "🏠 Kontrakan": 1000000.0,
+      "🌐 Internet": 475000.0,
+      "🎗 ️ Zakat": 212500.0,
+      "🐈 Pets": 516000.0,
+      "🅿️": 100000.0,
+      "🍿 Netflix": 45000.0,
+      "📺 Youtube": 23000.0,
+      "🎶 Spotify": 19000.0
+    }
+  },
+  {
+    "month": "February 2024",
+    "date": "2024-02-01",
+    "income": 8950000.0,
+    "outcome": {
+      "cash": 4944000.0,
+      "credit_payment": 5769109.0,
+      "credit_expenses": 2460000.0,
+      "total": 10713109.0
+    },
+    "savings": -1763109.0,
+    "savings_rate_pct": -19.7,
+    "networth": 0.0,
+    "category_totals": {
+      "⛽ Bensin": 160000.0,
+      "🅿️": 100000.0,
+      "👰 ‍♀️ Marriage": 1000000.0,
+      "🌱 Invest": 1000000.0,
+      "🐄 Qurban": 200000.0,
+      "👨 ‍👩‍👧 Family": 1500000.0,
+      "🏠 Kontrakan": 1000000.0,
+      "🌐 Internet": 420000.0,
+      "🎗 ️ Zakat": 250000.0,
+      "⚡ Listrik": 200000.0,
+      "🎁 Presents": 987000.0,
+      "🐈 Pets": 500000.0,
+      "🍿 Netflix": 45000.0,
+      "📺 Youtube": 23000.0,
+      "🎶 Spotify": 19000.0
+    }
+  },
+  {
+    "month": "March 2024",
+    "date": "2024-03-01",
+    "income": 9400000.0,
+    "outcome": {
+      "cash": 6239561.0,
+      "credit_payment": 4082000.0,
+      "credit_expenses": 2460000.0,
+      "total": 10321561.0
+    },
+    "savings": -921561.0,
+    "savings_rate_pct": -9.8,
+    "networth": 0.0,
+    "category_totals": {
+      "⛽ Bensin": 160000.0,
+      "🅿️": 100000.0,
+      "🌱 Invest": 1000000.0,
+      "👰 ‍♀️ Marriage": 1000000.0,
+      "🐄 Qurban": 200000.0,
+      "💳 OVO Credit Card": 2252561.0,
+      "👨 ‍👩‍👧 Family": 1500000.0,
+      "🏠 Kontrakan": 1000000.0,
+      "🌐 Internet": 475000.0,
+      "🎗 ️ Zakat": 225000.0,
+      "⚡ Listrik": 200000.0,
+      "🐈 Pets": 500000.0,
+      "🍿 Netflix": 45000.0,
+      "📺 Youtube": 23000.0,
+      "🎶 Spotify": 19000.0
+    }
+  },
+  {
+    "month": "April 2024",
+    "date": "2024-04-01",
+    "income": 29433333.0,
+    "outcome": {
+      "cash": 5074500.0,
+      "credit_payment": 5902915.0,
+      "credit_expenses": 1360000.0,
+      "total": 10977415.0
+    },
+    "savings": 18455918.0,
+    "savings_rate_pct": 62.7,
+    "networth": 0.0,
+    "category_totals": {
+      "⛽ Bensin": 160000.0,
+      "🌱 Invest": 1000000.0,
+      "🐄 Qurban": 200000.0,
+      "👨 ‍👩‍👧 Family": 1500000.0,
+      "🏠 Kontrakan": 1000000.0,
+      "🌐 Internet": 475000.0,
+      "🎗 ️ Zakat": 212500.0,
+      "⚡ Listrik": 200000.0,
+      "🐈 Pets": 500000.0,
+      "🅿️": 100000.0,
+      "🍿 Netflix": 45000.0,
+      "📺 Youtube": 23000.0,
+      "🎶 Spotify": 19000.0,
+      "👰 ‍♀️ Marriage": 1000000.0
+    }
+  },
+  {
+    "month": "May 2024",
+    "date": "2024-05-01",
+    "income": 17000000.0,
+    "outcome": {
+      "cash": 6195627.0,
+      "credit_payment": 6728114.0,
+      "credit_expenses": 2460000.0,
+      "total": 12923741.0
+    },
+    "savings": 4076259.0,
+    "savings_rate_pct": 23.98,
+    "networth": 0.0,
+    "category_totals": {
+      "⛽ Bensin": 160000.0,
+      "🅿️": 100000.0,
+      "🌱 Invest": 1000000.0,
+      "👰 ‍♀️ Marriage": 1000000.0,
+      "🐄 Qurban": 200000.0,
+      "💳 OVO": 2183627.0,
+      "👨 ‍👩‍👧 Family": 1500000.0,
+      "🏠 Kontrakan": 1000000.0,
+      "🌐 Internet": 475000.0,
+      "🎗 ️ Zakat": 250000.0,
+      "⚡ Listrik": 200000.0,
+      "🐈 Pets": 500000.0,
+      "🍿 Netflix": 45000.0,
+      "📺 Youtube": 23000.0,
+      "🎶 Spotify": 19000.0
+    }
+  },
+  {
+    "month": "June 2024",
+    "date": "2024-06-01",
+    "income": 17000000.0,
+    "outcome": {
+      "cash": 15212000.0,
+      "credit_payment": 6631987.0,
+      "credit_expenses": 1160000.0,
+      "total": 21843987.0
+    },
+    "savings": -4843987.0,
+    "savings_rate_pct": -28.49,
+    "networth": 0.0,
+    "category_totals": {
+      "⛽ Bensin": 160000.0,
+      "👰 ‍♀️ Marriage": 1000000.0,
+      "👨 ‍👩‍👧 Family": 1500000.0,
+      "🏠 Kontrakan": 1000000.0,
+      "🌐 Internet": 475000.0,
+      "🎗 ️ Zakat": 250000.0,
+      "⚡ Listrik": 200000.0,
+      "🐈 Pets": 500000.0,
+      "🅿️": 100000.0,
+      "🍿 Netflix": 45000.0,
+      "📺 Youtube": 23000.0,
+      "🎶 Spotify": 19000.0,
+      "🌱 Invest": 9200000.0,
+      "🐄 Qurban": 1900000.0
+    }
+  },
+  {
+    "month": "July 2024",
+    "date": "2024-07-01",
+    "income": 17001000.0,
+    "outcome": {
+      "cash": 3208798.0,
+      "credit_payment": 8072441.0,
+      "credit_expenses": 3147500.0,
+      "total": 11281239.0
+    },
+    "savings": 5719761.0,
+    "savings_rate_pct": 33.64,
+    "networth": 0.0,
+    "category_totals": {
+      "🌐 Internet": 475000.0,
+      "🎗 ️ Zakat": 212500.0,
+      "⛽ Bensin": 160000.0,
+      "🅿️": 100000.0,
+      "🌱 Invest": 1000000.0,
+      "👰 ‍♀️ Marriage": 1000000.0,
+      "🐄 Qurban": 200000.0,
+      "👨 ‍👩‍👧 Family": 1500000.0,
+      "🏠 Kontrakan": 1000000.0,
+      "⚡ Listrik": 100000.0,
+      "🐈 Pets": 521798.0,
+      "🍿 Netflix": 45000.0,
+      "📺 Youtube": 23000.0,
+      "🎶 Spotify": 19000.0
+    }
+  },
+  {
+    "month": "August 2024",
+    "date": "2024-08-01",
+    "income": 17000000.0,
+    "outcome": {
+      "cash": 3774500.0,
+      "credit_payment": 5657567.0,
+      "credit_expenses": 2660000.0,
+      "total": 9432067.0
+    },
+    "savings": 7567933.0,
+    "savings_rate_pct": 44.52,
+    "networth": 0.0,
+    "category_totals": {
+      "⚡ Listrik": 200000.0,
+      "⛽ Bensin": 160000.0,
+      "🅿️": 100000.0,
+      "👰 ‍♀️ Marriage": 1000000.0,
+      "🌱 Invest": 1000000.0,
+      "🐄 Qurban": 200000.0,
+      "👨 ‍👩‍👧 Family": 1500000.0,
+      "🏠 Kontrakan": 1000000.0,
+      "🌐 Internet": 475000.0,
+      "🎗 ️ Zakat": 212500.0,
+      "🐈 Pets": 500000.0,
+      "🍿 Netflix": 45000.0,
+      "📺 Youtube": 23000.0,
+      "🎶 Spotify": 19000.0
+    }
+  },
+  {
+    "month": "September 2024",
+    "date": "2024-09-01",
+    "income": 17000000.0,
+    "outcome": {
+      "cash": 3874500.0,
+      "credit_payment": 7520000.0,
+      "credit_expenses": 1460000.0,
+      "total": 11394500.0
+    },
+    "savings": 5605500.0,
+    "savings_rate_pct": 32.97,
+    "networth": 0.0,
+    "category_totals": {
+      "⚡ Listrik": 200000.0,
+      "⛽ Bensin": 160000.0,
+      "🅿️": 100000.0,
+      "🌱 Invest": 1000000.0,
+      "👨 ‍👩‍👧 Family": 1500000.0,
+      "🏠 Kontrakan": 1000000.0,
+      "🌐 Internet": 475000.0,
+      "🎗 ️ Zakat": 212500.0,
+      "🐈 Pets": 600000.0,
+      "🍿 Netflix": 45000.0,
+      "📺 Youtube": 23000.0,
+      "🎶 Spotify": 19000.0
+    }
+  },
+  {
+    "month": "Oktober 2024",
+    "date": "2024-10-01",
+    "income": 10000000.0,
+    "outcome": {
+      "cash": 2975000.0,
+      "credit_payment": 4000000.0,
+      "credit_expenses": 2259500.0,
+      "total": 6975000.0
+    },
+    "savings": 3025000.0,
+    "savings_rate_pct": 30.25,
+    "networth": 0.0,
+    "category_totals": {
+      "🎗 ️ Zakat": 212500.0,
+      "⚡ Listrik": 200000.0,
+      "🐈 Pets": 500000.0,
+      "⛽ Bensin": 160000.0,
+      "🅿️": 100000.0,
+      "🍿 Netflix": 45000.0,
+      "📺 Youtube": 23000.0,
+      "🎶 Spotify": 19000.0,
+      "🌱 Invest": 1000000.0,
+      "👨 ‍👩‍👧 Family": 1500000.0,
+      "🏠 Kontrakan": 1000000.0,
+      "🌐 Internet": 475000.0
+    }
+  },
+  {
+    "month": "November 2024",
+    "date": "2024-11-01",
+    "income": 10000000.0,
+    "outcome": {
+      "cash": 4874500.0,
+      "credit_payment": 5706437.0,
+      "credit_expenses": 360000.0,
+      "total": 10580937.0
+    },
+    "savings": -580937.0,
+    "savings_rate_pct": -5.81,
+    "networth": 0.0,
+    "category_totals": {
+      "⚡ Listrik": 200000.0,
+      "⛽ Bensin": 160000.0,
+      "👨 ‍👩‍👧 Family": 1500000.0,
+      "🏠 Kontrakan": 1000000.0,
+      "🌐 Internet": 475000.0,
+      "🎗 ️ Zakat": 212500.0,
+      "🐈 Pets": 500000.0,
+      "🅿️": 100000.0,
+      "🍿 Netflix": 45000.0,
+      "📺 Youtube": 23000.0,
+      "🎶 Spotify": 19000.0,
+      "🌱 Invest": 1000000.0
+    }
+  },
+  {
+    "month": "December 2024",
+    "date": "2024-12-01",
+    "income": 10000000.0,
+    "outcome": {
+      "cash": 3087000.0,
+      "credit_payment": 4000000.0,
+      "credit_expenses": 2147500.0,
+      "total": 7087000.0
+    },
+    "savings": 2913000.0,
+    "savings_rate_pct": 29.13,
+    "networth": 0.0,
+    "category_totals": {
+      "🌐 Internet": 475000.0,
+      "🎗 ️ Zakat": 212500.0,
+      "⚡ Listrik": 200000.0,
+      "⛽ Bensin": 160000.0,
+      "🅿️": 100000.0,
+      "🌱 Invest": 1000000.0,
+      "👨 ‍👩‍👧 Family": 1500000.0,
+      "🏠 Kontrakan": 1000000.0,
+      "🐈 Pets": 500000.0,
+      "🍿 Netflix": 45000.0,
+      "📺 Youtube": 23000.0,
+      "🎶 Spotify": 19000.0
+    }
+  },
+  {
+    "month": "January 2025",
+    "date": "2025-01-01",
+    "income": 10000000.0,
+    "outcome": {
+      "cash": 7789000.0,
+      "credit_payment": 15607441.0,
+      "credit_expenses": 160000.0,
+      "total": 23396441.0
+    },
+    "savings": -13396441.0,
+    "savings_rate_pct": -133.96,
+    "networth": 0.0,
+    "category_totals": {
+      "⛽ Bensin": 160000.0,
+      "👨 ‍👩‍👧 Family": 1500000.0,
+      "🏠 Kontrakan": 1000000.0,
+      "🌐 Internet": 400000.0,
+      "⚡ Listrik": 250000.0,
+      "🎗 ️ Zakat": 250000.0,
+      "👰 Istri": 3000000.0,
+      "🌱 Invest": 570000.0,
+      "🐈 Pets": 500000.0,
+      "📺 Youtube": 155000.0,
+      "🍿 Netflix": 45000.0,
+      "🎶 Spotify": 19000.0,
+      "🅿️": 100000.0
+    }
+  },
+  {
+    "month": "February 2025",
+    "date": "2025-02-01",
+    "income": 18500000.0,
+    "outcome": {
+      "cash": 7119000.0,
+      "credit_payment": 8481890.0,
+      "credit_expenses": 1160000.0,
+      "total": 15600890.0
+    },
+    "savings": 2899110.0,
+    "savings_rate_pct": 15.67,
+    "networth": 0.0,
+    "category_totals": {
+      "🌱 Invest": 1000000.0,
+      "⛽ Bensin": 160000.0,
+      "👨 ‍👩‍👧 Family": 1500000.0,
+      "🏠 Kontrakan": 1000000.0,
+      "🌐 Internet": 400000.0,
+      "🎗 ️ Zakat": 250000.0,
+      "⚡ Listrik": 250000.0,
+      "👰 Istri": 3000000.0,
+      "🐈 Pets": 500000.0,
+      "📺 Youtube": 155000.0,
+      "🍿 Netflix": 45000.0,
+      "🎶 Spotify": 19000.0,
+      "🅿️": 0.0
+    }
+  },
+  {
+    "month": "March 2025",
+    "date": "2025-03-01",
+    "income": 15000000.0,
+    "outcome": {
+      "cash": 9119000.0,
+      "credit_payment": 8911452.0,
+      "credit_expenses": 260000.0,
+      "total": 18030452.0
+    },
+    "savings": -3030452.0,
+    "savings_rate_pct": -20.2,
+    "networth": 0.0,
+    "category_totals": {
+      "⛽ Bensin": 160000.0,
+      "🅿️": 100000.0,
+      "👨 ‍👩‍👧 Family": 1500000.0,
+      "🏠 Kontrakan": 1000000.0,
+      "🌐 Internet": 400000.0,
+      "🎗 ️ Zakat": 250000.0,
+      "⚡ Listrik": 250000.0,
+      "👰 Istri": 3000000.0,
+      "🌱 Invest": 2000000.0,
+      "🐈 Pets": 500000.0,
+      "📺 Youtube": 155000.0,
+      "🍿 Netflix": 45000.0,
+      "🎶 Spotify": 19000.0
+    }
+  },
+  {
+    "month": "April 2025",
+    "date": "2025-04-01",
+    "income": 18000000.0,
+    "outcome": {
+      "cash": 12519000.0,
+      "credit_payment": 12526492.0,
+      "credit_expenses": 260000.0,
+      "total": 25045492.0
+    },
+    "savings": -7045492.0,
+    "savings_rate_pct": -39.14,
+    "networth": 0.0,
+    "category_totals": {
+      "⛽ Bensin": 160000.0,
+      "🅿️": 100000.0,
+      "👨 ‍👩‍👧 Family": 1500000.0,
+      "🏠 Kontrakan": 1000000.0,
+      "🌐 Internet": 400000.0,
+      "🎗 ️ Zakat": 250000.0,
+      "⚡ Listrik": 250000.0,
+      "🌱 Invest": 3000000.0,
+      "👰 Istri": 3000000.0,
+      "🎮 Nintendo Switch": 2400000.0,
+      "🐈 Pets": 500000.0,
+      "📺 Youtube": 155000.0,
+      "🍿 Netflix": 45000.0,
+      "🎶 Spotify": 19000.0
+    }
+  },
+  {
+    "month": "May 2025",
+    "date": "2025-05-01",
+    "income": 10000000.0,
+    "outcome": {
+      "cash": 7219000.0,
+      "credit_payment": 4000000.0,
+      "credit_expenses": 1160000.0,
+      "total": 11219000.0
+    },
+    "savings": -1219000.0,
+    "savings_rate_pct": -12.19,
+    "networth": 0.0,
+    "category_totals": {
+      "🌱 Invest": 1000000.0,
+      "⛽ Bensin": 160000.0,
+      "👨 ‍👩‍👧 Family": 1500000.0,
+      "🏠 Kontrakan": 1000000.0,
+      "🌐 Internet": 400000.0,
+      "🎗 ️ Zakat": 250000.0,
+      "⚡ Listrik": 250000.0,
+      "👰 Istri": 3000000.0,
+      "🐈 Pets": 500000.0,
+      "📺 Youtube": 155000.0,
+      "🍿 Netflix": 45000.0,
+      "🎶 Spotify": 19000.0,
+      "🅿️": 100000.0
+    }
+  },
+  {
+    "month": "June 2025",
+    "date": "2025-06-01",
+    "income": 10000000.0,
+    "outcome": {
+      "cash": 2369000.0,
+      "credit_payment": 7678000.0,
+      "credit_expenses": 6010000.0,
+      "total": 10047000.0
+    },
+    "savings": -47000.0,
+    "savings_rate_pct": -0.47,
+    "networth": 0.0,
+    "category_totals": {
+      "🏠 Kontrakan": 1000000.0,
+      "🎗 ️ Zakat": 250000.0,
+      "👰 Istri": 3000000.0,
+      "🌱 Invest": 1000000.0,
+      "🐈 Pets": 500000.0,
+      "⛽ Bensin": 160000.0,
+      "🅿️": 100000.0,
+      "👨 ‍👩‍👧 Family": 1500000.0,
+      "🌐 Internet": 400000.0,
+      "⚡ Listrik": 250000.0,
+      "📺 Youtube": 155000.0,
+      "🍿 Netflix": 45000.0,
+      "🎶 Spotify": 19000.0
+    }
+  },
+  {
+    "month": "July 2025",
+    "date": "2025-07-01",
+    "income": 10000000.0,
+    "outcome": {
+      "cash": 8119000.0,
+      "credit_payment": 10487393.0,
+      "credit_expenses": 260000.0,
+      "total": 18606393.0
+    },
+    "savings": -8606393.0,
+    "savings_rate_pct": -86.06,
+    "networth": 0.0,
+    "category_totals": {
+      "⛽ Bensin": 160000.0,
+      "🅿️": 100000.0,
+      "👨 ‍👩‍👧 Family": 1500000.0,
+      "🏠 Kontrakan": 1000000.0,
+      "🌐 Internet": 400000.0,
+      "🎗 ️ Zakat": 250000.0,
+      "⚡ Listrik": 250000.0,
+      "👰 Istri": 3000000.0,
+      "🌱 Invest": 1000000.0,
+      "🐈 Pets": 500000.0,
+      "📺 Youtube": 155000.0,
+      "🍿 Netflix": 45000.0,
+      "🎶 Spotify": 19000.0
+    }
+  },
+  {
+    "month": "August 2025",
+    "date": "2025-08-01",
+    "income": 18514000.0,
+    "outcome": {
+      "cash": 11486000.0,
+      "credit_payment": 15256813.0,
+      "credit_expenses": 100000.0,
+      "total": 26742813.0
+    },
+    "savings": -8228813.0,
+    "savings_rate_pct": -44.45,
+    "networth": 0.0,
+    "category_totals": {
+      "🅿️": 100000.0,
+      "👨 ‍👩‍👧 Family": 1500000.0,
+      "🏠 Kontrakan": 1000000.0,
+      "🛒 Monthly Necessities": 960000.0,
+      "🎗 ️ Zakat": 500000.0,
+      "🌐 Internet": 400000.0,
+      "⚡ Listrik": 50000.0,
+      "🎮 Others": 2157000.0,
+      "👰 Istri": 3000000.0,
+      "🌱 Invest": 1000000.0,
+      "🐈 Pets": 500000.0,
+      "⛽ Bensin": 200000.0,
+      "📺 Youtube": 155000.0,
+      "🍿 Netflix": 45000.0,
+      "🎶 Spotify": 19000.0
+    }
+  },
+  {
+    "month": "September 2025",
+    "date": "2025-09-01",
+    "income": 18500000.0,
+    "outcome": {
+      "cash": 7619000.0,
+      "credit_payment": 5500000.0,
+      "credit_expenses": 10384624.0,
+      "total": 13119000.0
+    },
+    "savings": 5381000.0,
+    "savings_rate_pct": 29.09,
+    "networth": 0.0,
+    "category_totals": {
+      "⚡ Listrik": 250000.0,
+      "🎗 ️ Zakat": 250000.0,
+      "🛒 Neccessities": 700000.0,
+      "🐈 Pets": 500000.0,
+      "⛽ Bensin": 160000.0,
+      "🎮 Others": 8524624.0,
+      "👨 ‍👩‍👧 Family": 1500000.0,
+      "🏠 Kontrakan": 1000000.0,
+      "🍽 ️ Rumah Bulanan": 500000.0,
+      "🌐 Internet": 400000.0,
+      "👰 Istri": 3000000.0,
+      "🌱 Invest": 900000.0,
+      "📺 Youtube": 155000.0,
+      "🍿 Netflix": 45000.0,
+      "🎶 Spotify": 19000.0,
+      "🅿️": 100000.0
+    }
+  },
+  {
+    "month": "October 2025",
+    "date": "2025-10-01",
+    "income": 18500000.0,
+    "outcome": {
+      "cash": 7700000.0,
+      "credit_payment": 8350000.0,
+      "credit_expenses": 10008018.0,
+      "total": 16050000.0
+    },
+    "savings": 2450000.0,
+    "savings_rate_pct": 13.24,
+    "networth": 16986000.0,
+    "category_totals": {
+      "🛒 Neccessities": 700000.0,
+      "🐈 Pets": 500000.0,
+      "⛽ Bensin": 160000.0,
+      "🎮 Others": 8548018.0,
+      "🅿️": 100000.0,
+      "👨 ‍👩‍👧 Family": 1500000.0,
+      "🏠 Kontrakan": 1000000.0,
+      "🍽 ️ Rumah Bulanan": 500000.0,
+      "🌐 Internet": 400000.0,
+      "🎗 ️ Zakat": 250000.0,
+      "⚡ Listrik": 100000.0,
+      "👰 Istri": 3000000.0,
+      "🌱 Invest": 750000.0,
+      "📺 Youtube": 155000.0,
+      "🍿 Netflix": 45000.0
+    }
+  },
+  {
+    "month": "November 2025",
+    "date": "2025-11-01",
+    "income": 18500000.0,
+    "outcome": {
+      "cash": 8600000.0,
+      "credit_payment": 8548018.0,
+      "credit_expenses": 646654112.0,
+      "total": 17148018.0
+    },
+    "savings": 1351982.0,
+    "savings_rate_pct": 7.31,
+    "networth": 18554892.71,
+    "category_totals": {
+      "🌱 Invest": 1000000.0,
+      "⛽ Bensin": 160000.0,
+      "🎮 Others": 645494112.0,
+      "👨 ‍👩‍👧 Family": 1500000.0,
+      "🏠 Kontrakan": 1000000.0,
+      "🍽 ️ Rumah Bulanan": 500000.0,
+      "🎗 ️ Zakat": 250000.0,
+      "👰 Istri": 5300000.0,
+      "🅿️": 50000.0
+    }
+  },
+  {
+    "month": "December 2025",
+    "date": "2025-12-01",
+    "income": 23950000.0,
+    "outcome": {
+      "cash": 10450000.0,
+      "credit_payment": 6459994.0,
+      "credit_expenses": 9860886.0,
+      "total": 16909994.0
+    },
+    "savings": 7040006.0,
+    "savings_rate_pct": 29.39,
+    "networth": 18747758.88,
+    "category_totals": {
+      "⛽ Bensin": 160000.0,
+      "🎮 Others": 9600886.0,
+      "🅿️": 100000.0,
+      "👨 ‍👩‍👧 Family": 1500000.0,
+      "🏠 Kontrakan": 1000000.0,
+      "🎗 ️ Zakat": 500000.0,
+      "🍽 ️ Rumah Bulanan": 500000.0,
+      "⚡ Listrik": 250000.0,
+      "🌐 Internet": 0.0,
+      "👰 Istri": 5700000.0,
+      "🌱 Invest": 1000000.0
+    }
+  },
+  {
+    "month": "Month 2026",
+    "date": "2026-01-01",
+    "income": 18500000.0,
+    "outcome": {
+      "cash": 8233000.0,
+      "credit_payment": 4000000.0,
+      "credit_expenses": 174290.0,
+      "total": 12233000.0
+    },
+    "savings": 6267000.0,
+    "savings_rate_pct": 33.88,
+    "networth": 0.0,
+    "category_totals": {
+      "👨 ‍👩‍👧 Family": 1500000.0,
+      "🏠 Kontrakan": 1150000.0,
+      "🍽 ️ Cash Rumah Bulanan": 500000.0,
+      "🌐 Internet": 333000.0,
+      "🎗 ️ Zakat": 250000.0,
+      "👰 Istri": 3000000.0,
+      "🌱 Invest": 1000000.0,
+      "💵 Cash Pribadi": 500000.0,
+      "Youtube": 154290.0,
+      "Biaya": 20000.0
+    }
+  },
+  {
+    "month": "January 2026",
+    "date": "2026-01-01",
+    "income": 18500000.0,
+    "outcome": {
+      "cash": 11362216.0,
+      "credit_payment": 10813937.0,
+      "credit_expenses": 8613166.0,
+      "total": 22176153.0
+    },
+    "savings": -3676153.0,
+    "savings_rate_pct": -19.87,
+    "networth": 22215309.0,
+    "category_totals": {
+      "⛽ Bensin": 160000.0,
+      "🎮 Others": 8453166.0,
+      "👨 ‍👩‍👧 Family": 1500000.0,
+      "🏠 Kontrakan": 1150000.0,
+      "🍽 ️ Rumah Bulanan": 500000.0,
+      "⚡ Listrik": 250000.0,
+      "🎗 ️ Zakat": 250000.0,
+      "🌐 Internet": 0.0,
+      "👰 Istri": 3000000.0,
+      "🏫 SPP Kuliah": 2988000.0,
+      "🌱 Invest": 1624216.0,
+      "🐈 Pets": 0.0,
+      "🅿️": 100000.0
+    }
+  },
+  {
+    "month": "February 2026",
+    "date": "2026-02-01",
+    "income": 10000000.0,
+    "outcome": {
+      "cash": 9185055.0,
+      "credit_payment": 8243911.0,
+      "credit_expenses": 1011809967.0,
+      "total": 17428966.0
+    },
+    "savings": -7428966.0,
+    "savings_rate_pct": -74.29,
+    "networth": 30112401.0,
+    "category_totals": {
+      "⚡ Listrik": 250000.0,
+      "🐈 Pets": 500000.0,
+      "⛽ Bensin": 160000.0,
+      "🎮 Others": 1010799967.0,
+      "🅿️": 100000.0,
+      "👨 ‍👩‍👧 Family": 1500000.0,
+      "🏠 Kontrakan": 1000000.0,
+      "🍽 ️ Rumah Bulanan": 500000.0,
+      "🎗 ️ Zakat": 250000.0,
+      "🌐 Internet": 0.0,
+      "👰 Istri": 3000000.0,
+      "🌱 Invest": 2935055.0
+    }
+  },
+  {
+    "month": "March 2026",
+    "date": "2026-03-01",
+    "income": 28500000.0,
+    "outcome": {
+      "cash": 20518172.0,
+      "credit_payment": 10421263.0,
+      "credit_expenses": 6765156.0,
+      "total": 30939435.0
+    },
+    "savings": -2439435.0,
+    "savings_rate_pct": -8.56,
+    "networth": 31034640.0,
+    "category_totals": {
+      "🎮 Others": 6665156.0,
+      "🅿️": 100000.0,
+      "👨 ‍👩‍👧 Family": 1500000.0,
+      "🏠 Kontrakan": 1150000.0,
+      "🍽 ️ Rumah Bulanan": 500000.0,
+      "🎗 ️ Zakat": 250000.0,
+      "🌐 Internet": 0.0,
+      "🛵 DP Indomobil Tyranno": 12000000.0,
+      "👰 Istri": 3000000.0,
+      "🌱 Invest": 2118172.0
+    }
+  },
+  {
+    "month": "April 2026",
+    "date": "2026-04-01",
+    "income": 20500000.0,
+    "outcome": {
+      "cash": 7801500.0,
+      "credit_payment": 7325534.0,
+      "credit_expenses": 5919530.0,
+      "total": 15127034.0
+    },
+    "savings": 5372966.0,
+    "savings_rate_pct": 26.21,
+    "networth": 29091781.0,
+    "category_totals": {
+      "🌱 Invest": 1000000.0,
+      "⚡ Listrik": 52000.0,
+      "Biaya": 20000.0,
+      "Youtube": 154290.0,
+      "K24": 115800.0,
+      "Smart": 63000.0,
+      "Listrik": 204000.0,
+      "Calf": 80500.0,
+      "Snack": 41600.0,
+      "Tissue": 44902.0,
+      "Berobat": 175000.0,
+      "Indomie": 25400.0,
+      "Carok": 81850.0,
+      "Obat": 257696.0,
+      "Nugget": 138700.0,
+      "Z": 91406.0,
+      "Claw": 7000.0,
+      "AW": 120000.0,
+      "Living": 75800.0,
+      "Yummy": 36000.0,
+      "Grabfood": 81972.0,
+      "Funworld": 350000.0,
+      "Aunt": 41000.0,
+      "Haka": 108000.0,
+      "Warung": 253000.0,
+      "Ayam": 175300.0,
+      "Dokter": 275000.0,
+      "Sayur": 88000.0,
+      "Belanja": 649972.0,
+      "Sensodyne": 37976.0,
+      "CCTV": 60000.0,
+      "Mr": 143000.0,
+      "Hokben": 137000.0,
+      "Shopee": 585793.0,
+      "Momoyo": 26000.0,
+      "Wedrink": 42000.0,
+      "Bebek": 93000.0,
+      "Sederhana": 297500.0,
+      "Ketupat": 26000.0,
+      "Indomaret": 159600.0,
+      "Tokopedia": 115700.0,
+      "Grab": 15000.0,
+      "Paket": 15000.0,
+      "OSave": 211900.0,
+      "Tiktokshop": 146873.0,
+      "👰 Istri": 3000000.0,
+      "🍽 ️ Cash Rumah Bulanan": 500000.0,
+      "🎗 ️ Zakat": 250000.0,
+      "🅿️": 101500.0,
+      "🏠 Kontrakan": 1150000.0,
+      "🌐 Internet": 300000.0,
+      "👨 ‍👩‍👧 Family": 1500000.0
+    }
+  },
+  {
+    "month": "May 2026",
+    "date": "2026-05-01",
+    "income": 18500000.0,
+    "outcome": {
+      "cash": 9053000.0,
+      "credit_payment": 4000000.0,
+      "credit_expenses": 174290.0,
+      "total": 13053000.0
+    },
+    "savings": 5447000.0,
+    "savings_rate_pct": 29.44,
+    "networth": 27234740.0,
+    "category_totals": {
+      "👨 ‍👩‍👧 Family": 1500000.0,
+      "🏠 Kontrakan": 1150000.0,
+      "🍽 ️ Cash Rumah Bulanan": 500000.0,
+      "🌐 Internet": 333000.0,
+      "🎗 ️ Zakat": 250000.0,
+      "👰 Istri": 3000000.0,
+      "💵 Cash Pribadi": 500000.0,
+      "🌱 Invest": 1820000.0,
+      "Youtube": 154290.0,
+      "Biaya": 20000.0
+    }
+  }
+]

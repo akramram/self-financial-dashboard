@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+
+# Build output
+astro-app/dist/
+
+# Database
+data/*.db
+*.db
+*.db-shm
+*.db-wal
+
+# OS
+.DS_Store
+
+# Logs
+npm-debug.log*
+/docs
+.astro
