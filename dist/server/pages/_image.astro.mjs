@@ -952,7 +952,7 @@ const $$Image = createComponent(async ($$result, $$props, $$slots) => {
     additionalAttributes.srcset = image.srcSet.attribute;
   }
   return renderTemplate`${maybeRenderHead()}<img${addAttribute(image.src, "src")}${spreadAttributes(additionalAttributes)}${spreadAttributes(image.attributes)}>`;
-}, "/Users/user/Documents/Projects/dashboard/astro-app/node_modules/astro/components/Image.astro", void 0);
+}, "/root/self-financial-dashboard/node_modules/astro/components/Image.astro", void 0);
 
 const $$Astro = createAstro();
 const $$Picture = createComponent(async ($$result, $$props, $$slots) => {
@@ -1012,7 +1012,7 @@ const $$Picture = createComponent(async ($$result, $$props, $$slots) => {
     const srcsetAttribute = props.densities || !props.densities && !props.widths ? `${image.src}${image.srcSet.values.length > 0 ? ", " + image.srcSet.attribute : ""}` : image.srcSet.attribute;
     return renderTemplate`<source${addAttribute(srcsetAttribute, "srcset")}${addAttribute(mime.lookup(image.options.format ?? image.src) ?? `image/${image.options.format}`, "type")}${spreadAttributes(sourceAdditionalAttributes)}>`;
   })} <img${addAttribute(fallbackImage.src, "src")}${spreadAttributes(imgAdditionalAttributes)}${spreadAttributes(fallbackImage.attributes)}> </picture>`;
-}, "/Users/user/Documents/Projects/dashboard/astro-app/node_modules/astro/components/Picture.astro", void 0);
+}, "/root/self-financial-dashboard/node_modules/astro/components/Picture.astro", void 0);
 
 const imageConfig = {"service":{"entrypoint":"astro/assets/services/sharp","config":{}},"domains":[],"remotePatterns":[],"endpoint":"astro/assets/endpoint/node"};
 					// This is used by the @astrojs/node integration to locate images.
@@ -1021,7 +1021,7 @@ const imageConfig = {"service":{"entrypoint":"astro/assets/services/sharp","conf
 					// in the Lambda bundle, which would bloat the bundle with images.
 					// To prevent this, we mark the URL construction as pure,
 					// so that it's tree-shaken away for all platforms that don't need it.
-					const outDir = /* #__PURE__ */ new URL("file:///Users/user/Documents/Projects/dashboard/astro-app/dist/client/");
+					const outDir = /* #__PURE__ */ new URL("file:///root/self-financial-dashboard/dist/client/");
 					const assetsDir = /* #__PURE__ */ new URL("_astro", outDir);
 					const getImage = async (options) => await getImage$1(options, imageConfig);
 

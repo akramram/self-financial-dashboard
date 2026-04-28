@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import type { Transaction, NetworthRecord, MonthlySummary } from '../lib/data';
 import { formatIdr } from '../lib/utils';
-import { updateTransactionApi, deleteTransactionApi } from '../lib/api';
+import { updateTransactionApi, deleteTransactionApi, toggleTransactionDoneApi } from '../lib/api';
 import OutcomeChart from './OutcomeChart';
 import NetworthChart from './NetworthChart';
 import CategoryChart from './CategoryChart';
@@ -246,6 +246,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
           <table className="w-full text-sm text-left">
             <thead className="bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 uppercase text-xs">
               <tr>
+                <th className="px-4 py-3 font-medium">Paid</th>
                 <th className="px-4 py-3 font-medium">Title</th>
                 <th className="px-4 py-3 font-medium">Category</th>
                 <th className="px-4 py-3 font-medium">Date</th>
@@ -276,6 +277,17 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
                   if (isEditing) {
                     return (
                       <tr key={row.id} className="bg-slate-50 dark:bg-slate-700/30">
+                        <td className="px-4 py-2">
+                          <label className="inline-flex items-center cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={!!editForm.done}
+                              onChange={(e) => handleChange('done', e.target.checked)}
+                              className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                            />
+                            <span className="ml-2 text-xs">{editForm.done ? 'Paid' : 'Unpaid'}</span>
+                          </label>
+                        </td>
                         <td className="px-4 py-2">
                           <input
                             type="text"
@@ -331,6 +343,21 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
 
                   return (
                     <tr key={row.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/30">
+                      <td className="px-4 py-3">
+                        <button
+                          onClick={async () => {
+                            await toggleTransactionDoneApi(row.id, !row.done);
+                            window.location.reload();
+                          }}
+                          className={`px-2 py-1 rounded text-xs font-semibold transition-colors ${
+                            row.done
+                              ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400'
+                              : 'bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400'
+                          }`}
+                        >
+                          {row.done ? 'Paid' : 'Unpaid'}
+                        </button>
+                      </td>
                       <td className="px-4 py-3">{row.title}</td>
                       <td className="px-4 py-3">
                         <span className="px-2 py-1 rounded-full text-xs bg-slate-100 dark:bg-slate-700">{row.category}</span>

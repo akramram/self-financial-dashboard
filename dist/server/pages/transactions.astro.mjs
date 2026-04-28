@@ -1,12 +1,11 @@
 /* empty css                               */
 import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BVE5k6Zu.mjs';
 import 'kleur/colors';
-import { $ as $$Layout } from '../chunks/Layout_DTBKtYAs.mjs';
+import { f as formatIdr, $ as $$Layout } from '../chunks/utils_Bx4nDzFr.mjs';
 import { jsxs, jsx } from 'react/jsx-runtime';
 import { useState, useMemo } from 'react';
-import { d as deleteTransactionApi, b as updateTransactionApi } from '../chunks/api_BJrEQ3uz.mjs';
-import { f as formatIdr } from '../chunks/utils_DHI1a69c.mjs';
-import { g as getTransactions } from '../chunks/db_CdWsZrN7.mjs';
+import { t as toggleTransactionDoneApi, d as deleteTransactionApi, b as updateTransactionApi } from '../chunks/api_DIaGD6bk.mjs';
+import { g as getTransactions } from '../chunks/db_BnTmBRTu.mjs';
 export { renderers } from '../renderers.mjs';
 
 function parseCreatedTime(tx) {
@@ -104,6 +103,7 @@ function TransactionTable({ transactions, showMonth = true }) {
     ] }),
     /* @__PURE__ */ jsx("div", { className: "overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700", children: /* @__PURE__ */ jsxs("table", { className: "w-full text-sm text-left", children: [
       /* @__PURE__ */ jsx("thead", { className: "bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 uppercase text-xs", children: /* @__PURE__ */ jsxs("tr", { children: [
+        /* @__PURE__ */ jsx("th", { className: "px-4 py-3 font-medium", children: "Paid" }),
         showMonth && /* @__PURE__ */ jsx("th", { className: "px-4 py-3 font-medium", children: "Month" }),
         /* @__PURE__ */ jsx("th", { className: "px-4 py-3 font-medium", children: "Title" }),
         /* @__PURE__ */ jsx("th", { className: "px-4 py-3 font-medium", children: "Category" }),
@@ -118,6 +118,18 @@ function TransactionTable({ transactions, showMonth = true }) {
         const dateStr = isNaN(createdDate.getTime()) ? row.date : createdDate.toLocaleDateString("id-ID", { year: "numeric", month: "short", day: "numeric" });
         if (isEditing) {
           return /* @__PURE__ */ jsxs("tr", { className: "bg-slate-50 dark:bg-slate-700/30", children: [
+            /* @__PURE__ */ jsx("td", { className: "px-4 py-2", children: /* @__PURE__ */ jsxs("label", { className: "inline-flex items-center cursor-pointer", children: [
+              /* @__PURE__ */ jsx(
+                "input",
+                {
+                  type: "checkbox",
+                  checked: !!editForm.done,
+                  onChange: (e) => handleChange("done", e.target.checked),
+                  className: "w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                }
+              ),
+              /* @__PURE__ */ jsx("span", { className: "ml-2 text-xs", children: editForm.done ? "Paid" : "Unpaid" })
+            ] }) }),
             showMonth && /* @__PURE__ */ jsx("td", { className: "px-4 py-2", children: /* @__PURE__ */ jsx(
               "input",
               {
@@ -196,6 +208,17 @@ function TransactionTable({ transactions, showMonth = true }) {
         const typeClass = row.type === "cash" ? "text-blue-600 dark:text-blue-400" : row.type === "credit_payment" ? "text-amber-600 dark:text-amber-400" : "text-purple-600 dark:text-purple-400";
         const typeLabel = row.type === "cash" ? "Cash" : row.type === "credit_payment" ? "Credit Pay" : "Credit";
         return /* @__PURE__ */ jsxs("tr", { className: "hover:bg-slate-50 dark:hover:bg-slate-700/30", children: [
+          /* @__PURE__ */ jsx("td", { className: "px-4 py-3", children: /* @__PURE__ */ jsx(
+            "button",
+            {
+              onClick: async () => {
+                await toggleTransactionDoneApi(row.id, !row.done);
+                window.location.reload();
+              },
+              className: `px-2 py-1 rounded text-xs font-semibold transition-colors ${row.done ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400" : "bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400"}`,
+              children: row.done ? "Paid" : "Unpaid"
+            }
+          ) }),
           showMonth && /* @__PURE__ */ jsx("td", { className: "px-4 py-3 font-medium", children: row.month }),
           /* @__PURE__ */ jsx("td", { className: "px-4 py-3", children: row.title }),
           /* @__PURE__ */ jsx("td", { className: "px-4 py-3", children: /* @__PURE__ */ jsx("span", { className: "px-2 py-1 rounded-full text-xs bg-slate-100 dark:bg-slate-700", children: row.category }) }),
@@ -263,10 +286,10 @@ function TransactionTable({ transactions, showMonth = true }) {
 
 const $$Transactions = createComponent(($$result, $$props, $$slots) => {
   const transactions = getTransactions();
-  return renderTemplate`${renderComponent($$result, "Layout", $$Layout, { "title": "Transactions" }, { "default": ($$result2) => renderTemplate` ${maybeRenderHead()}<div class="mb-6"> <h1 class="text-2xl font-bold">Transactions</h1> <p class="text-slate-500 dark:text-slate-400 text-sm">All cash and credit expenses</p> </div> <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6"> ${renderComponent($$result2, "TransactionTable", TransactionTable, { "transactions": transactions, "showMonth": true, "client:load": true, "client:component-hydration": "load", "client:component-path": "/Users/user/Documents/Projects/dashboard/astro-app/src/components/TransactionTable", "client:component-export": "default" })} </div> ` })}`;
-}, "/Users/user/Documents/Projects/dashboard/astro-app/src/pages/transactions.astro", void 0);
+  return renderTemplate`${renderComponent($$result, "Layout", $$Layout, { "title": "Transactions" }, { "default": ($$result2) => renderTemplate` ${maybeRenderHead()}<div class="mb-6"> <h1 class="text-2xl font-bold">Transactions</h1> <p class="text-slate-500 dark:text-slate-400 text-sm">All cash and credit expenses</p> </div> <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6"> ${renderComponent($$result2, "TransactionTable", TransactionTable, { "transactions": transactions, "showMonth": true, "client:load": true, "client:component-hydration": "load", "client:component-path": "/root/self-financial-dashboard/src/components/TransactionTable", "client:component-export": "default" })} </div> ` })}`;
+}, "/root/self-financial-dashboard/src/pages/transactions.astro", void 0);
 
-const $$file = "/Users/user/Documents/Projects/dashboard/astro-app/src/pages/transactions.astro";
+const $$file = "/root/self-financial-dashboard/src/pages/transactions.astro";
 const $$url = "/transactions";
 
 const _page = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({

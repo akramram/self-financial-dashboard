@@ -31,6 +31,14 @@ export async function updateTransactionApi(id: number, tx: Partial<Transaction>)
   });
 }
 
+export async function toggleTransactionDoneApi(id: number, done: boolean): Promise<void> {
+  await fetch(`/api/transactions/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ done }),
+  });
+}
+
 export async function deleteTransactionApi(id: number): Promise<void> {
   await fetch(`/api/transactions/${id}`, { method: 'DELETE' });
 }

@@ -1,4 +1,4 @@
-import { f as deleteTransaction, h as getTransactionById, i as updateTransaction } from '../../../chunks/db_CdWsZrN7.mjs';
+import { f as deleteTransaction, h as getTransactionById, i as updateTransaction } from '../../../chunks/db_BnTmBRTu.mjs';
 export { renderers } from '../../../renderers.mjs';
 
 const GET = async ({ params }) => {

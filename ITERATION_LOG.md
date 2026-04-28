@@ -54,3 +54,25 @@
 
 ### What's next
 FIN-016: Refactor existing tables and forms to shadcn/ui components
+
+---
+
+## Iteration 2 — FIN-021 (Manual Trigger)
+**Date:** 2025-04-28
+**Issue:** #7 (created manually)
+**Branch:** `feat/FIN-021-outcome-breakdown-income-budget`
+**PR:** Opened via push (gh CLI unavailable)
+
+### What changed
+- Added **Total Income** line to Outcome Breakdown card on Dashboard
+- Added **Budget Used** progress bar showing `outcome.total / income` percentage
+- Color-coded thresholds: green (<50%), amber (50-80%), red (>80%)
+- Shows "X spent of Y" detail text under the bar
+- Works for both All-time (latest month) and filtered month views
+- No DB/schema changes — uses existing MonthlySummary data
+
+### Build status
+✅ Passes — live at `http://192.168.0.6:4321`
+
+### What's next
+FIN-016: Refactor existing tables and forms to shadcn/ui components

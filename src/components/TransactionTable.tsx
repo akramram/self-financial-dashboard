@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import type { Transaction } from '../lib/data';
-import { updateTransactionApi, deleteTransactionApi } from '../lib/api';
+import { updateTransactionApi, deleteTransactionApi, toggleTransactionDoneApi } from '../lib/api';
 import { formatIdr } from '../lib/utils';
 
 interface Props {
@@ -104,6 +104,7 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
         <table className="w-full text-sm text-left">
           <thead className="bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 uppercase text-xs">
             <tr>
+              <th className="px-4 py-3 font-medium">Paid</th>
               {showMonth && <th className="px-4 py-3 font-medium">Month</th>}
               <th className="px-4 py-3 font-medium">Title</th>
               <th className="px-4 py-3 font-medium">Category</th>
@@ -124,6 +125,17 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
               if (isEditing) {
                 return (
                   <tr key={row.id} className="bg-slate-50 dark:bg-slate-700/30">
+                    <td className="px-4 py-2">
+                      <label className="inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={!!editForm.done}
+                          onChange={(e) => handleChange('done', e.target.checked)}
+                          className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                        />
+                        <span className="ml-2 text-xs">{editForm.done ? 'Paid' : 'Unpaid'}</span>
+                      </label>
+                    </td>
                     {showMonth && (
                       <td className="px-4 py-2">
                         <input
@@ -209,6 +221,21 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
 
               return (
                 <tr key={row.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/30">
+                  <td className="px-4 py-3">
+                    <button
+                      onClick={async () => {
+                        await toggleTransactionDoneApi(row.id, !row.done);
+                        window.location.reload();
+                      }}
+                      className={`px-2 py-1 rounded text-xs font-semibold transition-colors ${
+                        row.done
+                          ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400'
+                          : 'bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400'
+                      }`}
+                    >
+                      {row.done ? 'Paid' : 'Unpaid'}
+                    </button>
+                  </td>
                   {showMonth && <td className="px-4 py-3 font-medium">{row.month}</td>}
                   <td className="px-4 py-3">{row.title}</td>
                   <td className="px-4 py-3">

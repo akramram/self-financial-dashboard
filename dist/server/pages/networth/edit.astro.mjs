@@ -1,11 +1,10 @@
 /* empty css                                  */
 import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../../chunks/astro/server_BVE5k6Zu.mjs';
 import 'kleur/colors';
-import { $ as $$Layout } from '../../chunks/Layout_DTBKtYAs.mjs';
+import { f as formatIdr, $ as $$Layout } from '../../chunks/utils_Bx4nDzFr.mjs';
 import { jsx, jsxs } from 'react/jsx-runtime';
 import { useState, useEffect } from 'react';
-import { f as fetchNetworth, u as updateNetworthApi } from '../../chunks/api_BJrEQ3uz.mjs';
-import { f as formatIdr } from '../../chunks/utils_DHI1a69c.mjs';
+import { f as fetchNetworth, u as updateNetworthApi } from '../../chunks/api_DIaGD6bk.mjs';
 export { renderers } from '../../renderers.mjs';
 
 function NetworthEditForm() {
@@ -137,10 +136,10 @@ function NetworthEditForm() {
 }
 
 const $$Edit = createComponent(($$result, $$props, $$slots) => {
-  return renderTemplate`${renderComponent($$result, "Layout", $$Layout, { "title": "Edit Networth" }, { "default": ($$result2) => renderTemplate` ${maybeRenderHead()}<div class="mb-6"> <h1 class="text-2xl font-bold">Edit Networth</h1> <p class="text-slate-500 dark:text-slate-400 text-sm">Modify the investment breakdown for a month</p> </div> <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6"> ${renderComponent($$result2, "NetworthEditForm", NetworthEditForm, { "client:load": true, "client:component-hydration": "load", "client:component-path": "/Users/user/Documents/Projects/dashboard/astro-app/src/components/NetworthEditForm", "client:component-export": "default" })} </div> ` })}`;
-}, "/Users/user/Documents/Projects/dashboard/astro-app/src/pages/networth/edit.astro", void 0);
+  return renderTemplate`${renderComponent($$result, "Layout", $$Layout, { "title": "Edit Networth" }, { "default": ($$result2) => renderTemplate` ${maybeRenderHead()}<div class="mb-6"> <h1 class="text-2xl font-bold">Edit Networth</h1> <p class="text-slate-500 dark:text-slate-400 text-sm">Modify the investment breakdown for a month</p> </div> <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6"> ${renderComponent($$result2, "NetworthEditForm", NetworthEditForm, { "client:load": true, "client:component-hydration": "load", "client:component-path": "/root/self-financial-dashboard/src/components/NetworthEditForm", "client:component-export": "default" })} </div> ` })}`;
+}, "/root/self-financial-dashboard/src/pages/networth/edit.astro", void 0);
 
-const $$file = "/Users/user/Documents/Projects/dashboard/astro-app/src/pages/networth/edit.astro";
+const $$file = "/root/self-financial-dashboard/src/pages/networth/edit.astro";
 const $$url = "/networth/edit";
 
 const _page = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({

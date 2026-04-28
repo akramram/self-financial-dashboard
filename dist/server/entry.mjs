@@ -1,6 +1,6 @@
 import { renderers } from './renderers.mjs';
 import { c as createExports, s as serverEntrypointModule } from './chunks/_@astrojs-ssr-adapter_DX3j8JO6.mjs';
-import { manifest } from './manifest_XjKowEh2.mjs';
+import { manifest } from './manifest_DAZL3lPz.mjs';
 
 const _page0 = () => import('./pages/_image.astro.mjs');
 const _page1 = () => import('./pages/add.astro.mjs');
@@ -38,8 +38,8 @@ const _manifest = Object.assign(manifest, {
 });
 const _args = {
     "mode": "standalone",
-    "client": "file:///Users/user/Documents/Projects/dashboard/astro-app/dist/client/",
-    "server": "file:///Users/user/Documents/Projects/dashboard/astro-app/dist/server/",
+    "client": "file:///root/self-financial-dashboard/dist/client/",
+    "server": "file:///root/self-financial-dashboard/dist/server/",
     "host": false,
     "port": 4321,
     "assets": "_astro"

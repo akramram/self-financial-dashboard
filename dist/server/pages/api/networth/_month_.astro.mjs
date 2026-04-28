@@ -1,4 +1,4 @@
-import { c as deleteNetworth, r as recalcNetworthMoM, e as getNetworthByMonth, u as upsertNetworth } from '../../../chunks/db_CdWsZrN7.mjs';
+import { c as deleteNetworth, r as recalcNetworthMoM, e as getNetworthByMonth, u as upsertNetworth } from '../../../chunks/db_BnTmBRTu.mjs';
 export { renderers } from '../../../renderers.mjs';
 
 const GET = async ({ params }) => {

@@ -151,7 +151,7 @@ export function getMonthlySummary() {
 
   const summaries = [];
   for (const { month, date } of months) {
-    const tx = db.prepare('SELECT * FROM transactions WHERE month = ?').all(month) as any[];
+    const tx = db.prepare('SELECT * FROM transactions WHERE month = ? AND done = 1').all(month) as any[];
     const cash = tx.filter((t) => t.type === 'cash').reduce((s, t) => s + t.amount, 0);
     const credit_payment = tx.filter((t) => t.type === 'credit_payment').reduce((s, t) => s + t.amount, 0);
     const credit_expenses = tx.filter((t) => t.type === 'credit_expense').reduce((s, t) => s + t.amount, 0);
@@ -167,7 +167,7 @@ export function getMonthlySummary() {
     summaries.push({
       month,
       date,
-      income: 0, // Will be populated from existing JSON or manual input
+      income: 0,
       outcome: { cash, credit_payment, credit_expenses, total: total_outcome },
       savings: 0,
       savings_rate_pct: 0,

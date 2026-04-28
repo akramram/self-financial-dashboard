@@ -1,21 +1,21 @@
 /* empty css                               */
 import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BVE5k6Zu.mjs';
 import 'kleur/colors';
-import { $ as $$Layout } from '../chunks/Layout_DTBKtYAs.mjs';
+import { f as formatIdr, $ as $$Layout } from '../chunks/utils_Bx4nDzFr.mjs';
 import { jsx, jsxs } from 'react/jsx-runtime';
 import { useMemo, useState } from 'react';
-import { f as formatIdr } from '../chunks/utils_DHI1a69c.mjs';
-import { d as deleteTransactionApi, b as updateTransactionApi } from '../chunks/api_BJrEQ3uz.mjs';
+import { t as toggleTransactionDoneApi, d as deleteTransactionApi, b as updateTransactionApi } from '../chunks/api_DIaGD6bk.mjs';
 import { Chart, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
 import { Bar, Doughnut } from 'react-chartjs-2';
-import { N as NetworthChart } from '../chunks/NetworthChart_C1B5wj2W.mjs';
-import { g as getTransactions, a as getNetworth, b as getMonthlySummary, d as db } from '../chunks/db_CdWsZrN7.mjs';
+import { N as NetworthChart } from '../chunks/NetworthChart_BOiwreRL.mjs';
+import { g as getTransactions, a as getNetworth, b as getMonthlySummary, d as db } from '../chunks/db_BnTmBRTu.mjs';
 export { renderers } from '../renderers.mjs';
 
 Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
-function CashOutcomeChart({ data }) {
+function OutcomeChart({ data }) {
   const labels = data.map((d) => d.month);
   const cashOutcomes = data.map((d) => d.outcome.cash);
+  const creditPayments = data.map((d) => d.outcome.credit_payment);
   const chartData = {
     labels,
     datasets: [
@@ -24,34 +24,7 @@ function CashOutcomeChart({ data }) {
         data: cashOutcomes,
         backgroundColor: "#3b82f6",
         borderRadius: 4
-      }
-    ]
-  };
-  const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        callbacks: {
-          label: (ctx) => `Cash Outcome: ${formatIdr(ctx.parsed.y)}`
-        }
-      }
-    },
-    scales: {
-      y: { beginAtZero: true }
-    }
-  };
-  return /* @__PURE__ */ jsx("div", { className: "relative h-72", children: /* @__PURE__ */ jsx(Bar, { data: chartData, options }) });
-}
-
-Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
-function CreditPaymentChart({ data }) {
-  const labels = data.map((d) => d.month);
-  const creditPayments = data.map((d) => d.outcome.credit_payment);
-  const chartData = {
-    labels,
-    datasets: [
+      },
       {
         label: "Credit Payment",
         data: creditPayments,
@@ -64,15 +37,27 @@ function CreditPaymentChart({ data }) {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { display: false },
+      legend: {
+        position: "top",
+        labels: {
+          usePointStyle: true,
+          padding: 16
+        }
+      },
       tooltip: {
         callbacks: {
-          label: (ctx) => `Credit Payment: ${formatIdr(ctx.parsed.y)}`
+          label: (ctx) => `${ctx.dataset.label}: ${formatIdr(ctx.parsed.y)}`
         }
       }
     },
     scales: {
-      y: { beginAtZero: true }
+      y: { beginAtZero: true },
+      x: {
+        ticks: {
+          maxRotation: 45,
+          minRotation: 45
+        }
+      }
     }
   };
   return /* @__PURE__ */ jsx("div", { className: "relative h-72", children: /* @__PURE__ */ jsx(Bar, { data: chartData, options }) });
@@ -234,15 +219,9 @@ function Dashboard({ transactions, networth, summaries }) {
         /* @__PURE__ */ jsx("div", { className: "w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 mt-3", children: /* @__PURE__ */ jsx("div", { className: "bg-emerald-500 h-2 rounded-full transition-all", style: { width: `${Math.min(100, savingsRate)}%` } }) })
       ] })
     ] }),
-    /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-2 gap-6", children: [
-      /* @__PURE__ */ jsxs("div", { className: "bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6", children: [
-        /* @__PURE__ */ jsx("h2", { className: "text-lg font-semibold mb-4", children: "Cash Outcome by Month" }),
-        /* @__PURE__ */ jsx(CashOutcomeChart, { data: filteredSummaries })
-      ] }),
-      /* @__PURE__ */ jsxs("div", { className: "bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6", children: [
-        /* @__PURE__ */ jsx("h2", { className: "text-lg font-semibold mb-4", children: "Credit Payment by Month" }),
-        /* @__PURE__ */ jsx(CreditPaymentChart, { data: filteredSummaries })
-      ] })
+    /* @__PURE__ */ jsxs("div", { className: "bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6", children: [
+      /* @__PURE__ */ jsx("h2", { className: "text-lg font-semibold mb-4", children: "Cash Outcome vs Credit Payment by Month" }),
+      /* @__PURE__ */ jsx(OutcomeChart, { data: filteredSummaries })
     ] }),
     /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-2 gap-6", children: [
       /* @__PURE__ */ jsxs("div", { className: "bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6", children: [
@@ -263,6 +242,33 @@ function Dashboard({ transactions, networth, summaries }) {
       /* @__PURE__ */ jsxs("div", { className: "space-y-4 max-w-xl", children: [
         /* @__PURE__ */ jsxs("div", { children: [
           /* @__PURE__ */ jsxs("div", { className: "flex justify-between text-sm mb-1", children: [
+            /* @__PURE__ */ jsx("span", { className: "text-slate-600 dark:text-slate-300", children: "Total Income" }),
+            /* @__PURE__ */ jsx("span", { className: "font-semibold text-emerald-600 dark:text-emerald-400", children: formatIdr(latest?.income ?? 0) })
+          ] }),
+          /* @__PURE__ */ jsx("div", { className: "w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2", children: /* @__PURE__ */ jsx("div", { className: "bg-emerald-500 h-2 rounded-full", style: { width: "100%" } }) })
+        ] }),
+        (() => {
+          const budgetPct = latest?.income > 0 ? Math.min(100, Math.max(0, (latest?.outcome.total ?? 0) / latest.income * 100)) : 0;
+          const budgetColor = budgetPct > 80 ? "bg-red-500" : budgetPct > 50 ? "bg-amber-500" : "bg-emerald-500";
+          return /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsxs("div", { className: "flex justify-between text-sm mb-1", children: [
+              /* @__PURE__ */ jsx("span", { className: "text-slate-600 dark:text-slate-300", children: "Budget Used" }),
+              /* @__PURE__ */ jsxs("span", { className: `font-semibold ${budgetPct > 80 ? "text-red-600 dark:text-red-400" : budgetPct > 50 ? "text-amber-600 dark:text-amber-400" : "text-emerald-600 dark:text-emerald-400"}`, children: [
+                budgetPct.toFixed(1),
+                "%"
+              ] })
+            ] }),
+            /* @__PURE__ */ jsx("div", { className: "w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2", children: /* @__PURE__ */ jsx("div", { className: `${budgetColor} h-2 rounded-full transition-all`, style: { width: `${budgetPct}%` } }) }),
+            /* @__PURE__ */ jsxs("p", { className: "text-xs text-slate-400 mt-1", children: [
+              formatIdr(latest?.outcome.total ?? 0),
+              " spent of ",
+              formatIdr(latest?.income ?? 0)
+            ] })
+          ] });
+        })(),
+        /* @__PURE__ */ jsx("div", { className: "border-t border-slate-200 dark:border-slate-700" }),
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsxs("div", { className: "flex justify-between text-sm mb-1", children: [
             /* @__PURE__ */ jsx("span", { className: "text-slate-600 dark:text-slate-300", children: "Cash Expenses" }),
             /* @__PURE__ */ jsx("span", { className: "font-semibold", children: formatIdr(latest?.outcome.cash ?? 0) })
           ] }),
@@ -275,7 +281,7 @@ function Dashboard({ transactions, networth, summaries }) {
           ] }),
           /* @__PURE__ */ jsx("div", { className: "w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2", children: /* @__PURE__ */ jsx("div", { className: "bg-amber-500 h-2 rounded-full", style: { width: `${creditPct}%` } }) })
         ] }),
-        /* @__PURE__ */ jsxs("div", { className: "pt-4 border-t border-slate-200 dark:border-slate-700", children: [
+        /* @__PURE__ */ jsxs("div", { className: "pt-2 border-t border-slate-200 dark:border-slate-700", children: [
           /* @__PURE__ */ jsxs("div", { className: "flex justify-between text-sm", children: [
             /* @__PURE__ */ jsx("span", { className: "text-slate-500 dark:text-slate-400", children: "Current Month Credit Expenses" }),
             /* @__PURE__ */ jsx("span", { className: "font-semibold", children: formatIdr(latest?.outcome.credit_expenses ?? 0) })
@@ -295,6 +301,7 @@ function Dashboard({ transactions, networth, summaries }) {
       ] }),
       /* @__PURE__ */ jsx("div", { className: "overflow-x-auto", children: /* @__PURE__ */ jsxs("table", { className: "w-full text-sm text-left", children: [
         /* @__PURE__ */ jsx("thead", { className: "bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 uppercase text-xs", children: /* @__PURE__ */ jsxs("tr", { children: [
+          /* @__PURE__ */ jsx("th", { className: "px-4 py-3 font-medium", children: "Paid" }),
           /* @__PURE__ */ jsx("th", { className: "px-4 py-3 font-medium", children: "Title" }),
           /* @__PURE__ */ jsx("th", { className: "px-4 py-3 font-medium", children: "Category" }),
           /* @__PURE__ */ jsx("th", { className: "px-4 py-3 font-medium", children: "Date" }),
@@ -310,6 +317,18 @@ function Dashboard({ transactions, networth, summaries }) {
           const dateStr = isNaN(createdDate.getTime()) ? row.date : createdDate.toLocaleDateString("id-ID", { year: "numeric", month: "short", day: "numeric" });
           if (isEditing) {
             return /* @__PURE__ */ jsxs("tr", { className: "bg-slate-50 dark:bg-slate-700/30", children: [
+              /* @__PURE__ */ jsx("td", { className: "px-4 py-2", children: /* @__PURE__ */ jsxs("label", { className: "inline-flex items-center cursor-pointer", children: [
+                /* @__PURE__ */ jsx(
+                  "input",
+                  {
+                    type: "checkbox",
+                    checked: !!editForm.done,
+                    onChange: (e) => handleChange("done", e.target.checked),
+                    className: "w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                  }
+                ),
+                /* @__PURE__ */ jsx("span", { className: "ml-2 text-xs", children: editForm.done ? "Paid" : "Unpaid" })
+              ] }) }),
               /* @__PURE__ */ jsx("td", { className: "px-4 py-2", children: /* @__PURE__ */ jsx(
                 "input",
                 {
@@ -362,6 +381,17 @@ function Dashboard({ transactions, networth, summaries }) {
             ] }, row.id);
           }
           return /* @__PURE__ */ jsxs("tr", { className: "hover:bg-slate-50 dark:hover:bg-slate-700/30", children: [
+            /* @__PURE__ */ jsx("td", { className: "px-4 py-3", children: /* @__PURE__ */ jsx(
+              "button",
+              {
+                onClick: async () => {
+                  await toggleTransactionDoneApi(row.id, !row.done);
+                  window.location.reload();
+                },
+                className: `px-2 py-1 rounded text-xs font-semibold transition-colors ${row.done ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400" : "bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400"}`,
+                children: row.done ? "Paid" : "Unpaid"
+              }
+            ) }),
             /* @__PURE__ */ jsx("td", { className: "px-4 py-3", children: row.title }),
             /* @__PURE__ */ jsx("td", { className: "px-4 py-3", children: /* @__PURE__ */ jsx("span", { className: "px-2 py-1 rounded-full text-xs bg-slate-100 dark:bg-slate-700", children: row.category }) }),
             /* @__PURE__ */ jsx("td", { className: "px-4 py-3 text-slate-500 dark:text-slate-400 text-xs", children: dateStr }),
@@ -404,10 +434,10 @@ const $$Index = createComponent(($$result, $$props, $$slots) => {
   }
   return renderTemplate`${renderComponent($$result, "Layout", $$Layout, { "title": "Financial Dashboard" }, { "default": ($$result2) => renderTemplate` ${maybeRenderHead()}<div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"> <div> <h1 class="text-2xl font-bold">Dashboard</h1> <p class="text-slate-500 dark:text-slate-400 text-sm">Overview of income, outcome, and networth</p> </div> <a href="/add" class="px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-700 transition">
 + Add Data
-</a> </div> ${renderComponent($$result2, "Dashboard", Dashboard, { "transactions": transactions, "networth": networth, "summaries": summaries, "client:load": true, "client:component-hydration": "load", "client:component-path": "/Users/user/Documents/Projects/dashboard/astro-app/src/components/Dashboard", "client:component-export": "default" })} ` })}`;
-}, "/Users/user/Documents/Projects/dashboard/astro-app/src/pages/index.astro", void 0);
+</a> </div> ${renderComponent($$result2, "Dashboard", Dashboard, { "transactions": transactions, "networth": networth, "summaries": summaries, "client:load": true, "client:component-hydration": "load", "client:component-path": "/root/self-financial-dashboard/src/components/Dashboard", "client:component-export": "default" })} ` })}`;
+}, "/root/self-financial-dashboard/src/pages/index.astro", void 0);
 
-const $$file = "/Users/user/Documents/Projects/dashboard/astro-app/src/pages/index.astro";
+const $$file = "/root/self-financial-dashboard/src/pages/index.astro";
 const $$url = "";
 
 const _page = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
