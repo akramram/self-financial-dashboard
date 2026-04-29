@@ -1,5 +1,17 @@
 import React, { useState } from 'react';
 import { createNetworth } from '../lib/api';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 const MONTH_OPTIONS = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -58,88 +70,90 @@ export default function AddNetworthForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      {message && (
-        <div className="p-3 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-200 text-sm">
-          {message}
-        </div>
-      )}
+    <Card>
+      <CardHeader>
+        <CardTitle>Add / Update Networth</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {message && (
+            <Badge variant="outline" className="w-full justify-start px-3 py-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-200 border-emerald-200 dark:border-emerald-800">
+              {message}
+            </Badge>
+          )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Month</label>
-          <select
-            value={month}
-            onChange={(e) => setMonth(e.target.value)}
-            className="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800"
-          >
-            {MONTH_OPTIONS.map((m) => (
-              <option key={m} value={m}>{m}</option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Year</label>
-          <input
-            type="number"
-            value={year}
-            onChange={(e) => setYear(Number(e.target.value))}
-            className="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800"
-          />
-        </div>
-      </div>
-
-      <div>
-        <div className="flex justify-between items-center mb-2">
-          <label className="block text-xs font-medium text-slate-500 dark:text-slate-400">Breakdown</label>
-          <button
-            type="button"
-            onClick={addBreakdownItem}
-            className="text-xs px-2 py-1 rounded bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600"
-          >
-            + Add Item
-          </button>
-        </div>
-        <div className="space-y-2">
-          {Object.entries(breakdown).map(([key, value]) => (
-            <div key={key} className="flex gap-2 items-center">
-              <input
-                type="text"
-                value={key}
-                readOnly
-                className="flex-1 px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-100 dark:bg-slate-700/50 text-sm"
-              />
-              <input
-                type="number"
-                value={value}
-                onChange={(e) => handleBreakdownChange(key, e.target.value)}
-                placeholder="0"
-                className="w-32 px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm"
-              />
-              <button
-                type="button"
-                onClick={() => removeBreakdownItem(key)}
-                className="text-red-500 hover:text-red-700 text-xs px-2"
-              >
-                ✕
-              </button>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <Label>Month</Label>
+              <Select value={month} onValueChange={setMonth}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {MONTH_OPTIONS.map((m) => (
+                    <SelectItem key={m} value={m}>{m}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-          ))}
-        </div>
-      </div>
+            <div className="space-y-1.5">
+              <Label>Year</Label>
+              <Input
+                type="number"
+                value={year}
+                onChange={(e) => setYear(Number(e.target.value))}
+              />
+            </div>
+          </div>
 
-      <div className="p-3 rounded-lg bg-slate-100 dark:bg-slate-700/50">
-        <p className="text-sm font-medium">
-          Total: IDR {Object.values(breakdown).reduce((s, v) => s + v, 0).toLocaleString('id-ID')}
-        </p>
-      </div>
+          <div>
+            <div className="flex justify-between items-center mb-2">
+              <Label>Breakdown</Label>
+              <Button type="button" variant="outline" size="sm" onClick={addBreakdownItem}>
+                + Add Item
+              </Button>
+            </div>
+            <div className="space-y-2">
+              {Object.entries(breakdown).map(([key, value]) => (
+                <div key={key} className="flex gap-2 items-center">
+                  <Input
+                    type="text"
+                    value={key}
+                    readOnly
+                    className="flex-1 bg-muted"
+                  />
+                  <Input
+                    type="number"
+                    value={value}
+                    onChange={(e) => handleBreakdownChange(key, e.target.value)}
+                    placeholder="0"
+                    className="w-32"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => removeBreakdownItem(key)}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    ✕
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </div>
 
-      <button
-        type="submit"
-        className="w-full px-4 py-2 rounded-lg bg-violet-600 text-white font-medium hover:bg-violet-700 transition"
-      >
-        Add / Update Networth
-      </button>
-    </form>
+          <div className="p-3 rounded-lg bg-muted">
+            <p className="text-sm font-medium">
+              Total: IDR {Object.values(breakdown).reduce((s, v) => s + v, 0).toLocaleString('id-ID')}
+            </p>
+          </div>
+
+          <Button type="submit" className="w-full">
+            Add / Update Networth
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
   );
 }

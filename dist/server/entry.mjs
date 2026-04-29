@@ -1,6 +1,6 @@
 import { renderers } from './renderers.mjs';
 import { c as createExports, s as serverEntrypointModule } from './chunks/_@astrojs-ssr-adapter_DX3j8JO6.mjs';
-import { manifest } from './manifest_BtrnnRDf.mjs';
+import { manifest } from './manifest_CoCScG3W.mjs';
 
 const _page0 = () => import('./pages/_image.astro.mjs');
 const _page1 = () => import('./pages/add.astro.mjs');

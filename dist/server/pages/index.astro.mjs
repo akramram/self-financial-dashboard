@@ -1,13 +1,15 @@
 /* empty css                               */
 import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BVE5k6Zu.mjs';
 import 'kleur/colors';
-import { f as formatIdr, $ as $$Layout } from '../chunks/utils_BtLgDIxw.mjs';
+import { f as formatIdr, B as Button, $ as $$Layout } from '../chunks/button_B8ZIUF-N.mjs';
 import { jsx, jsxs } from 'react/jsx-runtime';
 import { useMemo, useState } from 'react';
-import { t as toggleTransactionDoneApi, d as deleteTransactionApi, b as updateTransactionApi } from '../chunks/api_DIaGD6bk.mjs';
+import { I as Input, t as toggleTransactionDoneApi, B as Badge, d as deleteTransactionApi, b as updateTransactionApi } from '../chunks/badge_DBAg2bc-.mjs';
 import { Chart, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
 import { Bar, Doughnut } from 'react-chartjs-2';
-import { N as NetworthChart } from '../chunks/NetworthChart_CXZABOwu.mjs';
+import { N as NetworthChart } from '../chunks/NetworthChart_D_XYM4dJ.mjs';
+import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_CeLrRofe.mjs';
+import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_tpbcs11u.mjs';
 import { g as getTransactions, a as getNetworth, b as getMonthlySummary, d as db } from '../chunks/db_BnTmBRTu.mjs';
 export { renderers } from '../renderers.mjs';
 
@@ -187,21 +189,16 @@ function Dashboard({ transactions, networth, summaries }) {
   return /* @__PURE__ */ jsxs("div", { className: "space-y-6", children: [
     /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3", children: [
       /* @__PURE__ */ jsx("label", { className: "text-sm font-medium text-slate-600 dark:text-slate-300", children: "Period:" }),
-      /* @__PURE__ */ jsxs(
-        "select",
-        {
-          value: filterMonth,
-          onChange: (e) => {
-            setFilterMonth(e.target.value);
-            setTxPage(1);
-          },
-          className: "px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm",
-          children: [
-            /* @__PURE__ */ jsx("option", { value: "all", children: "All-time" }),
-            months.map((m) => /* @__PURE__ */ jsx("option", { value: m, children: m }, m))
-          ]
-        }
-      )
+      /* @__PURE__ */ jsxs(Select, { value: filterMonth, onValueChange: (v) => {
+        setFilterMonth(v);
+        setTxPage(1);
+      }, children: [
+        /* @__PURE__ */ jsx(SelectTrigger, { className: "w-[160px]", children: /* @__PURE__ */ jsx(SelectValue, {}) }),
+        /* @__PURE__ */ jsxs(SelectContent, { children: [
+          /* @__PURE__ */ jsx(SelectItem, { value: "all", children: "All-time" }),
+          months.map((m) => /* @__PURE__ */ jsx(SelectItem, { value: m, children: m }, m))
+        ] })
+      ] })
     ] }),
     /* @__PURE__ */ jsxs("div", { className: "bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6", children: [
       /* @__PURE__ */ jsxs("h2", { className: "text-lg font-semibold mb-4", children: [
@@ -269,25 +266,25 @@ function Dashboard({ transactions, networth, summaries }) {
         ] }),
         /* @__PURE__ */ jsx("a", { href: "/transactions", className: "text-xs text-blue-500 hover:text-blue-700", children: "View all →" })
       ] }),
-      /* @__PURE__ */ jsx("div", { className: "overflow-x-auto", children: /* @__PURE__ */ jsxs("table", { className: "w-full text-sm text-left", children: [
-        /* @__PURE__ */ jsx("thead", { className: "bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 uppercase text-xs", children: /* @__PURE__ */ jsxs("tr", { children: [
-          /* @__PURE__ */ jsx("th", { className: "px-4 py-3 font-medium", children: "Paid" }),
-          /* @__PURE__ */ jsx("th", { className: "px-4 py-3 font-medium", children: "Title" }),
-          /* @__PURE__ */ jsx("th", { className: "px-4 py-3 font-medium", children: "Category" }),
-          /* @__PURE__ */ jsx("th", { className: "px-4 py-3 font-medium", children: "Date" }),
-          /* @__PURE__ */ jsx("th", { className: "px-4 py-3 font-medium text-right", children: "Amount" }),
-          /* @__PURE__ */ jsx("th", { className: "px-4 py-3 font-medium", children: "Type" }),
-          /* @__PURE__ */ jsx("th", { className: "px-4 py-3 font-medium" })
+      /* @__PURE__ */ jsx("div", { className: "overflow-x-auto", children: /* @__PURE__ */ jsxs(Table, { children: [
+        /* @__PURE__ */ jsx(TableHeader, { children: /* @__PURE__ */ jsxs(TableRow, { children: [
+          /* @__PURE__ */ jsx(TableHead, { children: "Paid" }),
+          /* @__PURE__ */ jsx(TableHead, { children: "Title" }),
+          /* @__PURE__ */ jsx(TableHead, { children: "Category" }),
+          /* @__PURE__ */ jsx(TableHead, { children: "Date" }),
+          /* @__PURE__ */ jsx(TableHead, { className: "text-right", children: "Amount" }),
+          /* @__PURE__ */ jsx(TableHead, { children: "Type" }),
+          /* @__PURE__ */ jsx(TableHead, {})
         ] }) }),
-        /* @__PURE__ */ jsx("tbody", { className: "divide-y divide-slate-200 dark:divide-slate-700", children: pagedTransactions.map((row) => {
+        /* @__PURE__ */ jsx(TableBody, { children: pagedTransactions.map((row) => {
           const isEditing = editingId === row.id;
           const typeClass = row.type === "cash" ? "text-blue-600 dark:text-blue-400" : row.type === "credit_payment" ? "text-amber-600 dark:text-amber-400" : "text-purple-600 dark:text-purple-400";
           const typeLabel = row.type === "cash" ? "Cash" : row.type === "credit_payment" ? "Credit Pay" : "Credit";
           const createdDate = parseCreatedTime(row);
           const dateStr = isNaN(createdDate.getTime()) ? row.date : createdDate.toLocaleDateString("id-ID", { year: "numeric", month: "short", day: "numeric" });
           if (isEditing) {
-            return /* @__PURE__ */ jsxs("tr", { className: "bg-slate-50 dark:bg-slate-700/30", children: [
-              /* @__PURE__ */ jsx("td", { className: "px-4 py-2", children: /* @__PURE__ */ jsxs("label", { className: "inline-flex items-center cursor-pointer", children: [
+            return /* @__PURE__ */ jsxs(TableRow, { className: "bg-muted/30", children: [
+              /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsxs("label", { className: "inline-flex items-center cursor-pointer gap-2", children: [
                 /* @__PURE__ */ jsx(
                   "input",
                   {
@@ -297,91 +294,81 @@ function Dashboard({ transactions, networth, summaries }) {
                     className: "w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
                   }
                 ),
-                /* @__PURE__ */ jsx("span", { className: "ml-2 text-xs", children: editForm.done ? "Paid" : "Unpaid" })
+                /* @__PURE__ */ jsx("span", { className: "text-xs", children: editForm.done ? "Paid" : "Unpaid" })
               ] }) }),
-              /* @__PURE__ */ jsx("td", { className: "px-4 py-2", children: /* @__PURE__ */ jsx(
-                "input",
+              /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(
+                Input,
                 {
                   type: "text",
                   value: editForm.title ?? "",
                   onChange: (e) => handleChange("title", e.target.value),
-                  className: "w-full px-2 py-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs"
+                  className: "h-8 text-xs"
                 }
               ) }),
-              /* @__PURE__ */ jsx("td", { className: "px-4 py-2", children: /* @__PURE__ */ jsx(
-                "input",
+              /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(
+                Input,
                 {
                   type: "text",
                   value: editForm.category ?? "",
                   onChange: (e) => handleChange("category", e.target.value),
-                  className: "w-full px-2 py-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs"
+                  className: "h-8 text-xs"
                 }
               ) }),
-              /* @__PURE__ */ jsx("td", { className: "px-4 py-2", children: /* @__PURE__ */ jsx(
-                "input",
+              /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(
+                Input,
                 {
                   type: "text",
                   value: editForm.created_time ?? "",
                   onChange: (e) => handleChange("created_time", e.target.value),
-                  className: "w-full px-2 py-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs"
+                  className: "h-8 text-xs"
                 }
               ) }),
-              /* @__PURE__ */ jsx("td", { className: "px-4 py-2", children: /* @__PURE__ */ jsx(
-                "input",
+              /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(
+                Input,
                 {
                   type: "number",
                   value: editForm.amount ?? 0,
                   onChange: (e) => handleChange("amount", Number(e.target.value)),
-                  className: "w-full px-2 py-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs text-right"
+                  className: "h-8 text-xs text-right"
                 }
               ) }),
-              /* @__PURE__ */ jsx("td", { className: "px-4 py-2", children: /* @__PURE__ */ jsx(
-                "select",
-                {
-                  value: editForm.type ?? "cash",
-                  onChange: (e) => handleChange("type", e.target.value),
-                  className: "w-full px-2 py-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs",
-                  children: TYPE_OPTIONS.map((opt) => /* @__PURE__ */ jsx("option", { value: opt.value, children: opt.label }, opt.value))
-                }
-              ) }),
-              /* @__PURE__ */ jsx("td", { className: "px-4 py-2", children: /* @__PURE__ */ jsxs("div", { className: "flex gap-1", children: [
-                /* @__PURE__ */ jsx("button", { onClick: saveEdit, className: "px-2 py-1 rounded bg-emerald-600 text-white text-xs hover:bg-emerald-700", children: "Save" }),
-                /* @__PURE__ */ jsx("button", { onClick: cancelEdit, className: "px-2 py-1 rounded bg-slate-300 dark:bg-slate-600 text-xs hover:bg-slate-400 dark:hover:bg-slate-500", children: "Cancel" })
+              /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsxs(Select, { value: editForm.type ?? "cash", onValueChange: (v) => handleChange("type", v), children: [
+                /* @__PURE__ */ jsx(SelectTrigger, { className: "h-8 text-xs", children: /* @__PURE__ */ jsx(SelectValue, {}) }),
+                /* @__PURE__ */ jsx(SelectContent, { children: TYPE_OPTIONS.map((opt) => /* @__PURE__ */ jsx(SelectItem, { value: opt.value, children: opt.label }, opt.value)) })
+              ] }) }),
+              /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsxs("div", { className: "flex gap-1", children: [
+                /* @__PURE__ */ jsx(Button, { size: "sm", className: "h-7 text-xs", onClick: saveEdit, children: "Save" }),
+                /* @__PURE__ */ jsx(Button, { size: "sm", variant: "secondary", className: "h-7 text-xs", onClick: cancelEdit, children: "Cancel" })
               ] }) })
             ] }, row.id);
           }
-          return /* @__PURE__ */ jsxs("tr", { className: "hover:bg-slate-50 dark:hover:bg-slate-700/30", children: [
-            /* @__PURE__ */ jsx("td", { className: "px-4 py-3", children: /* @__PURE__ */ jsx(
-              "button",
+          return /* @__PURE__ */ jsxs(TableRow, { children: [
+            /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(
+              Button,
               {
+                size: "sm",
+                variant: "ghost",
                 onClick: async () => {
                   await toggleTransactionDoneApi(row.id, !row.done);
                   window.location.reload();
                 },
-                className: `px-2 py-1 rounded text-xs font-semibold transition-colors ${row.done ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400" : "bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400"}`,
+                className: `h-7 text-xs font-semibold px-2 py-0 ${row.done ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400" : "bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400"}`,
                 children: row.done ? "Paid" : "Unpaid"
               }
             ) }),
-            /* @__PURE__ */ jsx("td", { className: "px-4 py-3", children: row.title }),
-            /* @__PURE__ */ jsx("td", { className: "px-4 py-3", children: /* @__PURE__ */ jsx("span", { className: "px-2 py-1 rounded-full text-xs bg-slate-100 dark:bg-slate-700", children: row.category }) }),
-            /* @__PURE__ */ jsx("td", { className: "px-4 py-3 text-slate-500 dark:text-slate-400 text-xs", children: dateStr }),
-            /* @__PURE__ */ jsx("td", { className: "px-4 py-3 font-medium text-right", children: formatIdr(row.amount) }),
-            /* @__PURE__ */ jsx("td", { className: `px-4 py-3 ${typeClass} text-xs font-semibold uppercase`, children: typeLabel }),
-            /* @__PURE__ */ jsx("td", { className: "px-4 py-3", children: /* @__PURE__ */ jsxs("div", { className: "flex gap-2", children: [
-              /* @__PURE__ */ jsx("button", { onClick: () => startEdit(row), className: "text-blue-500 hover:text-blue-700 text-xs", children: "Edit" }),
-              /* @__PURE__ */ jsx(
-                "button",
-                {
-                  onClick: async () => {
-                    if (confirm("Delete this transaction?")) {
-                      await deleteTransactionApi(row.id);
-                      window.location.reload();
-                    }
-                  },
-                  className: "text-red-500 hover:text-red-700 text-xs",
-                  children: "Delete"
+            /* @__PURE__ */ jsx(TableCell, { children: row.title }),
+            /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(Badge, { variant: "secondary", children: row.category }) }),
+            /* @__PURE__ */ jsx(TableCell, { className: "text-muted-foreground text-xs", children: dateStr }),
+            /* @__PURE__ */ jsx(TableCell, { className: "font-medium text-right", children: formatIdr(row.amount) }),
+            /* @__PURE__ */ jsx(TableCell, { className: `${typeClass} text-xs font-semibold uppercase`, children: typeLabel }),
+            /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsxs("div", { className: "flex gap-2", children: [
+              /* @__PURE__ */ jsx(Button, { variant: "ghost", size: "sm", className: "h-7 text-xs text-blue-500 hover:text-blue-700", onClick: () => startEdit(row), children: "Edit" }),
+              /* @__PURE__ */ jsx(Button, { variant: "ghost", size: "sm", className: "h-7 text-xs text-red-500 hover:text-red-700", onClick: async () => {
+                if (confirm("Delete this transaction?")) {
+                  await deleteTransactionApi(row.id);
+                  window.location.reload();
                 }
-              )
+              }, children: "Delete" })
             ] }) })
           ] }, row.id);
         }) })
@@ -397,11 +384,12 @@ function Dashboard({ transactions, networth, summaries }) {
         ] }),
         /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
           /* @__PURE__ */ jsx(
-            "button",
+            Button,
             {
+              variant: "outline",
+              size: "sm",
               onClick: () => goToPage(txPage - 1),
               disabled: txPage <= 1,
-              className: "px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-700",
               children: "Previous"
             }
           ),
@@ -411,11 +399,12 @@ function Dashboard({ transactions, networth, summaries }) {
             totalTxPages
           ] }),
           /* @__PURE__ */ jsx(
-            "button",
+            Button,
             {
+              variant: "outline",
+              size: "sm",
               onClick: () => goToPage(txPage + 1),
               disabled: txPage >= totalTxPages,
-              className: "px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-700",
               children: "Next"
             }
           )

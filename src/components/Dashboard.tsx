@@ -5,6 +5,24 @@ import { updateTransactionApi, deleteTransactionApi, toggleTransactionDoneApi } 
 import OutcomeChart from './OutcomeChart';
 import NetworthChart from './NetworthChart';
 import CategoryChart from './CategoryChart';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 function parseCreatedTime(tx: Transaction): Date {
   if (tx.created_time) {
@@ -120,19 +138,17 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
       {/* Month Filter */}
       <div className="flex items-center gap-3">
         <label className="text-sm font-medium text-slate-600 dark:text-slate-300">Period:</label>
-        <select
-          value={filterMonth}
-          onChange={(e) => {
-            setFilterMonth(e.target.value);
-            setTxPage(1);
-          }}
-          className="px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm"
-        >
-          <option value="all">All-time</option>
-          {months.map((m) => (
-            <option key={m} value={m}>{m}</option>
-          ))}
-        </select>
+        <Select value={filterMonth} onValueChange={(v) => { setFilterMonth(v); setTxPage(1); }}>
+          <SelectTrigger className="w-[160px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All-time</SelectItem>
+            {months.map((m) => (
+              <SelectItem key={m} value={m}>{m}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Outcome Breakdown — TOP */}
@@ -211,19 +227,19 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
           <a href="/transactions" className="text-xs text-blue-500 hover:text-blue-700">View all →</a>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 uppercase text-xs">
-              <tr>
-                <th className="px-4 py-3 font-medium">Paid</th>
-                <th className="px-4 py-3 font-medium">Title</th>
-                <th className="px-4 py-3 font-medium">Category</th>
-                <th className="px-4 py-3 font-medium">Date</th>
-                <th className="px-4 py-3 font-medium text-right">Amount</th>
-                <th className="px-4 py-3 font-medium">Type</th>
-                <th className="px-4 py-3 font-medium"></th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Paid</TableHead>
+                <TableHead>Title</TableHead>
+                <TableHead>Category</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead className="text-right">Amount</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {pagedTransactions.map((row) => {
                 const isEditing = editingId === row.id;
                 const typeClass =
@@ -241,116 +257,114 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
 
                 if (isEditing) {
                   return (
-                    <tr key={row.id} className="bg-slate-50 dark:bg-slate-700/30">
-                      <td className="px-4 py-2">
-                        <label className="inline-flex items-center cursor-pointer">
+                    <TableRow key={row.id} className="bg-muted/30">
+                      <TableCell>
+                        <label className="inline-flex items-center cursor-pointer gap-2">
                           <input
                             type="checkbox"
                             checked={!!editForm.done}
                             onChange={(e) => handleChange('done', e.target.checked)}
                             className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
                           />
-                          <span className="ml-2 text-xs">{editForm.done ? 'Paid' : 'Unpaid'}</span>
+                          <span className="text-xs">{editForm.done ? 'Paid' : 'Unpaid'}</span>
                         </label>
-                      </td>
-                      <td className="px-4 py-2">
-                        <input
+                      </TableCell>
+                      <TableCell>
+                        <Input
                           type="text"
                           value={editForm.title ?? ''}
                           onChange={(e) => handleChange('title', e.target.value)}
-                          className="w-full px-2 py-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs"
+                          className="h-8 text-xs"
                         />
-                      </td>
-                      <td className="px-4 py-2">
-                        <input
+                      </TableCell>
+                      <TableCell>
+                        <Input
                           type="text"
                           value={editForm.category ?? ''}
                           onChange={(e) => handleChange('category', e.target.value)}
-                          className="w-full px-2 py-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs"
+                          className="h-8 text-xs"
                         />
-                      </td>
-                      <td className="px-4 py-2">
-                        <input
+                      </TableCell>
+                      <TableCell>
+                        <Input
                           type="text"
                           value={editForm.created_time ?? ''}
                           onChange={(e) => handleChange('created_time', e.target.value)}
-                          className="w-full px-2 py-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs"
+                          className="h-8 text-xs"
                         />
-                      </td>
-                      <td className="px-4 py-2">
-                        <input
+                      </TableCell>
+                      <TableCell>
+                        <Input
                           type="number"
                           value={editForm.amount ?? 0}
                           onChange={(e) => handleChange('amount', Number(e.target.value))}
-                          className="w-full px-2 py-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs text-right"
+                          className="h-8 text-xs text-right"
                         />
-                      </td>
-                      <td className="px-4 py-2">
-                        <select
-                          value={editForm.type ?? 'cash'}
-                          onChange={(e) => handleChange('type', e.target.value)}
-                          className="w-full px-2 py-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs"
-                        >
-                          {TYPE_OPTIONS.map((opt) => (
-                            <option key={opt.value} value={opt.value}>{opt.label}</option>
-                          ))}
-                        </select>
-                      </td>
-                      <td className="px-4 py-2">
+                      </TableCell>
+                      <TableCell>
+                        <Select value={editForm.type ?? 'cash'} onValueChange={(v) => handleChange('type', v)}>
+                          <SelectTrigger className="h-8 text-xs">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {TYPE_OPTIONS.map((opt) => (
+                              <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </TableCell>
+                      <TableCell>
                         <div className="flex gap-1">
-                          <button onClick={saveEdit} className="px-2 py-1 rounded bg-emerald-600 text-white text-xs hover:bg-emerald-700">Save</button>
-                          <button onClick={cancelEdit} className="px-2 py-1 rounded bg-slate-300 dark:bg-slate-600 text-xs hover:bg-slate-400 dark:hover:bg-slate-500">Cancel</button>
+                          <Button size="sm" className="h-7 text-xs" onClick={saveEdit}>Save</Button>
+                          <Button size="sm" variant="secondary" className="h-7 text-xs" onClick={cancelEdit}>Cancel</Button>
                         </div>
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   );
                 }
 
                 return (
-                  <tr key={row.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/30">
-                    <td className="px-4 py-3">
-                      <button
+                  <TableRow key={row.id}>
+                    <TableCell>
+                      <Button
+                        size="sm"
+                        variant="ghost"
                         onClick={async () => {
                           await toggleTransactionDoneApi(row.id, !row.done);
                           window.location.reload();
                         }}
-                        className={`px-2 py-1 rounded text-xs font-semibold transition-colors ${
+                        className={`h-7 text-xs font-semibold px-2 py-0 ${
                           row.done
                             ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400'
                             : 'bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400'
                         }`}
                       >
                         {row.done ? 'Paid' : 'Unpaid'}
-                      </button>
-                    </td>
-                    <td className="px-4 py-3">{row.title}</td>
-                    <td className="px-4 py-3">
-                      <span className="px-2 py-1 rounded-full text-xs bg-slate-100 dark:bg-slate-700">{row.category}</span>
-                    </td>
-                    <td className="px-4 py-3 text-slate-500 dark:text-slate-400 text-xs">{dateStr}</td>
-                    <td className="px-4 py-3 font-medium text-right">{formatIdr(row.amount)}</td>
-                    <td className={`px-4 py-3 ${typeClass} text-xs font-semibold uppercase`}>{typeLabel}</td>
-                    <td className="px-4 py-3">
+                      </Button>
+                    </TableCell>
+                    <TableCell>{row.title}</TableCell>
+                    <TableCell>
+                      <Badge variant="secondary">{row.category}</Badge>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground text-xs">{dateStr}</TableCell>
+                    <TableCell className="font-medium text-right">{formatIdr(row.amount)}</TableCell>
+                    <TableCell className={`${typeClass} text-xs font-semibold uppercase`}>{typeLabel}</TableCell>
+                    <TableCell>
                       <div className="flex gap-2">
-                        <button onClick={() => startEdit(row)} className="text-blue-500 hover:text-blue-700 text-xs">Edit</button>
-                        <button
-                          onClick={async () => {
-                            if (confirm('Delete this transaction?')) {
-                              await deleteTransactionApi(row.id);
-                              window.location.reload();
-                            }
-                          }}
-                          className="text-red-500 hover:text-red-700 text-xs"
-                        >
-                          Delete
-                        </button>
+                        <Button variant="ghost" size="sm" className="h-7 text-xs text-blue-500 hover:text-blue-700" onClick={() => startEdit(row)}>Edit</Button>
+                        <Button variant="ghost" size="sm" className="h-7 text-xs text-red-500 hover:text-red-700" onClick={async () => {
+                          if (confirm('Delete this transaction?')) {
+                            await deleteTransactionApi(row.id);
+                            window.location.reload();
+                          }
+                        }}>Delete</Button>
                       </div>
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 );
               })}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
 
         {/* Pagination controls */}
@@ -360,23 +374,25 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
               Showing {(txPage - 1) * txPerPage + 1}–{Math.min(txPage * txPerPage, sortedTransactions.length)} of {sortedTransactions.length}
             </p>
             <div className="flex items-center gap-2">
-              <button
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => goToPage(txPage - 1)}
                 disabled={txPage <= 1}
-                className="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-700"
               >
                 Previous
-              </button>
+              </Button>
               <span className="text-xs text-slate-500 dark:text-slate-400 min-w-[3rem] text-center">
                 {txPage} / {totalTxPages}
               </span>
-              <button
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => goToPage(txPage + 1)}
                 disabled={txPage >= totalTxPages}
-                className="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-700"
               >
                 Next
-              </button>
+              </Button>
             </div>
           </div>
         )}
