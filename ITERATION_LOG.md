@@ -100,11 +100,29 @@ FIN-016: Refactor existing tables and forms to shadcn/ui components
 
 ---
 
-## Iteration 4 — FIN-016
+## Iteration 4 — UI Reorder & Pagination
 **Date:** 2025-04-28
+**Issue:** #10
+**Branch:** main (direct)
+**PR:** N/A
+
+### What changed
+- Moved **Outcome Breakdown** card to top section of Dashboard
+- Moved **This Month Transactions** card to top section
+- Moved **Summary/Totals** cards to bottom of dashboard
+- Added pagination controls to current month transaction table (10 per page)
+- Reset page to 1 when month filter changes
+
+### Build status
+✅ Passes
+
+---
+
+## Iteration 5 — FIN-016
+**Date:** 2025-04-29
 **Issue:** #2
 **Branch:** `feat/FIN-016`
-**PR:** (Pending — branch pushed, GitHub token not available for API creation)
+**PR:** #13
 
 ### What changed
 - **TransactionTable.tsx**: Migrated raw `<table>` to shadcn/ui `Table`, `TableHeader`, `TableBody`, `TableRow`, `TableHead`, `TableCell`. Replaced native `<input>`, `<select>`, `<button>` with shadcn `Input`, `Select`, `Button`, `Badge`.
