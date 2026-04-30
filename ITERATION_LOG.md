@@ -140,3 +140,30 @@ FIN-016: Refactor existing tables and forms to shadcn/ui components
 
 ### What's next
 FIN-017: Build Category Settings Module
+
+---
+
+## Iteration 6 — FIN-017
+**Date:** 2025-04-30
+**Issue:** #3
+**Branch:** `feat/FIN-017`
+**PR:** #14
+
+### What changed
+- Added `categories` table to SQLite schema (additive migration): `id`, `name` (unique), `color`, `monthly_limit`, `created_at`
+- Added category CRUD DB helpers: `getCategories()`, `getCategoryById()`, `getCategoryByName()`, `insertCategory()`, `updateCategory()`, `deleteCategory()`
+- Added `Category` interface to `src/lib/data.ts`
+- Created `/api/categories` (GET/POST) and `/api/categories/[id]` (GET/PUT/DELETE) API routes
+- Added category API helpers to `src/lib/api.ts`: `fetchCategories()`, `createCategory()`, `updateCategoryApi()`, `deleteCategoryApi()`
+- Created `CategorySettings.tsx` component with shadcn/ui `Card`, `Table`, `Input`, `Button`, `Label`
+  - Inline add form with name, monthly limit, native color picker + 18 preset color swatches
+  - Inline edit per row
+  - Delete with confirmation dialog
+- Created `/settings` Astro page hosting `CategorySettings`
+- Added **Settings** link to desktop and mobile nav in `Layout.astro`
+
+### Build status
+✅ Passes — live at `http://192.168.0.6:4321`
+
+### What's next
+FIN-018: Implement Category-Level Budget Targets
