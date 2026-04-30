@@ -41,6 +41,14 @@ export function initSchema() {
       FOREIGN KEY (month) REFERENCES networth(month) ON DELETE CASCADE
     );
 
+    CREATE TABLE IF NOT EXISTS categories (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL UNIQUE,
+      color TEXT NOT NULL DEFAULT '#3b82f6',
+      monthly_limit REAL DEFAULT 0,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    );
+
     CREATE INDEX IF NOT EXISTS idx_tx_month ON transactions(month);
     CREATE INDEX IF NOT EXISTS idx_tx_type ON transactions(type);
     CREATE INDEX IF NOT EXISTS idx_tx_date ON transactions(date);
@@ -142,6 +150,43 @@ export function upsertNetworth(record: any) {
 
 export function deleteNetworth(month: string) {
   db.prepare('DELETE FROM networth WHERE month = ?').run(month);
+}
+
+export function getCategories() {
+  return db.prepare('SELECT * FROM categories ORDER BY name ASC').all() as any[];
+}
+
+export function getCategoryById(id: number) {
+  return db.prepare('SELECT * FROM categories WHERE id = ?').get(id) as any;
+}
+
+export function getCategoryByName(name: string) {
+  return db.prepare('SELECT * FROM categories WHERE name = ? COLLATE NOCASE').get(name) as any;
+}
+
+export function insertCategory(cat: { name: string; color: string; monthly_limit?: number }) {
+  const stmt = db.prepare(`
+    INSERT INTO categories (name, color, monthly_limit)
+    VALUES (@name, @color, @monthly_limit)
+  `);
+  const result = stmt.run({
+    name: cat.name,
+    color: cat.color,
+    monthly_limit: cat.monthly_limit ?? 0,
+  });
+  return result.lastInsertRowid as number;
+}
+
+export function updateCategory(id: number, cat: Partial<{ name: string; color: string; monthly_limit: number }>) {
+  const fields = Object.keys(cat).filter((k) => k !== 'id');
+  if (fields.length === 0) return;
+  const setClause = fields.map((f) => `${f} = @${f}`).join(', ');
+  const stmt = db.prepare(`UPDATE categories SET ${setClause} WHERE id = @id`);
+  stmt.run({ ...cat, id });
+}
+
+export function deleteCategory(id: number) {
+  db.prepare('DELETE FROM categories WHERE id = ?').run(id);
 }
 
 export function getMonthlySummary() {
