@@ -11,14 +11,15 @@ import {
   Legend,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-import type { NetworthRecord } from '../lib/dataStore';
+import type { NetworthRecord } from '../lib/data';
 import { formatIdr } from '../lib/utils';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Filler, Legend);
 
 export default function NetworthChart({ data }: { data: NetworthRecord[] }) {
-  const labels = data.map((d) => d.month);
-  const values = data.map((d) => d.total);
+  const sortedData = [...data].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  const labels = sortedData.map((d) => d.month);
+  const values = sortedData.map((d) => d.total);
 
   const chartData = {
     labels,
@@ -46,7 +47,7 @@ export default function NetworthChart({ data }: { data: NetworthRecord[] }) {
           label: (ctx: any) => `Networth: ${formatIdr(ctx.parsed.y)}`,
           afterLabel: (ctx: any) => {
             const idx = ctx.dataIndex;
-            const change = data[idx]?.month_over_month_pct;
+            const change = sortedData[idx]?.month_over_month_pct;
             if (change == null) return '';
             return `MoM Change: ${change > 0 ? '+' : ''}${change}%`;
           },

@@ -1,0 +1,11 @@
+---
+import Layout from '../layouts/Layout.astro';
+import CategorySettings from '../components/CategorySettings';
+---
+
+<Layout title="Settings - Financial Dashboard">
+  <div class="space-y-6">
+    <h1 class="text-2xl font-bold">Settings</h1>
+    <CategorySettings client:load />
+  </div>
+</Layout>

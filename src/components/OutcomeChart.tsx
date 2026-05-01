@@ -15,9 +15,10 @@ import { formatIdr } from '../lib/utils';
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 export default function OutcomeChart({ data }: { data: MonthlySummary[] }) {
-  const labels = data.map((d) => d.month);
-  const cashOutcomes = data.map((d) => d.outcome.cash);
-  const creditPayments = data.map((d) => d.outcome.credit_payment);
+  const sortedData = [...data].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  const labels = sortedData.map((d) => d.month);
+  const cashOutcomes = sortedData.map((d) => d.outcome.cash);
+  const creditPayments = sortedData.map((d) => d.outcome.credit_payment);
 
   const chartData = {
     labels,

@@ -1,14 +1,38 @@
 /* empty css                               */
 import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BVE5k6Zu.mjs';
 import 'kleur/colors';
-import { B as Button, f as formatIdr, $ as $$Layout } from '../chunks/button_B8ZIUF-N.mjs';
-import { jsxs, jsx } from 'react/jsx-runtime';
+import { c as cn, B as Button, f as formatIdr, $ as $$Layout } from '../chunks/button_CiITpdQ-.mjs';
+import { jsx, jsxs } from 'react/jsx-runtime';
+import * as React from 'react';
 import { useState, useMemo } from 'react';
-import { I as Input, t as toggleTransactionDoneApi, B as Badge, d as deleteTransactionApi, b as updateTransactionApi } from '../chunks/badge_DBAg2bc-.mjs';
-import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_CeLrRofe.mjs';
-import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_tpbcs11u.mjs';
-import { g as getTransactions } from '../chunks/db_BnTmBRTu.mjs';
+import { I as Input, t as toggleTransactionDoneApi, h as deleteTransactionApi, i as updateTransactionApi, j as deleteTransactionsBulkApi } from '../chunks/input_DDs-Bie3.mjs';
+import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_bMQ14wB_.mjs';
+import { B as Badge } from '../chunks/badge_BswV_YQn.mjs';
+import * as CheckboxPrimitive from '@radix-ui/react-checkbox';
+import { Check } from 'lucide-react';
+import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_DFBIyLp5.mjs';
+import { c as getTransactions } from '../chunks/db_CjJXfo23.mjs';
 export { renderers } from '../renderers.mjs';
+
+const Checkbox = React.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx(
+  CheckboxPrimitive.Root,
+  {
+    ref,
+    className: cn(
+      "grid place-content-center peer h-4 w-4 shrink-0 rounded-sm border border-primary ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground",
+      className
+    ),
+    ...props,
+    children: /* @__PURE__ */ jsx(
+      CheckboxPrimitive.Indicator,
+      {
+        className: cn("grid place-content-center text-current"),
+        children: /* @__PURE__ */ jsx(Check, { className: "h-4 w-4" })
+      }
+    )
+  }
+));
+Checkbox.displayName = CheckboxPrimitive.Root.displayName;
 
 function parseCreatedTime(tx) {
   if (tx.created_time) {
@@ -28,6 +52,7 @@ function TransactionTable({ transactions, showMonth = true }) {
   const [search, setSearch] = useState("");
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({});
+  const [selected, setSelected] = useState(/* @__PURE__ */ new Set());
   const rowsPerPage = 25;
   const sorted = useMemo(() => {
     return [...transactions].sort((a, b) => {
@@ -70,6 +95,31 @@ function TransactionTable({ transactions, showMonth = true }) {
   const handleChange = (field, value) => {
     setEditForm((prev) => ({ ...prev, [field]: value }));
   };
+  const toggleSelect = (id) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+  const toggleSelectAll = () => {
+    const allSelected = pageRows.every((r) => selected.has(r.id));
+    setSelected((prev) => {
+      const next = new Set(prev);
+      pageRows.forEach((r) => {
+        if (allSelected) next.delete(r.id);
+        else next.add(r.id);
+      });
+      return next;
+    });
+  };
+  const handleBulkDelete = async () => {
+    if (!confirm(`Delete ${selected.size} transactions?`)) return;
+    await deleteTransactionsBulkApi(Array.from(selected));
+    setSelected(/* @__PURE__ */ new Set());
+    window.location.reload();
+  };
   return /* @__PURE__ */ jsxs("div", { children: [
     /* @__PURE__ */ jsxs("div", { className: "flex flex-col sm:flex-row gap-3 mb-4", children: [
       /* @__PURE__ */ jsx(
@@ -98,8 +148,23 @@ function TransactionTable({ transactions, showMonth = true }) {
         ] })
       ] })
     ] }),
+    selected.size > 0 && /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3 mb-3", children: [
+      /* @__PURE__ */ jsxs("span", { className: "text-sm text-slate-600 dark:text-slate-300", children: [
+        selected.size,
+        " selected"
+      ] }),
+      /* @__PURE__ */ jsx(Button, { size: "sm", variant: "destructive", onClick: handleBulkDelete, children: "Delete Selected" })
+    ] }),
     /* @__PURE__ */ jsx("div", { className: "rounded-xl border", children: /* @__PURE__ */ jsxs(Table, { children: [
       /* @__PURE__ */ jsx(TableHeader, { children: /* @__PURE__ */ jsxs(TableRow, { children: [
+        /* @__PURE__ */ jsx(TableHead, { className: "w-10", children: /* @__PURE__ */ jsx(
+          Checkbox,
+          {
+            checked: pageRows.length > 0 && pageRows.every((r) => selected.has(r.id)),
+            onCheckedChange: toggleSelectAll,
+            "aria-label": "Select all"
+          }
+        ) }),
         /* @__PURE__ */ jsx(TableHead, { children: "Paid" }),
         showMonth && /* @__PURE__ */ jsx(TableHead, { children: "Month" }),
         /* @__PURE__ */ jsx(TableHead, { children: "Title" }),
@@ -115,6 +180,7 @@ function TransactionTable({ transactions, showMonth = true }) {
         const dateStr = isNaN(createdDate.getTime()) ? row.date : createdDate.toLocaleDateString("id-ID", { year: "numeric", month: "short", day: "numeric" });
         if (isEditing) {
           return /* @__PURE__ */ jsxs(TableRow, { className: "bg-muted/30", children: [
+            /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(Checkbox, { checked: selected.has(row.id), disabled: true }) }),
             /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsxs("label", { className: "inline-flex items-center cursor-pointer gap-2", children: [
               /* @__PURE__ */ jsx(
                 "input",
@@ -186,6 +252,14 @@ function TransactionTable({ transactions, showMonth = true }) {
         const typeClass = row.type === "cash" ? "text-blue-600 dark:text-blue-400" : row.type === "credit_payment" ? "text-amber-600 dark:text-amber-400" : "text-purple-600 dark:text-purple-400";
         const typeLabel = row.type === "cash" ? "Cash" : row.type === "credit_payment" ? "Credit Pay" : "Credit";
         return /* @__PURE__ */ jsxs(TableRow, { children: [
+          /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(
+            Checkbox,
+            {
+              checked: selected.has(row.id),
+              onCheckedChange: () => toggleSelect(row.id),
+              "aria-label": `Select ${row.title}`
+            }
+          ) }),
           /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(
             Button,
             {

@@ -1,4 +1,4 @@
-import type { Transaction, NetworthRecord, MonthlySummary } from './data';
+import type { Transaction, NetworthRecord, MonthlySummary, Category } from './data';
 
 export async function fetchTransactions(filters?: { month?: string; type?: string; search?: string }): Promise<Transaction[]> {
   const params = new URLSearchParams();
@@ -71,4 +71,38 @@ export async function deleteNetworthApi(month: string): Promise<void> {
 export async function fetchSummaries(): Promise<MonthlySummary[]> {
   const res = await fetch('/api/summary');
   return res.json();
+}
+
+export async function fetchCategories(): Promise<Category[]> {
+  const res = await fetch('/api/categories');
+  return res.json();
+}
+
+export async function createCategory(cat: Omit<Category, 'id' | 'created_at'>): Promise<Category> {
+  const res = await fetch('/api/categories', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(cat),
+  });
+  return res.json();
+}
+
+export async function updateCategoryApi(id: number, cat: Partial<Omit<Category, 'id' | 'created_at'>>): Promise<void> {
+  await fetch(`/api/categories/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(cat),
+  });
+}
+
+export async function deleteCategoryApi(id: number): Promise<void> {
+  await fetch(`/api/categories/${id}`, { method: 'DELETE' });
+}
+
+export async function deleteTransactionsBulkApi(ids: number[]): Promise<void> {
+  await fetch('/api/transactions', {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ids }),
+  });
 }

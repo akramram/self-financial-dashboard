@@ -6,6 +6,14 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -34,6 +42,7 @@ export default function AddTransactionForm() {
   const [done, setDone] = useState(false);
   const [message, setMessage] = useState('');
   const [categories, setCategories] = useState<string[]>([]);
+  const [showDuplicateDialog, setShowDuplicateDialog] = useState(false);
   const titleRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -43,16 +52,10 @@ export default function AddTransactionForm() {
     });
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!title || !amount) {
-      setMessage('Title and amount are required.');
-      return;
-    }
+  const buildPayload = () => {
     const monthName = `${month} ${year}`;
     const date = `${year}-${String(MONTH_OPTIONS.indexOf(month) + 1).padStart(2, '0')}-01`;
-
-    await createTransaction({
+    return {
       month: monthName,
       date,
       title,
@@ -63,14 +66,55 @@ export default function AddTransactionForm() {
       payment_method: type === 'cash' ? 'Cash' : 'Credit',
       done,
       created_time: new Date().toISOString(),
-    });
+    };
+  };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title || !amount) {
+      setMessage('Title and amount are required.');
+      return;
+    }
+    const payload = buildPayload();
+    const res = await fetch('/api/transactions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (res.status === 409) {
+      setShowDuplicateDialog(true);
+      return;
+    }
+    if (!res.ok) {
+      setMessage('Failed to add transaction.');
+      return;
+    }
     setMessage('Transaction added successfully!');
     setTitle('');
     setCategory('');
     setAmount('');
     setTimeout(() => setMessage(''), 3000);
     titleRef.current?.focus();
+  };
+
+  const confirmDuplicate = async () => {
+    const payload = buildPayload();
+    const res = await fetch('/api/transactions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...payload, force: true }),
+    });
+    setShowDuplicateDialog(false);
+    if (res.ok) {
+      setMessage('Transaction added successfully!');
+      setTitle('');
+      setCategory('');
+      setAmount('');
+      setTimeout(() => setMessage(''), 3000);
+      titleRef.current?.focus();
+    } else {
+      setMessage('Failed to add transaction.');
+    }
   };
 
   return (
@@ -179,6 +223,25 @@ export default function AddTransactionForm() {
           </Button>
         </form>
       </CardContent>
+
+      <Dialog open={showDuplicateDialog} onOpenChange={setShowDuplicateDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Possible Duplicate</DialogTitle>
+            <DialogDescription>
+              A similar transaction was added within the last 24 hours. Are you sure you want to add it again?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="secondary" onClick={() => setShowDuplicateDialog(false)}>
+              Cancel
+            </Button>
+            <Button onClick={confirmDuplicate}>
+              Add Anyway
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }
