@@ -1,15 +1,15 @@
 /* empty css                               */
 import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BVE5k6Zu.mjs';
 import 'kleur/colors';
-import { f as formatIdr, B as Button, $ as $$Layout } from '../chunks/button_B8ZIUF-N.mjs';
+import { f as formatIdr, B as Button, $ as $$Layout } from '../chunks/button_DnJ041oi.mjs';
 import { jsx, jsxs } from 'react/jsx-runtime';
 import { useMemo, useState } from 'react';
-import { I as Input, t as toggleTransactionDoneApi, B as Badge, d as deleteTransactionApi, b as updateTransactionApi } from '../chunks/badge_DBAg2bc-.mjs';
+import { I as Input, t as toggleTransactionDoneApi, B as Badge, d as deleteTransactionApi, e as updateTransactionApi } from '../chunks/badge_Ci1nvH3T.mjs';
 import { Chart, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
 import { Bar, Doughnut } from 'react-chartjs-2';
-import { N as NetworthChart } from '../chunks/NetworthChart_D_XYM4dJ.mjs';
-import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_CeLrRofe.mjs';
-import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_tpbcs11u.mjs';
+import { N as NetworthChart } from '../chunks/NetworthChart_kwjMNz_Z.mjs';
+import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_Bc_UmIAO.mjs';
+import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_CZ6CGKqe.mjs';
 import { g as getTransactions, a as getNetworth, b as getMonthlySummary, d as db } from '../chunks/db_BnTmBRTu.mjs';
 export { renderers } from '../renderers.mjs';
 
@@ -206,7 +206,7 @@ function Dashboard({ transactions, networth, summaries }) {
         latest?.month,
         ")"
       ] }),
-      /* @__PURE__ */ jsxs("div", { className: "space-y-4 max-w-xl", children: [
+      /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4", children: [
         /* @__PURE__ */ jsxs("div", { children: [
           /* @__PURE__ */ jsxs("div", { className: "flex justify-between text-sm mb-1", children: [
             /* @__PURE__ */ jsx("span", { className: "text-slate-600 dark:text-slate-300", children: "Total Income" }),
@@ -215,17 +215,22 @@ function Dashboard({ transactions, networth, summaries }) {
           /* @__PURE__ */ jsx("div", { className: "w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2", children: /* @__PURE__ */ jsx("div", { className: "bg-emerald-500 h-2 rounded-full", style: { width: "100%" } }) })
         ] }),
         (() => {
-          const budgetPct = latest?.income > 0 ? Math.min(100, Math.max(0, (latest?.outcome.total ?? 0) / latest.income * 100)) : 0;
-          const budgetColor = budgetPct > 80 ? "bg-red-500" : budgetPct > 50 ? "bg-amber-500" : "bg-emerald-500";
+          const rawBudgetPct = latest?.income > 0 ? (latest?.outcome.total ?? 0) / latest.income * 100 : 0;
+          const budgetPct = Math.max(0, rawBudgetPct);
+          const visualBudgetPct = Math.min(100, budgetPct);
+          const isOverBudget = budgetPct > 100;
+          const budgetColor = isOverBudget ? "bg-red-600" : budgetPct > 80 ? "bg-red-500" : budgetPct > 50 ? "bg-amber-500" : "bg-emerald-500";
+          const budgetTextColor = isOverBudget ? "text-red-700 dark:text-red-300" : budgetPct > 80 ? "text-red-600 dark:text-red-400" : budgetPct > 50 ? "text-amber-600 dark:text-amber-400" : "text-emerald-600 dark:text-emerald-400";
           return /* @__PURE__ */ jsxs("div", { children: [
             /* @__PURE__ */ jsxs("div", { className: "flex justify-between text-sm mb-1", children: [
               /* @__PURE__ */ jsx("span", { className: "text-slate-600 dark:text-slate-300", children: "Budget Used" }),
-              /* @__PURE__ */ jsxs("span", { className: `font-semibold ${budgetPct > 80 ? "text-red-600 dark:text-red-400" : budgetPct > 50 ? "text-amber-600 dark:text-amber-400" : "text-emerald-600 dark:text-emerald-400"}`, children: [
+              /* @__PURE__ */ jsxs("span", { className: `font-semibold ${budgetTextColor}`, children: [
                 budgetPct.toFixed(1),
-                "%"
+                "%",
+                isOverBudget && /* @__PURE__ */ jsx("span", { className: "ml-1 text-xs", children: "(Over)" })
               ] })
             ] }),
-            /* @__PURE__ */ jsx("div", { className: "w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2", children: /* @__PURE__ */ jsx("div", { className: `${budgetColor} h-2 rounded-full transition-all`, style: { width: `${budgetPct}%` } }) }),
+            /* @__PURE__ */ jsx("div", { className: "w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2", children: /* @__PURE__ */ jsx("div", { className: `${budgetColor} h-2 rounded-full transition-all`, style: { width: `${visualBudgetPct}%` } }) }),
             /* @__PURE__ */ jsxs("p", { className: "text-xs text-slate-400 mt-1", children: [
               formatIdr(latest?.outcome.total ?? 0),
               " spent of ",
@@ -233,7 +238,7 @@ function Dashboard({ transactions, networth, summaries }) {
             ] })
           ] });
         })(),
-        /* @__PURE__ */ jsx("div", { className: "border-t border-slate-200 dark:border-slate-700" }),
+        /* @__PURE__ */ jsx("div", { className: "border-t border-slate-200 dark:border-slate-700 md:col-span-2" }),
         /* @__PURE__ */ jsxs("div", { children: [
           /* @__PURE__ */ jsxs("div", { className: "flex justify-between text-sm mb-1", children: [
             /* @__PURE__ */ jsx("span", { className: "text-slate-600 dark:text-slate-300", children: "Cash Expenses" }),
@@ -248,7 +253,7 @@ function Dashboard({ transactions, networth, summaries }) {
           ] }),
           /* @__PURE__ */ jsx("div", { className: "w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2", children: /* @__PURE__ */ jsx("div", { className: "bg-amber-500 h-2 rounded-full", style: { width: `${creditPct}%` } }) })
         ] }),
-        /* @__PURE__ */ jsxs("div", { className: "pt-2 border-t border-slate-200 dark:border-slate-700", children: [
+        /* @__PURE__ */ jsxs("div", { className: "md:col-span-2 pt-2 border-t border-slate-200 dark:border-slate-700", children: [
           /* @__PURE__ */ jsxs("div", { className: "flex justify-between text-sm", children: [
             /* @__PURE__ */ jsx("span", { className: "text-slate-500 dark:text-slate-400", children: "Current Month Credit Expenses" }),
             /* @__PURE__ */ jsx("span", { className: "font-semibold", children: formatIdr(latest?.outcome.credit_expenses ?? 0) })

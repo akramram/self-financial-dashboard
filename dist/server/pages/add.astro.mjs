@@ -1,12 +1,12 @@
 /* empty css                               */
 import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BVE5k6Zu.mjs';
 import 'kleur/colors';
-import { B as Button, $ as $$Layout } from '../chunks/button_B8ZIUF-N.mjs';
+import { B as Button, $ as $$Layout } from '../chunks/button_DnJ041oi.mjs';
 import { jsxs, jsx } from 'react/jsx-runtime';
-import { useState } from 'react';
-import { B as Badge, I as Input, c as createTransaction, a as createNetworth } from '../chunks/badge_DBAg2bc-.mjs';
-import { C as Card, a as CardHeader, b as CardTitle, c as CardContent, L as Label, d as CardDescription } from '../chunks/label_DLTnRics.mjs';
-import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_tpbcs11u.mjs';
+import { useState, useRef, useEffect } from 'react';
+import { f as fetchTransactions, B as Badge, I as Input, c as createTransaction, a as fetchNetworth, b as createNetworth } from '../chunks/badge_Ci1nvH3T.mjs';
+import { C as Card, a as CardHeader, b as CardTitle, c as CardContent, L as Label, d as CardDescription } from '../chunks/label_D1ai0at6.mjs';
+import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_CZ6CGKqe.mjs';
 export { renderers } from '../renderers.mjs';
 
 const MONTH_OPTIONS$1 = [
@@ -37,6 +37,14 @@ function AddTransactionForm() {
   const [type, setType] = useState("cash");
   const [done, setDone] = useState(false);
   const [message, setMessage] = useState("");
+  const [categories, setCategories] = useState([]);
+  const titleRef = useRef(null);
+  useEffect(() => {
+    fetchTransactions().then((txs) => {
+      const unique = Array.from(new Set(txs.map((t) => t.category).filter(Boolean)));
+      setCategories(unique.sort());
+    });
+  }, []);
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!title || !amount) {
@@ -62,6 +70,7 @@ function AddTransactionForm() {
     setCategory("");
     setAmount("");
     setTimeout(() => setMessage(""), 3e3);
+    titleRef.current?.focus();
   };
   return /* @__PURE__ */ jsxs(Card, { children: [
     /* @__PURE__ */ jsx(CardHeader, { children: /* @__PURE__ */ jsx(CardTitle, { children: "Add Transaction" }) }),
@@ -95,7 +104,8 @@ function AddTransactionForm() {
             type: "text",
             value: title,
             onChange: (e) => setTitle(e.target.value),
-            placeholder: "e.g. 🏠 Kontrakan"
+            placeholder: "e.g. 🏠 Kontrakan",
+            ref: titleRef
           }
         )
       ] }),
@@ -107,9 +117,11 @@ function AddTransactionForm() {
             type: "text",
             value: category,
             onChange: (e) => setCategory(e.target.value),
-            placeholder: "e.g. 🏠 Kontrakan"
+            placeholder: "e.g. 🏠 Kontrakan",
+            list: "category-list"
           }
         ),
+        /* @__PURE__ */ jsx("datalist", { id: "category-list", children: categories.map((cat) => /* @__PURE__ */ jsx("option", { value: cat }, cat)) }),
         /* @__PURE__ */ jsx("p", { className: "text-xs text-muted-foreground", children: "Leave blank to use first word of title" })
       ] }),
       /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 sm:grid-cols-2 gap-4", children: [
@@ -176,6 +188,24 @@ function AddNetworthForm() {
     "Cash": 0
   });
   const [message, setMessage] = useState("");
+  useEffect(() => {
+    fetchNetworth().then((all) => {
+      if (all.length === 0) return;
+      const latest = all[all.length - 1];
+      if (latest) {
+        const [latestMonth, latestYear] = latest.month.split(" ");
+        if (latestMonth && MONTH_OPTIONS.includes(latestMonth)) {
+          setMonth(latestMonth);
+        }
+        if (latestYear) {
+          setYear(Number(latestYear));
+        }
+        if (latest.breakdown && Object.keys(latest.breakdown).length > 0) {
+          setBreakdown({ ...latest.breakdown });
+        }
+      }
+    });
+  }, []);
   const handleBreakdownChange = (key, value) => {
     setBreakdown((prev) => ({ ...prev, [key]: Number(value) || 0 }));
   };

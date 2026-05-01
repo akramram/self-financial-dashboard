@@ -11,7 +11,7 @@ import {
   Legend,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-import type { NetworthRecord } from '../lib/dataStore';
+import type { NetworthRecord } from '../lib/data';
 import { formatIdr } from '../lib/utils';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Filler, Legend);

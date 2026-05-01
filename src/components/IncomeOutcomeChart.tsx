@@ -9,7 +9,7 @@ import {
   Legend,
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
-import type { MonthlySummary } from '../lib/dataStore';
+import type { MonthlySummary } from '../lib/data';
 import { formatIdr } from '../lib/utils';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
