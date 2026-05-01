@@ -237,6 +237,42 @@ export function getMonthlySummary() {
   return summaries;
 }
 
+export function getMonthlyIncome() {
+  return db.prepare('SELECT * FROM monthly_income ORDER BY date ASC').all() as any[];
+}
+
+export function getMonthlyIncomeByMonth(month: string) {
+  return db.prepare('SELECT * FROM monthly_income WHERE month = ?').get(month) as any;
+}
+
+export function upsertMonthlyIncome(record: { month: string; date: string; income: number; other_income?: number }) {
+  const existing = db.prepare('SELECT month FROM monthly_income WHERE month = ?').get(record.month);
+  if (existing) {
+    db.prepare(`
+      UPDATE monthly_income SET date = @date, income = @income, other_income = @other_income WHERE month = @month
+    `).run({
+      month: record.month,
+      date: record.date,
+      income: record.income,
+      other_income: record.other_income ?? 0,
+    });
+  } else {
+    db.prepare(`
+      INSERT INTO monthly_income (month, date, income, other_income)
+      VALUES (@month, @date, @income, @other_income)
+    `).run({
+      month: record.month,
+      date: record.date,
+      income: record.income,
+      other_income: record.other_income ?? 0,
+    });
+  }
+}
+
+export function deleteMonthlyIncome(month: string) {
+  db.prepare('DELETE FROM monthly_income WHERE month = ?').run(month);
+}
+
 export function recalcNetworthMoM() {
   const rows = db.prepare('SELECT month, date, total FROM networth ORDER BY date ASC').all() as any[];
   let prev: number | null = null;

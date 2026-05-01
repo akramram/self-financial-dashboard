@@ -1,24 +1,25 @@
 /* empty css                               */
 import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BVE5k6Zu.mjs';
 import 'kleur/colors';
-import { f as formatIdr, B as Button, $ as $$Layout } from '../chunks/button_CiITpdQ-.mjs';
+import { f as formatIdr, B as Button, $ as $$Layout } from '../chunks/button_wMNCUa4_.mjs';
 import { jsx, jsxs } from 'react/jsx-runtime';
 import { useMemo, useState, useEffect } from 'react';
-import { b as fetchCategories, I as Input, t as toggleTransactionDoneApi, h as deleteTransactionApi, i as updateTransactionApi } from '../chunks/input_DDs-Bie3.mjs';
+import { b as fetchCategories, I as Input, t as toggleTransactionDoneApi, l as deleteTransactionApi, m as updateTransactionApi } from '../chunks/input_Czu6wWQP.mjs';
 import { Chart, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
 import { Bar, Doughnut } from 'react-chartjs-2';
-import { N as NetworthChart } from '../chunks/NetworthChart_D9IFMBnw.mjs';
-import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_bMQ14wB_.mjs';
-import { B as Badge } from '../chunks/badge_BswV_YQn.mjs';
-import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_DFBIyLp5.mjs';
-import { c as getTransactions, e as getNetworth, f as getMonthlySummary, h as db } from '../chunks/db_CjJXfo23.mjs';
+import { N as NetworthChart } from '../chunks/NetworthChart_CNcWi1MM.mjs';
+import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_DMTZVFSr.mjs';
+import { B as Badge } from '../chunks/badge_DgQx8syk.mjs';
+import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_CAFeRdrs.mjs';
+import { c as getTransactions, e as getNetworth, f as getMonthlySummary, h as db } from '../chunks/db_DmlXICmv.mjs';
 export { renderers } from '../renderers.mjs';
 
 Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 function OutcomeChart({ data }) {
-  const labels = data.map((d) => d.month);
-  const cashOutcomes = data.map((d) => d.outcome.cash);
-  const creditPayments = data.map((d) => d.outcome.credit_payment);
+  const sortedData = [...data].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  const labels = sortedData.map((d) => d.month);
+  const cashOutcomes = sortedData.map((d) => d.outcome.cash);
+  const creditPayments = sortedData.map((d) => d.outcome.credit_payment);
   const chartData = {
     labels,
     datasets: [

@@ -106,3 +106,35 @@ export async function deleteTransactionsBulkApi(ids: number[]): Promise<void> {
     body: JSON.stringify({ ids }),
   });
 }
+
+export interface MonthlyIncome {
+  month: string;
+  date: string;
+  income: number;
+  other_income: number;
+}
+
+export async function fetchMonthlyIncome(): Promise<MonthlyIncome[]> {
+  const res = await fetch('/api/income');
+  return res.json();
+}
+
+export async function upsertMonthlyIncomeApi(record: Omit<MonthlyIncome, 'other_income'> & { other_income?: number }): Promise<void> {
+  await fetch('/api/income', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(record),
+  });
+}
+
+export async function updateMonthlyIncomeApi(month: string, record: Partial<MonthlyIncome>): Promise<void> {
+  await fetch(`/api/income/${encodeURIComponent(month)}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(record),
+  });
+}
+
+export async function deleteMonthlyIncomeApi(month: string): Promise<void> {
+  await fetch(`/api/income/${encodeURIComponent(month)}`, { method: 'DELETE' });
+}
