@@ -1,33 +1,39 @@
 import { renderers } from './renderers.mjs';
 import { c as createExports, s as serverEntrypointModule } from './chunks/_@astrojs-ssr-adapter_DX3j8JO6.mjs';
-import { manifest } from './manifest_CB-bsBcX.mjs';
+import { manifest } from './manifest_CUpM_RgQ.mjs';
 
 const _page0 = () => import('./pages/_image.astro.mjs');
 const _page1 = () => import('./pages/add.astro.mjs');
-const _page2 = () => import('./pages/api/export.astro.mjs');
-const _page3 = () => import('./pages/api/networth/_month_.astro.mjs');
-const _page4 = () => import('./pages/api/networth.astro.mjs');
-const _page5 = () => import('./pages/api/summary.astro.mjs');
-const _page6 = () => import('./pages/api/transactions/_id_.astro.mjs');
-const _page7 = () => import('./pages/api/transactions.astro.mjs');
-const _page8 = () => import('./pages/networth/edit.astro.mjs');
-const _page9 = () => import('./pages/networth.astro.mjs');
-const _page10 = () => import('./pages/transactions.astro.mjs');
-const _page11 = () => import('./pages/index.astro.mjs');
+const _page2 = () => import('./pages/api/categories/_id_.astro.mjs');
+const _page3 = () => import('./pages/api/categories.astro.mjs');
+const _page4 = () => import('./pages/api/export.astro.mjs');
+const _page5 = () => import('./pages/api/networth/_month_.astro.mjs');
+const _page6 = () => import('./pages/api/networth.astro.mjs');
+const _page7 = () => import('./pages/api/summary.astro.mjs');
+const _page8 = () => import('./pages/api/transactions/_id_.astro.mjs');
+const _page9 = () => import('./pages/api/transactions.astro.mjs');
+const _page10 = () => import('./pages/networth/edit.astro.mjs');
+const _page11 = () => import('./pages/networth.astro.mjs');
+const _page12 = () => import('./pages/settings.astro.mjs');
+const _page13 = () => import('./pages/transactions.astro.mjs');
+const _page14 = () => import('./pages/index.astro.mjs');
 
 const pageMap = new Map([
     ["node_modules/astro/dist/assets/endpoint/node.js", _page0],
     ["src/pages/add.astro", _page1],
-    ["src/pages/api/export.ts", _page2],
-    ["src/pages/api/networth/[month].ts", _page3],
-    ["src/pages/api/networth/index.ts", _page4],
-    ["src/pages/api/summary.ts", _page5],
-    ["src/pages/api/transactions/[id].ts", _page6],
-    ["src/pages/api/transactions/index.ts", _page7],
-    ["src/pages/networth/edit.astro", _page8],
-    ["src/pages/networth.astro", _page9],
-    ["src/pages/transactions.astro", _page10],
-    ["src/pages/index.astro", _page11]
+    ["src/pages/api/categories/[id].ts", _page2],
+    ["src/pages/api/categories/index.ts", _page3],
+    ["src/pages/api/export.ts", _page4],
+    ["src/pages/api/networth/[month].ts", _page5],
+    ["src/pages/api/networth/index.ts", _page6],
+    ["src/pages/api/summary.ts", _page7],
+    ["src/pages/api/transactions/[id].ts", _page8],
+    ["src/pages/api/transactions/index.ts", _page9],
+    ["src/pages/networth/edit.astro", _page10],
+    ["src/pages/networth.astro", _page11],
+    ["src/pages/settings.astro", _page12],
+    ["src/pages/transactions.astro", _page13],
+    ["src/pages/index.astro", _page14]
 ]);
 const serverIslandMap = new Map();
 const _manifest = Object.assign(manifest, {

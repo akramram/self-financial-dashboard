@@ -824,32 +824,6 @@
     }
   },
   {
-    "month": "Month 2026",
-    "date": "2026-01-01",
-    "income": 18500000.0,
-    "outcome": {
-      "cash": 8233000.0,
-      "credit_payment": 4000000.0,
-      "credit_expenses": 174290.0,
-      "total": 12233000.0
-    },
-    "savings": 6267000.0,
-    "savings_rate_pct": 33.88,
-    "networth": 0.0,
-    "category_totals": {
-      "👨 ‍👩‍👧 Family": 1500000.0,
-      "🏠 Kontrakan": 1150000.0,
-      "🍽 ️ Cash Rumah Bulanan": 500000.0,
-      "🌐 Internet": 333000.0,
-      "🎗 ️ Zakat": 250000.0,
-      "👰 Istri": 3000000.0,
-      "🌱 Invest": 1000000.0,
-      "💵 Cash Pribadi": 500000.0,
-      "Youtube": 154290.0,
-      "Biaya": 20000.0
-    }
-  },
-  {
     "month": "January 2026",
     "date": "2026-01-01",
     "income": 18500000.0,

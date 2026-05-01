@@ -42,6 +42,14 @@ export interface MonthlySummary {
   category_totals: Record<string, number>;
 }
 
+export interface Category {
+  id: number;
+  name: string;
+  color: string;
+  monthly_limit: number;
+  created_at: string;
+}
+
 export const initialTransactions: Transaction[] = transactionsJson as Transaction[];
 export const initialNetworth: NetworthRecord[] = networthJson as NetworthRecord[];
 export const initialMonthlySummary: MonthlySummary[] = monthlySummaryJson as unknown as MonthlySummary[];
