@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { createNetworth } from '../lib/api';
+import React, { useState, useEffect } from 'react';
+import { createNetworth, fetchNetworth } from '../lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -29,6 +29,25 @@ export default function AddNetworthForm() {
     'Cash': 0,
   });
   const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    fetchNetworth().then((all) => {
+      if (all.length === 0) return;
+      const latest = all[all.length - 1];
+      if (latest) {
+        const [latestMonth, latestYear] = latest.month.split(' ');
+        if (latestMonth && MONTH_OPTIONS.includes(latestMonth)) {
+          setMonth(latestMonth);
+        }
+        if (latestYear) {
+          setYear(Number(latestYear));
+        }
+        if (latest.breakdown && Object.keys(latest.breakdown).length > 0) {
+          setBreakdown({ ...latest.breakdown });
+        }
+      }
+    });
+  }, []);
 
   const handleBreakdownChange = (key: string, value: string) => {
     setBreakdown((prev) => ({ ...prev, [key]: Number(value) || 0 }));

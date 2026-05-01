@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { createTransaction } from '../lib/api';
+import React, { useState, useEffect, useRef } from 'react';
+import { createTransaction, fetchTransactions } from '../lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -33,6 +33,15 @@ export default function AddTransactionForm() {
   const [type, setType] = useState<'cash' | 'credit_expense' | 'credit_payment'>('cash');
   const [done, setDone] = useState(false);
   const [message, setMessage] = useState('');
+  const [categories, setCategories] = useState<string[]>([]);
+  const titleRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    fetchTransactions().then((txs) => {
+      const unique = Array.from(new Set(txs.map((t) => t.category).filter(Boolean)));
+      setCategories(unique.sort());
+    });
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,6 +70,7 @@ export default function AddTransactionForm() {
     setCategory('');
     setAmount('');
     setTimeout(() => setMessage(''), 3000);
+    titleRef.current?.focus();
   };
 
   return (
@@ -107,6 +117,7 @@ export default function AddTransactionForm() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. 🏠 Kontrakan"
+              ref={titleRef}
             />
           </div>
 
@@ -117,7 +128,13 @@ export default function AddTransactionForm() {
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               placeholder="e.g. 🏠 Kontrakan"
+              list="category-list"
             />
+            <datalist id="category-list">
+              {categories.map((cat) => (
+                <option key={cat} value={cat} />
+              ))}
+            </datalist>
             <p className="text-xs text-muted-foreground">Leave blank to use first word of title</p>
           </div>
 

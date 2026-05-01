@@ -154,7 +154,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
       {/* Outcome Breakdown — TOP */}
       <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
         <h2 className="text-lg font-semibold mb-4">Outcome Breakdown ({latest?.month})</h2>
-        <div className="space-y-4 max-w-xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
           {/* Total Income */}
           <div>
             <div className="flex justify-between text-sm mb-1">
@@ -168,20 +168,37 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
 
           {/* Budget Used */}
           {(() => {
-            const budgetPct = latest?.income > 0
-              ? Math.min(100, Math.max(0, ((latest?.outcome.total ?? 0) / latest.income) * 100))
+            const rawBudgetPct = latest?.income > 0
+              ? ((latest?.outcome.total ?? 0) / latest.income) * 100
               : 0;
-            const budgetColor = budgetPct > 80 ? 'bg-red-500' : budgetPct > 50 ? 'bg-amber-500' : 'bg-emerald-500';
+            const budgetPct = Math.max(0, rawBudgetPct);
+            const visualBudgetPct = Math.min(100, budgetPct);
+            const isOverBudget = budgetPct > 100;
+            const budgetColor = isOverBudget
+              ? 'bg-red-600'
+              : budgetPct > 80
+                ? 'bg-red-500'
+                : budgetPct > 50
+                  ? 'bg-amber-500'
+                  : 'bg-emerald-500';
+            const budgetTextColor = isOverBudget
+              ? 'text-red-700 dark:text-red-300'
+              : budgetPct > 80
+                ? 'text-red-600 dark:text-red-400'
+                : budgetPct > 50
+                  ? 'text-amber-600 dark:text-amber-400'
+                  : 'text-emerald-600 dark:text-emerald-400';
             return (
               <div>
                 <div className="flex justify-between text-sm mb-1">
                   <span className="text-slate-600 dark:text-slate-300">Budget Used</span>
-                  <span className={`font-semibold ${budgetPct > 80 ? 'text-red-600 dark:text-red-400' : budgetPct > 50 ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
+                  <span className={`font-semibold ${budgetTextColor}`}>
                     {budgetPct.toFixed(1)}%
+                    {isOverBudget && <span className="ml-1 text-xs">(Over)</span>}
                   </span>
                 </div>
                 <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-                  <div className={`${budgetColor} h-2 rounded-full transition-all`} style={{ width: `${budgetPct}%` }} />
+                  <div className={`${budgetColor} h-2 rounded-full transition-all`} style={{ width: `${visualBudgetPct}%` }} />
                 </div>
                 <p className="text-xs text-slate-400 mt-1">
                   {formatIdr(latest?.outcome.total ?? 0)} spent of {formatIdr(latest?.income ?? 0)}
@@ -190,7 +207,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
             );
           })()}
 
-          <div className="border-t border-slate-200 dark:border-slate-700" />
+          <div className="border-t border-slate-200 dark:border-slate-700 md:col-span-2" />
 
           <div>
             <div className="flex justify-between text-sm mb-1">
@@ -210,7 +227,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
               <div className="bg-amber-500 h-2 rounded-full" style={{ width: `${creditPct}%` }} />
             </div>
           </div>
-          <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
+          <div className="md:col-span-2 pt-2 border-t border-slate-200 dark:border-slate-700">
             <div className="flex justify-between text-sm">
               <span className="text-slate-500 dark:text-slate-400">Current Month Credit Expenses</span>
               <span className="font-semibold">{formatIdr(latest?.outcome.credit_expenses ?? 0)}</span>
