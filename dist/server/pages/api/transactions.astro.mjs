@@ -1,4 +1,4 @@
-import { c as getTransactions, p as insertTransaction } from '../../chunks/db_B5rD-vVO.mjs';
+import { p as deleteTransactionsBulk, c as getTransactions, q as findDuplicateTransaction, s as insertTransaction } from '../../chunks/db_CjJXfo23.mjs';
 export { renderers } from '../../renderers.mjs';
 
 const GET = async ({ request }) => {
@@ -13,15 +13,42 @@ const GET = async ({ request }) => {
 };
 const POST = async ({ request }) => {
   const body = await request.json();
+  const duplicateId = findDuplicateTransaction({
+    title: body.title,
+    amount: Number(body.amount),
+    category: body.category || body.title.split(" ")[0],
+    type: body.type
+  });
+  if (duplicateId && !body.force) {
+    return new Response(JSON.stringify({ duplicate: true, duplicateId, message: "A similar transaction was added recently." }), {
+      status: 409,
+      headers: { "Content-Type": "application/json" }
+    });
+  }
   const id = insertTransaction(body);
   return new Response(JSON.stringify({ id, ...body }), {
     status: 201,
     headers: { "Content-Type": "application/json" }
   });
 };
+const DELETE = async ({ request }) => {
+  const body = await request.json();
+  const ids = body.ids;
+  if (!Array.isArray(ids) || ids.length === 0) {
+    return new Response(JSON.stringify({ error: "ids array required" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" }
+    });
+  }
+  deleteTransactionsBulk(ids);
+  return new Response(JSON.stringify({ success: true, deleted: ids.length }), {
+    headers: { "Content-Type": "application/json" }
+  });
+};
 
 const _page = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   __proto__: null,
+  DELETE,
   GET,
   POST
 }, Symbol.toStringTag, { value: 'Module' }));

@@ -98,3 +98,11 @@ export async function updateCategoryApi(id: number, cat: Partial<Omit<Category, 
 export async function deleteCategoryApi(id: number): Promise<void> {
   await fetch(`/api/categories/${id}`, { method: 'DELETE' });
 }
+
+export async function deleteTransactionsBulkApi(ids: number[]): Promise<void> {
+  await fetch('/api/transactions', {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ids }),
+  });
+}

@@ -1,7 +1,7 @@
-import React, { useState, useMemo } from 'react';
-import type { Transaction, NetworthRecord, MonthlySummary } from '../lib/data';
+import React, { useState, useMemo, useEffect } from 'react';
+import type { Transaction, NetworthRecord, MonthlySummary, Category } from '../lib/data';
 import { formatIdr } from '../lib/utils';
-import { updateTransactionApi, deleteTransactionApi, toggleTransactionDoneApi } from '../lib/api';
+import { updateTransactionApi, deleteTransactionApi, toggleTransactionDoneApi, fetchCategories } from '../lib/api';
 import OutcomeChart from './OutcomeChart';
 import NetworthChart from './NetworthChart';
 import CategoryChart from './CategoryChart';
@@ -115,6 +115,17 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
   // Pagination state for transactions
   const [txPage, setTxPage] = useState(1);
   const txPerPage = 10;
+
+  const [categories, setCategories] = useState<Category[]>([]);
+  useEffect(() => {
+    fetchCategories().then(setCategories).catch(() => {});
+  }, []);
+
+  const categoryMap = useMemo(() => {
+    const map: Record<string, Category> = {};
+    categories.forEach((c) => { map[c.name] = c; });
+    return map;
+  }, [categories]);
 
   const sortedTransactions = useMemo(() => {
     return [...filteredTransactions].sort(
@@ -234,6 +245,50 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
             </div>
             <p className="text-xs text-slate-400 mt-1">These will be paid next month</p>
           </div>
+
+          {/* Category Budgets */}
+          {latest?.category_totals && Object.keys(latest.category_totals).length > 0 && (
+            <div className="md:col-span-2 pt-4 border-t border-slate-200 dark:border-slate-700">
+              <h3 className="text-sm font-semibold mb-3 text-slate-700 dark:text-slate-200">Category Budgets</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
+                {Object.entries(latest.category_totals)
+                  .sort(([, a], [, b]) => b - a)
+                  .map(([cat, amount]) => {
+                    const limit = categoryMap[cat]?.monthly_limit ?? 0;
+                    if (limit <= 0) {
+                      return (
+                        <div key={cat}>
+                          <div className="flex justify-between text-sm mb-1">
+                            <span className="text-slate-600 dark:text-slate-300">{cat}</span>
+                            <span className="font-semibold">{formatIdr(amount)}</span>
+                          </div>
+                          <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-1.5">
+                            <div className="bg-slate-400 h-1.5 rounded-full" style={{ width: '100%' }} />
+                          </div>
+                        </div>
+                      );
+                    }
+                    const pct = Math.min(100, (amount / limit) * 100);
+                    const isOver = amount > limit;
+                    const barColor = isOver ? 'bg-red-500' : pct > 80 ? 'bg-amber-500' : 'bg-emerald-500';
+                    const textColor = isOver ? 'text-red-600 dark:text-red-400' : pct > 80 ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400';
+                    return (
+                      <div key={cat}>
+                        <div className="flex justify-between text-sm mb-1">
+                          <span className="text-slate-600 dark:text-slate-300">{cat}</span>
+                          <span className={`font-semibold ${textColor}`}>
+                            {formatIdr(amount)} / {formatIdr(limit)}
+                          </span>
+                        </div>
+                        <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-1.5">
+                          <div className={`${barColor} h-1.5 rounded-full transition-all`} style={{ width: `${pct}%` }} />
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

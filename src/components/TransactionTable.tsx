@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import type { Transaction } from '../lib/data';
-import { updateTransactionApi, deleteTransactionApi, toggleTransactionDoneApi } from '../lib/api';
+import { updateTransactionApi, deleteTransactionApi, toggleTransactionDoneApi, deleteTransactionsBulkApi } from '../lib/api';
 import { formatIdr } from '../lib/utils';
 import {
   Table,
@@ -13,6 +13,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Select,
   SelectContent,
@@ -46,6 +47,7 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
   const [search, setSearch] = useState('');
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editForm, setEditForm] = useState<Partial<Transaction>>({});
+  const [selected, setSelected] = useState<Set<number>>(new Set());
   const rowsPerPage = 25;
 
   const sorted = useMemo(() => {
@@ -96,6 +98,34 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
     setEditForm((prev) => ({ ...prev, [field]: value }));
   };
 
+  const toggleSelect = (id: number) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    const allSelected = pageRows.every((r) => selected.has(r.id));
+    setSelected((prev) => {
+      const next = new Set(prev);
+      pageRows.forEach((r) => {
+        if (allSelected) next.delete(r.id);
+        else next.add(r.id);
+      });
+      return next;
+    });
+  };
+
+  const handleBulkDelete = async () => {
+    if (!confirm(`Delete ${selected.size} transactions?`)) return;
+    await deleteTransactionsBulkApi(Array.from(selected));
+    setSelected(new Set());
+    window.location.reload();
+  };
+
   return (
     <div>
       <div className="flex flex-col sm:flex-row gap-3 mb-4">
@@ -119,10 +149,26 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
         </Select>
       </div>
 
+      {selected.size > 0 && (
+        <div className="flex items-center gap-3 mb-3">
+          <span className="text-sm text-slate-600 dark:text-slate-300">{selected.size} selected</span>
+          <Button size="sm" variant="destructive" onClick={handleBulkDelete}>
+            Delete Selected
+          </Button>
+        </div>
+      )}
+
       <div className="rounded-xl border">
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-10">
+                <Checkbox
+                  checked={pageRows.length > 0 && pageRows.every((r) => selected.has(r.id))}
+                  onCheckedChange={toggleSelectAll}
+                  aria-label="Select all"
+                />
+              </TableHead>
               <TableHead>Paid</TableHead>
               {showMonth && <TableHead>Month</TableHead>}
               <TableHead>Title</TableHead>
@@ -144,6 +190,9 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
               if (isEditing) {
                 return (
                   <TableRow key={row.id} className="bg-muted/30">
+                    <TableCell>
+                      <Checkbox checked={selected.has(row.id)} disabled />
+                    </TableCell>
                     <TableCell>
                       <label className="inline-flex items-center cursor-pointer gap-2">
                         <input
@@ -235,6 +284,13 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
 
               return (
                 <TableRow key={row.id}>
+                  <TableCell>
+                    <Checkbox
+                      checked={selected.has(row.id)}
+                      onCheckedChange={() => toggleSelect(row.id)}
+                      aria-label={`Select ${row.title}`}
+                    />
+                  </TableCell>
                   <TableCell>
                     <Button
                       size="sm"

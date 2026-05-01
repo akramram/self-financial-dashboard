@@ -108,6 +108,20 @@ export function deleteTransaction(id: number) {
   db.prepare('DELETE FROM transactions WHERE id = ?').run(id);
 }
 
+export function deleteTransactionsBulk(ids: number[]) {
+  if (ids.length === 0) return;
+  const placeholders = ids.map(() => '?').join(',');
+  db.prepare(`DELETE FROM transactions WHERE id IN (${placeholders})`).run(...ids);
+}
+
+export function findDuplicateTransaction(tx: { title: string; amount: number; category: string; type: string }, hours = 24) {
+  const since = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
+  const row = db.prepare(
+    `SELECT id FROM transactions WHERE title = ? AND amount = ? AND category = ? AND type = ? AND created_time > ? LIMIT 1`
+  ).get(tx.title, tx.amount, tx.category, tx.type, since);
+  return row ? (row as any).id : null;
+}
+
 export function getNetworth() {
   const rows = db.prepare('SELECT * FROM networth ORDER BY date ASC').all() as any[];
   for (const row of rows) {

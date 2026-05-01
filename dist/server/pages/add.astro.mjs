@@ -1,14 +1,103 @@
 /* empty css                               */
 import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BVE5k6Zu.mjs';
 import 'kleur/colors';
-import { B as Button, $ as $$Layout } from '../chunks/button_CObA1HLU.mjs';
-import { jsxs, jsx } from 'react/jsx-runtime';
-import { useState } from 'react';
-import { I as Input, c as createTransaction, a as createNetworth } from '../chunks/input_B2XQHpLE.mjs';
-import { C as Card, a as CardHeader, b as CardTitle, c as CardContent, L as Label, d as CardDescription } from '../chunks/label_x1QQHvkA.mjs';
-import { B as Badge } from '../chunks/badge_rfXm3Mte.mjs';
-import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_DQjir8sQ.mjs';
+import { c as cn, B as Button, $ as $$Layout } from '../chunks/button_CiITpdQ-.mjs';
+import { jsx, jsxs } from 'react/jsx-runtime';
+import * as React from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { f as fetchTransactions, I as Input, a as fetchNetworth, c as createNetworth } from '../chunks/input_DDs-Bie3.mjs';
+import { C as Card, a as CardHeader, b as CardTitle, c as CardContent, L as Label, d as CardDescription } from '../chunks/label_Cjp5XLHA.mjs';
+import { B as Badge } from '../chunks/badge_BswV_YQn.mjs';
+import * as DialogPrimitive from '@radix-ui/react-dialog';
+import { X } from 'lucide-react';
+import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_DFBIyLp5.mjs';
 export { renderers } from '../renderers.mjs';
+
+const Dialog = DialogPrimitive.Root;
+const DialogPortal = DialogPrimitive.Portal;
+const DialogOverlay = React.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx(
+  DialogPrimitive.Overlay,
+  {
+    ref,
+    className: cn(
+      "fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+      className
+    ),
+    ...props
+  }
+));
+DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
+const DialogContent = React.forwardRef(({ className, children, ...props }, ref) => /* @__PURE__ */ jsxs(DialogPortal, { children: [
+  /* @__PURE__ */ jsx(DialogOverlay, {}),
+  /* @__PURE__ */ jsxs(
+    DialogPrimitive.Content,
+    {
+      ref,
+      className: cn(
+        "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg",
+        className
+      ),
+      ...props,
+      children: [
+        children,
+        /* @__PURE__ */ jsxs(DialogPrimitive.Close, { className: "absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground", children: [
+          /* @__PURE__ */ jsx(X, { className: "h-4 w-4" }),
+          /* @__PURE__ */ jsx("span", { className: "sr-only", children: "Close" })
+        ] })
+      ]
+    }
+  )
+] }));
+DialogContent.displayName = DialogPrimitive.Content.displayName;
+const DialogHeader = ({
+  className,
+  ...props
+}) => /* @__PURE__ */ jsx(
+  "div",
+  {
+    className: cn(
+      "flex flex-col space-y-1.5 text-center sm:text-left",
+      className
+    ),
+    ...props
+  }
+);
+DialogHeader.displayName = "DialogHeader";
+const DialogFooter = ({
+  className,
+  ...props
+}) => /* @__PURE__ */ jsx(
+  "div",
+  {
+    className: cn(
+      "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2",
+      className
+    ),
+    ...props
+  }
+);
+DialogFooter.displayName = "DialogFooter";
+const DialogTitle = React.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx(
+  DialogPrimitive.Title,
+  {
+    ref,
+    className: cn(
+      "text-lg font-semibold leading-none tracking-tight",
+      className
+    ),
+    ...props
+  }
+));
+DialogTitle.displayName = DialogPrimitive.Title.displayName;
+const DialogDescription = React.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx(
+  DialogPrimitive.Description,
+  {
+    ref,
+    className: cn("text-sm text-muted-foreground", className),
+    ...props
+  }
+));
+DialogDescription.displayName = DialogPrimitive.Description.displayName;
 
 const MONTH_OPTIONS$1 = [
   "January",
@@ -38,15 +127,19 @@ function AddTransactionForm() {
   const [type, setType] = useState("cash");
   const [done, setDone] = useState(false);
   const [message, setMessage] = useState("");
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!title || !amount) {
-      setMessage("Title and amount are required.");
-      return;
-    }
+  const [categories, setCategories] = useState([]);
+  const [showDuplicateDialog, setShowDuplicateDialog] = useState(false);
+  const titleRef = useRef(null);
+  useEffect(() => {
+    fetchTransactions().then((txs) => {
+      const unique = Array.from(new Set(txs.map((t) => t.category).filter(Boolean)));
+      setCategories(unique.sort());
+    });
+  }, []);
+  const buildPayload = () => {
     const monthName = `${month} ${year}`;
     const date = `${year}-${String(MONTH_OPTIONS$1.indexOf(month) + 1).padStart(2, "0")}-01`;
-    await createTransaction({
+    return {
       month: monthName,
       date,
       title,
@@ -57,12 +150,53 @@ function AddTransactionForm() {
       payment_method: type === "cash" ? "Cash" : "Credit",
       done,
       created_time: (/* @__PURE__ */ new Date()).toISOString()
+    };
+  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!title || !amount) {
+      setMessage("Title and amount are required.");
+      return;
+    }
+    const payload = buildPayload();
+    const res = await fetch("/api/transactions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
     });
+    if (res.status === 409) {
+      setShowDuplicateDialog(true);
+      return;
+    }
+    if (!res.ok) {
+      setMessage("Failed to add transaction.");
+      return;
+    }
     setMessage("Transaction added successfully!");
     setTitle("");
     setCategory("");
     setAmount("");
     setTimeout(() => setMessage(""), 3e3);
+    titleRef.current?.focus();
+  };
+  const confirmDuplicate = async () => {
+    const payload = buildPayload();
+    const res = await fetch("/api/transactions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...payload, force: true })
+    });
+    setShowDuplicateDialog(false);
+    if (res.ok) {
+      setMessage("Transaction added successfully!");
+      setTitle("");
+      setCategory("");
+      setAmount("");
+      setTimeout(() => setMessage(""), 3e3);
+      titleRef.current?.focus();
+    } else {
+      setMessage("Failed to add transaction.");
+    }
   };
   return /* @__PURE__ */ jsxs(Card, { children: [
     /* @__PURE__ */ jsx(CardHeader, { children: /* @__PURE__ */ jsx(CardTitle, { children: "Add Transaction" }) }),
@@ -96,7 +230,8 @@ function AddTransactionForm() {
             type: "text",
             value: title,
             onChange: (e) => setTitle(e.target.value),
-            placeholder: "e.g. 🏠 Kontrakan"
+            placeholder: "e.g. 🏠 Kontrakan",
+            ref: titleRef
           }
         )
       ] }),
@@ -108,9 +243,11 @@ function AddTransactionForm() {
             type: "text",
             value: category,
             onChange: (e) => setCategory(e.target.value),
-            placeholder: "e.g. 🏠 Kontrakan"
+            placeholder: "e.g. 🏠 Kontrakan",
+            list: "category-list"
           }
         ),
+        /* @__PURE__ */ jsx("datalist", { id: "category-list", children: categories.map((cat) => /* @__PURE__ */ jsx("option", { value: cat }, cat)) }),
         /* @__PURE__ */ jsx("p", { className: "text-xs text-muted-foreground", children: "Leave blank to use first word of title" })
       ] }),
       /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 sm:grid-cols-2 gap-4", children: [
@@ -148,6 +285,16 @@ function AddTransactionForm() {
         /* @__PURE__ */ jsx(Label, { htmlFor: "done", className: "text-sm text-slate-600 dark:text-slate-300", children: "Paid / Done" })
       ] }),
       /* @__PURE__ */ jsx(Button, { type: "submit", className: "w-full", children: "Add Transaction" })
+    ] }) }),
+    /* @__PURE__ */ jsx(Dialog, { open: showDuplicateDialog, onOpenChange: setShowDuplicateDialog, children: /* @__PURE__ */ jsxs(DialogContent, { children: [
+      /* @__PURE__ */ jsxs(DialogHeader, { children: [
+        /* @__PURE__ */ jsx(DialogTitle, { children: "Possible Duplicate" }),
+        /* @__PURE__ */ jsx(DialogDescription, { children: "A similar transaction was added within the last 24 hours. Are you sure you want to add it again?" })
+      ] }),
+      /* @__PURE__ */ jsxs(DialogFooter, { children: [
+        /* @__PURE__ */ jsx(Button, { variant: "secondary", onClick: () => setShowDuplicateDialog(false), children: "Cancel" }),
+        /* @__PURE__ */ jsx(Button, { onClick: confirmDuplicate, children: "Add Anyway" })
+      ] })
     ] }) })
   ] });
 }
@@ -177,6 +324,24 @@ function AddNetworthForm() {
     "Cash": 0
   });
   const [message, setMessage] = useState("");
+  useEffect(() => {
+    fetchNetworth().then((all) => {
+      if (all.length === 0) return;
+      const latest = all[all.length - 1];
+      if (latest) {
+        const [latestMonth, latestYear] = latest.month.split(" ");
+        if (latestMonth && MONTH_OPTIONS.includes(latestMonth)) {
+          setMonth(latestMonth);
+        }
+        if (latestYear) {
+          setYear(Number(latestYear));
+        }
+        if (latest.breakdown && Object.keys(latest.breakdown).length > 0) {
+          setBreakdown({ ...latest.breakdown });
+        }
+      }
+    });
+  }, []);
   const handleBreakdownChange = (key, value) => {
     setBreakdown((prev) => ({ ...prev, [key]: Number(value) || 0 }));
   };

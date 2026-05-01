@@ -167,3 +167,78 @@ FIN-017: Build Category Settings Module
 
 ### What's next
 FIN-018: Implement Category-Level Budget Targets
+
+---
+
+## Iteration 7 — FIN-018
+**Date:** 2025-05-01
+**Issue:** #4
+**Branch:** main
+**PR:** N/A (direct)
+
+### What changed
+- Fetched categories client-side in `Dashboard.tsx` via `fetchCategories()`
+- Built `categoryMap` lookup for quick limit resolution
+- Added **Category Budgets** section inside the Outcome Breakdown card
+  - Lists every category from `category_totals`, sorted by spend (descending)
+  - Shows `amount / limit` text with color-coded thresholds (green <50%, amber 50-80%, red >80% / over-budget)
+  - Displays a compact progress bar per category
+  - Categories with no limit show spend amount with a neutral gray bar
+
+### Build status
+✅ Passes
+
+---
+
+## Iteration 8 — FIN-019
+**Date:** 2025-05-01
+**Issue:** #5
+**Branch:** main
+**PR:** N/A (direct)
+
+### What changed
+- Installed shadcn/ui `Checkbox` component
+- Added bulk selection state (`Set<number>`) to `TransactionTable.tsx`
+- Added **select-all** header checkbox and per-row checkboxes
+- Added bulk action bar above the table showing count + **Delete Selected** button (destructive variant)
+- Added `deleteTransactionsBulkApi()` to `src/lib/api.ts`
+- Added `deleteTransactionsBulk(ids)` DB helper in `src/lib/db.ts`
+- Added `DELETE /api/transactions` bulk endpoint in `src/pages/api/transactions/index.ts`
+
+### Build status
+✅ Passes
+
+---
+
+## Iteration 9 — FIN-020
+**Date:** 2025-05-01
+**Issue:** #6
+**Branch:** main
+**PR:** N/A (direct)
+
+### What changed
+- Added `findDuplicateTransaction()` to `src/lib/db.ts`
+  - Checks for same `title`, `amount`, `category`, and `type` within last 24 hours
+- Updated `POST /api/transactions` to run duplicate check
+  - Returns `409 Conflict` with `{ duplicate: true, duplicateId, message }` if match found and `force` is not set
+- Updated `AddTransactionForm.tsx`
+  - On 409 response, opens a shadcn `Dialog` asking "A similar transaction was added within the last 24 hours. Are you sure you want to add it again?"
+  - **Add Anyway** resubmits with `force: true`
+  - **Cancel** closes dialog without adding
+
+### Build status
+✅ Passes
+
+---
+
+## Hotfix — TypeScript Errors
+**Date:** 2025-05-01
+**Branch:** main
+
+### What changed
+- Fixed `IncomeOutcomeChart.tsx`: changed import from `../lib/dataStore` to `../lib/data` for `MonthlySummary`
+- Fixed `NetworthChart.tsx`: changed import from `../lib/dataStore` to `../lib/data` for `NetworthRecord`
+- Fixed `src/lib/data.ts`: changed `monthlySummaryJson as MonthlySummary[]` to `monthlySummaryJson as unknown as MonthlySummary[]` to suppress strict overlap error caused by undefined category values in JSON
+
+### Build status
+✅ Passes — `tsc --noEmit` clean
