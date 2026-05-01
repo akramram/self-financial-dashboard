@@ -242,3 +242,27 @@ FIN-018: Implement Category-Level Budget Targets
 
 ### Build status
 ✅ Passes — `tsc --noEmit` clean
+
+---
+
+## Iteration 10 — FIN-023
+**Date:** 2025-05-01
+**Issue:** #17
+**Branch:** `feat/FIN-023`
+**PR:** #18
+
+### What changed
+- Added DB helpers for `monthly_income`: `getMonthlyIncome()`, `getMonthlyIncomeByMonth()`, `upsertMonthlyIncome()`, `deleteMonthlyIncome()`
+- Added API routes: `GET /api/income`, `POST /api/income`, `PUT /api/income/[month]`, `DELETE /api/income/[month]`
+- Added client API helpers in `src/lib/api.ts`: `fetchMonthlyIncome()`, `upsertMonthlyIncomeApi()`, `updateMonthlyIncomeApi()`, `deleteMonthlyIncomeApi()`
+- Created `IncomeSettings.tsx` component with shadcn/ui Card, Table, Input, Button, Label
+  - Inline add form with month/year selector, income, and other income fields
+  - Inline edit per row
+  - Delete with confirmation
+- Integrated `IncomeSettings` into `/settings` page above Category Settings
+
+### Build status
+✅ Passes — live at `http://192.168.0.6:4321`
+
+### What's next
+FIN-024: Add JSON/CSV export UI button since the `/api/export` endpoint already exists but has no UI exposure.
