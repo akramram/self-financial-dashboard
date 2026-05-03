@@ -266,3 +266,28 @@ FIN-018: Implement Category-Level Budget Targets
 
 ### What's next
 FIN-024: Add JSON/CSV export UI button since the `/api/export` endpoint already exists but has no UI exposure.
+
+---
+
+## Iteration 11 — FIN-024
+**Date:** 2026-05-03
+**Issue:** #19
+**Branch:** `feat/FIN-024`
+**PR:** #19 (merged)
+
+### What changed
+- Enhanced `/api/export` to support `?format=csv` with `?type=transactions|networth|summary`
+  - JSON export remains the default (`?format=json`)
+  - CSV values are properly escaped for commas, quotes, and newlines
+- Created `ExportData.tsx` component with shadcn/ui `Card` and `Button`
+- Added 4 export buttons on `/settings` page:
+  - Export JSON (All data)
+  - Export Transactions CSV
+  - Export Networth CSV
+  - Export Monthly Summary CSV
+- Files are downloaded client-side via Blob URLs with date-stamped filenames
+
+### Build status
+✅ Passes — live at `http://192.168.0.6:4321`
+
+---
