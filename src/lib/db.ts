@@ -49,6 +49,13 @@ export function initSchema() {
       created_at TEXT DEFAULT CURRENT_TIMESTAMP
     );
 
+    CREATE TABLE IF NOT EXISTS monthly_income (
+      month TEXT PRIMARY KEY,
+      date TEXT NOT NULL,
+      income REAL NOT NULL DEFAULT 0,
+      other_income REAL NOT NULL DEFAULT 0
+    );
+
     CREATE INDEX IF NOT EXISTS idx_tx_month ON transactions(month);
     CREATE INDEX IF NOT EXISTS idx_tx_type ON transactions(type);
     CREATE INDEX IF NOT EXISTS idx_tx_date ON transactions(date);
