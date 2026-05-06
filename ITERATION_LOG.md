@@ -291,3 +291,20 @@ FIN-024: Add JSON/CSV export UI button since the `/api/export` endpoint already 
 ✅ Passes — live at `http://192.168.0.6:4321`
 
 ---
+
+## Iteration 12 — Schema Bugfix
+**Date:** 2026-05-06
+**Issue:** #20
+**Branch:** `fix/monthly-income-schema`
+**PR:** #21 (merged)
+
+### What changed
+- Added missing `CREATE TABLE IF NOT EXISTS monthly_income` to `initSchema()` in `src/lib/db.ts`
+  - Schema: `month TEXT PRIMARY KEY`, `date TEXT NOT NULL`, `income REAL NOT NULL DEFAULT 0`, `other_income REAL NOT NULL DEFAULT 0`
+  - Uses `IF NOT EXISTS` so existing production DB is unaffected
+- This fixes a crash on fresh installs / DB resets whenever any code queries `monthly_income`
+
+### Build status
+✅ Passes
+
+---
