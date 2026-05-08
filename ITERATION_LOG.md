@@ -308,3 +308,18 @@ FIN-024: Add JSON/CSV export UI button since the `/api/export` endpoint already 
 ✅ Passes
 
 ---
+## Iteration 13 — FIN-025
+**Date:** 2026-05-08
+**Issue:** #22
+**Branch:** `feat/FIN-025`
+**PR:** #23
+
+### What changed
+- **CategoryChart**: added `categories` prop; uses category colors from Settings instead of hardcoded palette. Unknown categories fall back to the original palette.
+- **Dashboard**: passes fetched `categories` to `CategoryChart`. Category badges in the inline transaction table now use the category color as background with white text. Category budget progress bars use the category color at 15% opacity (`#RRGGBB26`) for the track background; no-limit categories use the category color for the fill itself.
+- **TransactionTable**: fetches categories client-side and applies category colors to category badges.
+
+### Build status
+✅ Passes — live at `http://192.168.0.6:4321`
+
+---
