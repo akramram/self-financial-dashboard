@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from 'react';
-import type { Transaction } from '../lib/data';
-import { updateTransactionApi, deleteTransactionApi, toggleTransactionDoneApi, deleteTransactionsBulkApi } from '../lib/api';
+import React, { useState, useMemo, useEffect } from 'react';
+import type { Transaction, Category } from '../lib/data';
+import { updateTransactionApi, deleteTransactionApi, toggleTransactionDoneApi, deleteTransactionsBulkApi, fetchCategories } from '../lib/api';
 import { formatIdr } from '../lib/utils';
 import {
   Table,
@@ -48,7 +48,18 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editForm, setEditForm] = useState<Partial<Transaction>>({});
   const [selected, setSelected] = useState<Set<number>>(new Set());
+  const [categories, setCategories] = useState<Category[]>([]);
   const rowsPerPage = 25;
+
+  useEffect(() => {
+    fetchCategories().then(setCategories).catch(() => {});
+  }, []);
+
+  const categoryMap = useMemo(() => {
+    const map: Record<string, Category> = {};
+    categories.forEach((c) => { map[c.name] = c; });
+    return map;
+  }, [categories]);
 
   const sorted = useMemo(() => {
     return [...transactions].sort((a, b) => {
@@ -311,7 +322,15 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
                   {showMonth && <TableCell className="font-medium">{row.month}</TableCell>}
                   <TableCell>{row.title}</TableCell>
                   <TableCell>
-                    <Badge variant="secondary">{row.category}</Badge>
+                    <Badge
+                      variant="secondary"
+                      style={{
+                        backgroundColor: categoryMap[row.category]?.color || undefined,
+                        color: categoryMap[row.category]?.color ? '#fff' : undefined,
+                      }}
+                    >
+                      {row.category}
+                    </Badge>
                   </TableCell>
                   <TableCell className="text-muted-foreground text-xs">{dateStr}</TableCell>
                   <TableCell className="font-medium text-right">{formatIdr(row.amount)}</TableCell>
