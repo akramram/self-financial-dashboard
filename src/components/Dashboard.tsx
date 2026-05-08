@@ -255,6 +255,10 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
                   .sort(([, a], [, b]) => b - a)
                   .map(([cat, amount]) => {
                     const limit = categoryMap[cat]?.monthly_limit ?? 0;
+                    const catColor = categoryMap[cat]?.color;
+                    const trackStyle = catColor
+                      ? { backgroundColor: `${catColor}26` } // 15% opacity hex
+                      : undefined;
                     if (limit <= 0) {
                       return (
                         <div key={cat}>
@@ -262,8 +266,8 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
                             <span className="text-slate-600 dark:text-slate-300">{cat}</span>
                             <span className="font-semibold">{formatIdr(amount)}</span>
                           </div>
-                          <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-1.5">
-                            <div className="bg-slate-400 h-1.5 rounded-full" style={{ width: '100%' }} />
+                          <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-1.5" style={trackStyle}>
+                            <div className="h-1.5 rounded-full" style={{ width: '100%', backgroundColor: catColor || '#94a3b8' }} />
                           </div>
                         </div>
                       );
@@ -280,7 +284,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
                             {formatIdr(amount)} / {formatIdr(limit)}
                           </span>
                         </div>
-                        <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-1.5">
+                        <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-1.5" style={trackStyle}>
                           <div className={`${barColor} h-1.5 rounded-full transition-all`} style={{ width: `${pct}%` }} />
                         </div>
                       </div>
@@ -416,7 +420,15 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
                     </TableCell>
                     <TableCell>{row.title}</TableCell>
                     <TableCell>
-                      <Badge variant="secondary">{row.category}</Badge>
+                      <Badge
+                        variant="secondary"
+                        style={{
+                          backgroundColor: categoryMap[row.category]?.color || undefined,
+                          color: categoryMap[row.category]?.color ? '#fff' : undefined,
+                        }}
+                      >
+                        {row.category}
+                      </Badge>
                     </TableCell>
                     <TableCell className="text-muted-foreground text-xs">{dateStr}</TableCell>
                     <TableCell className="font-medium text-right">{formatIdr(row.amount)}</TableCell>
@@ -487,7 +499,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
             {isAllTime ? 'Latest Month Categories' : `${latest.month} Categories`}
           </h2>
           {latest?.category_totals && Object.keys(latest.category_totals).length > 0 ? (
-            <CategoryChart data={latest.category_totals} />
+            <CategoryChart data={latest.category_totals} categories={categories} />
           ) : (
             <p className="text-slate-500 text-sm">No category data available.</p>
           )}
