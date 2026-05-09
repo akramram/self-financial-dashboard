@@ -556,10 +556,11 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Category: {selectedCategory}</DialogTitle>
+            <DialogTitle>{selectedCategory} — {isAllTime ? activeSummary.month : filterMonth}</DialogTitle>
             <DialogDescription>
               {(() => {
-                const catTxs = filteredTransactions.filter((t) => t.category === selectedCategory);
+                const targetMonth = isAllTime ? activeSummary.month : filterMonth;
+                const catTxs = transactions.filter((t) => t.category === selectedCategory && t.month === targetMonth);
                 const total = catTxs.reduce((sum, t) => sum + t.amount, 0);
                 return `${catTxs.length} transaction${catTxs.length !== 1 ? 's' : ''} • Total: ${formatIdr(total)}`;
               })()}
@@ -567,8 +568,9 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
           </DialogHeader>
           <div className="mt-2">
             {(() => {
-              const catTxs = [...filteredTransactions]
-                .filter((t) => t.category === selectedCategory)
+              const targetMonth = isAllTime ? activeSummary.month : filterMonth;
+              const catTxs = transactions
+                .filter((t) => t.category === selectedCategory && t.month === targetMonth)
                 .sort((a, b) => parseCreatedTime(b).getTime() - parseCreatedTime(a).getTime());
               if (catTxs.length === 0) {
                 return <p className="text-sm text-slate-500">No transactions found for this category.</p>;
