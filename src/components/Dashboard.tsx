@@ -23,6 +23,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 
 function parseCreatedTime(tx: Transaction): Date {
   if (tx.created_time) {
@@ -120,6 +127,14 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
   useEffect(() => {
     fetchCategories().then(setCategories).catch(() => {});
   }, []);
+
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
+
+  const openCategoryDialog = (cat: string) => {
+    setSelectedCategory(cat);
+    setDialogOpen(true);
+  };
 
   const categoryMap = useMemo(() => {
     const map: Record<string, Category> = {};
@@ -261,7 +276,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
                       : undefined;
                     if (limit <= 0) {
                       return (
-                        <div key={cat}>
+                        <div key={cat} className="cursor-pointer" onClick={() => openCategoryDialog(cat)}>
                           <div className="flex justify-between text-sm mb-1">
                             <span className="text-slate-600 dark:text-slate-300">{cat}</span>
                             <span className="font-semibold">{formatIdr(amount)}</span>
@@ -277,7 +292,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
                     const barColor = isOver ? 'bg-red-500' : pct > 80 ? 'bg-amber-500' : 'bg-emerald-500';
                     const textColor = isOver ? 'text-red-600 dark:text-red-400' : pct > 80 ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400';
                     return (
-                      <div key={cat}>
+                      <div key={cat} className="cursor-pointer" onClick={() => openCategoryDialog(cat)}>
                         <div className="flex justify-between text-sm mb-1">
                           <span className="text-slate-600 dark:text-slate-300">{cat}</span>
                           <span className={`font-semibold ${textColor}`}>
@@ -499,7 +514,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
             {isAllTime ? 'Latest Month Categories' : `${latest.month} Categories`}
           </h2>
           {latest?.category_totals && Object.keys(latest.category_totals).length > 0 ? (
-            <CategoryChart data={latest.category_totals} categories={categories} />
+            <CategoryChart data={latest.category_totals} categories={categories} onCategoryClick={openCategoryDialog} />
           ) : (
             <p className="text-slate-500 text-sm">No category data available.</p>
           )}
@@ -537,6 +552,63 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
           </div>
         </div>
       </div>
+      {/* Category Transactions Dialog */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Category: {selectedCategory}</DialogTitle>
+            <DialogDescription>
+              {(() => {
+                const catTxs = filteredTransactions.filter((t) => t.category === selectedCategory);
+                const total = catTxs.reduce((sum, t) => sum + t.amount, 0);
+                return `${catTxs.length} transaction${catTxs.length !== 1 ? 's' : ''} • Total: ${formatIdr(total)}`;
+              })()}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="mt-2">
+            {(() => {
+              const catTxs = [...filteredTransactions]
+                .filter((t) => t.category === selectedCategory)
+                .sort((a, b) => parseCreatedTime(b).getTime() - parseCreatedTime(a).getTime());
+              if (catTxs.length === 0) {
+                return <p className="text-sm text-slate-500">No transactions found for this category.</p>;
+              }
+              return (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Title</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead className="text-right">Amount</TableHead>
+                      <TableHead>Type</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {catTxs.map((t) => {
+                      const d = parseCreatedTime(t);
+                      const dateStr = isNaN(d.getTime())
+                        ? t.date
+                        : d.toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' });
+                      const typeLabel =
+                        t.type === 'cash' ? 'Cash' : t.type === 'credit_payment' ? 'Credit Pay' : 'Credit';
+                      return (
+                        <TableRow key={t.id}>
+                          <TableCell className="font-medium">{t.title}</TableCell>
+                          <TableCell className="text-muted-foreground text-xs">{dateStr}</TableCell>
+                          <TableCell className="text-right font-medium">{formatIdr(t.amount)}</TableCell>
+                          <TableCell className="text-xs font-semibold uppercase">
+                            <Badge variant="outline">{typeLabel}</Badge>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              );
+            })()}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -14,9 +14,10 @@ const FALLBACK_COLORS = [
 interface Props {
   data: Record<string, number>;
   categories?: Category[];
+  onCategoryClick?: (category: string) => void;
 }
 
-export default function CategoryChart({ data, categories = [] }: Props) {
+export default function CategoryChart({ data, categories = [], onCategoryClick }: Props) {
   const entries = Object.entries(data).sort((a, b) => b[1] - a[1]).slice(0, 10);
   const labels = entries.map(([k]) => k);
   const values = entries.map(([_, v]) => v);
@@ -38,10 +39,22 @@ export default function CategoryChart({ data, categories = [] }: Props) {
   const options = {
     responsive: true,
     maintainAspectRatio: false,
+    onClick: (_evt: any, elements: any[]) => {
+      if (elements.length > 0 && onCategoryClick) {
+        const index = elements[0].index;
+        const category = labels[index];
+        if (category) onCategoryClick(category);
+      }
+    },
     plugins: {
       legend: {
         position: 'right' as const,
         labels: { boxWidth: 12, font: { size: 11 } },
+        onClick: (_e: any, legendItem: any, _legend: any) => {
+          if (onCategoryClick && legendItem.text) {
+            onCategoryClick(legendItem.text);
+          }
+        },
       },
       tooltip: {
         callbacks: {
