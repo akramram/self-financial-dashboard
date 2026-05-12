@@ -1,17 +1,16 @@
 /* empty css                               */
 import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BVE5k6Zu.mjs';
 import 'kleur/colors';
-import { c as cn, B as Button, f as formatIdr, $ as $$Layout } from '../chunks/button_3D6Qkda7.mjs';
+import { c as cn, B as Button, f as formatIdr, $ as $$Layout } from '../chunks/button_Bx8EVyLF.mjs';
 import { jsx, jsxs } from 'react/jsx-runtime';
 import * as React from 'react';
-import { useState, useMemo } from 'react';
-import { I as Input, t as toggleTransactionDoneApi, l as deleteTransactionApi, m as updateTransactionApi, n as deleteTransactionsBulkApi } from '../chunks/input_BBUjP35A.mjs';
-import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_BLw6Tfmc.mjs';
-import { B as Badge } from '../chunks/badge_BUBVXJLz.mjs';
+import { useState, useEffect, useMemo } from 'react';
+import { b as fetchCategories, I as Input, t as toggleTransactionDoneApi, B as Badge, m as deleteTransactionApi, n as updateTransactionApi, o as deleteTransactionsBulkApi } from '../chunks/badge_Co1MM_vK.mjs';
+import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_CbJIhMnF.mjs';
 import * as CheckboxPrimitive from '@radix-ui/react-checkbox';
 import { Check } from 'lucide-react';
-import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_CVD_0lf_.mjs';
-import { c as getTransactions } from '../chunks/db_DmlXICmv.mjs';
+import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_DBhyzp65.mjs';
+import { c as getTransactions } from '../chunks/db_B8cbmQtY.mjs';
 export { renderers } from '../renderers.mjs';
 
 const Checkbox = React.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx(
@@ -53,7 +52,19 @@ function TransactionTable({ transactions, showMonth = true }) {
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({});
   const [selected, setSelected] = useState(/* @__PURE__ */ new Set());
+  const [categories, setCategories] = useState([]);
   const rowsPerPage = 25;
+  useEffect(() => {
+    fetchCategories().then(setCategories).catch(() => {
+    });
+  }, []);
+  const categoryMap = useMemo(() => {
+    const map = {};
+    categories.forEach((c) => {
+      map[c.name] = c;
+    });
+    return map;
+  }, [categories]);
   const sorted = useMemo(() => {
     return [...transactions].sort((a, b) => {
       const da = parseCreatedTime(a);
@@ -275,7 +286,17 @@ function TransactionTable({ transactions, showMonth = true }) {
           ) }),
           showMonth && /* @__PURE__ */ jsx(TableCell, { className: "font-medium", children: row.month }),
           /* @__PURE__ */ jsx(TableCell, { children: row.title }),
-          /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(Badge, { variant: "secondary", children: row.category }) }),
+          /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(
+            Badge,
+            {
+              variant: "secondary",
+              style: {
+                backgroundColor: categoryMap[row.category]?.color || void 0,
+                color: categoryMap[row.category]?.color ? "#fff" : void 0
+              },
+              children: row.category
+            }
+          ) }),
           /* @__PURE__ */ jsx(TableCell, { className: "text-muted-foreground text-xs", children: dateStr }),
           /* @__PURE__ */ jsx(TableCell, { className: "font-medium text-right", children: formatIdr(row.amount) }),
           /* @__PURE__ */ jsx(TableCell, { className: `${typeClass} text-xs font-semibold uppercase`, children: typeLabel }),

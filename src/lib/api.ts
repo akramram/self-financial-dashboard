@@ -138,3 +138,22 @@ export async function updateMonthlyIncomeApi(month: string, record: Partial<Mont
 export async function deleteMonthlyIncomeApi(month: string): Promise<void> {
   await fetch(`/api/income/${encodeURIComponent(month)}`, { method: 'DELETE' });
 }
+
+export interface ImportResult {
+  imported: number;
+  skipped: number;
+  errors: number;
+}
+
+export async function importDataApi(type: 'transactions' | 'networth' | 'monthly_income', rows: any[]): Promise<ImportResult> {
+  const res = await fetch('/api/import', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ type, rows }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: 'Import failed' }));
+    throw new Error(err.error || 'Import failed');
+  }
+  return res.json();
+}

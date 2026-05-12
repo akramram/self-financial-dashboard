@@ -1,12 +1,12 @@
 /* empty css                               */
 import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BVE5k6Zu.mjs';
 import 'kleur/colors';
-import { f as formatIdr, B as Button, $ as $$Layout } from '../chunks/button_3D6Qkda7.mjs';
-import { N as NetworthChart } from '../chunks/NetworthChart_DDO1bnV_.mjs';
+import { f as formatIdr, B as Button, $ as $$Layout } from '../chunks/button_Bx8EVyLF.mjs';
+import { N as NetworthChart } from '../chunks/NetworthChart_D8imeaX_.mjs';
 import { jsx, jsxs } from 'react/jsx-runtime';
 import 'react';
-import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_BLw6Tfmc.mjs';
-import { e as getNetworth } from '../chunks/db_DmlXICmv.mjs';
+import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_CbJIhMnF.mjs';
+import { e as getNetworth } from '../chunks/db_B8cbmQtY.mjs';
 export { renderers } from '../renderers.mjs';
 
 function NetworthTable({ networth }) {

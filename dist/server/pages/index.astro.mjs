@@ -1,17 +1,17 @@
 /* empty css                               */
 import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BVE5k6Zu.mjs';
 import 'kleur/colors';
-import { f as formatIdr, B as Button, $ as $$Layout } from '../chunks/button_3D6Qkda7.mjs';
+import { f as formatIdr, B as Button, $ as $$Layout } from '../chunks/button_Bx8EVyLF.mjs';
 import { jsx, jsxs } from 'react/jsx-runtime';
 import { useMemo, useState, useEffect } from 'react';
-import { b as fetchCategories, I as Input, t as toggleTransactionDoneApi, l as deleteTransactionApi, m as updateTransactionApi } from '../chunks/input_BBUjP35A.mjs';
+import { b as fetchCategories, I as Input, t as toggleTransactionDoneApi, B as Badge, m as deleteTransactionApi, n as updateTransactionApi } from '../chunks/badge_Co1MM_vK.mjs';
 import { Chart, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
 import { Bar, Doughnut } from 'react-chartjs-2';
-import { N as NetworthChart } from '../chunks/NetworthChart_DDO1bnV_.mjs';
-import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_BLw6Tfmc.mjs';
-import { B as Badge } from '../chunks/badge_BUBVXJLz.mjs';
-import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_CVD_0lf_.mjs';
-import { c as getTransactions, e as getNetworth, f as getMonthlySummary, h as db } from '../chunks/db_DmlXICmv.mjs';
+import { N as NetworthChart } from '../chunks/NetworthChart_D8imeaX_.mjs';
+import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_CbJIhMnF.mjs';
+import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_DBhyzp65.mjs';
+import { D as Dialog, a as DialogContent, b as DialogHeader, c as DialogTitle, d as DialogDescription } from '../chunks/dialog_D6p1s_OZ.mjs';
+import { c as getTransactions, e as getNetworth, f as getMonthlySummary, h as db } from '../chunks/db_B8cbmQtY.mjs';
 export { renderers } from '../renderers.mjs';
 
 Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -68,22 +68,24 @@ function OutcomeChart({ data }) {
 }
 
 Chart.register(ArcElement, Tooltip, Legend);
-function CategoryChart({ data }) {
+const FALLBACK_COLORS = [
+  "#3b82f6",
+  "#10b981",
+  "#f59e0b",
+  "#ef4444",
+  "#8b5cf6",
+  "#ec4899",
+  "#06b6d4",
+  "#84cc16",
+  "#f97316",
+  "#6366f1"
+];
+function CategoryChart({ data, categories = [], onCategoryClick }) {
   const entries = Object.entries(data).sort((a, b) => b[1] - a[1]).slice(0, 10);
   const labels = entries.map(([k]) => k);
   const values = entries.map(([_, v]) => v);
-  const colors = [
-    "#3b82f6",
-    "#10b981",
-    "#f59e0b",
-    "#ef4444",
-    "#8b5cf6",
-    "#ec4899",
-    "#06b6d4",
-    "#84cc16",
-    "#f97316",
-    "#6366f1"
-  ];
+  const colorMap = new Map(categories.map((c) => [c.name, c.color]));
+  const colors = labels.map((label, i) => colorMap.get(label) || FALLBACK_COLORS[i % FALLBACK_COLORS.length]);
   const chartData = {
     labels,
     datasets: [
@@ -97,10 +99,22 @@ function CategoryChart({ data }) {
   const options = {
     responsive: true,
     maintainAspectRatio: false,
+    onClick: (_evt, elements) => {
+      if (elements.length > 0 && onCategoryClick) {
+        const index = elements[0].index;
+        const category = labels[index];
+        if (category) onCategoryClick(category);
+      }
+    },
     plugins: {
       legend: {
         position: "right",
-        labels: { boxWidth: 12, font: { size: 11 } }
+        labels: { boxWidth: 12, font: { size: 11 } },
+        onClick: (_e, legendItem, _legend) => {
+          if (onCategoryClick && legendItem.text) {
+            onCategoryClick(legendItem.text);
+          }
+        }
       },
       tooltip: {
         callbacks: {
@@ -179,6 +193,12 @@ function Dashboard({ transactions, networth, summaries }) {
     fetchCategories().then(setCategories).catch(() => {
     });
   }, []);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const openCategoryDialog = (cat) => {
+    setSelectedCategory(cat);
+    setDialogOpen(true);
+  };
   const categoryMap = useMemo(() => {
     const map = {};
     categories.forEach((c) => {
@@ -278,20 +298,22 @@ function Dashboard({ transactions, networth, summaries }) {
           /* @__PURE__ */ jsx("h3", { className: "text-sm font-semibold mb-3 text-slate-700 dark:text-slate-200", children: "Category Budgets" }),
           /* @__PURE__ */ jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3", children: Object.entries(latest.category_totals).sort(([, a], [, b]) => b - a).map(([cat, amount]) => {
             const limit = categoryMap[cat]?.monthly_limit ?? 0;
+            const catColor = categoryMap[cat]?.color;
+            const trackStyle = catColor ? { backgroundColor: `${catColor}26` } : void 0;
             if (limit <= 0) {
-              return /* @__PURE__ */ jsxs("div", { children: [
+              return /* @__PURE__ */ jsxs("div", { className: "cursor-pointer", onClick: () => openCategoryDialog(cat), children: [
                 /* @__PURE__ */ jsxs("div", { className: "flex justify-between text-sm mb-1", children: [
                   /* @__PURE__ */ jsx("span", { className: "text-slate-600 dark:text-slate-300", children: cat }),
                   /* @__PURE__ */ jsx("span", { className: "font-semibold", children: formatIdr(amount) })
                 ] }),
-                /* @__PURE__ */ jsx("div", { className: "w-full bg-slate-200 dark:bg-slate-700 rounded-full h-1.5", children: /* @__PURE__ */ jsx("div", { className: "bg-slate-400 h-1.5 rounded-full", style: { width: "100%" } }) })
+                /* @__PURE__ */ jsx("div", { className: "w-full bg-slate-200 dark:bg-slate-700 rounded-full h-1.5", style: trackStyle, children: /* @__PURE__ */ jsx("div", { className: "h-1.5 rounded-full", style: { width: "100%", backgroundColor: catColor || "#94a3b8" } }) })
               ] }, cat);
             }
             const pct = Math.min(100, amount / limit * 100);
             const isOver = amount > limit;
             const barColor = isOver ? "bg-red-500" : pct > 80 ? "bg-amber-500" : "bg-emerald-500";
             const textColor = isOver ? "text-red-600 dark:text-red-400" : pct > 80 ? "text-amber-600 dark:text-amber-400" : "text-emerald-600 dark:text-emerald-400";
-            return /* @__PURE__ */ jsxs("div", { children: [
+            return /* @__PURE__ */ jsxs("div", { className: "cursor-pointer", onClick: () => openCategoryDialog(cat), children: [
               /* @__PURE__ */ jsxs("div", { className: "flex justify-between text-sm mb-1", children: [
                 /* @__PURE__ */ jsx("span", { className: "text-slate-600 dark:text-slate-300", children: cat }),
                 /* @__PURE__ */ jsxs("span", { className: `font-semibold ${textColor}`, children: [
@@ -300,7 +322,7 @@ function Dashboard({ transactions, networth, summaries }) {
                   formatIdr(limit)
                 ] })
               ] }),
-              /* @__PURE__ */ jsx("div", { className: "w-full bg-slate-200 dark:bg-slate-700 rounded-full h-1.5", children: /* @__PURE__ */ jsx("div", { className: `${barColor} h-1.5 rounded-full transition-all`, style: { width: `${pct}%` } }) })
+              /* @__PURE__ */ jsx("div", { className: "w-full bg-slate-200 dark:bg-slate-700 rounded-full h-1.5", style: trackStyle, children: /* @__PURE__ */ jsx("div", { className: `${barColor} h-1.5 rounded-full transition-all`, style: { width: `${pct}%` } }) })
             ] }, cat);
           }) })
         ] })
@@ -406,7 +428,17 @@ function Dashboard({ transactions, networth, summaries }) {
               }
             ) }),
             /* @__PURE__ */ jsx(TableCell, { children: row.title }),
-            /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(Badge, { variant: "secondary", children: row.category }) }),
+            /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(
+              Badge,
+              {
+                variant: "secondary",
+                style: {
+                  backgroundColor: categoryMap[row.category]?.color || void 0,
+                  color: categoryMap[row.category]?.color ? "#fff" : void 0
+                },
+                children: row.category
+              }
+            ) }),
             /* @__PURE__ */ jsx(TableCell, { className: "text-muted-foreground text-xs", children: dateStr }),
             /* @__PURE__ */ jsx(TableCell, { className: "font-medium text-right", children: formatIdr(row.amount) }),
             /* @__PURE__ */ jsx(TableCell, { className: `${typeClass} text-xs font-semibold uppercase`, children: typeLabel }),
@@ -471,7 +503,7 @@ function Dashboard({ transactions, networth, summaries }) {
       ] }),
       /* @__PURE__ */ jsxs("div", { className: "bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6", children: [
         /* @__PURE__ */ jsx("h2", { className: "text-lg font-semibold mb-4", children: isAllTime ? "Latest Month Categories" : `${latest.month} Categories` }),
-        latest?.category_totals && Object.keys(latest.category_totals).length > 0 ? /* @__PURE__ */ jsx(CategoryChart, { data: latest.category_totals }) : /* @__PURE__ */ jsx("p", { className: "text-slate-500 text-sm", children: "No category data available." })
+        latest?.category_totals && Object.keys(latest.category_totals).length > 0 ? /* @__PURE__ */ jsx(CategoryChart, { data: latest.category_totals, categories, onCategoryClick: openCategoryDialog }) : /* @__PURE__ */ jsx("p", { className: "text-slate-500 text-sm", children: "No category data available." })
       ] })
     ] }),
     /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4", children: [
@@ -508,7 +540,48 @@ function Dashboard({ transactions, networth, summaries }) {
         ] }),
         /* @__PURE__ */ jsx("div", { className: "w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 mt-3", children: /* @__PURE__ */ jsx("div", { className: "bg-emerald-500 h-2 rounded-full transition-all", style: { width: `${Math.min(100, savingsRate)}%` } }) })
       ] })
-    ] })
+    ] }),
+    /* @__PURE__ */ jsx(Dialog, { open: dialogOpen, onOpenChange: setDialogOpen, children: /* @__PURE__ */ jsxs(DialogContent, { className: "max-w-2xl max-h-[80vh] overflow-y-auto", children: [
+      /* @__PURE__ */ jsxs(DialogHeader, { children: [
+        /* @__PURE__ */ jsxs(DialogTitle, { children: [
+          selectedCategory,
+          " — ",
+          isAllTime ? activeSummary.month : filterMonth
+        ] }),
+        /* @__PURE__ */ jsx(DialogDescription, { children: (() => {
+          const targetMonth = isAllTime ? activeSummary.month : filterMonth;
+          const catTxs = transactions.filter((t) => t.category === selectedCategory && t.month === targetMonth);
+          const total = catTxs.reduce((sum, t) => sum + t.amount, 0);
+          return `${catTxs.length} transaction${catTxs.length !== 1 ? "s" : ""} • Total: ${formatIdr(total)}`;
+        })() })
+      ] }),
+      /* @__PURE__ */ jsx("div", { className: "mt-2", children: (() => {
+        const targetMonth = isAllTime ? activeSummary.month : filterMonth;
+        const catTxs = transactions.filter((t) => t.category === selectedCategory && t.month === targetMonth).sort((a, b) => parseCreatedTime(b).getTime() - parseCreatedTime(a).getTime());
+        if (catTxs.length === 0) {
+          return /* @__PURE__ */ jsx("p", { className: "text-sm text-slate-500", children: "No transactions found for this category." });
+        }
+        return /* @__PURE__ */ jsxs(Table, { children: [
+          /* @__PURE__ */ jsx(TableHeader, { children: /* @__PURE__ */ jsxs(TableRow, { children: [
+            /* @__PURE__ */ jsx(TableHead, { children: "Title" }),
+            /* @__PURE__ */ jsx(TableHead, { children: "Date" }),
+            /* @__PURE__ */ jsx(TableHead, { className: "text-right", children: "Amount" }),
+            /* @__PURE__ */ jsx(TableHead, { children: "Type" })
+          ] }) }),
+          /* @__PURE__ */ jsx(TableBody, { children: catTxs.map((t) => {
+            const d = parseCreatedTime(t);
+            const dateStr = isNaN(d.getTime()) ? t.date : d.toLocaleDateString("id-ID", { year: "numeric", month: "short", day: "numeric" });
+            const typeLabel = t.type === "cash" ? "Cash" : t.type === "credit_payment" ? "Credit Pay" : "Credit";
+            return /* @__PURE__ */ jsxs(TableRow, { children: [
+              /* @__PURE__ */ jsx(TableCell, { className: "font-medium", children: t.title }),
+              /* @__PURE__ */ jsx(TableCell, { className: "text-muted-foreground text-xs", children: dateStr }),
+              /* @__PURE__ */ jsx(TableCell, { className: "text-right font-medium", children: formatIdr(t.amount) }),
+              /* @__PURE__ */ jsx(TableCell, { className: "text-xs font-semibold uppercase", children: /* @__PURE__ */ jsx(Badge, { variant: "outline", children: typeLabel }) })
+            ] }, t.id);
+          }) })
+        ] });
+      })() })
+    ] }) })
   ] });
 }
 

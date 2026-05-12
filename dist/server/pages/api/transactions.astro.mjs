@@ -1,4 +1,4 @@
-import { v as deleteTransactionsBulk, c as getTransactions, w as findDuplicateTransaction, x as insertTransaction } from '../../chunks/db_DmlXICmv.mjs';
+import { w as deleteTransactionsBulk, c as getTransactions, x as findDuplicateTransaction, j as insertTransaction } from '../../chunks/db_B8cbmQtY.mjs';
 export { renderers } from '../../renderers.mjs';
 
 const GET = async ({ request }) => {
