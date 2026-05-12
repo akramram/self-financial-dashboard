@@ -323,3 +323,21 @@ FIN-024: Add JSON/CSV export UI button since the `/api/export` endpoint already 
 ✅ Passes — live at `http://192.168.0.6:4321`
 
 ---
+
+## Iteration 14 — Dark Mode Persistence
+**Date:** 2026-05-12
+**Issue:** #26
+**Branch:** `fix/dark-mode-persistence`
+**PR:** #27 (merged)
+
+### What changed
+- Removed hardcoded `class="dark"` from `<html>` in `Layout.astro`
+- Added inline `<script>` in `<head>` that reads `localStorage.theme` and applies the `dark` class before the page renders, preventing FOUC
+- Updated toggle button script to save the active theme preference to `localStorage`
+- Defaults to dark mode if no preference is saved (matches original behavior)
+- Theme preference now persists across all page navigations in the MPA
+
+### Build status
+✅ Passes — live at `http://192.168.0.6:4321`
+
+---
