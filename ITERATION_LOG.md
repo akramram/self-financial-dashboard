@@ -341,3 +341,25 @@ FIN-024: Add JSON/CSV export UI button since the `/api/export` endpoint already 
 ✅ Passes — live at `http://192.168.0.6:4321`
 
 ---
+
+## Iteration 15 — FIN-027
+**Date:** 2026-05-12
+**Issue:** #28
+**Branch:** `feat/FIN-027`
+**PR:** #29
+
+### What changed
+- Added `POST /api/import` endpoint supporting JSON and CSV import for transactions, networth, and monthly_income
+- Added `importDataApi()` client helper in `src/lib/api.ts`
+- Created `ImportData.tsx` component with:
+  - File upload (JSON or CSV)
+  - Auto-detection of format and data type from JSON keys
+  - Manual type selection for CSV
+  - Preview table showing first 5 rows
+  - Import summary (imported / skipped / errors)
+- Integrated `ImportData` into `/settings` page between Export and Income settings
+
+### Build status
+✅ Passes — live at `http://192.168.0.6:4321`
+
+---
