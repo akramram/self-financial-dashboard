@@ -5,6 +5,7 @@ import { updateTransactionApi, deleteTransactionApi, toggleTransactionDoneApi, f
 import OutcomeChart from './OutcomeChart';
 import NetworthChart from './NetworthChart';
 import CategoryChart from './CategoryChart';
+import SavingsRateChart from './SavingsRateChart';
 import {
   Table,
   TableBody,
@@ -501,6 +502,12 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
       <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
         <h2 className="text-lg font-semibold mb-4">Cash Outcome vs Credit Payment by Month</h2>
         <OutcomeChart data={filteredSummaries} />
+      </div>
+
+      {/* Savings Rate Trend */}
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+        <h2 className="text-lg font-semibold mb-4">Savings Rate Trend</h2>
+        <SavingsRateChart data={filteredSummaries} />
       </div>
 
       {/* Charts Row 2 */}
