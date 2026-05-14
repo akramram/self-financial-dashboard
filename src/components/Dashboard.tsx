@@ -5,6 +5,7 @@ import { updateTransactionApi, deleteTransactionApi, toggleTransactionDoneApi, f
 import OutcomeChart from './OutcomeChart';
 import NetworthChart from './NetworthChart';
 import CategoryChart from './CategoryChart';
+import CategoryTrendChart from './CategoryTrendChart';
 import SavingsRateChart from './SavingsRateChart';
 import {
   Table,
@@ -508,6 +509,15 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
       <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
         <h2 className="text-lg font-semibold mb-4">Savings Rate Trend</h2>
         <SavingsRateChart data={filteredSummaries} />
+      </div>
+
+      {/* Category Spending Trend */}
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold">Category Spending Trend</h2>
+          <span className="text-xs text-slate-500 dark:text-slate-400">Top categories by total spend</span>
+        </div>
+        <CategoryTrendChart data={filteredSummaries} categories={categories} />
       </div>
 
       {/* Charts Row 2 */}
