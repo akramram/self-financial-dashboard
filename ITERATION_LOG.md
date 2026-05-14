@@ -346,7 +346,7 @@ FIN-024: Add JSON/CSV export UI button since the `/api/export` endpoint already 
 **Date:** 2026-05-12
 **Issue:** #28
 **Branch:** `feat/FIN-027`
-**PR:** #29
+**PR:** #29 (merged)
 
 ### What changed
 - Added `POST /api/import` endpoint supporting JSON and CSV import for transactions, networth, and monthly_income
@@ -361,5 +361,29 @@ FIN-024: Add JSON/CSV export UI button since the `/api/export` endpoint already 
 
 ### Build status
 ✅ Passes — live at `http://192.168.0.6:4321`
+
+---
+
+## Iteration 16 — FIN-028
+**Date:** 2026-05-14
+**Issue:** N/A (autonomous innovation)
+**Branch:** `main`
+**PR:** Pushed directly
+
+### What changed
+- Created `CategoryTrendChart.tsx` — a new Line chart visualization using Chart.js
+  - Automatically identifies the top 6 categories by total spend across all time
+  - Renders a multi-line trend chart with one line per category
+  - Uses category colors from Settings; falls back to a curated 10-color palette
+  - Y-axis uses compact formatting (1M, 1K) for readability
+  - Interactive legend (click to hide/show lines) and index-mode tooltips
+- Integrated the chart into `Dashboard.tsx` between the Savings Rate Trend and the Networth/Category doughnut row
+- Chart respects the month filter: when a specific month is selected, it shows data only for that month (single point per category)
+
+### Why it matters
+Users can now visually track which spending categories are growing or shrinking over time — a critical personal finance insight that was previously impossible to see at a glance.
+
+### Build status
+✅ Passes — `npm run build` clean
 
 ---
