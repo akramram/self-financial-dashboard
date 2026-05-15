@@ -1,11 +1,12 @@
 /* empty css                                  */
 import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../../chunks/astro/server_BVE5k6Zu.mjs';
 import 'kleur/colors';
-import { B as Button, f as formatIdr, $ as $$Layout } from '../../chunks/button_Bx8EVyLF.mjs';
+import { B as Button, f as formatIdr, $ as $$Layout } from '../../chunks/button_DxZ39a-H.mjs';
 import { jsx, jsxs } from 'react/jsx-runtime';
 import { useState, useEffect } from 'react';
-import { a as fetchNetworth, B as Badge, I as Input, u as updateNetworthApi } from '../../chunks/badge_Co1MM_vK.mjs';
-import { C as Card, a as CardHeader, b as CardTitle, c as CardContent, L as Label } from '../../chunks/label_B4dA29fh.mjs';
+import { a as fetchNetworth, B as Badge, I as Input, u as updateNetworthApi } from '../../chunks/badge_m88INWDZ.mjs';
+import { C as Card, a as CardHeader, b as CardTitle, c as CardContent } from '../../chunks/card_BrPPjHWf.mjs';
+import { L as Label } from '../../chunks/label_-8YrM3C7.mjs';
 export { renderers } from '../../renderers.mjs';
 
 function NetworthEditForm() {

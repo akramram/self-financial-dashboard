@@ -7,6 +7,7 @@ import NetworthChart from './NetworthChart';
 import CategoryChart from './CategoryChart';
 import CategoryTrendChart from './CategoryTrendChart';
 import SavingsRateChart from './SavingsRateChart';
+import FinancialInsights from './FinancialInsights';
 import {
   Table,
   TableBody,
@@ -178,6 +179,15 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
           </SelectContent>
         </Select>
       </div>
+
+      {/* Financial Insights */}
+      <FinancialInsights
+        transactions={transactions}
+        networth={networth}
+        summaries={summaries}
+        categories={categories}
+        activeMonth={isAllTime ? activeSummary.month : filterMonth}
+      />
 
       {/* Outcome Breakdown — TOP */}
       <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
