@@ -387,3 +387,32 @@ Users can now visually track which spending categories are growing or shrinking 
 ✅ Passes — `npm run build` clean
 
 ---
+
+## Iteration 17 — FIN-029
+**Date:** 2026-05-15
+**Issue:** N/A (autonomous innovation)
+**Branch:** `main`
+**PR:** Pushed directly
+
+### What changed
+- Created `FinancialInsights.tsx` — a new Smart Insights widget for the dashboard
+  - Budget alerts: flags categories over budget (red) or near limit >=80% (amber)
+  - Spending trend: compares current month total spending vs previous month with % change
+  - Unpaid bills tracker: counts unpaid transactions and shows their total amount
+  - Networth trend: shows month-over-month change with amount and percentage
+  - Savings rate health: warns on negative/low savings (<10%), celebrates healthy rates
+- Integrated the widget into `Dashboard.tsx` directly below the month filter
+  - Receives `transactions`, `networth`, `summaries`, `categories`, and `activeMonth` props
+  - Fully reactive to month filter changes (works for both All-time and specific months)
+- Uses existing shadcn/ui `Card`, `CardHeader`, `CardTitle`, `CardContent`, and `Badge` components
+- Uses `lucide-react` icons: `TrendingUp`, `TrendingDown`, `AlertTriangle`, `CheckCircle`, `Wallet`, `PiggyBank`, `Receipt`
+- Color-coded insight cards with dark-mode support (emerald for good, amber for watch, red for alert)
+- No DB schema or API changes required — computes entirely from existing client-side data
+
+### Why it matters
+Previously, users had to manually scan category budgets, compare months, and check unpaid statuses across different parts of the dashboard. The Insights widget surfaces actionable intelligence automatically, helping users catch overspending, missed payments, and savings trends at a glance.
+
+### Build status
+✅ Passes — `npm run build` clean
+
+---
