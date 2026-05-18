@@ -44,6 +44,7 @@ const TYPE_OPTIONS = [
 export default function TransactionTable({ transactions, showMonth = true }: Props) {
   const [page, setPage] = useState(1);
   const [filterType, setFilterType] = useState<string>('all');
+  const [filterMonth, setFilterMonth] = useState<string>('all');
   const [search, setSearch] = useState('');
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editForm, setEditForm] = useState<Partial<Transaction>>({});
@@ -61,6 +62,16 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
     return map;
   }, [categories]);
 
+  const monthOptions = useMemo(() => {
+    const set = new Set<string>();
+    transactions.forEach((t) => { if (t.month) set.add(t.month); });
+    return Array.from(set).sort((a, b) => {
+      const da = new Date(a);
+      const db = new Date(b);
+      return db.getTime() - da.getTime();
+    });
+  }, [transactions]);
+
   const sorted = useMemo(() => {
     return [...transactions].sort((a, b) => {
       const da = parseCreatedTime(a);
@@ -72,6 +83,9 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
   let filtered = sorted;
   if (filterType !== 'all') {
     filtered = filtered.filter((t) => t.type === filterType);
+  }
+  if (filterMonth !== 'all') {
+    filtered = filtered.filter((t) => t.month === filterMonth);
   }
   if (search.trim()) {
     const q = search.toLowerCase();
@@ -156,6 +170,17 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
             <SelectItem value="cash">Cash</SelectItem>
             <SelectItem value="credit_expense">Credit Expense</SelectItem>
             <SelectItem value="credit_payment">Credit Payment</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value={filterMonth} onValueChange={(v) => { setFilterMonth(v); setPage(1); }}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="All Months" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Months</SelectItem>
+            {monthOptions.map((m) => (
+              <SelectItem key={m} value={m}>{m}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
