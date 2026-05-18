@@ -38,8 +38,8 @@ export default function AddTransactionForm() {
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
   const [amount, setAmount] = useState('');
-  const [type, setType] = useState<'cash' | 'credit_expense' | 'credit_payment'>('cash');
-  const [done, setDone] = useState(false);
+  const [type, setType] = useState<'cash' | 'credit_expense' | 'credit_payment'>('credit_expense');
+  const [done, setDone] = useState(true);
   const [message, setMessage] = useState('');
   const [categories, setCategories] = useState<string[]>([]);
   const [showDuplicateDialog, setShowDuplicateDialog] = useState(false);
