@@ -604,6 +604,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
               data={activeSummary?.category_totals || {}}
               categories={categories}
               highlightCategory={selectedCategory}
+              summaries={summaries}
             />
           </div>
 
