@@ -436,3 +436,30 @@ Reduces friction for the most common entry pattern (credit card expenses that ar
 
 ### Build status
 ✅ Passes — `npm run build` clean
+
+---
+
+## Iteration 19 — FIN-031
+**Date:** 2026-05-18
+**Issue:** [#30](https://github.com/akramram/self-financial-dashboard/issues/30)
+**Branch:** `feat/FIN-031`
+**PR:** [#33](https://github.com/akramram/self-financial-dashboard/pull/33)
+
+### What changed
+- Created `OutcomeBarChart.tsx` — a new reusable horizontal bar chart component using Chart.js
+  - Displays outcome grouped by category for a single month (default mode)
+  - Supports an optional trend mode (single category across all months) when `summaries` prop is passed
+  - Uses category colors from Settings; falls back to a curated 10-color palette
+  - Highlights a selected category with full opacity + 2px border; dims others to 25% opacity
+  - Y-axis uses compact formatting (1M, 1K) for readability
+  - Responsive layout with fixed 256px height
+- Integrated the chart into `Dashboard.tsx` inside the category transactions dialog
+  - Chart renders above the transaction table when a category is clicked from the doughnut chart
+  - Uses `activeSummary.category_totals` which already filters to `done=1` and aggregates `cash` + `credit_expense`
+  - Dialog max-height increased from `80vh` to `85vh` to accommodate the chart without excessive scrolling
+
+### Why it matters
+Users can now see a visual breakdown of where their money went for the selected month immediately upon opening a category dialog. Previously, they only saw raw transaction rows with no comparative context. The highlighted category makes it easy to spot the selected category's relative share at a glance.
+
+### Build status
+✅ Passes — `npm run build` clean
