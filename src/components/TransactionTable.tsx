@@ -42,10 +42,21 @@ const TYPE_OPTIONS = [
 ];
 
 export default function TransactionTable({ transactions, showMonth = true }: Props) {
-  const [page, setPage] = useState(1);
-  const [filterType, setFilterType] = useState<string>('all');
-  const [filterMonth, setFilterMonth] = useState<string>('all');
-  const [search, setSearch] = useState('');
+  const getInitialState = () => {
+    if (typeof window === 'undefined') return { page: 1, filterType: 'all', filterMonth: 'all', search: '' };
+    const params = new URLSearchParams(window.location.search);
+    return {
+      page: Math.max(1, parseInt(params.get('page') || '1', 10) || 1),
+      filterType: params.get('type') || 'all',
+      filterMonth: params.get('month') || 'all',
+      search: params.get('search') || '',
+    };
+  };
+  const initial = getInitialState();
+  const [page, setPage] = useState(initial.page);
+  const [filterType, setFilterType] = useState<string>(initial.filterType);
+  const [filterMonth, setFilterMonth] = useState<string>(initial.filterMonth);
+  const [search, setSearch] = useState(initial.search);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editForm, setEditForm] = useState<Partial<Transaction>>({});
   const [selected, setSelected] = useState<Set<number>>(new Set());
@@ -55,6 +66,17 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
   useEffect(() => {
     fetchCategories().then(setCategories).catch(() => {});
   }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    if (page > 1) params.set('page', String(page)); else params.delete('page');
+    if (filterType !== 'all') params.set('type', filterType); else params.delete('type');
+    if (filterMonth !== 'all') params.set('month', filterMonth); else params.delete('month');
+    if (search.trim()) params.set('search', search.trim()); else params.delete('search');
+    const newUrl = `${window.location.pathname}${params.toString() ? '?' + params.toString() : ''}`;
+    window.history.replaceState({}, '', newUrl);
+  }, [page, filterType, filterMonth, search]);
 
   const categoryMap = useMemo(() => {
     const map: Record<string, Category> = {};
