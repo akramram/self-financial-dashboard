@@ -485,3 +485,22 @@ Users can now quickly narrow down transactions to a specific billing/reporting m
 
 ### Build status
 ✅ Passes — `npm run build` clean
+
+## Iteration 21 — Fix: Persist Filters & Pagination on Transaction Page
+
+**Date:** 2026-05-18
+**Commit:** 01cfe00
+
+### What changed
+- `TransactionTable` now syncs filter state (type, month, search) and page number to URL query params via `history.replaceState`
+- On mount, it reads the URL to restore the previous filter/pagination state
+- This means `window.location.reload()` after save/delete/toggle no longer resets filters
+
+### Files changed
+- `src/components/TransactionTable.tsx`
+
+### Why it matters
+Users no longer lose their place (filters, search, page) when editing, deleting, or toggling a transaction. The URL becomes shareable/bookmarkable for specific filtered views.
+
+### Build status
+✅ Passes — `npm run build` clean
