@@ -463,3 +463,25 @@ Users can now see a visual breakdown of where their money went for the selected 
 
 ### Build status
 ✅ Passes — `npm run build` clean
+
+## Iteration 20 — FIN-032: Month Filter on Transaction Page
+
+**Date:** 2026-05-18
+**Branch:** feat/FIN-032
+**PR:** #35
+**Issue:** #34
+
+### What changed
+- Added month filter dropdown to `TransactionTable` component
+- Filter options dynamically derived from all unique `month` values in transactions, sorted descending (newest first)
+- Works in combination with existing type filter and search input
+- Selecting "All Months" resets the filter
+
+### Files changed
+- `src/components/TransactionTable.tsx`
+
+### Why it matters
+Users can now quickly narrow down transactions to a specific billing/reporting month instead of scrolling through paginated results across all months. Useful for reconciling monthly statements.
+
+### Build status
+✅ Passes — `npm run build` clean
