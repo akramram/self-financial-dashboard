@@ -504,3 +504,23 @@ Users no longer lose their place (filters, search, page) when editing, deleting,
 
 ### Build status
 ✅ Passes — `npm run build` clean
+
+## Iteration 22 — Fix: Allow Negative Savings Rate Display
+
+**Date:** 2026-05-18
+**Commit:** bf3cc70
+
+### What changed
+- Removed `Math.max(0, ...)` clamp from savings rate calculation in `Dashboard.tsx`
+- Savings rate can now display negative values (e.g., May 2026 shows -10.7% instead of 0%)
+- Progress bar width clamped to `Math.max(0, Math.min(100, savingsRate))` to prevent invalid CSS
+- Negative rates show red text and red progress bar; positive rates remain emerald
+
+### Files changed
+- `src/components/Dashboard.tsx`
+
+### Why it matters
+When total spending exceeds income (e.g., May 2026: income 18.5M vs outcome 20.5M), the savings rate should accurately reflect the deficit. Previously it falsely showed 0%, hiding the fact that the user was overspending.
+
+### Build status
+✅ Passes — `npm run build` clean
