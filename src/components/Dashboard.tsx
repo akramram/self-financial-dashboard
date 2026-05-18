@@ -113,7 +113,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
   const latestNetworth = filteredNetworth[filteredNetworth.length - 1] ?? networth[networth.length - 1];
 
   const savingsRate = latest?.income > 0
-    ? Math.max(0, Math.min(100, ((latest.income - latest.outcome.total) / latest.income) * 100))
+    ? Math.min(100, ((latest.income - latest.outcome.total) / latest.income) * 100)
     : 0;
 
   const cashPct = latest?.outcome.total > 0
@@ -574,9 +574,9 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
           <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
             Savings Rate {isAllTime ? '(Latest)' : `(${latest.month})`}
           </p>
-          <p className="text-2xl font-bold mt-2">{savingsRate.toFixed(1)}%</p>
+          <p className="text-2xl font-bold mt-2" style={{ color: savingsRate < 0 ? '#ef4444' : undefined }}>{savingsRate.toFixed(1)}%</p>
           <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 mt-3">
-            <div className="bg-emerald-500 h-2 rounded-full transition-all" style={{ width: `${Math.min(100, savingsRate)}%` }} />
+            <div className={`h-2 rounded-full transition-all ${savingsRate < 0 ? 'bg-red-500' : 'bg-emerald-500'}`} style={{ width: `${Math.max(0, Math.min(100, savingsRate))}%` }} />
           </div>
         </div>
       </div>
