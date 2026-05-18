@@ -416,3 +416,23 @@ Previously, users had to manually scan category budgets, compare months, and che
 ✅ Passes — `npm run build` clean
 
 ---
+
+---
+
+## Iteration 18 — FIN-030
+**Date:** 2026-05-18
+**Issue:** [#31](https://github.com/akramram/self-financial-dashboard/issues/31)
+**Branch:** `feat/FIN-030`
+**PR:** [#32](https://github.com/akramram/self-financial-dashboard/pull/32)
+
+### What changed
+- Updated `AddTransactionForm.tsx` default state:
+  - `type` default changed from `'cash'` → `'credit_expense'`
+  - `done` default changed from `false` → `true`
+- This means every new transaction form now opens with **Credit Expense** selected and **Paid/Done** already checked.
+
+### Why it matters
+Reduces friction for the most common entry pattern (credit card expenses that are already paid). Users no longer need to manually switch type and check the paid box on every transaction.
+
+### Build status
+✅ Passes — `npm run build` clean
