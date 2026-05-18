@@ -8,6 +8,7 @@ import CategoryChart from './CategoryChart';
 import CategoryTrendChart from './CategoryTrendChart';
 import SavingsRateChart from './SavingsRateChart';
 import FinancialInsights from './FinancialInsights';
+import OutcomeBarChart from './OutcomeBarChart';
 import {
   Table,
   TableBody,
@@ -581,7 +582,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
       </div>
       {/* Category Transactions Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{selectedCategory} — {isAllTime ? activeSummary.month : filterMonth}</DialogTitle>
             <DialogDescription>
@@ -593,6 +594,19 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
               })()}
             </DialogDescription>
           </DialogHeader>
+
+          {/* Outcome by Category Bar Chart */}
+          <div className="mt-2 mb-4">
+            <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">
+              Outcome by Category
+            </h4>
+            <OutcomeBarChart
+              data={activeSummary?.category_totals || {}}
+              categories={categories}
+              highlightCategory={selectedCategory}
+            />
+          </div>
+
           <div className="mt-2">
             {(() => {
               const targetMonth = isAllTime ? activeSummary.month : filterMonth;
