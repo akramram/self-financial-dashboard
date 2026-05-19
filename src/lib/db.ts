@@ -238,7 +238,7 @@ export function getMonthlySummary() {
     const nw = db.prepare('SELECT total FROM networth WHERE month = ?').get(month) as any;
 
     const category_totals: Record<string, number> = {};
-    tx.filter((t) => t.type === 'cash' || t.type === 'credit_expense').forEach((t) => {
+    tx.filter((t) => t.type === 'cash' || t.type === 'credit_expense' || t.type === 'credit_payment').forEach((t) => {
       category_totals[t.category] = (category_totals[t.category] || 0) + t.amount;
     });
 
