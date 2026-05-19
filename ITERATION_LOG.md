@@ -524,3 +524,34 @@ When total spending exceeds income (e.g., May 2026: income 18.5M vs outcome 20.5
 
 ### Build status
 ✅ Passes — `npm run build` clean
+
+## Iteration 23 — FIN-033: Recurring Transactions & Monthly Salary Kickoff
+
+**Date:** 2026-05-19
+**Issue:** #36
+**PR:** #37
+**Commit:** d596451
+
+### What changed
+- Added `recurring_transactions` SQLite table with full CRUD API (`/api/recurring`)
+- Created `/recurring` page with `RecurringManager.tsx` for managing recurring expenses
+- Added `/api/kickoff` endpoint: creates new month with salary income + preloads all active recurring transactions
+- Created `MonthKickoffModal.tsx` for salary input and kickoff confirmation
+- Integrated salary banner into `Dashboard.tsx`: appears after the 25th when next month doesn't exist yet
+- Added "Recurring" nav link to desktop and mobile navigation in `Layout.astro`
+
+### Files changed
+- `src/lib/db.ts` — New `recurring_transactions` table + CRUD helpers
+- `src/lib/data.ts` — Added `RecurringTransaction` interface
+- `src/lib/api.ts` — Added recurring & kickoff API helpers
+- `src/pages/api/recurring/index.ts` — GET/POST recurring transactions
+- `src/pages/api/recurring/[id].ts` — PUT/DELETE recurring transactions
+- `src/pages/api/kickoff.ts` — GET status / POST create new month
+- `src/components/RecurringManager.tsx` — CRUD UI for recurring transactions
+- `src/components/MonthKickoffModal.tsx` — Salary input + kickoff confirmation modal
+- `src/components/Dashboard.tsx` — Integrated salary kickoff banner
+- `src/layouts/Layout.astro` — Added Recurring nav link
+- `src/pages/recurring.astro` — New page
+
+### Build status
+✅ Passes — `npm run build` clean
