@@ -658,7 +658,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
           </p>
           <p className="text-2xl font-bold mt-2" style={{ color: savingsRate < 0 ? '#ef4444' : undefined }}>{savingsRate.toFixed(1)}%</p>
           <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 mt-3">
-            <div className={`h-2 rounded-full transition-all ${savingsRate < 0 ? 'bg-red-500' : 'bg-emerald-500'}`} style={{ width: `${Math.max(0, Math.min(100, savingsRate))}%` }} />
+            <div className={`h-2 rounded-full transition-all ${savingsRate < 0 ? 'bg-red-500 ml-auto' : 'bg-emerald-500'}`} style={{ width: `${Math.min(100, Math.abs(savingsRate))}%` }} />
           </div>
         </div>
       </div>
