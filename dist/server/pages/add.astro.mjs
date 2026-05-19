@@ -1,14 +1,15 @@
 /* empty css                               */
 import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BVE5k6Zu.mjs';
 import 'kleur/colors';
-import { B as Button, $ as $$Layout } from '../chunks/button_DxZ39a-H.mjs';
+import { B as Button, $ as $$Layout } from '../chunks/button_U3IufC2b.mjs';
 import { jsxs, jsx } from 'react/jsx-runtime';
 import { useState, useRef, useEffect } from 'react';
-import { f as fetchTransactions, B as Badge, I as Input, a as fetchNetworth, c as createNetworth } from '../chunks/badge_m88INWDZ.mjs';
-import { C as Card, a as CardHeader, b as CardTitle, c as CardContent, d as CardDescription } from '../chunks/card_BrPPjHWf.mjs';
-import { L as Label } from '../chunks/label_-8YrM3C7.mjs';
-import { D as Dialog, a as DialogContent, b as DialogHeader, c as DialogTitle, d as DialogDescription, e as DialogFooter } from '../chunks/dialog_ybYIOgOo.mjs';
-import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_DbBAKWvI.mjs';
+import { f as fetchTransactions, I as Input, a as fetchNetworth, c as createNetworth } from '../chunks/input_BsChHIwv.mjs';
+import { C as Card, a as CardHeader, b as CardTitle, c as CardContent, d as CardDescription } from '../chunks/card_BFvb3mRx.mjs';
+import { L as Label } from '../chunks/label_DKfi430O.mjs';
+import { B as Badge } from '../chunks/badge_DkaK0Sk2.mjs';
+import { D as Dialog, a as DialogContent, b as DialogHeader, c as DialogTitle, d as DialogDescription, e as DialogFooter } from '../chunks/dialog_CACMj91i.mjs';
+import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_K0bQUR3q.mjs';
 export { renderers } from '../renderers.mjs';
 
 const MONTH_OPTIONS$1 = [
@@ -36,8 +37,8 @@ function AddTransactionForm() {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [amount, setAmount] = useState("");
-  const [type, setType] = useState("cash");
-  const [done, setDone] = useState(false);
+  const [type, setType] = useState("credit_expense");
+  const [done, setDone] = useState(true);
   const [message, setMessage] = useState("");
   const [categories, setCategories] = useState([]);
   const [showDuplicateDialog, setShowDuplicateDialog] = useState(false);

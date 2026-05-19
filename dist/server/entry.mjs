@@ -1,6 +1,6 @@
 import { renderers } from './renderers.mjs';
 import { c as createExports, s as serverEntrypointModule } from './chunks/_@astrojs-ssr-adapter_DX3j8JO6.mjs';
-import { manifest } from './manifest_D7ApRlXJ.mjs';
+import { manifest } from './manifest_Dvj5wKBq.mjs';
 
 const _page0 = () => import('./pages/_image.astro.mjs');
 const _page1 = () => import('./pages/add.astro.mjs');
@@ -10,16 +10,21 @@ const _page4 = () => import('./pages/api/export.astro.mjs');
 const _page5 = () => import('./pages/api/import.astro.mjs');
 const _page6 = () => import('./pages/api/income/_month_.astro.mjs');
 const _page7 = () => import('./pages/api/income.astro.mjs');
-const _page8 = () => import('./pages/api/networth/_month_.astro.mjs');
-const _page9 = () => import('./pages/api/networth.astro.mjs');
-const _page10 = () => import('./pages/api/summary.astro.mjs');
-const _page11 = () => import('./pages/api/transactions/_id_.astro.mjs');
-const _page12 = () => import('./pages/api/transactions.astro.mjs');
-const _page13 = () => import('./pages/networth/edit.astro.mjs');
-const _page14 = () => import('./pages/networth.astro.mjs');
-const _page15 = () => import('./pages/settings.astro.mjs');
-const _page16 = () => import('./pages/transactions.astro.mjs');
-const _page17 = () => import('./pages/index.astro.mjs');
+const _page8 = () => import('./pages/api/kickoff.astro.mjs');
+const _page9 = () => import('./pages/api/networth/_month_.astro.mjs');
+const _page10 = () => import('./pages/api/networth.astro.mjs');
+const _page11 = () => import('./pages/api/recurring/_id_.astro.mjs');
+const _page12 = () => import('./pages/api/recurring.astro.mjs');
+const _page13 = () => import('./pages/api/summary.astro.mjs');
+const _page14 = () => import('./pages/api/transactions/_id_.astro.mjs');
+const _page15 = () => import('./pages/api/transactions.astro.mjs');
+const _page16 = () => import('./pages/budget.astro.mjs');
+const _page17 = () => import('./pages/networth/edit.astro.mjs');
+const _page18 = () => import('./pages/networth.astro.mjs');
+const _page19 = () => import('./pages/recurring.astro.mjs');
+const _page20 = () => import('./pages/settings.astro.mjs');
+const _page21 = () => import('./pages/transactions.astro.mjs');
+const _page22 = () => import('./pages/index.astro.mjs');
 
 const pageMap = new Map([
     ["node_modules/astro/dist/assets/endpoint/node.js", _page0],
@@ -30,16 +35,21 @@ const pageMap = new Map([
     ["src/pages/api/import.ts", _page5],
     ["src/pages/api/income/[month].ts", _page6],
     ["src/pages/api/income/index.ts", _page7],
-    ["src/pages/api/networth/[month].ts", _page8],
-    ["src/pages/api/networth/index.ts", _page9],
-    ["src/pages/api/summary.ts", _page10],
-    ["src/pages/api/transactions/[id].ts", _page11],
-    ["src/pages/api/transactions/index.ts", _page12],
-    ["src/pages/networth/edit.astro", _page13],
-    ["src/pages/networth.astro", _page14],
-    ["src/pages/settings.astro", _page15],
-    ["src/pages/transactions.astro", _page16],
-    ["src/pages/index.astro", _page17]
+    ["src/pages/api/kickoff.ts", _page8],
+    ["src/pages/api/networth/[month].ts", _page9],
+    ["src/pages/api/networth/index.ts", _page10],
+    ["src/pages/api/recurring/[id].ts", _page11],
+    ["src/pages/api/recurring/index.ts", _page12],
+    ["src/pages/api/summary.ts", _page13],
+    ["src/pages/api/transactions/[id].ts", _page14],
+    ["src/pages/api/transactions/index.ts", _page15],
+    ["src/pages/budget.astro", _page16],
+    ["src/pages/networth/edit.astro", _page17],
+    ["src/pages/networth.astro", _page18],
+    ["src/pages/recurring.astro", _page19],
+    ["src/pages/settings.astro", _page20],
+    ["src/pages/transactions.astro", _page21],
+    ["src/pages/index.astro", _page22]
 ]);
 const serverIslandMap = new Map();
 const _manifest = Object.assign(manifest, {

@@ -1,37 +1,16 @@
 /* empty css                               */
 import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BVE5k6Zu.mjs';
 import 'kleur/colors';
-import { c as cn, B as Button, f as formatIdr, $ as $$Layout } from '../chunks/button_DxZ39a-H.mjs';
-import { jsx, jsxs } from 'react/jsx-runtime';
-import * as React from 'react';
+import { B as Button, f as formatIdr, $ as $$Layout } from '../chunks/button_U3IufC2b.mjs';
+import { jsxs, jsx } from 'react/jsx-runtime';
 import { useState, useEffect, useMemo } from 'react';
-import { b as fetchCategories, I as Input, t as toggleTransactionDoneApi, B as Badge, m as deleteTransactionApi, n as updateTransactionApi, o as deleteTransactionsBulkApi } from '../chunks/badge_m88INWDZ.mjs';
-import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_WY4BWlv2.mjs';
-import * as CheckboxPrimitive from '@radix-ui/react-checkbox';
-import { Check } from 'lucide-react';
-import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_DbBAKWvI.mjs';
-import { c as getTransactions } from '../chunks/db_B8cbmQtY.mjs';
+import { d as fetchCategories, I as Input, t as toggleTransactionDoneApi, q as deleteTransactionApi, r as updateTransactionApi, s as deleteTransactionsBulkApi } from '../chunks/input_BsChHIwv.mjs';
+import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_DxG8s1h0.mjs';
+import { B as Badge } from '../chunks/badge_DkaK0Sk2.mjs';
+import { C as Checkbox } from '../chunks/checkbox_BKYn_r45.mjs';
+import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_K0bQUR3q.mjs';
+import { c as getTransactions } from '../chunks/db_Bpk2-XLV.mjs';
 export { renderers } from '../renderers.mjs';
-
-const Checkbox = React.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx(
-  CheckboxPrimitive.Root,
-  {
-    ref,
-    className: cn(
-      "grid place-content-center peer h-4 w-4 shrink-0 rounded-sm border border-primary ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground",
-      className
-    ),
-    ...props,
-    children: /* @__PURE__ */ jsx(
-      CheckboxPrimitive.Indicator,
-      {
-        className: cn("grid place-content-center text-current"),
-        children: /* @__PURE__ */ jsx(Check, { className: "h-4 w-4" })
-      }
-    )
-  }
-));
-Checkbox.displayName = CheckboxPrimitive.Root.displayName;
 
 function parseCreatedTime(tx) {
   if (tx.created_time) {
@@ -46,9 +25,21 @@ const TYPE_OPTIONS = [
   { value: "credit_payment", label: "Credit Payment" }
 ];
 function TransactionTable({ transactions, showMonth = true }) {
-  const [page, setPage] = useState(1);
-  const [filterType, setFilterType] = useState("all");
-  const [search, setSearch] = useState("");
+  const getInitialState = () => {
+    if (typeof window === "undefined") return { page: 1, filterType: "all", filterMonth: "all", search: "" };
+    const params = new URLSearchParams(window.location.search);
+    return {
+      page: Math.max(1, parseInt(params.get("page") || "1", 10) || 1),
+      filterType: params.get("type") || "all",
+      filterMonth: params.get("month") || "all",
+      search: params.get("search") || ""
+    };
+  };
+  const initial = getInitialState();
+  const [page, setPage] = useState(initial.page);
+  const [filterType, setFilterType] = useState(initial.filterType);
+  const [filterMonth, setFilterMonth] = useState(initial.filterMonth);
+  const [search, setSearch] = useState(initial.search);
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({});
   const [selected, setSelected] = useState(/* @__PURE__ */ new Set());
@@ -58,6 +49,20 @@ function TransactionTable({ transactions, showMonth = true }) {
     fetchCategories().then(setCategories).catch(() => {
     });
   }, []);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    if (page > 1) params.set("page", String(page));
+    else params.delete("page");
+    if (filterType !== "all") params.set("type", filterType);
+    else params.delete("type");
+    if (filterMonth !== "all") params.set("month", filterMonth);
+    else params.delete("month");
+    if (search.trim()) params.set("search", search.trim());
+    else params.delete("search");
+    const newUrl = `${window.location.pathname}${params.toString() ? "?" + params.toString() : ""}`;
+    window.history.replaceState({}, "", newUrl);
+  }, [page, filterType, filterMonth, search]);
   const categoryMap = useMemo(() => {
     const map = {};
     categories.forEach((c) => {
@@ -65,6 +70,17 @@ function TransactionTable({ transactions, showMonth = true }) {
     });
     return map;
   }, [categories]);
+  const monthOptions = useMemo(() => {
+    const set = /* @__PURE__ */ new Set();
+    transactions.forEach((t) => {
+      if (t.month) set.add(t.month);
+    });
+    return Array.from(set).sort((a, b) => {
+      const da = new Date(a);
+      const db = new Date(b);
+      return db.getTime() - da.getTime();
+    });
+  }, [transactions]);
   const sorted = useMemo(() => {
     return [...transactions].sort((a, b) => {
       const da = parseCreatedTime(a);
@@ -75,6 +91,9 @@ function TransactionTable({ transactions, showMonth = true }) {
   let filtered = sorted;
   if (filterType !== "all") {
     filtered = filtered.filter((t) => t.type === filterType);
+  }
+  if (filterMonth !== "all") {
+    filtered = filtered.filter((t) => t.month === filterMonth);
   }
   if (search.trim()) {
     const q = search.toLowerCase();
@@ -156,6 +175,16 @@ function TransactionTable({ transactions, showMonth = true }) {
           /* @__PURE__ */ jsx(SelectItem, { value: "cash", children: "Cash" }),
           /* @__PURE__ */ jsx(SelectItem, { value: "credit_expense", children: "Credit Expense" }),
           /* @__PURE__ */ jsx(SelectItem, { value: "credit_payment", children: "Credit Payment" })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxs(Select, { value: filterMonth, onValueChange: (v) => {
+        setFilterMonth(v);
+        setPage(1);
+      }, children: [
+        /* @__PURE__ */ jsx(SelectTrigger, { className: "w-[180px]", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "All Months" }) }),
+        /* @__PURE__ */ jsxs(SelectContent, { children: [
+          /* @__PURE__ */ jsx(SelectItem, { value: "all", children: "All Months" }),
+          monthOptions.map((m) => /* @__PURE__ */ jsx(SelectItem, { value: m, children: m }, m))
         ] })
       ] })
     ] }),

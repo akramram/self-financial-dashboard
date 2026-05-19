@@ -1,19 +1,21 @@
 /* empty css                               */
 import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BVE5k6Zu.mjs';
 import 'kleur/colors';
-import { f as formatIdr, B as Button, $ as $$Layout } from '../chunks/button_DxZ39a-H.mjs';
+import { f as formatIdr, B as Button, $ as $$Layout } from '../chunks/button_U3IufC2b.mjs';
 import { jsx, jsxs } from 'react/jsx-runtime';
 import { useMemo, useState, useEffect } from 'react';
-import { B as Badge, b as fetchCategories, I as Input, t as toggleTransactionDoneApi, m as deleteTransactionApi, n as updateTransactionApi } from '../chunks/badge_m88INWDZ.mjs';
+import { I as Input, v as kickoffMonth, d as fetchCategories, b as fetchRecurringTransactions, t as toggleTransactionDoneApi, q as deleteTransactionApi, r as updateTransactionApi } from '../chunks/input_BsChHIwv.mjs';
 import { Chart, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement, Filler } from 'chart.js';
 import { Bar, Doughnut, Line } from 'react-chartjs-2';
-import { N as NetworthChart } from '../chunks/NetworthChart_8Ak_WuMa.mjs';
-import { C as Card, a as CardHeader, b as CardTitle, c as CardContent } from '../chunks/card_BrPPjHWf.mjs';
+import { N as NetworthChart } from '../chunks/NetworthChart_C8mZjxlD.mjs';
+import { C as Card, a as CardHeader, b as CardTitle, c as CardContent } from '../chunks/card_BFvb3mRx.mjs';
+import { B as Badge } from '../chunks/badge_DkaK0Sk2.mjs';
 import { AlertTriangle, TrendingUp, TrendingDown, Receipt, CheckCircle, PiggyBank, Wallet } from 'lucide-react';
-import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_WY4BWlv2.mjs';
-import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_DbBAKWvI.mjs';
-import { D as Dialog, a as DialogContent, b as DialogHeader, c as DialogTitle, d as DialogDescription } from '../chunks/dialog_ybYIOgOo.mjs';
-import { c as getTransactions, e as getNetworth, f as getMonthlySummary, h as db } from '../chunks/db_B8cbmQtY.mjs';
+import { L as Label } from '../chunks/label_DKfi430O.mjs';
+import { D as Dialog, a as DialogContent, b as DialogHeader, c as DialogTitle, d as DialogDescription } from '../chunks/dialog_CACMj91i.mjs';
+import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_DxG8s1h0.mjs';
+import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_K0bQUR3q.mjs';
+import { c as getTransactions, e as getNetworth, f as getMonthlySummary, h as db } from '../chunks/db_Bpk2-XLV.mjs';
 export { renderers } from '../renderers.mjs';
 
 Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -70,7 +72,7 @@ function OutcomeChart({ data }) {
 }
 
 Chart.register(ArcElement, Tooltip, Legend);
-const FALLBACK_COLORS$1 = [
+const FALLBACK_COLORS$2 = [
   "#3b82f6",
   "#10b981",
   "#f59e0b",
@@ -87,7 +89,7 @@ function CategoryChart({ data, categories = [], onCategoryClick }) {
   const labels = entries.map(([k]) => k);
   const values = entries.map(([_, v]) => v);
   const colorMap = new Map(categories.map((c) => [c.name, c.color]));
-  const colors = labels.map((label, i) => colorMap.get(label) || FALLBACK_COLORS$1[i % FALLBACK_COLORS$1.length]);
+  const colors = labels.map((label, i) => colorMap.get(label) || FALLBACK_COLORS$2[i % FALLBACK_COLORS$2.length]);
   const chartData = {
     labels,
     datasets: [
@@ -129,7 +131,7 @@ function CategoryChart({ data, categories = [], onCategoryClick }) {
 }
 
 Chart.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
-const FALLBACK_COLORS = [
+const FALLBACK_COLORS$1 = [
   "#3b82f6",
   "#10b981",
   "#f59e0b",
@@ -161,7 +163,7 @@ function CategoryTrendChart({ data, categories = [] }) {
     });
     const topCategories = Object.entries(categoryTotals).sort((a, b) => b[1] - a[1]).slice(0, 6).map(([name]) => name);
     const datasets2 = topCategories.map((cat, idx) => {
-      const color = colorMap.get(cat) || FALLBACK_COLORS[idx % FALLBACK_COLORS.length];
+      const color = colorMap.get(cat) || FALLBACK_COLORS$1[idx % FALLBACK_COLORS$1.length];
       return {
         label: cat,
         data: sortedData.map((summary) => summary.category_totals?.[cat] ?? 0),
@@ -450,6 +452,198 @@ function FinancialInsights({ transactions, networth, summaries, categories, acti
   ] });
 }
 
+Chart.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
+const FALLBACK_COLORS = [
+  "#3b82f6",
+  "#10b981",
+  "#f59e0b",
+  "#ef4444",
+  "#8b5cf6",
+  "#ec4899",
+  "#06b6d4",
+  "#84cc16",
+  "#f97316",
+  "#6366f1"
+];
+function OutcomeBarChart({ data, categories = [], highlightCategory, summaries }) {
+  const isTrendMode = !!highlightCategory && !!summaries && summaries.length > 0;
+  const { labels, values, backgroundColors, borderColors, borderWidths } = useMemo(() => {
+    if (isTrendMode) {
+      const sorted = [...summaries].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      const labels3 = sorted.map((s) => s.month);
+      const values3 = sorted.map((s) => s.category_totals?.[highlightCategory] ?? 0);
+      const colorMap2 = new Map(categories.map((c) => [c.name, c.color]));
+      const baseColor = colorMap2.get(highlightCategory) || FALLBACK_COLORS[0];
+      return {
+        labels: labels3,
+        values: values3,
+        backgroundColors: values3.map((v) => v > 0 ? baseColor : `${baseColor}40`),
+        borderColors: labels3.map(() => baseColor),
+        borderWidths: labels3.map(() => 0)
+      };
+    }
+    const entries = Object.entries(data).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]);
+    const labels2 = entries.map(([k]) => k);
+    const values2 = entries.map(([_, v]) => v);
+    const colorMap = new Map(categories.map((c) => [c.name, c.color]));
+    const backgroundColors2 = labels2.map((label, i) => {
+      const baseColor = colorMap.get(label) || FALLBACK_COLORS[i % FALLBACK_COLORS.length];
+      if (highlightCategory && label !== highlightCategory) {
+        return `${baseColor}40`;
+      }
+      return baseColor;
+    });
+    const borderColors2 = labels2.map((label, i) => {
+      return colorMap.get(label) || FALLBACK_COLORS[i % FALLBACK_COLORS.length];
+    });
+    const borderWidths2 = labels2.map((label) => {
+      return highlightCategory && label === highlightCategory ? 2 : 0;
+    });
+    return { labels: labels2, values: values2, backgroundColors: backgroundColors2, borderColors: borderColors2, borderWidths: borderWidths2 };
+  }, [data, categories, highlightCategory, summaries, isTrendMode]);
+  const chartData = {
+    labels,
+    datasets: [
+      {
+        data: values,
+        backgroundColor: backgroundColors,
+        borderColor: borderColors,
+        borderWidth: borderWidths,
+        borderRadius: 4,
+        barPercentage: 0.6
+      }
+    ]
+  };
+  const options = {
+    indexAxis: isTrendMode ? "x" : "y",
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: (ctx) => `${ctx.label}: ${formatIdr(isTrendMode ? ctx.parsed.y : ctx.parsed.x)}`
+        }
+      }
+    },
+    scales: {
+      [isTrendMode ? "y" : "x"]: {
+        beginAtZero: true,
+        ticks: {
+          callback: (value) => {
+            const num = Number(value);
+            if (num >= 1e6) return `${(num / 1e6).toFixed(1)}M`;
+            if (num >= 1e3) return `${(num / 1e3).toFixed(0)}K`;
+            return `${num}`;
+          },
+          font: { size: 10 }
+        },
+        grid: {
+          color: "rgba(148, 163, 184, 0.15)"
+        }
+      },
+      [isTrendMode ? "x" : "y"]: {
+        ticks: {
+          font: { size: 11 }
+        },
+        grid: { display: false }
+      }
+    }
+  };
+  if (labels.length === 0 || values.every((v) => v === 0)) {
+    return /* @__PURE__ */ jsx("div", { className: "flex items-center justify-center h-48", children: /* @__PURE__ */ jsx("p", { className: "text-sm text-slate-500", children: "No outcome data available." }) });
+  }
+  return /* @__PURE__ */ jsx("div", { className: "relative h-64", children: /* @__PURE__ */ jsx(Bar, { data: chartData, options }) });
+}
+
+function MonthKickoffModal({ open, onOpenChange, nextMonth, recurringCount, onSuccess }) {
+  const [salary, setSalary] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState(null);
+  const handleKickoff = async () => {
+    const salaryNum = Number(salary);
+    if (!salaryNum || salaryNum <= 0) {
+      setResult({ success: false, message: "Please enter a valid salary amount." });
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await kickoffMonth(nextMonth, salaryNum);
+      if (res.success) {
+        setResult({
+          success: true,
+          message: `${nextMonth} started! Salary: ${formatIdr(res.salary)}. ${res.preloaded} recurring transaction${res.preloaded !== 1 ? "s" : ""} preloaded.`
+        });
+      } else {
+        setResult({ success: false, message: "Failed to start new month." });
+      }
+    } catch (e) {
+      setResult({ success: false, message: e.message || "An error occurred." });
+    } finally {
+      setLoading(false);
+    }
+  };
+  const handleClose = () => {
+    if (result?.success) {
+      setResult(null);
+      setSalary("");
+      onOpenChange(false);
+      onSuccess();
+      return;
+    }
+    setResult(null);
+    setSalary("");
+    onOpenChange(false);
+  };
+  return /* @__PURE__ */ jsx(Dialog, { open, onOpenChange: handleClose, children: /* @__PURE__ */ jsxs(DialogContent, { className: "max-w-md", children: [
+    /* @__PURE__ */ jsxs(DialogHeader, { children: [
+      /* @__PURE__ */ jsxs(DialogTitle, { children: [
+        "Start ",
+        nextMonth
+      ] }),
+      /* @__PURE__ */ jsx(DialogDescription, { children: "Enter your salary to kick off the new month. All active recurring transactions will be preloaded." })
+    ] }),
+    result ? /* @__PURE__ */ jsxs("div", { className: "space-y-4", children: [
+      /* @__PURE__ */ jsx("div", { className: `rounded-lg border px-4 py-3 text-sm ${result.success ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-300" : "border-red-200 bg-red-50 text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-300"}`, children: result.message }),
+      /* @__PURE__ */ jsx("div", { className: "flex justify-end", children: /* @__PURE__ */ jsx(Button, { onClick: handleClose, children: result.success ? "Go to Dashboard" : "Close" }) })
+    ] }) : /* @__PURE__ */ jsxs("div", { className: "space-y-4", children: [
+      /* @__PURE__ */ jsxs("div", { className: "space-y-1.5", children: [
+        /* @__PURE__ */ jsx(Label, { htmlFor: "salary", children: "Monthly Salary (IDR)" }),
+        /* @__PURE__ */ jsx(
+          Input,
+          {
+            id: "salary",
+            type: "number",
+            value: salary,
+            onChange: (e) => setSalary(e.target.value),
+            placeholder: "Enter your salary",
+            autoFocus: true
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "rounded-lg border bg-slate-50 dark:bg-slate-800/50 p-3 text-sm space-y-1", children: [
+        /* @__PURE__ */ jsx("p", { className: "font-medium text-slate-700 dark:text-slate-200", children: "What will happen:" }),
+        /* @__PURE__ */ jsxs("ul", { className: "list-disc list-inside text-slate-500 dark:text-slate-400 space-y-0.5", children: [
+          /* @__PURE__ */ jsxs("li", { children: [
+            "Create income record for ",
+            nextMonth
+          ] }),
+          /* @__PURE__ */ jsxs("li", { children: [
+            "Preload ",
+            recurringCount,
+            " active recurring transaction",
+            recurringCount !== 1 ? "s" : ""
+          ] })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "flex justify-end gap-2", children: [
+        /* @__PURE__ */ jsx(Button, { variant: "secondary", onClick: handleClose, disabled: loading, children: "Cancel" }),
+        /* @__PURE__ */ jsx(Button, { onClick: handleKickoff, disabled: loading, children: loading ? "Starting..." : `Confirm & Start ${nextMonth}` })
+      ] })
+    ] })
+  ] }) });
+}
+
 function parseCreatedTime(tx) {
   if (tx.created_time) {
     const d = new Date(tx.created_time);
@@ -507,7 +701,7 @@ function Dashboard({ transactions, networth, summaries }) {
   };
   const latest = activeSummary;
   const latestNetworth = filteredNetworth[filteredNetworth.length - 1] ?? networth[networth.length - 1];
-  const savingsRate = latest?.income > 0 ? Math.max(0, Math.min(100, (latest.income - latest.outcome.total) / latest.income * 100)) : 0;
+  const savingsRate = latest?.income > 0 ? Math.min(100, (latest.income - latest.outcome.total) / latest.income * 100) : 0;
   const cashPct = latest?.outcome.total > 0 ? Math.round(latest.outcome.cash / latest.outcome.total * 100) : 0;
   const creditPct = latest?.outcome.total > 0 ? Math.round(latest.outcome.credit_payment / latest.outcome.total * 100) : 0;
   const [txPage, setTxPage] = useState(1);
@@ -519,6 +713,30 @@ function Dashboard({ transactions, networth, summaries }) {
   }, []);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [kickoffBanner, setKickoffBanner] = useState(null);
+  const [kickoffOpen, setKickoffOpen] = useState(false);
+  useEffect(() => {
+    const today = /* @__PURE__ */ new Date();
+    if (today.getDate() < 26) return;
+    const latest2 = summaries[summaries.length - 1];
+    if (!latest2) return;
+    const latestDate = /* @__PURE__ */ new Date(latest2.month + " 1");
+    const nextDate = new Date(latestDate);
+    nextDate.setMonth(nextDate.getMonth() + 1);
+    const nextMonthStr = nextDate.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+    const hasNext = summaries.some((s) => s.month === nextMonthStr);
+    if (hasNext) return;
+    fetchRecurringTransactions().then((recurring) => {
+      const activeCount = recurring.filter((r) => r.active).length;
+      setKickoffBanner({
+        show: true,
+        currentMonth: latest2.month,
+        nextMonth: nextMonthStr,
+        recurringCount: activeCount
+      });
+    }).catch(() => {
+    });
+  }, [summaries]);
   const openCategoryDialog = (cat) => {
     setSelectedCategory(cat);
     setDialogOpen(true);
@@ -558,6 +776,60 @@ function Dashboard({ transactions, networth, summaries }) {
         ] })
       ] })
     ] }),
+    kickoffBanner?.show && /* @__PURE__ */ jsxs("div", { className: "rounded-xl border border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-900/20 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3", children: [
+      /* @__PURE__ */ jsxs("div", { children: [
+        /* @__PURE__ */ jsxs("p", { className: "text-sm font-semibold text-amber-800 dark:text-amber-300", children: [
+          "💰 Have you received your salary for ",
+          kickoffBanner.currentMonth,
+          "?"
+        ] }),
+        /* @__PURE__ */ jsxs("p", { className: "text-xs text-amber-600 dark:text-amber-400 mt-0.5", children: [
+          "Confirm to start ",
+          kickoffBanner.nextMonth,
+          " with ",
+          kickoffBanner.recurringCount,
+          " recurring transaction",
+          kickoffBanner.recurringCount !== 1 ? "s" : "",
+          " preloaded."
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "flex gap-2 shrink-0", children: [
+        /* @__PURE__ */ jsx(
+          Button,
+          {
+            variant: "secondary",
+            size: "sm",
+            onClick: () => setKickoffBanner((prev) => prev ? { ...prev, show: false } : null),
+            children: "Later"
+          }
+        ),
+        /* @__PURE__ */ jsxs(
+          Button,
+          {
+            size: "sm",
+            className: "bg-emerald-600 hover:bg-emerald-700 text-white",
+            onClick: () => setKickoffOpen(true),
+            children: [
+              "Confirm & Start ",
+              kickoffBanner.nextMonth
+            ]
+          }
+        )
+      ] })
+    ] }),
+    /* @__PURE__ */ jsx(
+      MonthKickoffModal,
+      {
+        open: kickoffOpen,
+        onOpenChange: setKickoffOpen,
+        nextMonth: kickoffBanner?.nextMonth || "",
+        recurringCount: kickoffBanner?.recurringCount || 0,
+        onSuccess: () => {
+          setKickoffBanner(null);
+          window.location.reload();
+        }
+      }
+    ),
     /* @__PURE__ */ jsx(
       FinancialInsights,
       {
@@ -879,14 +1151,14 @@ function Dashboard({ transactions, networth, summaries }) {
           "Savings Rate ",
           isAllTime ? "(Latest)" : `(${latest.month})`
         ] }),
-        /* @__PURE__ */ jsxs("p", { className: "text-2xl font-bold mt-2", children: [
+        /* @__PURE__ */ jsxs("p", { className: "text-2xl font-bold mt-2", style: { color: savingsRate < 0 ? "#ef4444" : void 0 }, children: [
           savingsRate.toFixed(1),
           "%"
         ] }),
-        /* @__PURE__ */ jsx("div", { className: "w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 mt-3", children: /* @__PURE__ */ jsx("div", { className: "bg-emerald-500 h-2 rounded-full transition-all", style: { width: `${Math.min(100, savingsRate)}%` } }) })
+        /* @__PURE__ */ jsx("div", { className: "w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 mt-3", children: /* @__PURE__ */ jsx("div", { className: `h-2 rounded-full transition-all ${savingsRate < 0 ? "bg-red-500 ml-auto" : "bg-emerald-500"}`, style: { width: `${Math.min(100, Math.abs(savingsRate))}%` } }) })
       ] })
     ] }),
-    /* @__PURE__ */ jsx(Dialog, { open: dialogOpen, onOpenChange: setDialogOpen, children: /* @__PURE__ */ jsxs(DialogContent, { className: "max-w-2xl max-h-[80vh] overflow-y-auto", children: [
+    /* @__PURE__ */ jsx(Dialog, { open: dialogOpen, onOpenChange: setDialogOpen, children: /* @__PURE__ */ jsxs(DialogContent, { className: "max-w-2xl max-h-[85vh] overflow-y-auto", children: [
       /* @__PURE__ */ jsxs(DialogHeader, { children: [
         /* @__PURE__ */ jsxs(DialogTitle, { children: [
           selectedCategory,
@@ -899,6 +1171,18 @@ function Dashboard({ transactions, networth, summaries }) {
           const total = catTxs.reduce((sum, t) => sum + t.amount, 0);
           return `${catTxs.length} transaction${catTxs.length !== 1 ? "s" : ""} • Total: ${formatIdr(total)}`;
         })() })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "mt-2 mb-4", children: [
+        /* @__PURE__ */ jsx("h4", { className: "text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2", children: "Outcome by Category" }),
+        /* @__PURE__ */ jsx(
+          OutcomeBarChart,
+          {
+            data: activeSummary?.category_totals || {},
+            categories,
+            highlightCategory: selectedCategory,
+            summaries
+          }
+        )
       ] }),
       /* @__PURE__ */ jsx("div", { className: "mt-2", children: (() => {
         const targetMonth = isAllTime ? activeSummary.month : filterMonth;
