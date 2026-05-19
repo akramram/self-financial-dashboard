@@ -9,6 +9,8 @@ import CategoryTrendChart from './CategoryTrendChart';
 import SavingsRateChart from './SavingsRateChart';
 import FinancialInsights from './FinancialInsights';
 import OutcomeBarChart from './OutcomeBarChart';
+import MonthKickoffModal from './MonthKickoffModal';
+import { fetchRecurringTransactions } from '../lib/api';
 import {
   Table,
   TableBody,
@@ -135,6 +137,45 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
 
+  // Month kickoff banner state
+  const [kickoffBanner, setKickoffBanner] = useState<{
+    show: boolean;
+    currentMonth: string;
+    nextMonth: string;
+    recurringCount: number;
+  } | null>(null);
+  const [kickoffOpen, setKickoffOpen] = useState(false);
+
+  useEffect(() => {
+    // Check if we should show the salary kickoff banner
+    const today = new Date();
+    if (today.getDate() < 26) return;
+
+    const latest = summaries[summaries.length - 1];
+    if (!latest) return;
+
+    // Compute next month
+    const latestDate = new Date(latest.month + ' 1');
+    const nextDate = new Date(latestDate);
+    nextDate.setMonth(nextDate.getMonth() + 1);
+    const nextMonthStr = nextDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+    // Check if next month already exists
+    const hasNext = summaries.some((s) => s.month === nextMonthStr);
+    if (hasNext) return;
+
+    // Fetch active recurring count
+    fetchRecurringTransactions().then((recurring) => {
+      const activeCount = recurring.filter((r) => r.active).length;
+      setKickoffBanner({
+        show: true,
+        currentMonth: latest.month,
+        nextMonth: nextMonthStr,
+        recurringCount: activeCount,
+      });
+    }).catch(() => {});
+  }, [summaries]);
+
   const openCategoryDialog = (cat: string) => {
     setSelectedCategory(cat);
     setDialogOpen(true);
@@ -180,6 +221,47 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
           </SelectContent>
         </Select>
       </div>
+
+      {/* Salary Kickoff Banner */}
+      {kickoffBanner?.show && (
+        <div className="rounded-xl border border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-900/20 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div>
+            <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">
+              💰 Have you received your salary for {kickoffBanner.currentMonth}?
+            </p>
+            <p className="text-xs text-amber-600 dark:text-amber-400 mt-0.5">
+              Confirm to start {kickoffBanner.nextMonth} with {kickoffBanner.recurringCount} recurring transaction{kickoffBanner.recurringCount !== 1 ? 's' : ''} preloaded.
+            </p>
+          </div>
+          <div className="flex gap-2 shrink-0">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => setKickoffBanner((prev) => prev ? { ...prev, show: false } : null)}
+            >
+              Later
+            </Button>
+            <Button
+              size="sm"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              onClick={() => setKickoffOpen(true)}
+            >
+              Confirm & Start {kickoffBanner.nextMonth}
+            </Button>
+          </div>
+        </div>
+      )}
+
+      <MonthKickoffModal
+        open={kickoffOpen}
+        onOpenChange={setKickoffOpen}
+        nextMonth={kickoffBanner?.nextMonth || ''}
+        recurringCount={kickoffBanner?.recurringCount || 0}
+        onSuccess={() => {
+          setKickoffBanner(null);
+          window.location.reload();
+        }}
+      />
 
       {/* Financial Insights */}
       <FinancialInsights

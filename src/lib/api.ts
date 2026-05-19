@@ -139,6 +139,71 @@ export async function deleteMonthlyIncomeApi(month: string): Promise<void> {
   await fetch(`/api/income/${encodeURIComponent(month)}`, { method: 'DELETE' });
 }
 
+export interface RecurringTransaction {
+  id: number;
+  title: string;
+  category: string;
+  amount: number;
+  type: 'cash' | 'credit_expense' | 'credit_payment';
+  payment_method: string;
+  done: boolean;
+  active: boolean;
+  created_at: string;
+}
+
+export async function fetchRecurringTransactions(): Promise<RecurringTransaction[]> {
+  const res = await fetch('/api/recurring');
+  return res.json();
+}
+
+export async function createRecurringTransaction(tx: Omit<RecurringTransaction, 'id' | 'created_at'>): Promise<RecurringTransaction> {
+  const res = await fetch('/api/recurring', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(tx),
+  });
+  return res.json();
+}
+
+export async function updateRecurringTransactionApi(id: number, tx: Partial<Omit<RecurringTransaction, 'id' | 'created_at'>>): Promise<void> {
+  await fetch(`/api/recurring/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(tx),
+  });
+}
+
+export async function deleteRecurringTransactionApi(id: number): Promise<void> {
+  await fetch(`/api/recurring/${id}`, { method: 'DELETE' });
+}
+
+export interface KickoffStatus {
+  latestMonth: string | null;
+  nextMonth: string | null;
+  hasNextMonth: boolean;
+}
+
+export async function fetchKickoffStatus(): Promise<KickoffStatus> {
+  const res = await fetch('/api/kickoff');
+  return res.json();
+}
+
+export interface KickoffResult {
+  success: boolean;
+  month: string;
+  salary: number;
+  preloaded: number;
+}
+
+export async function kickoffMonth(month: string, salary: number): Promise<KickoffResult> {
+  const res = await fetch('/api/kickoff', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ month, salary }),
+  });
+  return res.json();
+}
+
 export interface ImportResult {
   imported: number;
   skipped: number;

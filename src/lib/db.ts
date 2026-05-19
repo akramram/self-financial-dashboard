@@ -56,6 +56,18 @@ export function initSchema() {
       other_income REAL NOT NULL DEFAULT 0
     );
 
+    CREATE TABLE IF NOT EXISTS recurring_transactions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      category TEXT NOT NULL,
+      amount REAL NOT NULL,
+      type TEXT NOT NULL CHECK(type IN ('cash', 'credit_expense', 'credit_payment')),
+      payment_method TEXT NOT NULL DEFAULT 'Cash',
+      done INTEGER NOT NULL DEFAULT 0,
+      active INTEGER NOT NULL DEFAULT 1,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    );
+
     CREATE INDEX IF NOT EXISTS idx_tx_month ON transactions(month);
     CREATE INDEX IF NOT EXISTS idx_tx_type ON transactions(type);
     CREATE INDEX IF NOT EXISTS idx_tx_date ON transactions(date);
@@ -278,6 +290,44 @@ export function upsertMonthlyIncome(record: { month: string; date: string; incom
 
 export function deleteMonthlyIncome(month: string) {
   db.prepare('DELETE FROM monthly_income WHERE month = ?').run(month);
+}
+
+export function getRecurringTransactions() {
+  return db.prepare('SELECT * FROM recurring_transactions ORDER BY active DESC, created_at ASC').all() as any[];
+}
+
+export function getRecurringTransactionById(id: number) {
+  return db.prepare('SELECT * FROM recurring_transactions WHERE id = ?').get(id) as any;
+}
+
+export function insertRecurringTransaction(tx: Omit<any, 'id'>) {
+  const stmt = db.prepare(`
+    INSERT INTO recurring_transactions (title, category, amount, type, payment_method, done, active, created_at)
+    VALUES (@title, @category, @amount, @type, @payment_method, @done, @active, @created_at)
+  `);
+  const result = stmt.run({
+    title: tx.title,
+    category: tx.category,
+    amount: Number(tx.amount),
+    type: tx.type,
+    payment_method: tx.payment_method || 'Cash',
+    done: tx.done ? 1 : 0,
+    active: tx.active !== false ? 1 : 0,
+    created_at: tx.created_at || new Date().toISOString(),
+  });
+  return result.lastInsertRowid as number;
+}
+
+export function updateRecurringTransaction(id: number, tx: Partial<any>) {
+  const fields = Object.keys(tx).filter((k) => k !== 'id');
+  if (fields.length === 0) return;
+  const setClause = fields.map((f) => `${f} = @${f}`).join(', ');
+  const stmt = db.prepare(`UPDATE recurring_transactions SET ${setClause} WHERE id = @id`);
+  stmt.run({ ...tx, id });
+}
+
+export function deleteRecurringTransaction(id: number) {
+  db.prepare('DELETE FROM recurring_transactions WHERE id = ?').run(id);
 }
 
 export function recalcNetworthMoM() {

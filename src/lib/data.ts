@@ -50,6 +50,18 @@ export interface Category {
   created_at: string;
 }
 
+export interface RecurringTransaction {
+  id: number;
+  title: string;
+  category: string;
+  amount: number;
+  type: 'cash' | 'credit_expense' | 'credit_payment';
+  payment_method: string;
+  done: boolean;
+  active: boolean;
+  created_at: string;
+}
+
 export const initialTransactions: Transaction[] = transactionsJson as Transaction[];
 export const initialNetworth: NetworthRecord[] = networthJson as NetworthRecord[];
 export const initialMonthlySummary: MonthlySummary[] = monthlySummaryJson as unknown as MonthlySummary[];
