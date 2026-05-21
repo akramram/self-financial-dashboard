@@ -1,10 +1,11 @@
 import type { Transaction, NetworthRecord, MonthlySummary, Category } from './data';
 
-export async function fetchTransactions(filters?: { month?: string; type?: string; search?: string }): Promise<Transaction[]> {
+export async function fetchTransactions(filters?: { month?: string; type?: string; search?: string; category?: string }): Promise<Transaction[]> {
   const params = new URLSearchParams();
   if (filters?.month) params.set('month', filters.month);
   if (filters?.type) params.set('type', filters.type);
   if (filters?.search) params.set('search', filters.search);
+  if (filters?.category) params.set('category', filters.category);
   const res = await fetch(`/api/transactions?${params.toString()}`);
   return res.json();
 }

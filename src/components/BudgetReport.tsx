@@ -1,6 +1,7 @@
-import React, { useMemo, useState } from 'react';
-import type { MonthlySummary, Category } from '../lib/data';
+import React, { useMemo, useState, useEffect } from 'react';
+import type { MonthlySummary, Category, Transaction } from '../lib/data';
 import { formatIdr } from '../lib/utils';
+import { fetchTransactions } from '../lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -20,6 +21,13 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
+import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
@@ -29,7 +37,7 @@ import {
   Legend,
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
-import { ArrowUpDown, TrendingDown, TrendingUp, Wallet, AlertTriangle, PiggyBank } from 'lucide-react';
+import { ArrowUpDown, TrendingDown, Wallet, AlertTriangle, PiggyBank, Receipt } from 'lucide-react';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -46,6 +54,11 @@ export default function BudgetReport({ summaries, categories }: Props) {
   const [filterMonth, setFilterMonth] = useState<string>('all');
   const [sortKey, setSortKey] = useState<SortKey>('pct');
   const [sortDir, setSortDir] = useState<SortDir>('desc');
+
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [categoryTransactions, setCategoryTransactions] = useState<Transaction[]>([]);
+  const [dialogLoading, setDialogLoading] = useState(false);
 
   const isAllTime = filterMonth === 'all';
 
@@ -191,6 +204,26 @@ export default function BudgetReport({ summaries, categories }: Props) {
     </button>
   );
 
+  const openCategoryDialog = async (catName: string) => {
+    setSelectedCategory(catName);
+    setDialogOpen(true);
+    setDialogLoading(true);
+    setCategoryTransactions([]);
+    try {
+      const rows = await fetchTransactions({
+        month: isAllTime ? undefined : filterMonth,
+        category: catName,
+      });
+      setCategoryTransactions(rows);
+    } catch (e) {
+      setCategoryTransactions([]);
+    } finally {
+      setDialogLoading(false);
+    }
+  };
+
+  const dialogTotal = categoryTransactions.reduce((s, t) => s + t.amount, 0);
+
   return (
     <div className="space-y-6">
       {/* Month Filter */}
@@ -320,7 +353,11 @@ export default function BudgetReport({ summaries, categories }: Props) {
                   const hasLimit = row.limit > 0;
 
                   return (
-                    <TableRow key={row.name}>
+                    <TableRow
+                      key={row.name}
+                      className="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition"
+                      onClick={() => openCategoryDialog(row.name)}
+                    >
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <span
@@ -380,6 +417,83 @@ export default function BudgetReport({ summaries, categories }: Props) {
           </div>
         </CardContent>
       </Card>
+
+      {/* Category Drill-down Dialog */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Receipt className="w-5 h-5 text-slate-500" />
+              {selectedCategory} — Transactions
+            </DialogTitle>
+            <DialogDescription>
+              {isAllTime ? 'All months' : filterMonth} · {categoryTransactions.length} transaction{categoryTransactions.length !== 1 ? 's' : ''} · Total {formatIdr(dialogTotal)}
+            </DialogDescription>
+          </DialogHeader>
+
+          {dialogLoading ? (
+            <div className="py-8 text-center text-sm text-muted-foreground">Loading transactions...</div>
+          ) : categoryTransactions.length === 0 ? (
+            <div className="py-8 text-center text-sm text-muted-foreground">No transactions found for this category.</div>
+          ) : (
+            <div className="rounded-xl border overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Title</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead className="text-right">Amount</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Paid</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {categoryTransactions.map((tx) => {
+                    const typeClass =
+                      tx.type === 'cash'
+                        ? 'text-blue-600 dark:text-blue-400'
+                        : tx.type === 'credit_payment'
+                        ? 'text-amber-600 dark:text-amber-400'
+                        : 'text-purple-600 dark:text-purple-400';
+                    const typeLabel =
+                      tx.type === 'cash' ? 'Cash' : tx.type === 'credit_payment' ? 'Credit Pay' : 'Credit';
+                    const dateObj = tx.created_time ? new Date(tx.created_time) : new Date(tx.date);
+                    const dateStr = isNaN(dateObj.getTime())
+                      ? tx.date
+                      : dateObj.toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' });
+                    return (
+                      <TableRow key={tx.id}>
+                        <TableCell className="font-medium">{tx.title}</TableCell>
+                        <TableCell className="text-muted-foreground text-xs">{dateStr}</TableCell>
+                        <TableCell className="text-right font-medium">{formatIdr(tx.amount)}</TableCell>
+                        <TableCell className={`${typeClass} text-xs font-semibold uppercase`}>{typeLabel}</TableCell>
+                        <TableCell>
+                          <Badge
+                            variant="secondary"
+                            className={`text-[10px] ${
+                              tx.done
+                                ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
+                                : 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300'
+                            }`}
+                          >
+                            {tx.done ? 'Paid' : 'Unpaid'}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+
+          <div className="flex justify-end pt-2">
+            <Button size="sm" variant="secondary" onClick={() => setDialogOpen(false)}>
+              Close
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

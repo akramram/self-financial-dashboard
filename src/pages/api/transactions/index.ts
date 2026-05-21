@@ -6,7 +6,8 @@ export const GET: APIRoute = async ({ request }) => {
   const month = url.searchParams.get('month') || undefined;
   const type = url.searchParams.get('type') || undefined;
   const search = url.searchParams.get('search') || undefined;
-  const rows = getTransactions({ month, type, search });
+  const category = url.searchParams.get('category') || undefined;
+  const rows = getTransactions({ month, type, search, category });
   return new Response(JSON.stringify(rows), {
     headers: { 'Content-Type': 'application/json' },
   });

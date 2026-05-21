@@ -74,7 +74,7 @@ export function initSchema() {
   `);
 }
 
-export function getTransactions(filters?: { month?: string; type?: string; search?: string }) {
+export function getTransactions(filters?: { month?: string; type?: string; search?: string; category?: string }) {
   let sql = 'SELECT * FROM transactions WHERE 1=1';
   const params: any[] = [];
   if (filters?.month) {
@@ -88,6 +88,10 @@ export function getTransactions(filters?: { month?: string; type?: string; searc
   if (filters?.search) {
     sql += ' AND (title LIKE ? OR category LIKE ?)';
     params.push(`%${filters.search}%`, `%${filters.search}%`);
+  }
+  if (filters?.category) {
+    sql += ' AND category = ?';
+    params.push(filters.category);
   }
   sql += ' ORDER BY COALESCE(created_time, date) DESC';
   return db.prepare(sql).all(...params) as any[];
