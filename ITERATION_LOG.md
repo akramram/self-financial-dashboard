@@ -555,3 +555,26 @@ When total spending exceeds income (e.g., May 2026: income 18.5M vs outcome 20.5
 
 ### Build status
 ✅ Passes — `npm run build` clean
+
+## Iteration 24 — FIN-035: Export JSON for Specific Month
+
+**Date:** 2026-05-21
+**Issue:** [#38](https://github.com/akramram/self-financial-dashboard/issues/38)
+**Branch:** `feat/FIN-035`
+**PR:** [#39](https://github.com/akramram/self-financial-dashboard/pull/39)
+
+### What changed
+- Added **Export JSON** button next to the month/type filter row in `TransactionTable.tsx`
+- Exports all currently filtered transactions (respects month + type + search filters, NOT paginated)
+- Exported JSON shape: `date`, `description` (title), `amount`, `type`, `category`, `paid` (done)
+- File name: `transactions-YYYY-MM.json` when a specific month is selected, `transactions-all.json` otherwise
+- Shows `alert('No transactions found for this month')` when the filtered set is empty
+
+### Files changed
+- `src/components/TransactionTable.tsx`
+
+### Why it matters
+Users can now download transaction data for a specific month as structured JSON, making it easy to archive, share, or process in external tools.
+
+### Build status
+✅ Passes — `npm run build` clean

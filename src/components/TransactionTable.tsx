@@ -205,6 +205,36 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
             ))}
           </SelectContent>
         </Select>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => {
+            const exportData = filtered.map((t) => ({
+              date: t.date,
+              description: t.title,
+              amount: t.amount,
+              type: t.type,
+              category: t.category,
+              paid: t.done,
+            }));
+            if (exportData.length === 0) {
+              alert('No transactions found for this month');
+              return;
+            }
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const fileName = filterMonth !== 'all' ? `transactions-${filterMonth}.json` : 'transactions-all.json';
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+          }}
+        >
+          Export JSON
+        </Button>
       </div>
 
       {selected.size > 0 && (
