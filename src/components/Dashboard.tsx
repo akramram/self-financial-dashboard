@@ -22,6 +22,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -208,7 +210,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
     <div className="space-y-6">
       {/* Month Filter */}
       <div className="flex items-center gap-3">
-        <label className="text-sm font-medium text-slate-600 dark:text-slate-300">Period:</label>
+        <Label className="text-sm font-medium text-slate-600 dark:text-slate-300">Period:</Label>
         <Select value={filterMonth} onValueChange={(v) => { setFilterMonth(v); setTxPage(1); }}>
           <SelectTrigger className="w-[160px]">
             <SelectValue />
@@ -445,15 +447,13 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
                   return (
                     <TableRow key={row.id} className="bg-muted/30">
                       <TableCell>
-                        <label className="inline-flex items-center cursor-pointer gap-2">
-                          <input
-                            type="checkbox"
-                            checked={!!editForm.done}
-                            onChange={(e) => handleChange('done', e.target.checked)}
-                            className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
-                          />
-                          <span className="text-xs">{editForm.done ? 'Paid' : 'Unpaid'}</span>
-                        </label>
+                      <div className="flex items-center gap-2">
+                        <Checkbox
+                          checked={!!editForm.done}
+                          onCheckedChange={(v) => handleChange('done', !!v)}
+                        />
+                        <span className="text-xs">{editForm.done ? 'Paid' : 'Unpaid'}</span>
+                      </div>
                       </TableCell>
                       <TableCell>
                         <Input

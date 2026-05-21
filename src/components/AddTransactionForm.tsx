@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { createTransaction, fetchTransactions } from '../lib/api';
+import React, { useState, useRef } from 'react';
+import { createTransaction } from '../lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Dialog,
   DialogContent,
@@ -41,16 +42,8 @@ export default function AddTransactionForm() {
   const [type, setType] = useState<'cash' | 'credit_expense' | 'credit_payment'>('credit_expense');
   const [done, setDone] = useState(true);
   const [message, setMessage] = useState('');
-  const [categories, setCategories] = useState<string[]>([]);
   const [showDuplicateDialog, setShowDuplicateDialog] = useState(false);
   const titleRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    fetchTransactions().then((txs) => {
-      const unique = Array.from(new Set(txs.map((t) => t.category).filter(Boolean)));
-      setCategories(unique.sort());
-    });
-  }, []);
 
   const buildPayload = () => {
     const monthName = `${month} ${year}`;
@@ -172,13 +165,7 @@ export default function AddTransactionForm() {
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               placeholder="e.g. 🏠 Kontrakan"
-              list="category-list"
             />
-            <datalist id="category-list">
-              {categories.map((cat) => (
-                <option key={cat} value={cat} />
-              ))}
-            </datalist>
             <p className="text-xs text-muted-foreground">Leave blank to use first word of title</p>
           </div>
 
@@ -208,12 +195,10 @@ export default function AddTransactionForm() {
           </div>
 
           <div className="flex items-center gap-2">
-            <input
+            <Checkbox
               id="done"
-              type="checkbox"
               checked={done}
-              onChange={(e) => setDone(e.target.checked)}
-              className="rounded border-slate-300"
+              onCheckedChange={(v) => setDone(!!v)}
             />
             <Label htmlFor="done" className="text-sm text-slate-600 dark:text-slate-300">Paid / Done</Label>
           </div>

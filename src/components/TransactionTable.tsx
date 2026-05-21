@@ -355,15 +355,13 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
                       <Checkbox checked={selected.has(row.id)} disabled />
                     </TableCell>
                     <TableCell>
-                      <label className="inline-flex items-center cursor-pointer gap-2">
-                        <input
-                          type="checkbox"
+                      <div className="flex items-center gap-2">
+                        <Checkbox
                           checked={!!editForm.done}
-                          onChange={(e) => handleChange('done', e.target.checked)}
-                          className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                          onCheckedChange={(v) => handleChange('done', !!v)}
                         />
                         <span className="text-xs">{editForm.done ? 'Paid' : 'Unpaid'}</span>
-                      </label>
+                      </div>
                     </TableCell>
                     {showMonth && (
                       <TableCell>
