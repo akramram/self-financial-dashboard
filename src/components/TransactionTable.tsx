@@ -43,13 +43,17 @@ const TYPE_OPTIONS = [
 
 export default function TransactionTable({ transactions, showMonth = true }: Props) {
   const getInitialState = () => {
-    if (typeof window === 'undefined') return { page: 1, filterType: 'all', filterMonth: 'all', search: '' };
+    if (typeof window === 'undefined') return { page: 1, filterType: 'all', filterMonth: 'all', search: '', dateFrom: '', dateTo: '', amountMin: '', amountMax: '' };
     const params = new URLSearchParams(window.location.search);
     return {
       page: Math.max(1, parseInt(params.get('page') || '1', 10) || 1),
       filterType: params.get('type') || 'all',
       filterMonth: params.get('month') || 'all',
       search: params.get('search') || '',
+      dateFrom: params.get('dateFrom') || '',
+      dateTo: params.get('dateTo') || '',
+      amountMin: params.get('amountMin') || '',
+      amountMax: params.get('amountMax') || '',
     };
   };
   const initial = getInitialState();
@@ -57,6 +61,10 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
   const [filterType, setFilterType] = useState<string>(initial.filterType);
   const [filterMonth, setFilterMonth] = useState<string>(initial.filterMonth);
   const [search, setSearch] = useState(initial.search);
+  const [dateFrom, setDateFrom] = useState(initial.dateFrom);
+  const [dateTo, setDateTo] = useState(initial.dateTo);
+  const [amountMin, setAmountMin] = useState(initial.amountMin);
+  const [amountMax, setAmountMax] = useState(initial.amountMax);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editForm, setEditForm] = useState<Partial<Transaction>>({});
   const [selected, setSelected] = useState<Set<number>>(new Set());
@@ -74,9 +82,13 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
     if (filterType !== 'all') params.set('type', filterType); else params.delete('type');
     if (filterMonth !== 'all') params.set('month', filterMonth); else params.delete('month');
     if (search.trim()) params.set('search', search.trim()); else params.delete('search');
+    if (dateFrom) params.set('dateFrom', dateFrom); else params.delete('dateFrom');
+    if (dateTo) params.set('dateTo', dateTo); else params.delete('dateTo');
+    if (amountMin) params.set('amountMin', amountMin); else params.delete('amountMin');
+    if (amountMax) params.set('amountMax', amountMax); else params.delete('amountMax');
     const newUrl = `${window.location.pathname}${params.toString() ? '?' + params.toString() : ''}`;
     window.history.replaceState({}, '', newUrl);
-  }, [page, filterType, filterMonth, search]);
+  }, [page, filterType, filterMonth, search, dateFrom, dateTo, amountMin, amountMax]);
 
   const categoryMap = useMemo(() => {
     const map: Record<string, Category> = {};
@@ -114,6 +126,22 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
     filtered = filtered.filter((t) =>
       t.title.toLowerCase().includes(q) || t.category.toLowerCase().includes(q)
     );
+  }
+  if (dateFrom) {
+    const fromTime = new Date(dateFrom).getTime();
+    filtered = filtered.filter((t) => new Date(t.date).getTime() >= fromTime);
+  }
+  if (dateTo) {
+    const toTime = new Date(dateTo).getTime();
+    filtered = filtered.filter((t) => new Date(t.date).getTime() <= toTime);
+  }
+  if (amountMin) {
+    const min = Number(amountMin);
+    if (!isNaN(min)) filtered = filtered.filter((t) => t.amount >= min);
+  }
+  if (amountMax) {
+    const max = Number(amountMax);
+    if (!isNaN(max)) filtered = filtered.filter((t) => t.amount <= max);
   }
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
@@ -234,6 +262,51 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
           }}
         >
           Export JSON
+        </Button>
+      </div>
+
+      <div className="flex flex-col sm:flex-row gap-3 mb-4">
+        <Input
+          type="date"
+          placeholder="From date"
+          value={dateFrom}
+          onChange={(e) => { setDateFrom(e.target.value); setPage(1); }}
+          className="w-full sm:w-[150px]"
+        />
+        <Input
+          type="date"
+          placeholder="To date"
+          value={dateTo}
+          onChange={(e) => { setDateTo(e.target.value); setPage(1); }}
+          className="w-full sm:w-[150px]"
+        />
+        <Input
+          type="number"
+          placeholder="Min amount"
+          value={amountMin}
+          onChange={(e) => { setAmountMin(e.target.value); setPage(1); }}
+          className="w-full sm:w-[130px]"
+        />
+        <Input
+          type="number"
+          placeholder="Max amount"
+          value={amountMax}
+          onChange={(e) => { setAmountMax(e.target.value); setPage(1); }}
+          className="w-full sm:w-[130px]"
+        />
+        <Button
+          size="sm"
+          variant="secondary"
+          onClick={() => {
+            setDateFrom('');
+            setDateTo('');
+            setAmountMin('');
+            setAmountMax('');
+            setPage(1);
+          }}
+          className="shrink-0"
+        >
+          Clear Ranges
         </Button>
       </div>
 

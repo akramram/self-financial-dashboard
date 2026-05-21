@@ -578,3 +578,27 @@ Users can now download transaction data for a specific month as structured JSON,
 
 ### Build status
 ✅ Passes — `npm run build` clean
+
+## Iteration 25 — FIN-036: Date Range and Amount Range Filters
+
+**Date:** 2026-05-21
+**Issue:** [#40](https://github.com/akramram/self-financial-dashboard/issues/40)
+**Branch:** `feat/FIN-036`
+**PR:** [#41](https://github.com/akramram/self-financial-dashboard/pull/41)
+
+### What changed
+- Added **date range** filters to `TransactionTable.tsx`: `From date` and `To date` HTML date pickers
+- Added **amount range** filters: `Min amount` and `Max amount` number inputs
+- All range filters compose with existing search, type, and month filters
+- Filter state synced to URL query params (`dateFrom`, `dateTo`, `amountMin`, `amountMax`) and restored on mount
+- Added **Clear Ranges** button to reset all four range inputs at once
+- Filters apply to the full dataset (not just the current page)
+
+### Files changed
+- `src/components/TransactionTable.tsx`
+
+### Why it matters
+Users can now drill down to transactions within a specific date window or amount bracket, making it easier to reconcile statements, find large expenses, or audit a time period.
+
+### Build status
+✅ Passes — `npm run build` clean
