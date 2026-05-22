@@ -642,3 +642,22 @@ Users can now drill down to transactions within a specific date window or amount
 
 ### Build status
 ✅ Passes — `npm run build` clean
+
+## Iteration 28 — FIN-039: Show All Categories in Category Spending Trend
+
+**Date:** 2026-05-22
+**Issue:** [#46](https://github.com/akramram/self-financial-dashboard/issues/46)
+**Branch:** `feat/FIN-039`
+**PR:** [#47](https://github.com/akramram/self-financial-dashboard/pull/47)
+**Commit:** 8e38fd3
+
+### What changed
+- Removed the `.slice(0, 6)` limit in `CategoryTrendChart.tsx`
+- The Category Spending Trend line chart now displays **all** categories instead of only the top 6 by total spend
+- Categories are still sorted by total spend (descending) for consistent legend ordering
+
+### Files changed
+- `src/components/CategoryTrendChart.tsx`
+
+### Build status
+✅ Passes — `npm run build` clean
