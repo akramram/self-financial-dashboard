@@ -621,3 +621,24 @@ Users can now drill down to transactions within a specific date window or amount
 
 ### Build status
 ✅ Passes — `npm run build` clean
+
+## Iteration 27 — FIN-038: Category Autocomplete on Add Transaction Form
+
+**Date:** 2026-05-22
+**Issue:** [#44](https://github.com/akramram/self-financial-dashboard/issues/44)
+**Branch:** `feat/FIN-038`
+**PR:** [#45](https://github.com/akramram/self-financial-dashboard/pull/45)
+**Commit:** 5704c16
+
+### What changed
+- Fetched existing categories on mount via `fetchCategories()` in `AddTransactionForm.tsx`
+- Replaced the free-text Category `<Input>` with an autocomplete input backed by a native HTML `<datalist>`
+- Users can pick an existing category from the dropdown or type a new one freely
+- Zero new dependencies — uses existing shadcn `Input` + browser-native `datalist`
+- Updated helper text from "Leave blank to use first word of title" to "Pick an existing category or type a new one"
+
+### Files changed
+- `src/components/AddTransactionForm.tsx`
+
+### Build status
+✅ Passes — `npm run build` clean
