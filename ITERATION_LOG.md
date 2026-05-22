@@ -661,3 +661,22 @@ Users can now drill down to transactions within a specific date window or amount
 
 ### Build status
 ✅ Passes — `npm run build` clean
+
+## Iteration 29 — FIN-040: Hide Zero-Spend Categories from Category Spending Trend
+
+**Date:** 2026-05-22
+**Issue:** [#48](https://github.com/akramram/self-financial-dashboard/issues/48)
+**Branch:** `feat/FIN-040`
+**PR:** [#49](https://github.com/akramram/self-financial-dashboard/pull/49)
+**Commit:** 6de5a0f
+
+### What changed
+- Added `.filter(([_, total]) => total > 0)` in `CategoryTrendChart.tsx`
+- Categories with 0 total spend across all months are now excluded from the line chart and legend
+- Keeps the chart focused on categories that actually have spending data
+
+### Files changed
+- `src/components/CategoryTrendChart.tsx`
+
+### Build status
+✅ Passes — `npm run build` clean
