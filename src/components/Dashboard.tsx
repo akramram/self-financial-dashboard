@@ -151,7 +151,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
   useEffect(() => {
     // Check if we should show the salary kickoff banner
     const today = new Date();
-    if (today.getDate() < 26) return;
+    if (today.getDate() < 21) return;
 
     const latest = summaries[summaries.length - 1];
     if (!latest) return;
