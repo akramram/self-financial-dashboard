@@ -48,10 +48,9 @@ export default function CategoryTrendChart({ data, categories = [] }: Props) {
       });
     });
 
-    // Pick top 6 categories by total spend
+    // Pick categories by total spend
     const topCategories = Object.entries(categoryTotals)
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 6)
       .map(([name]) => name);
 
     const datasets = topCategories.map((cat, idx) => {
