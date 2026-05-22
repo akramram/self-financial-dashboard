@@ -1,5 +1,6 @@
-import React, { useState, useRef } from 'react';
-import { createTransaction } from '../lib/api';
+import React, { useState, useRef, useEffect } from 'react';
+import { createTransaction, fetchCategories } from '../lib/api';
+import type { Category } from '../lib/data';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -43,7 +44,12 @@ export default function AddTransactionForm() {
   const [done, setDone] = useState(true);
   const [message, setMessage] = useState('');
   const [showDuplicateDialog, setShowDuplicateDialog] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
   const titleRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    fetchCategories().then(setCategories).catch(() => {});
+  }, []);
 
   const buildPayload = () => {
     const monthName = `${month} ${year}`;
@@ -165,8 +171,14 @@ export default function AddTransactionForm() {
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               placeholder="e.g. 🏠 Kontrakan"
+              list="category-list"
             />
-            <p className="text-xs text-muted-foreground">Leave blank to use first word of title</p>
+            <datalist id="category-list">
+              {categories.map((c) => (
+                <option key={c.id} value={c.name} />
+              ))}
+            </datalist>
+            <p className="text-xs text-muted-foreground">Pick an existing category or type a new one</p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
