@@ -602,3 +602,22 @@ Users can now drill down to transactions within a specific date window or amount
 
 ### Build status
 ✅ Passes — `npm run build` clean
+
+## Iteration 26 — Fix: Move Month Kickoff Trigger to 21st
+
+**Date:** 2026-05-22
+**Issue:** [#42](https://github.com/akramram/self-financial-dashboard/issues/42)
+**Branch:** `feat/FIN-035`
+**PR:** [#43](https://github.com/akramram/self-financial-dashboard/pull/43)
+**Commit:** 721c4a0
+
+### What changed
+- Changed `today.getDate() < 26` to `today.getDate() < 21` in `Dashboard.tsx`
+- The salary kickoff banner now appears starting on the **21st** of each month instead of the 25th
+- Gives users 4 extra days to prepare the new month before it starts
+
+### Files changed
+- `src/components/Dashboard.tsx`
+
+### Build status
+✅ Passes — `npm run build` clean
