@@ -48,8 +48,9 @@ export default function CategoryTrendChart({ data, categories = [] }: Props) {
       });
     });
 
-    // Pick categories by total spend
+    // Pick categories by total spend, filtering out zero-spend ones
     const topCategories = Object.entries(categoryTotals)
+      .filter(([_, total]) => total > 0)
       .sort((a, b) => b[1] - a[1])
       .map(([name]) => name);
 
