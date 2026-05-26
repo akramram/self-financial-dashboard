@@ -81,6 +81,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
   }, [filterMonth, networth, isAllTime]);
 
   const filteredTransactions = useMemo(() => {
+    if (!activeSummary) return [];
     if (isAllTime) return transactions.filter((t) => t.month === activeSummary.month);
     return transactions.filter((t) => t.month === filterMonth);
   }, [filterMonth, transactions, activeSummary, isAllTime]);
@@ -275,7 +276,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
         networth={networth}
         summaries={summaries}
         categories={categories}
-        activeMonth={isAllTime ? activeSummary.month : filterMonth}
+        activeMonth={isAllTime ? activeSummary?.month : filterMonth}
       />
 
       {/* Outcome Breakdown — TOP */}
@@ -625,7 +626,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
         </div>
         <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
           <h2 className="text-lg font-semibold mb-4">
-            {isAllTime ? 'Latest Month Categories' : `${latest.month} Categories`}
+            {isAllTime ? 'Latest Month Categories' : `${latest?.month ?? ''} Categories`}
           </h2>
           {latest?.category_totals && Object.keys(latest.category_totals).length > 0 ? (
             <CategoryChart data={latest.category_totals} categories={categories} onCategoryClick={openCategoryDialog} />
@@ -639,13 +640,13 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
           <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
-            Total Income {isAllTime ? '(Latest)' : `(${latest.month})`}
+            Total Income {isAllTime ? '(Latest)' : `(${latest?.month ?? ''})`}
           </p>
           <p className="text-2xl font-bold mt-2">{formatIdr(latest?.income ?? 0)}</p>
         </div>
         <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
           <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
-            Total Outcome {isAllTime ? '(Latest)' : `(${latest.month})`}
+            Total Outcome {isAllTime ? '(Latest)' : `(${latest?.month ?? ''})`}
           </p>
           <p className="text-2xl font-bold mt-2">{formatIdr(latest?.outcome.total ?? 0)}</p>
           <p className="text-xs text-slate-400 mt-1">Cash + Credit Payment</p>
@@ -658,7 +659,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
         </div>
         <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
           <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
-            Savings Rate {isAllTime ? '(Latest)' : `(${latest.month})`}
+            Savings Rate {isAllTime ? '(Latest)' : `(${latest?.month ?? ''})`}
           </p>
           <p className="text-2xl font-bold mt-2" style={{ color: savingsRate < 0 ? '#ef4444' : undefined }}>{savingsRate.toFixed(1)}%</p>
           <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 mt-3">
@@ -670,10 +671,10 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{selectedCategory} — {isAllTime ? activeSummary.month : filterMonth}</DialogTitle>
+            <DialogTitle>{selectedCategory} — {isAllTime ? activeSummary?.month : filterMonth}</DialogTitle>
             <DialogDescription>
               {(() => {
-                const targetMonth = isAllTime ? activeSummary.month : filterMonth;
+                const targetMonth = isAllTime ? activeSummary?.month : filterMonth;
                 const catTxs = transactions.filter((t) => t.category === selectedCategory && t.month === targetMonth);
                 const total = catTxs.reduce((sum, t) => sum + t.amount, 0);
                 return `${catTxs.length} transaction${catTxs.length !== 1 ? 's' : ''} • Total: ${formatIdr(total)}`;
@@ -696,7 +697,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
 
           <div className="mt-2">
             {(() => {
-              const targetMonth = isAllTime ? activeSummary.month : filterMonth;
+              const targetMonth = isAllTime ? activeSummary?.month : filterMonth;
               const catTxs = transactions
                 .filter((t) => t.category === selectedCategory && t.month === targetMonth)
                 .sort((a, b) => parseCreatedTime(b).getTime() - parseCreatedTime(a).getTime());
