@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createTransaction, fetchCategories } from '../lib/api';
 import type { Category } from '../lib/data';
+import { getActivePeriod } from '../lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -35,8 +36,9 @@ const TYPE_OPTIONS = [
 ];
 
 export default function AddTransactionForm() {
-  const [month, setMonth] = useState('May');
-  const [year, setYear] = useState(2026);
+  const { month: defaultMonth, year: defaultYear } = getActivePeriod();
+  const [month, setMonth] = useState(defaultMonth);
+  const [year, setYear] = useState(defaultYear);
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
   const [amount, setAmount] = useState('');
