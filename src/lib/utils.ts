@@ -15,6 +15,28 @@ export function formatNumber(n: number | undefined | null): string {
   return Math.round(n).toLocaleString('id-ID');
 }
 
+/**
+ * Returns the current active billing period based on the 21st-of-month kickoff rule.
+ * If today is >= 21 → next calendar month.
+ * If today is < 21  → current calendar month.
+ */
+export function getActivePeriod(): { month: string; year: number } {
+  const now = new Date();
+  const day = now.getDate();
+  if (day >= 21) {
+    // Roll to next month
+    const next = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    return {
+      month: next.toLocaleDateString('en-US', { month: 'long' }),
+      year: next.getFullYear(),
+    };
+  }
+  return {
+    month: now.toLocaleDateString('en-US', { month: 'long' }),
+    year: now.getFullYear(),
+  };
+}
+
 export function getMonthSortKey(monthName: string): number {
   const monthMap: Record<string, number> = {
     january: 1, february: 2, march: 3, april: 4, may: 5, june: 6,
