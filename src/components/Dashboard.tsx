@@ -162,20 +162,24 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
     nextDate.setMonth(nextDate.getMonth() + 1);
     const nextMonthStr = nextDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
-    // Check if next month already exists
-    const hasNext = summaries.some((s) => s.month === nextMonthStr);
-    if (hasNext) return;
+    // Check if next month already has data (income or transactions) via the kickoff API
+    fetch('/api/kickoff')
+      .then((res) => res.json())
+      .then((status: { hasNextMonth: boolean; nextMonth: string | null }) => {
+        if (status.hasNextMonth) return; // Already started — hide banner
 
-    // Fetch active recurring count
-    fetchRecurringTransactions().then((recurring) => {
-      const activeCount = recurring.filter((r) => r.active).length;
-      setKickoffBanner({
-        show: true,
-        currentMonth: latest.month,
-        nextMonth: nextMonthStr,
-        recurringCount: activeCount,
-      });
-    }).catch(() => {});
+        // Fetch active recurring count
+        fetchRecurringTransactions().then((recurring) => {
+          const activeCount = recurring.filter((r) => r.active).length;
+          setKickoffBanner({
+            show: true,
+            currentMonth: latest.month,
+            nextMonth: status.nextMonth || nextMonthStr,
+            recurringCount: activeCount,
+          });
+        }).catch(() => {});
+      })
+      .catch(() => {});
   }, [summaries]);
 
   const openCategoryDialog = (cat: string) => {
