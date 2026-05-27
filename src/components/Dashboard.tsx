@@ -167,7 +167,10 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
     fetch('/api/kickoff')
       .then((res) => res.json())
       .then((status: { hasNextMonth: boolean; nextMonth: string | null }) => {
-        if (status.hasNextMonth) return; // Already started — hide banner
+        if (status.hasNextMonth) {
+          setKickoffBanner(null);
+          return; // Already started — hide banner
+        }
 
         // Fetch active recurring count
         fetchRecurringTransactions().then((recurring) => {
