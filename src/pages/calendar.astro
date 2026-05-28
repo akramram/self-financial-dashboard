@@ -1,0 +1,21 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SpendingCalendar from '../components/SpendingCalendar';
+import { getTransactions } from '../lib/db';
+
+const transactions = getTransactions();
+---
+
+<Layout title="Spending Calendar - Financial Dashboard">
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold">Spending Calendar</h1>
+    <p class="text-slate-500 dark:text-slate-400 text-sm">
+      Visualize daily spending intensity and drill down into individual days
+    </p>
+  </div>
+
+  <SpendingCalendar
+    transactions={transactions}
+    client:load
+  />
+</Layout>
