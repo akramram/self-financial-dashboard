@@ -1,15 +1,18 @@
 /* empty css                               */
-import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BVE5k6Zu.mjs';
+import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BN-0jZ66.mjs';
 import 'kleur/colors';
-import { B as Button, $ as $$Layout } from '../chunks/button_U3IufC2b.mjs';
+import { g as getActivePeriod, $ as $$Layout } from '../chunks/utils_BV3uP8cD.mjs';
 import { jsxs, jsx } from 'react/jsx-runtime';
 import { useState, useRef, useEffect } from 'react';
-import { f as fetchTransactions, I as Input, a as fetchNetworth, c as createNetworth } from '../chunks/input_BsChHIwv.mjs';
-import { C as Card, a as CardHeader, b as CardTitle, c as CardContent, d as CardDescription } from '../chunks/card_BFvb3mRx.mjs';
-import { L as Label } from '../chunks/label_DKfi430O.mjs';
-import { B as Badge } from '../chunks/badge_DkaK0Sk2.mjs';
-import { D as Dialog, a as DialogContent, b as DialogHeader, c as DialogTitle, d as DialogDescription, e as DialogFooter } from '../chunks/dialog_CACMj91i.mjs';
-import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_K0bQUR3q.mjs';
+import { f as fetchCategories, a as fetchNetworth, c as createNetworth } from '../chunks/api_CHTFnAPN.mjs';
+import { C as Card, a as CardHeader, b as CardTitle, c as CardContent, d as CardDescription } from '../chunks/card_C3MBU-yw.mjs';
+import { I as Input } from '../chunks/input_CMjf0MNb.mjs';
+import { B as Button } from '../chunks/button_DWaBi1j-.mjs';
+import { L as Label } from '../chunks/label_Bi9dl2vq.mjs';
+import { B as Badge } from '../chunks/badge_Ck18rsVk.mjs';
+import { C as Checkbox } from '../chunks/checkbox_BpCKnwT9.mjs';
+import { D as Dialog, a as DialogContent, b as DialogHeader, c as DialogTitle, d as DialogDescription, e as DialogFooter } from '../chunks/dialog_rV5Ycyo9.mjs';
+import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_DvSVMMD5.mjs';
 export { renderers } from '../renderers.mjs';
 
 const MONTH_OPTIONS$1 = [
@@ -32,26 +35,26 @@ const TYPE_OPTIONS = [
   { value: "credit_payment", label: "Credit Payment" }
 ];
 function AddTransactionForm() {
-  const [month, setMonth] = useState("May");
-  const [year, setYear] = useState(2026);
+  const { month: defaultMonth, year: defaultYear } = getActivePeriod();
+  const [month, setMonth] = useState(defaultMonth);
+  const [year, setYear] = useState(defaultYear);
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [amount, setAmount] = useState("");
   const [type, setType] = useState("credit_expense");
   const [done, setDone] = useState(true);
   const [message, setMessage] = useState("");
-  const [categories, setCategories] = useState([]);
   const [showDuplicateDialog, setShowDuplicateDialog] = useState(false);
+  const [categories, setCategories] = useState([]);
   const titleRef = useRef(null);
   useEffect(() => {
-    fetchTransactions().then((txs) => {
-      const unique = Array.from(new Set(txs.map((t) => t.category).filter(Boolean)));
-      setCategories(unique.sort());
+    fetchCategories().then(setCategories).catch(() => {
     });
   }, []);
   const buildPayload = () => {
     const monthName = `${month} ${year}`;
-    const date = `${year}-${String(MONTH_OPTIONS$1.indexOf(month) + 1).padStart(2, "0")}-01`;
+    const monthIdx = MONTH_OPTIONS$1.indexOf(month) + 1;
+    const date = `${year}-${String(monthIdx).padStart(2, "0")}-21`;
     return {
       month: monthName,
       date,
@@ -160,8 +163,8 @@ function AddTransactionForm() {
             list: "category-list"
           }
         ),
-        /* @__PURE__ */ jsx("datalist", { id: "category-list", children: categories.map((cat) => /* @__PURE__ */ jsx("option", { value: cat }, cat)) }),
-        /* @__PURE__ */ jsx("p", { className: "text-xs text-muted-foreground", children: "Leave blank to use first word of title" })
+        /* @__PURE__ */ jsx("datalist", { id: "category-list", children: categories.map((c) => /* @__PURE__ */ jsx("option", { value: c.name }, c.id)) }),
+        /* @__PURE__ */ jsx("p", { className: "text-xs text-muted-foreground", children: "Pick an existing category or type a new one" })
       ] }),
       /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 sm:grid-cols-2 gap-4", children: [
         /* @__PURE__ */ jsxs("div", { className: "space-y-1.5", children: [
@@ -186,13 +189,11 @@ function AddTransactionForm() {
       ] }),
       /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
         /* @__PURE__ */ jsx(
-          "input",
+          Checkbox,
           {
             id: "done",
-            type: "checkbox",
             checked: done,
-            onChange: (e) => setDone(e.target.checked),
-            className: "rounded border-slate-300"
+            onCheckedChange: (v) => setDone(!!v)
           }
         ),
         /* @__PURE__ */ jsx(Label, { htmlFor: "done", className: "text-sm text-slate-600 dark:text-slate-300", children: "Paid / Done" })
@@ -274,7 +275,8 @@ function AddNetworthForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const monthName = `${month} ${year}`;
-    const date = `${year}-${String(MONTH_OPTIONS.indexOf(month) + 1).padStart(2, "0")}-01`;
+    const monthIdx = MONTH_OPTIONS.indexOf(month) + 1;
+    const date = `${year}-${String(monthIdx).padStart(2, "0")}-21`;
     const total = Object.values(breakdown).reduce((s, v) => s + v, 0);
     await createNetworth({
       month: monthName,
@@ -360,12 +362,12 @@ function AddNetworthForm() {
 }
 
 const $$Add = createComponent(($$result, $$props, $$slots) => {
-  return renderTemplate`${renderComponent($$result, "Layout", $$Layout, { "title": "Add Data" }, { "default": ($$result2) => renderTemplate` ${maybeRenderHead()}<div class="mb-6"> <h1 class="text-2xl font-bold">Add Data</h1> <p class="text-slate-500 dark:text-slate-400 text-sm">Add new transactions or update networth</p> </div> <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8"> ${renderComponent($$result2, "AddTransactionForm", AddTransactionForm, { "client:load": true, "client:component-hydration": "load", "client:component-path": "/root/self-financial-dashboard/src/components/AddTransactionForm", "client:component-export": "default" })} ${renderComponent($$result2, "AddNetworthForm", AddNetworthForm, { "client:load": true, "client:component-hydration": "load", "client:component-path": "/root/self-financial-dashboard/src/components/AddNetworthForm", "client:component-export": "default" })} </div> ${renderComponent($$result2, "Card", Card, {}, { "default": ($$result3) => renderTemplate` ${renderComponent($$result3, "CardHeader", CardHeader, {}, { "default": ($$result4) => renderTemplate` ${renderComponent($$result4, "CardTitle", CardTitle, {}, { "default": ($$result5) => renderTemplate`Data Management` })} ${renderComponent($$result4, "CardDescription", CardDescription, {}, { "default": ($$result5) => renderTemplate`Export or back up your financial data` })} ` })} ${renderComponent($$result3, "CardContent", CardContent, {}, { "default": ($$result4) => renderTemplate` <div class="flex flex-col sm:flex-row gap-3"> ${renderComponent($$result4, "Button", Button, { "asChild": true }, { "default": ($$result5) => renderTemplate` <a href="/api/export">Export All Data (JSON)</a> ` })} </div> <p class="text-xs text-muted-foreground mt-3">
+  return renderTemplate`${renderComponent($$result, "Layout", $$Layout, { "title": "Add Data" }, { "default": ($$result2) => renderTemplate` ${maybeRenderHead()}<div class="mb-6"> <h1 class="text-2xl font-bold">Add Data</h1> <p class="text-slate-500 dark:text-slate-400 text-sm">Add new transactions or update networth</p> </div> <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8"> ${renderComponent($$result2, "AddTransactionForm", AddTransactionForm, { "client:load": true, "client:component-hydration": "load", "client:component-path": "/Users/user/hermes-workspace/self-financial-dashboard/src/components/AddTransactionForm", "client:component-export": "default" })} ${renderComponent($$result2, "AddNetworthForm", AddNetworthForm, { "client:load": true, "client:component-hydration": "load", "client:component-path": "/Users/user/hermes-workspace/self-financial-dashboard/src/components/AddNetworthForm", "client:component-export": "default" })} </div> ${renderComponent($$result2, "Card", Card, {}, { "default": ($$result3) => renderTemplate` ${renderComponent($$result3, "CardHeader", CardHeader, {}, { "default": ($$result4) => renderTemplate` ${renderComponent($$result4, "CardTitle", CardTitle, {}, { "default": ($$result5) => renderTemplate`Data Management` })} ${renderComponent($$result4, "CardDescription", CardDescription, {}, { "default": ($$result5) => renderTemplate`Export or back up your financial data` })} ` })} ${renderComponent($$result3, "CardContent", CardContent, {}, { "default": ($$result4) => renderTemplate` <div class="flex flex-col sm:flex-row gap-3"> ${renderComponent($$result4, "Button", Button, { "asChild": true }, { "default": ($$result5) => renderTemplate` <a href="/api/export">Export All Data (JSON)</a> ` })} </div> <p class="text-xs text-muted-foreground mt-3">
 Data is stored in a local SQLite database. Export to back up your changes.
 </p> ` })} ` })} ` })}`;
-}, "/root/self-financial-dashboard/src/pages/add.astro", void 0);
+}, "/Users/user/hermes-workspace/self-financial-dashboard/src/pages/add.astro", void 0);
 
-const $$file = "/root/self-financial-dashboard/src/pages/add.astro";
+const $$file = "/Users/user/hermes-workspace/self-financial-dashboard/src/pages/add.astro";
 const $$url = "/add";
 
 const _page = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({

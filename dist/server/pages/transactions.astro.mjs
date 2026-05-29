@@ -1,15 +1,17 @@
 /* empty css                               */
-import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BVE5k6Zu.mjs';
+import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BN-0jZ66.mjs';
 import 'kleur/colors';
-import { B as Button, f as formatIdr, $ as $$Layout } from '../chunks/button_U3IufC2b.mjs';
+import { f as formatIdr, $ as $$Layout } from '../chunks/utils_BV3uP8cD.mjs';
 import { jsxs, jsx } from 'react/jsx-runtime';
 import { useState, useEffect, useMemo } from 'react';
-import { d as fetchCategories, I as Input, t as toggleTransactionDoneApi, q as deleteTransactionApi, r as updateTransactionApi, s as deleteTransactionsBulkApi } from '../chunks/input_BsChHIwv.mjs';
-import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_DxG8s1h0.mjs';
-import { B as Badge } from '../chunks/badge_DkaK0Sk2.mjs';
-import { C as Checkbox } from '../chunks/checkbox_BKYn_r45.mjs';
-import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_K0bQUR3q.mjs';
-import { c as getTransactions } from '../chunks/db_Bpk2-XLV.mjs';
+import { f as fetchCategories, v as toggleTransactionDoneApi, w as deleteTransactionApi, x as updateTransactionApi, y as deleteTransactionsBulkApi } from '../chunks/api_CHTFnAPN.mjs';
+import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_B7HsFEUM.mjs';
+import { I as Input } from '../chunks/input_CMjf0MNb.mjs';
+import { B as Button } from '../chunks/button_DWaBi1j-.mjs';
+import { B as Badge } from '../chunks/badge_Ck18rsVk.mjs';
+import { C as Checkbox } from '../chunks/checkbox_BpCKnwT9.mjs';
+import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_DvSVMMD5.mjs';
+import { c as getTransactions } from '../chunks/db_Ccs3-dKx.mjs';
 export { renderers } from '../renderers.mjs';
 
 function parseCreatedTime(tx) {
@@ -26,13 +28,17 @@ const TYPE_OPTIONS = [
 ];
 function TransactionTable({ transactions, showMonth = true }) {
   const getInitialState = () => {
-    if (typeof window === "undefined") return { page: 1, filterType: "all", filterMonth: "all", search: "" };
+    if (typeof window === "undefined") return { page: 1, filterType: "all", filterMonth: "all", search: "", dateFrom: "", dateTo: "", amountMin: "", amountMax: "" };
     const params = new URLSearchParams(window.location.search);
     return {
       page: Math.max(1, parseInt(params.get("page") || "1", 10) || 1),
       filterType: params.get("type") || "all",
       filterMonth: params.get("month") || "all",
-      search: params.get("search") || ""
+      search: params.get("search") || "",
+      dateFrom: params.get("dateFrom") || "",
+      dateTo: params.get("dateTo") || "",
+      amountMin: params.get("amountMin") || "",
+      amountMax: params.get("amountMax") || ""
     };
   };
   const initial = getInitialState();
@@ -40,6 +46,10 @@ function TransactionTable({ transactions, showMonth = true }) {
   const [filterType, setFilterType] = useState(initial.filterType);
   const [filterMonth, setFilterMonth] = useState(initial.filterMonth);
   const [search, setSearch] = useState(initial.search);
+  const [dateFrom, setDateFrom] = useState(initial.dateFrom);
+  const [dateTo, setDateTo] = useState(initial.dateTo);
+  const [amountMin, setAmountMin] = useState(initial.amountMin);
+  const [amountMax, setAmountMax] = useState(initial.amountMax);
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({});
   const [selected, setSelected] = useState(/* @__PURE__ */ new Set());
@@ -60,9 +70,17 @@ function TransactionTable({ transactions, showMonth = true }) {
     else params.delete("month");
     if (search.trim()) params.set("search", search.trim());
     else params.delete("search");
+    if (dateFrom) params.set("dateFrom", dateFrom);
+    else params.delete("dateFrom");
+    if (dateTo) params.set("dateTo", dateTo);
+    else params.delete("dateTo");
+    if (amountMin) params.set("amountMin", amountMin);
+    else params.delete("amountMin");
+    if (amountMax) params.set("amountMax", amountMax);
+    else params.delete("amountMax");
     const newUrl = `${window.location.pathname}${params.toString() ? "?" + params.toString() : ""}`;
     window.history.replaceState({}, "", newUrl);
-  }, [page, filterType, filterMonth, search]);
+  }, [page, filterType, filterMonth, search, dateFrom, dateTo, amountMin, amountMax]);
   const categoryMap = useMemo(() => {
     const map = {};
     categories.forEach((c) => {
@@ -100,6 +118,22 @@ function TransactionTable({ transactions, showMonth = true }) {
     filtered = filtered.filter(
       (t) => t.title.toLowerCase().includes(q) || t.category.toLowerCase().includes(q)
     );
+  }
+  if (dateFrom) {
+    const fromTime = new Date(dateFrom).getTime();
+    filtered = filtered.filter((t) => new Date(t.date).getTime() >= fromTime);
+  }
+  if (dateTo) {
+    const toTime = new Date(dateTo).getTime();
+    filtered = filtered.filter((t) => new Date(t.date).getTime() <= toTime);
+  }
+  if (amountMin) {
+    const min = Number(amountMin);
+    if (!isNaN(min)) filtered = filtered.filter((t) => t.amount >= min);
+  }
+  if (amountMax) {
+    const max = Number(amountMax);
+    if (!isNaN(max)) filtered = filtered.filter((t) => t.amount <= max);
   }
   const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
   const start = (page - 1) * rowsPerPage;
@@ -186,7 +220,109 @@ function TransactionTable({ transactions, showMonth = true }) {
           /* @__PURE__ */ jsx(SelectItem, { value: "all", children: "All Months" }),
           monthOptions.map((m) => /* @__PURE__ */ jsx(SelectItem, { value: m, children: m }, m))
         ] })
-      ] })
+      ] }),
+      /* @__PURE__ */ jsx(
+        Button,
+        {
+          size: "sm",
+          variant: "outline",
+          onClick: () => {
+            const exportData = filtered.map((t) => ({
+              date: t.date,
+              description: t.title,
+              amount: t.amount,
+              type: t.type,
+              category: t.category,
+              paid: t.done
+            }));
+            if (exportData.length === 0) {
+              alert("No transactions found for this month");
+              return;
+            }
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            const fileName = filterMonth !== "all" ? `transactions-${filterMonth}.json` : "transactions-all.json";
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+          },
+          children: "Export JSON"
+        }
+      )
+    ] }),
+    /* @__PURE__ */ jsxs("div", { className: "flex flex-col sm:flex-row gap-3 mb-4", children: [
+      /* @__PURE__ */ jsx(
+        Input,
+        {
+          type: "date",
+          placeholder: "From date",
+          value: dateFrom,
+          onChange: (e) => {
+            setDateFrom(e.target.value);
+            setPage(1);
+          },
+          className: "w-full sm:w-[150px]"
+        }
+      ),
+      /* @__PURE__ */ jsx(
+        Input,
+        {
+          type: "date",
+          placeholder: "To date",
+          value: dateTo,
+          onChange: (e) => {
+            setDateTo(e.target.value);
+            setPage(1);
+          },
+          className: "w-full sm:w-[150px]"
+        }
+      ),
+      /* @__PURE__ */ jsx(
+        Input,
+        {
+          type: "number",
+          placeholder: "Min amount",
+          value: amountMin,
+          onChange: (e) => {
+            setAmountMin(e.target.value);
+            setPage(1);
+          },
+          className: "w-full sm:w-[130px]"
+        }
+      ),
+      /* @__PURE__ */ jsx(
+        Input,
+        {
+          type: "number",
+          placeholder: "Max amount",
+          value: amountMax,
+          onChange: (e) => {
+            setAmountMax(e.target.value);
+            setPage(1);
+          },
+          className: "w-full sm:w-[130px]"
+        }
+      ),
+      /* @__PURE__ */ jsx(
+        Button,
+        {
+          size: "sm",
+          variant: "secondary",
+          onClick: () => {
+            setDateFrom("");
+            setDateTo("");
+            setAmountMin("");
+            setAmountMax("");
+            setPage(1);
+          },
+          className: "shrink-0",
+          children: "Clear Ranges"
+        }
+      )
     ] }),
     selected.size > 0 && /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3 mb-3", children: [
       /* @__PURE__ */ jsxs("span", { className: "text-sm text-slate-600 dark:text-slate-300", children: [
@@ -221,14 +357,12 @@ function TransactionTable({ transactions, showMonth = true }) {
         if (isEditing) {
           return /* @__PURE__ */ jsxs(TableRow, { className: "bg-muted/30", children: [
             /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(Checkbox, { checked: selected.has(row.id), disabled: true }) }),
-            /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsxs("label", { className: "inline-flex items-center cursor-pointer gap-2", children: [
+            /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
               /* @__PURE__ */ jsx(
-                "input",
+                Checkbox,
                 {
-                  type: "checkbox",
                   checked: !!editForm.done,
-                  onChange: (e) => handleChange("done", e.target.checked),
-                  className: "w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                  onCheckedChange: (v) => handleChange("done", !!v)
                 }
               ),
               /* @__PURE__ */ jsx("span", { className: "text-xs", children: editForm.done ? "Paid" : "Unpaid" })
@@ -378,10 +512,10 @@ function TransactionTable({ transactions, showMonth = true }) {
 
 const $$Transactions = createComponent(($$result, $$props, $$slots) => {
   const transactions = getTransactions();
-  return renderTemplate`${renderComponent($$result, "Layout", $$Layout, { "title": "Transactions" }, { "default": ($$result2) => renderTemplate` ${maybeRenderHead()}<div class="mb-6"> <h1 class="text-2xl font-bold">Transactions</h1> <p class="text-slate-500 dark:text-slate-400 text-sm">All cash and credit expenses</p> </div> <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6"> ${renderComponent($$result2, "TransactionTable", TransactionTable, { "transactions": transactions, "showMonth": true, "client:load": true, "client:component-hydration": "load", "client:component-path": "/root/self-financial-dashboard/src/components/TransactionTable", "client:component-export": "default" })} </div> ` })}`;
-}, "/root/self-financial-dashboard/src/pages/transactions.astro", void 0);
+  return renderTemplate`${renderComponent($$result, "Layout", $$Layout, { "title": "Transactions" }, { "default": ($$result2) => renderTemplate` ${maybeRenderHead()}<div class="mb-6"> <h1 class="text-2xl font-bold">Transactions</h1> <p class="text-slate-500 dark:text-slate-400 text-sm">All cash and credit expenses</p> </div> <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6"> ${renderComponent($$result2, "TransactionTable", TransactionTable, { "transactions": transactions, "showMonth": true, "client:load": true, "client:component-hydration": "load", "client:component-path": "/Users/user/hermes-workspace/self-financial-dashboard/src/components/TransactionTable", "client:component-export": "default" })} </div> ` })}`;
+}, "/Users/user/hermes-workspace/self-financial-dashboard/src/pages/transactions.astro", void 0);
 
-const $$file = "/root/self-financial-dashboard/src/pages/transactions.astro";
+const $$file = "/Users/user/hermes-workspace/self-financial-dashboard/src/pages/transactions.astro";
 const $$url = "/transactions";
 
 const _page = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({

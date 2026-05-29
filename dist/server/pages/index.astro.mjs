@@ -1,21 +1,24 @@
 /* empty css                               */
-import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BVE5k6Zu.mjs';
+import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BN-0jZ66.mjs';
 import 'kleur/colors';
-import { f as formatIdr, B as Button, $ as $$Layout } from '../chunks/button_U3IufC2b.mjs';
+import { f as formatIdr, $ as $$Layout } from '../chunks/utils_BV3uP8cD.mjs';
 import { jsx, jsxs } from 'react/jsx-runtime';
 import { useMemo, useState, useEffect } from 'react';
-import { I as Input, v as kickoffMonth, d as fetchCategories, b as fetchRecurringTransactions, t as toggleTransactionDoneApi, q as deleteTransactionApi, r as updateTransactionApi } from '../chunks/input_BsChHIwv.mjs';
+import { z as kickoffMonth, f as fetchCategories, i as fetchRecurringTransactions, v as toggleTransactionDoneApi, w as deleteTransactionApi, x as updateTransactionApi } from '../chunks/api_CHTFnAPN.mjs';
 import { Chart, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement, Filler } from 'chart.js';
 import { Bar, Doughnut, Line } from 'react-chartjs-2';
-import { N as NetworthChart } from '../chunks/NetworthChart_C8mZjxlD.mjs';
-import { C as Card, a as CardHeader, b as CardTitle, c as CardContent } from '../chunks/card_BFvb3mRx.mjs';
-import { B as Badge } from '../chunks/badge_DkaK0Sk2.mjs';
+import { N as NetworthChart } from '../chunks/NetworthChart_OJTqMG_T.mjs';
+import { C as Card, a as CardHeader, b as CardTitle, c as CardContent } from '../chunks/card_C3MBU-yw.mjs';
+import { B as Badge } from '../chunks/badge_Ck18rsVk.mjs';
 import { AlertTriangle, TrendingUp, TrendingDown, Receipt, CheckCircle, PiggyBank, Wallet } from 'lucide-react';
-import { L as Label } from '../chunks/label_DKfi430O.mjs';
-import { D as Dialog, a as DialogContent, b as DialogHeader, c as DialogTitle, d as DialogDescription } from '../chunks/dialog_CACMj91i.mjs';
-import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_DxG8s1h0.mjs';
-import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_K0bQUR3q.mjs';
-import { c as getTransactions, e as getNetworth, f as getMonthlySummary, h as db } from '../chunks/db_Bpk2-XLV.mjs';
+import { B as Button } from '../chunks/button_DWaBi1j-.mjs';
+import { I as Input } from '../chunks/input_CMjf0MNb.mjs';
+import { L as Label } from '../chunks/label_Bi9dl2vq.mjs';
+import { D as Dialog, a as DialogContent, b as DialogHeader, c as DialogTitle, d as DialogDescription } from '../chunks/dialog_rV5Ycyo9.mjs';
+import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_B7HsFEUM.mjs';
+import { C as Checkbox } from '../chunks/checkbox_BpCKnwT9.mjs';
+import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_DvSVMMD5.mjs';
+import { c as getTransactions, e as getNetworth, f as getMonthlySummary, h as db } from '../chunks/db_Ccs3-dKx.mjs';
 export { renderers } from '../renderers.mjs';
 
 Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -85,7 +88,7 @@ const FALLBACK_COLORS$2 = [
   "#6366f1"
 ];
 function CategoryChart({ data, categories = [], onCategoryClick }) {
-  const entries = Object.entries(data).sort((a, b) => b[1] - a[1]).slice(0, 10);
+  const entries = Object.entries(data).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]).slice(0, 10);
   const labels = entries.map(([k]) => k);
   const values = entries.map(([_, v]) => v);
   const colorMap = new Map(categories.map((c) => [c.name, c.color]));
@@ -161,12 +164,13 @@ function CategoryTrendChart({ data, categories = [] }) {
         categoryTotals[cat] = (categoryTotals[cat] || 0) + amount;
       });
     });
-    const topCategories = Object.entries(categoryTotals).sort((a, b) => b[1] - a[1]).slice(0, 6).map(([name]) => name);
+    const topCategories = Object.entries(categoryTotals).filter(([_, total]) => total > 0).sort((a, b) => b[1] - a[1]).map(([name]) => name);
     const datasets2 = topCategories.map((cat, idx) => {
       const color = colorMap.get(cat) || FALLBACK_COLORS$1[idx % FALLBACK_COLORS$1.length];
       return {
         label: cat,
-        data: sortedData.map((summary) => summary.category_totals?.[cat] ?? 0),
+        data: sortedData.map((summary) => summary.category_totals?.[cat] || null),
+        spanGaps: true,
         borderColor: color,
         backgroundColor: color,
         pointRadius: 3,
@@ -673,6 +677,7 @@ function Dashboard({ transactions, networth, summaries }) {
     return networth.filter((n) => n.month === filterMonth);
   }, [filterMonth, networth, isAllTime]);
   const filteredTransactions = useMemo(() => {
+    if (!activeSummary) return [];
     if (isAllTime) return transactions.filter((t) => t.month === activeSummary.month);
     return transactions.filter((t) => t.month === filterMonth);
   }, [filterMonth, transactions, activeSummary, isAllTime]);
@@ -717,22 +722,27 @@ function Dashboard({ transactions, networth, summaries }) {
   const [kickoffOpen, setKickoffOpen] = useState(false);
   useEffect(() => {
     const today = /* @__PURE__ */ new Date();
-    if (today.getDate() < 26) return;
+    if (today.getDate() < 21) return;
     const latest2 = summaries[summaries.length - 1];
     if (!latest2) return;
     const latestDate = /* @__PURE__ */ new Date(latest2.month + " 1");
     const nextDate = new Date(latestDate);
     nextDate.setMonth(nextDate.getMonth() + 1);
     const nextMonthStr = nextDate.toLocaleDateString("en-US", { month: "long", year: "numeric" });
-    const hasNext = summaries.some((s) => s.month === nextMonthStr);
-    if (hasNext) return;
-    fetchRecurringTransactions().then((recurring) => {
-      const activeCount = recurring.filter((r) => r.active).length;
-      setKickoffBanner({
-        show: true,
-        currentMonth: latest2.month,
-        nextMonth: nextMonthStr,
-        recurringCount: activeCount
+    fetch("/api/kickoff").then((res) => res.json()).then((status) => {
+      if (status.hasNextMonth) {
+        setKickoffBanner(null);
+        return;
+      }
+      fetchRecurringTransactions().then((recurring) => {
+        const activeCount = recurring.filter((r) => r.active).length;
+        setKickoffBanner({
+          show: true,
+          currentMonth: latest2.month,
+          nextMonth: status.nextMonth || nextMonthStr,
+          recurringCount: activeCount
+        });
+      }).catch(() => {
       });
     }).catch(() => {
     });
@@ -764,7 +774,7 @@ function Dashboard({ transactions, networth, summaries }) {
   };
   return /* @__PURE__ */ jsxs("div", { className: "space-y-6", children: [
     /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3", children: [
-      /* @__PURE__ */ jsx("label", { className: "text-sm font-medium text-slate-600 dark:text-slate-300", children: "Period:" }),
+      /* @__PURE__ */ jsx(Label, { className: "text-sm font-medium text-slate-600 dark:text-slate-300", children: "Period:" }),
       /* @__PURE__ */ jsxs(Select, { value: filterMonth, onValueChange: (v) => {
         setFilterMonth(v);
         setTxPage(1);
@@ -837,7 +847,7 @@ function Dashboard({ transactions, networth, summaries }) {
         networth,
         summaries,
         categories,
-        activeMonth: isAllTime ? activeSummary.month : filterMonth
+        activeMonth: isAllTime ? activeSummary?.month : filterMonth
       }
     ),
     /* @__PURE__ */ jsxs("div", { className: "bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6", children: [
@@ -961,14 +971,12 @@ function Dashboard({ transactions, networth, summaries }) {
           const dateStr = isNaN(createdDate.getTime()) ? row.date : createdDate.toLocaleDateString("id-ID", { year: "numeric", month: "short", day: "numeric" });
           if (isEditing) {
             return /* @__PURE__ */ jsxs(TableRow, { className: "bg-muted/30", children: [
-              /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsxs("label", { className: "inline-flex items-center cursor-pointer gap-2", children: [
+              /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
                 /* @__PURE__ */ jsx(
-                  "input",
+                  Checkbox,
                   {
-                    type: "checkbox",
                     checked: !!editForm.done,
-                    onChange: (e) => handleChange("done", e.target.checked),
-                    className: "w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                    onCheckedChange: (v) => handleChange("done", !!v)
                   }
                 ),
                 /* @__PURE__ */ jsx("span", { className: "text-xs", children: editForm.done ? "Paid" : "Unpaid" })
@@ -1119,7 +1127,7 @@ function Dashboard({ transactions, networth, summaries }) {
         /* @__PURE__ */ jsx(NetworthChart, { data: filteredNetworth })
       ] }),
       /* @__PURE__ */ jsxs("div", { className: "bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6", children: [
-        /* @__PURE__ */ jsx("h2", { className: "text-lg font-semibold mb-4", children: isAllTime ? "Latest Month Categories" : `${latest.month} Categories` }),
+        /* @__PURE__ */ jsx("h2", { className: "text-lg font-semibold mb-4", children: isAllTime ? "Latest Month Categories" : `${latest?.month ?? ""} Categories` }),
         latest?.category_totals && Object.keys(latest.category_totals).length > 0 ? /* @__PURE__ */ jsx(CategoryChart, { data: latest.category_totals, categories, onCategoryClick: openCategoryDialog }) : /* @__PURE__ */ jsx("p", { className: "text-slate-500 text-sm", children: "No category data available." })
       ] })
     ] }),
@@ -1127,14 +1135,14 @@ function Dashboard({ transactions, networth, summaries }) {
       /* @__PURE__ */ jsxs("div", { className: "bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6", children: [
         /* @__PURE__ */ jsxs("p", { className: "text-sm font-medium text-slate-500 dark:text-slate-400", children: [
           "Total Income ",
-          isAllTime ? "(Latest)" : `(${latest.month})`
+          isAllTime ? "(Latest)" : `(${latest?.month ?? ""})`
         ] }),
         /* @__PURE__ */ jsx("p", { className: "text-2xl font-bold mt-2", children: formatIdr(latest?.income ?? 0) })
       ] }),
       /* @__PURE__ */ jsxs("div", { className: "bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6", children: [
         /* @__PURE__ */ jsxs("p", { className: "text-sm font-medium text-slate-500 dark:text-slate-400", children: [
           "Total Outcome ",
-          isAllTime ? "(Latest)" : `(${latest.month})`
+          isAllTime ? "(Latest)" : `(${latest?.month ?? ""})`
         ] }),
         /* @__PURE__ */ jsx("p", { className: "text-2xl font-bold mt-2", children: formatIdr(latest?.outcome.total ?? 0) }),
         /* @__PURE__ */ jsx("p", { className: "text-xs text-slate-400 mt-1", children: "Cash + Credit Payment" })
@@ -1149,7 +1157,7 @@ function Dashboard({ transactions, networth, summaries }) {
       /* @__PURE__ */ jsxs("div", { className: "bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6", children: [
         /* @__PURE__ */ jsxs("p", { className: "text-sm font-medium text-slate-500 dark:text-slate-400", children: [
           "Savings Rate ",
-          isAllTime ? "(Latest)" : `(${latest.month})`
+          isAllTime ? "(Latest)" : `(${latest?.month ?? ""})`
         ] }),
         /* @__PURE__ */ jsxs("p", { className: "text-2xl font-bold mt-2", style: { color: savingsRate < 0 ? "#ef4444" : void 0 }, children: [
           savingsRate.toFixed(1),
@@ -1163,10 +1171,10 @@ function Dashboard({ transactions, networth, summaries }) {
         /* @__PURE__ */ jsxs(DialogTitle, { children: [
           selectedCategory,
           " — ",
-          isAllTime ? activeSummary.month : filterMonth
+          isAllTime ? activeSummary?.month : filterMonth
         ] }),
         /* @__PURE__ */ jsx(DialogDescription, { children: (() => {
-          const targetMonth = isAllTime ? activeSummary.month : filterMonth;
+          const targetMonth = isAllTime ? activeSummary?.month : filterMonth;
           const catTxs = transactions.filter((t) => t.category === selectedCategory && t.month === targetMonth);
           const total = catTxs.reduce((sum, t) => sum + t.amount, 0);
           return `${catTxs.length} transaction${catTxs.length !== 1 ? "s" : ""} • Total: ${formatIdr(total)}`;
@@ -1185,7 +1193,7 @@ function Dashboard({ transactions, networth, summaries }) {
         )
       ] }),
       /* @__PURE__ */ jsx("div", { className: "mt-2", children: (() => {
-        const targetMonth = isAllTime ? activeSummary.month : filterMonth;
+        const targetMonth = isAllTime ? activeSummary?.month : filterMonth;
         const catTxs = transactions.filter((t) => t.category === selectedCategory && t.month === targetMonth).sort((a, b) => parseCreatedTime(b).getTime() - parseCreatedTime(a).getTime());
         if (catTxs.length === 0) {
           return /* @__PURE__ */ jsx("p", { className: "text-sm text-slate-500", children: "No transactions found for this category." });
@@ -1228,10 +1236,10 @@ const $$Index = createComponent(($$result, $$props, $$slots) => {
   }
   return renderTemplate`${renderComponent($$result, "Layout", $$Layout, { "title": "Financial Dashboard" }, { "default": ($$result2) => renderTemplate` ${maybeRenderHead()}<div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"> <div> <h1 class="text-2xl font-bold">Dashboard</h1> <p class="text-slate-500 dark:text-slate-400 text-sm">Overview of income, outcome, and networth</p> </div> <a href="/add" class="px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-700 transition">
 + Add Data
-</a> </div> ${renderComponent($$result2, "Dashboard", Dashboard, { "transactions": transactions, "networth": networth, "summaries": summaries, "client:load": true, "client:component-hydration": "load", "client:component-path": "/root/self-financial-dashboard/src/components/Dashboard", "client:component-export": "default" })} ` })}`;
-}, "/root/self-financial-dashboard/src/pages/index.astro", void 0);
+</a> </div> ${renderComponent($$result2, "Dashboard", Dashboard, { "transactions": transactions, "networth": networth, "summaries": summaries, "client:load": true, "client:component-hydration": "load", "client:component-path": "/Users/user/hermes-workspace/self-financial-dashboard/src/components/Dashboard", "client:component-export": "default" })} ` })}`;
+}, "/Users/user/hermes-workspace/self-financial-dashboard/src/pages/index.astro", void 0);
 
-const $$file = "/root/self-financial-dashboard/src/pages/index.astro";
+const $$file = "/Users/user/hermes-workspace/self-financial-dashboard/src/pages/index.astro";
 const $$url = "";
 
 const _page = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({

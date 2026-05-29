@@ -68,9 +68,25 @@ export function initSchema() {
       created_at TEXT DEFAULT CURRENT_TIMESTAMP
     );
 
+    CREATE TABLE IF NOT EXISTS goals (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      description TEXT DEFAULT '',
+      target_amount REAL NOT NULL DEFAULT 0,
+      current_amount REAL NOT NULL DEFAULT 0,
+      start_date TEXT NOT NULL,
+      target_date TEXT NOT NULL,
+      color TEXT NOT NULL DEFAULT '#6366f1',
+      icon TEXT NOT NULL DEFAULT 'savings',
+      completed INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+    );
+
     CREATE INDEX IF NOT EXISTS idx_tx_month ON transactions(month);
     CREATE INDEX IF NOT EXISTS idx_tx_type ON transactions(type);
     CREATE INDEX IF NOT EXISTS idx_tx_date ON transactions(date);
+    CREATE INDEX IF NOT EXISTS idx_goals_completed ON goals(completed);
   `);
 }
 
@@ -347,4 +363,63 @@ export function recalcNetworthMoM() {
     }
     prev = row.total;
   }
+}
+
+// ─── Goals CRUD ────────────────────────────────────────────────────────────
+
+export function getGoals() {
+  return db.prepare('SELECT * FROM goals ORDER BY completed ASC, target_date ASC').all() as any[];
+}
+
+export function getGoalById(id: number) {
+  return db.prepare('SELECT * FROM goals WHERE id = ?').get(id) as any;
+}
+
+export function insertGoal(goal: {
+  name: string;
+  description?: string;
+  target_amount: number;
+  current_amount?: number;
+  start_date: string;
+  target_date: string;
+  color?: string;
+  icon?: string;
+}) {
+  const stmt = db.prepare(`
+    INSERT INTO goals (name, description, target_amount, current_amount, start_date, target_date, color, icon, completed, updated_at)
+    VALUES (@name, @description, @target_amount, @current_amount, @start_date, @target_date, @color, @icon, 0, CURRENT_TIMESTAMP)
+  `);
+  const result = stmt.run({
+    name: goal.name,
+    description: goal.description ?? '',
+    target_amount: Number(goal.target_amount),
+    current_amount: Number(goal.current_amount ?? 0),
+    start_date: goal.start_date,
+    target_date: goal.target_date,
+    color: goal.color ?? '#6366f1',
+    icon: goal.icon ?? 'savings',
+  });
+  return result.lastInsertRowid as number;
+}
+
+export function updateGoal(id: number, goal: Partial<{
+  name: string;
+  description: string;
+  target_amount: number;
+  current_amount: number;
+  start_date: string;
+  target_date: string;
+  color: string;
+  icon: string;
+  completed: boolean;
+}>) {
+  const fields = Object.keys(goal).filter((k) => k !== 'id');
+  if (fields.length === 0) return;
+  const setClause = fields.map((f) => `${f} = @${f}`).join(', ');
+  const stmt = db.prepare(`UPDATE goals SET ${setClause}, updated_at = CURRENT_TIMESTAMP WHERE id = @id`);
+  stmt.run({ ...goal, id });
+}
+
+export function deleteGoal(id: number) {
+  db.prepare('DELETE FROM goals WHERE id = ?').run(id);
 }

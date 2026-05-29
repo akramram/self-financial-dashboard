@@ -184,6 +184,21 @@ export interface KickoffStatus {
   hasNextMonth: boolean;
 }
 
+export interface FinancialGoal {
+  id: number;
+  name: string;
+  description: string;
+  target_amount: number;
+  current_amount: number;
+  start_date: string;
+  target_date: string;
+  color: string;
+  icon: string;
+  completed: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 export async function fetchKickoffStatus(): Promise<KickoffStatus> {
   const res = await fetch('/api/kickoff');
   return res.json();
@@ -222,4 +237,36 @@ export async function importDataApi(type: 'transactions' | 'networth' | 'monthly
     throw new Error(err.error || 'Import failed');
   }
   return res.json();
+}
+
+// ─── Goals API ───────────────────────────────────────────────────────────────
+
+export async function fetchGoals(): Promise<FinancialGoal[]> {
+  const res = await fetch('/api/goals');
+  return res.json();
+}
+
+export async function createGoalApi(goal: Omit<FinancialGoal, 'id' | 'completed' | 'created_at' | 'updated_at'>): Promise<{ id: number }> {
+  const res = await fetch('/api/goals', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(goal),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: 'Failed to create goal' }));
+    throw new Error(err.error || 'Failed to create goal');
+  }
+  return res.json();
+}
+
+export async function updateGoalApi(id: number, goal: Partial<FinancialGoal>): Promise<void> {
+  await fetch(`/api/goals/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(goal),
+  });
+}
+
+export async function deleteGoalApi(id: number): Promise<void> {
+  await fetch(`/api/goals/${id}`, { method: 'DELETE' });
 }

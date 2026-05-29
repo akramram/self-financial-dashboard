@@ -1,4 +1,4 @@
-import { B as deleteTransactionsBulk, c as getTransactions, C as findDuplicateTransaction, j as insertTransaction } from '../../chunks/db_Bpk2-XLV.mjs';
+import { G as deleteTransactionsBulk, c as getTransactions, H as findDuplicateTransaction, o as insertTransaction } from '../../chunks/db_Ccs3-dKx.mjs';
 export { renderers } from '../../renderers.mjs';
 
 const GET = async ({ request }) => {
@@ -6,7 +6,8 @@ const GET = async ({ request }) => {
   const month = url.searchParams.get("month") || void 0;
   const type = url.searchParams.get("type") || void 0;
   const search = url.searchParams.get("search") || void 0;
-  const rows = getTransactions({ month, type, search });
+  const category = url.searchParams.get("category") || void 0;
+  const rows = getTransactions({ month, type, search, category });
   return new Response(JSON.stringify(rows), {
     headers: { "Content-Type": "application/json" }
   });

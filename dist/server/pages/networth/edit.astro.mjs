@@ -1,13 +1,15 @@
 /* empty css                                  */
-import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../../chunks/astro/server_BVE5k6Zu.mjs';
+import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../../chunks/astro/server_BN-0jZ66.mjs';
 import 'kleur/colors';
-import { B as Button, f as formatIdr, $ as $$Layout } from '../../chunks/button_U3IufC2b.mjs';
+import { f as formatIdr, $ as $$Layout } from '../../chunks/utils_BV3uP8cD.mjs';
 import { jsx, jsxs } from 'react/jsx-runtime';
 import { useState, useEffect } from 'react';
-import { a as fetchNetworth, I as Input, u as updateNetworthApi } from '../../chunks/input_BsChHIwv.mjs';
-import { C as Card, a as CardHeader, b as CardTitle, c as CardContent } from '../../chunks/card_BFvb3mRx.mjs';
-import { L as Label } from '../../chunks/label_DKfi430O.mjs';
-import { B as Badge } from '../../chunks/badge_DkaK0Sk2.mjs';
+import { a as fetchNetworth, h as updateNetworthApi } from '../../chunks/api_CHTFnAPN.mjs';
+import { C as Card, a as CardHeader, b as CardTitle, c as CardContent } from '../../chunks/card_C3MBU-yw.mjs';
+import { I as Input } from '../../chunks/input_CMjf0MNb.mjs';
+import { B as Button } from '../../chunks/button_DWaBi1j-.mjs';
+import { L as Label } from '../../chunks/label_Bi9dl2vq.mjs';
+import { B as Badge } from '../../chunks/badge_Ck18rsVk.mjs';
 export { renderers } from '../../renderers.mjs';
 
 function NetworthEditForm() {
@@ -122,10 +124,10 @@ function NetworthEditForm() {
 }
 
 const $$Edit = createComponent(($$result, $$props, $$slots) => {
-  return renderTemplate`${renderComponent($$result, "Layout", $$Layout, { "title": "Edit Networth" }, { "default": ($$result2) => renderTemplate` ${maybeRenderHead()}<div class="mb-6"> <h1 class="text-2xl font-bold">Edit Networth</h1> <p class="text-slate-500 dark:text-slate-400 text-sm">Modify the investment breakdown for a month</p> </div> <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6"> ${renderComponent($$result2, "NetworthEditForm", NetworthEditForm, { "client:load": true, "client:component-hydration": "load", "client:component-path": "/root/self-financial-dashboard/src/components/NetworthEditForm", "client:component-export": "default" })} </div> ` })}`;
-}, "/root/self-financial-dashboard/src/pages/networth/edit.astro", void 0);
+  return renderTemplate`${renderComponent($$result, "Layout", $$Layout, { "title": "Edit Networth" }, { "default": ($$result2) => renderTemplate` ${maybeRenderHead()}<div class="mb-6"> <h1 class="text-2xl font-bold">Edit Networth</h1> <p class="text-slate-500 dark:text-slate-400 text-sm">Modify the investment breakdown for a month</p> </div> <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6"> ${renderComponent($$result2, "NetworthEditForm", NetworthEditForm, { "client:load": true, "client:component-hydration": "load", "client:component-path": "/Users/user/hermes-workspace/self-financial-dashboard/src/components/NetworthEditForm", "client:component-export": "default" })} </div> ` })}`;
+}, "/Users/user/hermes-workspace/self-financial-dashboard/src/pages/networth/edit.astro", void 0);
 
-const $$file = "/root/self-financial-dashboard/src/pages/networth/edit.astro";
+const $$file = "/Users/user/hermes-workspace/self-financial-dashboard/src/pages/networth/edit.astro";
 const $$url = "/networth/edit";
 
 const _page = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
