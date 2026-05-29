@@ -34,9 +34,11 @@ export const POST: APIRoute = async ({ request }) => {
     });
   }
 
-  // Parse month to get date
+  // Parse month to get date — periods start on the 21st (salary cycle)
   const monthDate = new Date(month + ' 1');
-  const dateStr = monthDate.toISOString().slice(0, 10);
+  const mm = String(monthDate.getMonth() + 1).padStart(2, '0');
+  const yyyy = monthDate.getFullYear();
+  const dateStr = `${yyyy}-${mm}-21`;
 
   // Check if month already has income
   const existingIncome = getMonthlyIncomeByMonth(month);

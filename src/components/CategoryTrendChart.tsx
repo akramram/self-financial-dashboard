@@ -58,7 +58,8 @@ export default function CategoryTrendChart({ data, categories = [] }: Props) {
       const color = colorMap.get(cat) || FALLBACK_COLORS[idx % FALLBACK_COLORS.length];
       return {
         label: cat,
-        data: sortedData.map((summary) => summary.category_totals?.[cat] ?? 0),
+        data: sortedData.map((summary) => summary.category_totals?.[cat] || null),
+        spanGaps: true,
         borderColor: color,
         backgroundColor: color,
         pointRadius: 3,

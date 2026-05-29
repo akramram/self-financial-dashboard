@@ -17,6 +17,8 @@ export function formatNumber(n: number | undefined | null): string {
 
 /**
  * Returns the current active billing period based on the 21st-of-month kickoff rule.
+ * Each period runs from the 21st of a month to the 20th of the next month.
+ * The period is named after the month it ends in (the 20th).
  * If today is >= 21 → next calendar month.
  * If today is < 21  → current calendar month.
  */
@@ -24,7 +26,7 @@ export function getActivePeriod(): { month: string; year: number } {
   const now = new Date();
   const day = now.getDate();
   if (day >= 21) {
-    // Roll to next month
+    // New period started today — it ends next month
     const next = new Date(now.getFullYear(), now.getMonth() + 1, 1);
     return {
       month: next.toLocaleDateString('en-US', { month: 'long' }),

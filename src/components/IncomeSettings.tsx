@@ -80,7 +80,8 @@ export default function IncomeSettings() {
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     const monthName = `${newMonth} ${newYear}`;
-    const date = `${newYear}-${String(MONTH_OPTIONS.indexOf(newMonth) + 1).padStart(2, '0')}-01`;
+    const monthIdx = MONTH_OPTIONS.indexOf(newMonth) + 1;
+    const date = `${newYear}-${String(monthIdx).padStart(2, '0')}-21`;
     const incomeVal = Number(newIncome);
     if (!newIncome || isNaN(incomeVal)) return;
 

@@ -71,7 +71,8 @@ export default function AddNetworthForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const monthName = `${month} ${year}`;
-    const date = `${year}-${String(MONTH_OPTIONS.indexOf(month) + 1).padStart(2, '0')}-01`;
+    const monthIdx = MONTH_OPTIONS.indexOf(month) + 1;
+    const date = `${year}-${String(monthIdx).padStart(2, '0')}-21`;
     const total = Object.values(breakdown).reduce((s, v) => s + v, 0);
 
     await createNetworth({
