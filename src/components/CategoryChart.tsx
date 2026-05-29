@@ -18,7 +18,7 @@ interface Props {
 }
 
 export default function CategoryChart({ data, categories = [], onCategoryClick }: Props) {
-  const entries = Object.entries(data).sort((a, b) => b[1] - a[1]).slice(0, 10);
+  const entries = Object.entries(data).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]).slice(0, 10);
   const labels = entries.map(([k]) => k);
   const values = entries.map(([_, v]) => v);
 

@@ -228,7 +228,7 @@ export function deleteCategory(id: number) {
 
 export function getMonthlySummary() {
   const months = db.prepare(`
-    SELECT DISTINCT month, date FROM transactions ORDER BY date ASC
+    SELECT DISTINCT month, MIN(date) as date FROM transactions GROUP BY month ORDER BY MIN(date) ASC
   `).all() as any[];
 
   const summaries = [];

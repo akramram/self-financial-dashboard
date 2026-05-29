@@ -55,7 +55,8 @@ export default function AddTransactionForm() {
 
   const buildPayload = () => {
     const monthName = `${month} ${year}`;
-    const date = `${year}-${String(MONTH_OPTIONS.indexOf(month) + 1).padStart(2, '0')}-01`;
+    const monthIdx = MONTH_OPTIONS.indexOf(month) + 1;
+    const date = `${year}-${String(monthIdx).padStart(2, '0')}-21`;
     return {
       month: monthName,
       date,
