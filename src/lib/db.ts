@@ -423,3 +423,122 @@ export function updateGoal(id: number, goal: Partial<{
 export function deleteGoal(id: number) {
   db.prepare('DELETE FROM goals WHERE id = ?').run(id);
 }
+
+// ─── Analytics helpers ──────────────────────────────────────────────────────
+
+export function getDailySpending(month: string) {
+  return db.prepare(`
+    SELECT
+      SUBSTR(COALESCE(created_time, date), 1, 10) AS day,
+      COUNT(*) AS tx_count,
+      SUM(CASE WHEN done = 1 THEN amount ELSE 0 END) AS paid_amount,
+      SUM(amount) AS total_amount
+    FROM transactions
+    WHERE month = ?
+    GROUP BY day
+    ORDER BY day ASC
+  `).all(month) as any[];
+}
+
+export function getDayOfWeekSpending() {
+  return db.prepare(`
+    SELECT
+      CAST(strftime('%w', COALESCE(created_time, date)) AS INTEGER) AS dow,
+      COUNT(*) AS tx_count,
+      SUM(CASE WHEN done = 1 THEN amount ELSE 0 END) AS paid_amount,
+      AVG(CASE WHEN done = 1 THEN amount ELSE 0 END) AS avg_paid
+    FROM transactions
+    WHERE done = 1
+    GROUP BY dow
+    ORDER BY dow ASC
+  `).all() as any[];
+}
+
+export function getTransactionStats(month: string) {
+  const rows = db.prepare(`
+    SELECT amount, category, title, type, done, COALESCE(created_time, date) AS tx_date
+    FROM transactions WHERE month = ?
+  `).all(month) as any[];
+
+  if (rows.length === 0) {
+    return {
+      total: 0, count: 0, paid_count: 0, unpaid_count: 0,
+      avg_amount: 0, median_amount: 0, min_amount: 0, max_amount: 0,
+      largest_title: '', smallest_title: '',
+      paid_amount: 0, unpaid_amount: 0,
+    };
+  }
+
+  const paid = rows.filter((r) => r.done);
+  const paidAmounts = paid.map((r) => r.amount).sort((a, b) => a - b);
+  const allAmounts = rows.map((r) => r.amount).sort((a, b) => a - b);
+
+  const median = (arr: number[]) => {
+    if (arr.length === 0) return 0;
+    const mid = Math.floor(arr.length / 2);
+    return arr.length % 2 !== 0 ? arr[mid] : (arr[mid - 1] + arr[mid]) / 2;
+  };
+
+  const largest = paid.reduce((max, r) => r.amount > max.amount ? r : max, paid[0]);
+  const smallest = paid.length > 0 ? paid.reduce((min, r) => r.amount < min.amount ? r : min, paid[0]) : rows[0];
+
+  return {
+    total: paid.reduce((s, r) => s + r.amount, 0),
+    count: rows.length,
+    paid_count: paid.length,
+    unpaid_count: rows.length - paid.length,
+    avg_amount: paid.length > 0 ? paid.reduce((s, r) => s + r.amount, 0) / paid.length : 0,
+    median_amount: median(paidAmounts),
+    min_amount: paid.length > 0 ? paidAmounts[0] : 0,
+    max_amount: paid.length > 0 ? paidAmounts[paidAmounts.length - 1] : 0,
+    largest_title: largest?.title ?? '',
+    smallest_title: smallest?.title ?? '',
+    paid_amount: paid.reduce((s, r) => s + r.amount, 0),
+    unpaid_amount: rows.filter((r) => !r.done).reduce((s, r) => s + r.amount, 0),
+  };
+}
+
+export function getSpendingVelocity(month: string) {
+  // Get spending for current and previous months to compute velocity
+  const months = db.prepare(`
+    SELECT DISTINCT month FROM transactions ORDER BY MIN(COALESCE(created_time, date)) DESC LIMIT 4
+  `).all() as any[];
+
+  const monthOrder = months.map((m) => m.month);
+  const currentIdx = monthOrder.indexOf(month);
+
+  const currentDaily = getDailySpending(month);
+  const daysWithSpending = currentDaily.filter((d) => d.paid_amount > 0);
+
+  // Compute average daily spend from history
+  const allDays: { month: string; day: string; paid_amount: number }[] = [];
+  for (const m of monthOrder) {
+    const daily = getDailySpending(m);
+    daily.forEach((d) => allDays.push({ month: m, day: d.day, paid_amount: d.paid_amount }));
+  }
+
+  const allSpendingDays = allDays.filter((d) => d.paid_amount > 0);
+  const historicalAvgDaily = allSpendingDays.length > 0
+    ? allSpendingDays.reduce((s, d) => s + d.paid_amount, 0) / allSpendingDays.length
+    : 0;
+
+  const currentAvgDaily = daysWithSpending.length > 0
+    ? daysWithSpending.reduce((s, d) => s + d.paid_amount, 0) / daysWithSpending.length
+    : 0;
+
+  // Compute cumulative spending to detect velocity trend
+  const cumulative = currentDaily.reduce((s, d) => s + d.paid_amount, 0);
+  const totalDaysInPeriod = currentDaily.length || 1;
+
+  return {
+    current_avg_daily: currentAvgDaily,
+    historical_avg_daily: historicalAvgDaily,
+    days_with_spending: daysWithSpending.length,
+    days_tracked: currentDaily.length,
+    cumulative_spend: cumulative,
+    projected_monthly: currentAvgDaily * 30, // rough projection
+    velocity_vs_history: historicalAvgDaily > 0
+      ? ((currentAvgDaily - historicalAvgDaily) / historicalAvgDaily) * 100
+      : 0,
+  };
+}
