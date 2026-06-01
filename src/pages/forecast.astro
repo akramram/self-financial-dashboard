@@ -1,0 +1,15 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Forecast from '../components/Forecast';
+---
+
+<Layout title="Forecast & Predictions - Financial Dashboard">
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold">Forecast & Predictions</h1>
+    <p class="text-slate-500 dark:text-slate-400 text-sm">
+      Projected end-of-month spending, budget burn rate alerts, credit utilization tracking, and spending velocity analysis.
+    </p>
+  </div>
+
+  <Forecast client:load />
+</Layout>

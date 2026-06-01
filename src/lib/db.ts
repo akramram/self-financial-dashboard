@@ -498,6 +498,75 @@ export function getTransactionStats(month: string) {
   };
 }
 
+// ─── Forecast helpers ──────────────────────────────────────────────────────
+
+export function getMonthlySpendingByCategory(month: string) {
+  const rows = db.prepare(`
+    SELECT category, type, SUM(CASE WHEN done = 1 THEN amount ELSE 0 END) AS spent,
+           SUM(amount) AS total_amount, COUNT(*) AS tx_count
+    FROM transactions WHERE month = ?
+    GROUP BY category, type
+  `).all(month) as any[];
+  return rows;
+}
+
+export function getCreditStatus(month: string) {
+  const row = db.prepare(`
+    SELECT
+      SUM(CASE WHEN type = 'credit_expense' AND done = 1 THEN amount ELSE 0 END) AS credit_expenses_paid,
+      SUM(CASE WHEN type = 'credit_expense' THEN amount ELSE 0 END) AS credit_expenses_total,
+      SUM(CASE WHEN type = 'credit_payment' AND done = 1 THEN amount ELSE 0 END) AS credit_payments_paid,
+      SUM(CASE WHEN type = 'credit_payment' THEN amount ELSE 0 END) AS credit_payments_total
+    FROM transactions WHERE month = ?
+  `).get(month) as any;
+  return row || { credit_expenses_paid: 0, credit_expenses_total: 0, credit_payments_paid: 0, credit_payments_total: 0 };
+}
+
+export function getRecentMonthlyTotals(limit = 6) {
+  const months = db.prepare(`
+    SELECT DISTINCT month, MIN(COALESCE(created_time, date)) AS month_start
+    FROM transactions GROUP BY month ORDER BY MIN(COALESCE(created_time, date)) DESC LIMIT ?
+  `).all(limit) as any[];
+
+  const result = [];
+  for (const { month, month_start } of months) {
+    const row = db.prepare(`
+      SELECT SUM(CASE WHEN done = 1 THEN amount ELSE 0 END) AS total,
+             MIN(COALESCE(created_time, date)) AS earliest,
+             MAX(COALESCE(created_time, date)) AS latest
+      FROM transactions WHERE month = ?
+    `).get(month) as any;
+    if (row && row.earliest) {
+      const earliest = new Date(row.earliest);
+      const latest = new Date(row.latest);
+      const days = Math.max(1, Math.ceil((latest.getTime() - earliest.getTime()) / (1000 * 60 * 60 * 24)) + 1);
+      result.push({
+        month,
+        total: row.total || 0,
+        days,
+        daily_avg: (row.total || 0) / days,
+        month_start,
+      });
+    }
+  }
+  return result.reverse(); // chronological order
+}
+
+export function getCumulativeDailySpending(month: string) {
+  const daily = getDailySpending(month);
+  let cumulative = 0;
+  return daily.map((d: any) => {
+    cumulative += d.paid_amount;
+    return { day: d.day, amount: d.paid_amount, cumulative };
+  });
+}
+
+export function getAllMonthsWithSpending() {
+  return db.prepare(`
+    SELECT DISTINCT month FROM transactions ORDER BY MIN(COALESCE(created_time, date)) ASC
+  `).all() as any[];
+}
+
 export function getSpendingVelocity(month: string) {
   // Get spending for current and previous months to compute velocity
   const months = db.prepare(`
