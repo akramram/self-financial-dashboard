@@ -1,7 +1,9 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import type { Transaction, Category } from '../lib/data';
 import { updateTransactionApi, deleteTransactionApi, toggleTransactionDoneApi, deleteTransactionsBulkApi, fetchCategories } from '../lib/api';
 import { formatIdr } from '../lib/utils';
+import { useSortState } from '../hooks/useSortState';
+import SortableHeader from './SortableHeader';
 import {
   Table,
   TableBody,
@@ -70,6 +72,20 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [categories, setCategories] = useState<Category[]>([]);
   const rowsPerPage = 25;
+  const { toggleSort, sortData, isSorted } = useSortState();
+
+  const getCellValue = useCallback((t: Transaction, key: string): string | number => {
+    switch (key) {
+      case 'paid': return t.done ? 1 : 0;
+      case 'month': return t.month;
+      case 'title': return t.title;
+      case 'category': return t.category;
+      case 'date': return new Date(t.created_time || t.date).getTime();
+      case 'amount': return t.amount;
+      case 'type': return t.type;
+      default: return '';
+    }
+  }, []);
 
   useEffect(() => {
     fetchCategories().then(setCategories).catch(() => {});
@@ -107,12 +123,10 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
   }, [transactions]);
 
   const sorted = useMemo(() => {
-    return [...transactions].sort((a, b) => {
-      const da = parseCreatedTime(a);
-      const db = parseCreatedTime(b);
-      return db.getTime() - da.getTime();
-    });
-  }, [transactions]);
+    return sortData(transactions, getCellValue, (data) =>
+      [...data].sort((a, b) => parseCreatedTime(b).getTime() - parseCreatedTime(a).getTime())
+    );
+  }, [transactions, sortData, getCellValue]);
 
   let filtered = sorted;
   if (filterType !== 'all') {
@@ -330,13 +344,13 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
                   aria-label="Select all"
                 />
               </TableHead>
-              <TableHead>Paid</TableHead>
-              {showMonth && <TableHead>Month</TableHead>}
-              <TableHead>Title</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead className="text-right">Amount</TableHead>
-              <TableHead>Type</TableHead>
+              <SortableHeader sortKey="paid" currentDirection={isSorted('paid')} onSort={toggleSort}>Paid</SortableHeader>
+              {showMonth && <SortableHeader sortKey="month" currentDirection={isSorted('month')} onSort={toggleSort}>Month</SortableHeader>}
+              <SortableHeader sortKey="title" currentDirection={isSorted('title')} onSort={toggleSort}>Title</SortableHeader>
+              <SortableHeader sortKey="category" currentDirection={isSorted('category')} onSort={toggleSort}>Category</SortableHeader>
+              <SortableHeader sortKey="date" currentDirection={isSorted('date')} onSort={toggleSort}>Date</SortableHeader>
+              <SortableHeader sortKey="amount" currentDirection={isSorted('amount')} onSort={toggleSort} className="text-right">Amount</SortableHeader>
+              <SortableHeader sortKey="type" currentDirection={isSorted('type')} onSort={toggleSort}>Type</SortableHeader>
               <TableHead></TableHead>
             </TableRow>
           </TableHeader>

@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import type { NetworthRecord } from '../lib/data';
 import { formatIdr } from '../lib/utils';
+import { useSortState } from '../hooks/useSortState';
+import SortableHeader from './SortableHeader';
 import {
   Table,
   TableBody,
@@ -16,22 +18,36 @@ interface Props {
 }
 
 export default function NetworthTable({ networth }: Props) {
-  const networthReversed = [...networth].reverse();
+  const { toggleSort, sortData, isSorted } = useSortState();
+
+  const getCellValue = useCallback((row: NetworthRecord, key: string): string | number => {
+    switch (key) {
+      case 'month': return row.month;
+      case 'total': return row.total;
+      case 'change': return row.month_over_month_change ?? 0;
+      case 'pct': return row.month_over_month_pct ?? 0;
+      default: return '';
+    }
+  }, []);
+
+  const sortedRows = useMemo(() => {
+    return sortData(networth, getCellValue, (data) => [...data].reverse());
+  }, [networth, sortData, getCellValue]);
 
   return (
     <div className="rounded-xl border overflow-hidden">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Month</TableHead>
-            <TableHead className="text-right">Total</TableHead>
-            <TableHead className="text-right">MoM Change</TableHead>
-            <TableHead className="text-right">MoM %</TableHead>
+            <SortableHeader sortKey="month" currentDirection={isSorted('month')} onSort={toggleSort}>Month</SortableHeader>
+            <SortableHeader sortKey="total" currentDirection={isSorted('total')} onSort={toggleSort} className="text-right">Total</SortableHeader>
+            <SortableHeader sortKey="change" currentDirection={isSorted('change')} onSort={toggleSort} className="text-right">MoM Change</SortableHeader>
+            <SortableHeader sortKey="pct" currentDirection={isSorted('pct')} onSort={toggleSort} className="text-right">MoM %</SortableHeader>
             <TableHead></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {networthReversed.map((row) => (
+          {sortedRows.map((row) => (
             <TableRow key={row.month}>
               <TableCell className="font-medium">{row.month}</TableCell>
               <TableCell className="font-medium text-right">{formatIdr(row.total)}</TableCell>
