@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import type { Transaction, NetworthRecord, MonthlySummary, Category } from '../lib/data';
 import { formatIdr } from '../lib/utils';
 import { updateTransactionApi, deleteTransactionApi, toggleTransactionDoneApi, fetchCategories } from '../lib/api';
@@ -11,6 +11,8 @@ import FinancialInsights from './FinancialInsights';
 import OutcomeBarChart from './OutcomeBarChart';
 import MonthKickoffModal from './MonthKickoffModal';
 import { fetchRecurringTransactions } from '../lib/api';
+import { useSortState } from '../hooks/useSortState';
+import SortableHeader from './SortableHeader';
 import {
   Table,
   TableBody,
@@ -197,11 +199,25 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
     return map;
   }, [categories]);
 
+  const { toggleSort, sortData, isSorted } = useSortState();
+
+  const getTxCellValue = useCallback((t: Transaction, key: string): string | number => {
+    switch (key) {
+      case 'paid': return t.done ? 1 : 0;
+      case 'title': return t.title;
+      case 'category': return t.category;
+      case 'date': return new Date(t.created_time || t.date).getTime();
+      case 'amount': return t.amount;
+      case 'type': return t.type;
+      default: return '';
+    }
+  }, []);
+
   const sortedTransactions = useMemo(() => {
-    return [...filteredTransactions].sort(
-      (a, b) => parseCreatedTime(b).getTime() - parseCreatedTime(a).getTime()
+    return sortData(filteredTransactions, getTxCellValue, (data) =>
+      [...data].sort((a, b) => parseCreatedTime(b).getTime() - parseCreatedTime(a).getTime())
     );
-  }, [filteredTransactions]);
+  }, [filteredTransactions, sortData, getTxCellValue]);
 
   const totalTxPages = Math.max(1, Math.ceil(sortedTransactions.length / txPerPage));
   const pagedTransactions = sortedTransactions.slice(
@@ -426,12 +442,12 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Paid</TableHead>
-                <TableHead>Title</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead className="text-right">Amount</TableHead>
-                <TableHead>Type</TableHead>
+                <SortableHeader sortKey="paid" currentDirection={isSorted('paid')} onSort={toggleSort}>Paid</SortableHeader>
+                <SortableHeader sortKey="title" currentDirection={isSorted('title')} onSort={toggleSort}>Title</SortableHeader>
+                <SortableHeader sortKey="category" currentDirection={isSorted('category')} onSort={toggleSort}>Category</SortableHeader>
+                <SortableHeader sortKey="date" currentDirection={isSorted('date')} onSort={toggleSort}>Date</SortableHeader>
+                <SortableHeader sortKey="amount" currentDirection={isSorted('amount')} onSort={toggleSort} className="text-right">Amount</SortableHeader>
+                <SortableHeader sortKey="type" currentDirection={isSorted('type')} onSort={toggleSort}>Type</SortableHeader>
                 <TableHead></TableHead>
               </TableRow>
             </TableHeader>
