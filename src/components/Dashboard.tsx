@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import type { Transaction, NetworthRecord, MonthlySummary, Category } from '../lib/data';
-import { formatIdr } from '../lib/utils';
+import { formatIdr, getActivePeriod } from '../lib/utils';
 import { updateTransactionApi, deleteTransactionApi, toggleTransactionDoneApi, fetchCategories } from '../lib/api';
 import OutcomeChart from './OutcomeChart';
 import NetworthChart from './NetworthChart';
@@ -62,7 +62,19 @@ interface Props {
 }
 
 export default function Dashboard({ transactions, networth, summaries }: Props) {
-  const months = useMemo(() => [...summaries].reverse().map((s) => s.month), [summaries]);
+  const activePeriod = useMemo(() => {
+    const { month, year } = getActivePeriod();
+    return `${month} ${year}`;
+  }, []);
+  const dbMonths = useMemo(() => [...summaries].map((s) => s.month), [summaries]);
+  const months = useMemo(() => {
+    // Active period first (even if no data yet), then existing DB months in reverse
+    const set = new Set(dbMonths);
+    const list = set.has(activePeriod)
+      ? [activePeriod, ...dbMonths.filter((m) => m !== activePeriod).reverse()]
+      : [activePeriod, ...dbMonths.reverse()];
+    return list;
+  }, [dbMonths, activePeriod]);
   const [filterMonth, setFilterMonth] = useState<string>('all');
 
   const isAllTime = filterMonth === 'all';
