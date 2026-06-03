@@ -4,6 +4,7 @@ import { updateTransactionApi, deleteTransactionApi, toggleTransactionDoneApi, d
 import { formatIdr } from '../lib/utils';
 import { useSortState } from '../hooks/useSortState';
 import SortableHeader from './SortableHeader';
+import EditTransactionDialog from './EditTransactionDialog';
 import {
   Table,
   TableBody,
@@ -36,12 +37,6 @@ function parseCreatedTime(tx: Transaction): Date {
   }
   return new Date(tx.date);
 }
-
-const TYPE_OPTIONS = [
-  { value: 'cash', label: 'Cash' },
-  { value: 'credit_expense', label: 'Credit Expense' },
-  { value: 'credit_payment', label: 'Credit Payment' },
-];
 
 export default function TransactionTable({ transactions, showMonth = true }: Props) {
   const getInitialState = () => {
@@ -356,95 +351,10 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
           </TableHeader>
           <TableBody>
             {pageRows.map((row) => {
-              const isEditing = editingId === row.id;
               const createdDate = parseCreatedTime(row);
               const dateStr = isNaN(createdDate.getTime())
                 ? row.date
                 : createdDate.toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' });
-
-              if (isEditing) {
-                return (
-                  <TableRow key={row.id} className="bg-muted/30">
-                    <TableCell>
-                      <Checkbox checked={selected.has(row.id)} disabled />
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Checkbox
-                          checked={!!editForm.done}
-                          onCheckedChange={(v) => handleChange('done', !!v)}
-                        />
-                        <span className="text-xs">{editForm.done ? 'Paid' : 'Unpaid'}</span>
-                      </div>
-                    </TableCell>
-                    {showMonth && (
-                      <TableCell>
-                        <Input
-                          type="text"
-                          value={editForm.month ?? ''}
-                          onChange={(e) => handleChange('month', e.target.value)}
-                          className="h-8 text-xs"
-                        />
-                      </TableCell>
-                    )}
-                    <TableCell>
-                      <Input
-                        type="text"
-                        value={editForm.title ?? ''}
-                        onChange={(e) => handleChange('title', e.target.value)}
-                        className="h-8 text-xs"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Input
-                        type="text"
-                        value={editForm.category ?? ''}
-                        onChange={(e) => handleChange('category', e.target.value)}
-                        className="h-8 text-xs"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Input
-                        type="text"
-                        value={editForm.created_time ?? ''}
-                        onChange={(e) => handleChange('created_time', e.target.value)}
-                        placeholder="Created time"
-                        className="h-8 text-xs"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Input
-                        type="number"
-                        value={editForm.amount ?? 0}
-                        onChange={(e) => handleChange('amount', Number(e.target.value))}
-                        className="h-8 text-xs text-right"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Select value={editForm.type ?? 'cash'} onValueChange={(v) => handleChange('type', v)}>
-                        <SelectTrigger className="h-8 text-xs">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {TYPE_OPTIONS.map((opt) => (
-                            <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex gap-1">
-                        <Button size="sm" className="h-7 text-xs" onClick={saveEdit}>
-                          Save
-                        </Button>
-                        <Button size="sm" variant="secondary" className="h-7 text-xs" onClick={cancelEdit}>
-                          Cancel
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                );
-              }
 
               const typeClass =
                 row.type === 'cash'
@@ -542,6 +452,17 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
           </Button>
         </div>
       </div>
+
+      <EditTransactionDialog
+        open={editingId !== null}
+        transaction={editForm}
+        onChange={handleChange}
+        onSave={saveEdit}
+        onCancel={cancelEdit}
+        showMonth={showMonth}
+        months={monthOptions}
+        categories={categories.map(c => c.name)}
+      />
     </div>
   );
 }

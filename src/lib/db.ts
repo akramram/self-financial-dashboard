@@ -120,12 +120,12 @@ export function getTransactionById(id: number) {
 function normalizeTx(tx: any) {
   const copy = { ...tx };
   if (typeof copy.done === 'boolean') copy.done = copy.done ? 1 : 0;
-  if (!copy.created_time) copy.created_time = new Date().toISOString();
   return copy;
 }
 
 export function insertTransaction(tx: Omit<any, 'id'>) {
   const normalized = normalizeTx(tx);
+  if (!normalized.created_time) normalized.created_time = new Date().toISOString();
   const stmt = db.prepare(`
     INSERT INTO transactions (month, date, title, category, amount, currency, type, payment_method, done, created_time)
     VALUES (@month, @date, @title, @category, @amount, @currency, @type, @payment_method, @done, @created_time)

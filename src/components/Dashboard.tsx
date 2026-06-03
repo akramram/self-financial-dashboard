@@ -13,6 +13,7 @@ import MonthKickoffModal from './MonthKickoffModal';
 import { fetchRecurringTransactions } from '../lib/api';
 import { useSortState } from '../hooks/useSortState';
 import SortableHeader from './SortableHeader';
+import EditTransactionDialog from './EditTransactionDialog';
 import {
   Table,
   TableBody,
@@ -465,7 +466,11 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
             </TableHeader>
             <TableBody>
               {pagedTransactions.map((row) => {
-                const isEditing = editingId === row.id;
+                const createdDate = parseCreatedTime(row);
+                const dateStr = isNaN(createdDate.getTime())
+                  ? row.date
+                  : createdDate.toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' });
+
                 const typeClass =
                   row.type === 'cash'
                     ? 'text-blue-600 dark:text-blue-400'
@@ -474,76 +479,6 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
                     : 'text-purple-600 dark:text-purple-400';
                 const typeLabel =
                   row.type === 'cash' ? 'Cash' : row.type === 'credit_payment' ? 'Credit Pay' : 'Credit';
-                const createdDate = parseCreatedTime(row);
-                const dateStr = isNaN(createdDate.getTime())
-                  ? row.date
-                  : createdDate.toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' });
-
-                if (isEditing) {
-                  return (
-                    <TableRow key={row.id} className="bg-muted/30">
-                      <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Checkbox
-                          checked={!!editForm.done}
-                          onCheckedChange={(v) => handleChange('done', !!v)}
-                        />
-                        <span className="text-xs">{editForm.done ? 'Paid' : 'Unpaid'}</span>
-                      </div>
-                      </TableCell>
-                      <TableCell>
-                        <Input
-                          type="text"
-                          value={editForm.title ?? ''}
-                          onChange={(e) => handleChange('title', e.target.value)}
-                          className="h-8 text-xs"
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Input
-                          type="text"
-                          value={editForm.category ?? ''}
-                          onChange={(e) => handleChange('category', e.target.value)}
-                          className="h-8 text-xs"
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Input
-                          type="text"
-                          value={editForm.created_time ?? ''}
-                          onChange={(e) => handleChange('created_time', e.target.value)}
-                          className="h-8 text-xs"
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Input
-                          type="number"
-                          value={editForm.amount ?? 0}
-                          onChange={(e) => handleChange('amount', Number(e.target.value))}
-                          className="h-8 text-xs text-right"
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Select value={editForm.type ?? 'cash'} onValueChange={(v) => handleChange('type', v)}>
-                          <SelectTrigger className="h-8 text-xs">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {TYPE_OPTIONS.map((opt) => (
-                              <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex gap-1">
-                          <Button size="sm" className="h-7 text-xs" onClick={saveEdit}>Save</Button>
-                          <Button size="sm" variant="secondary" className="h-7 text-xs" onClick={cancelEdit}>Cancel</Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  );
-                }
 
                 return (
                   <TableRow key={row.id}>
@@ -596,6 +531,16 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
             </TableBody>
           </Table>
         </div>
+
+        <EditTransactionDialog
+          open={editingId !== null}
+          transaction={editForm}
+          onChange={handleChange}
+          onSave={saveEdit}
+          onCancel={cancelEdit}
+          months={months}
+          categories={categories.map(c => c.name)}
+        />
 
         {/* Pagination controls */}
         {sortedTransactions.length > txPerPage && (

@@ -67,25 +67,15 @@ function formatDateKey(year: number, month: number, day: number): string {
 }
 
 function parseTxDate(tx: Transaction): string | null {
-  if (tx.date) {
-    const d = new Date(tx.date);
-    if (!isNaN(d.getTime())) {
-      const y = d.getFullYear();
-      const m = String(d.getMonth() + 1).padStart(2, '0');
-      const day = String(d.getDate()).padStart(2, '0');
-      return `${y}-${m}-${day}`;
-    }
-  }
-  if (tx.created_time) {
-    const d = new Date(tx.created_time);
-    if (!isNaN(d.getTime())) {
-      const y = d.getFullYear();
-      const m = String(d.getMonth() + 1).padStart(2, '0');
-      const day = String(d.getDate()).padStart(2, '0');
-      return `${y}-${m}-${day}`;
-    }
-  }
-  return null;
+  // created_time is the actual transaction timestamp; date is just the period start (always 1st)
+  const raw = tx.created_time || tx.date;
+  if (!raw) return null;
+  const d = new Date(raw);
+  if (isNaN(d.getTime())) return null;
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
 }
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -123,7 +113,8 @@ export default function SpendingCalendar({ transactions }: Props) {
     transactions.forEach((tx) => {
       const dateKey = parseTxDate(tx);
       if (!dateKey) return;
-      const d = new Date(tx.date || tx.created_time || '');
+      const raw = tx.created_time || tx.date || '';
+      const d = new Date(raw);
       if (isNaN(d.getTime())) return;
       if (d.getFullYear() !== year || d.getMonth() !== monthIndex) return;
 
