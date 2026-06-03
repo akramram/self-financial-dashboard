@@ -26,12 +26,18 @@ const { title = 'Financial Dashboard' } = Astro.props;
   <body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
-      <!-- Top bar: Logo + Hamburger (mobile) / Dark toggle -->
+      <!-- Top bar: Logo + Search + Dark toggle -->
       <div class="flex items-center justify-between mb-4">
         <a href="/" class="text-xl sm:text-2xl font-bold tracking-tight hover:text-slate-600 dark:hover:text-slate-300 transition">
           💰 Financial Dashboard
         </a>
         <div class="flex items-center gap-2">
+          <!-- Command Palette Trigger -->
+          <button id="cmdPaletteBtn" class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-200/70 dark:bg-slate-700/70 text-xs font-medium text-slate-500 dark:text-slate-400 hover:bg-slate-300 dark:hover:bg-slate-600 transition border border-slate-200 dark:border-slate-600" aria-label="Open command palette">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <span>Search...</span>
+            <kbd class="ml-4 px-1 py-0.5 rounded border border-slate-300 dark:border-slate-500 bg-white dark:bg-slate-800 text-[10px] font-mono">⌘K</kbd>
+          </button>
           <button id="themeToggle" class="p-2 rounded-lg bg-slate-200 dark:bg-slate-700 text-sm font-medium hover:bg-slate-300 dark:hover:bg-slate-600 transition" aria-label="Toggle dark mode">
             <span class="dark:hidden">🌙</span>
             <span class="hidden dark:inline">☀️</span>
@@ -122,6 +128,20 @@ const { title = 'Financial Dashboard' } = Astro.props;
         });
       }
       highlightActivePage();
+    </script>
+
+    <!-- Command Palette -->
+    <script>
+      import CommandPalette from '../components/CommandPalette';
+      // Mount command palette on all pages
+      const container = document.createElement('div');
+      container.id = 'cmd-palette-root';
+      document.body.appendChild(container);
+      
+      import React from 'react';
+      import ReactDOM from 'react-dom/client';
+      const root = ReactDOM.createRoot(container);
+      root.render(React.createElement(CommandPalette));
     </script>
 
     <style is:global>
