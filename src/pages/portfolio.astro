@@ -1,0 +1,13 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PortfolioTracker from '../components/PortfolioTracker';
+---
+
+<Layout title="Investment Portfolio · Financial Dashboard">
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold">Investment Portfolio</h1>
+    <p class="text-slate-500 dark:text-slate-400 text-sm">Track your individual holdings, cost basis, and performance</p>
+  </div>
+
+  <PortfolioTracker client:load />
+</Layout>

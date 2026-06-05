@@ -1,4 +1,4 @@
-import type { Transaction, NetworthRecord, MonthlySummary, Category } from './data';
+import type { Transaction, NetworthRecord, MonthlySummary, Category, Investment, PortfolioSummary } from './data';
 
 export async function fetchTransactions(filters?: { month?: string; type?: string; search?: string; category?: string }): Promise<Transaction[]> {
   const params = new URLSearchParams();
@@ -269,4 +269,46 @@ export async function updateGoalApi(id: number, goal: Partial<FinancialGoal>): P
 
 export async function deleteGoalApi(id: number): Promise<void> {
   await fetch(`/api/goals/${id}`, { method: 'DELETE' });
+}
+
+// ─── Investments API ─────────────────────────────────────────────────────────
+
+export async function fetchInvestments(): Promise<Investment[]> {
+  const res = await fetch('/api/investments');
+  return res.json();
+}
+
+export async function fetchInvestment(id: number): Promise<Investment> {
+  const res = await fetch(`/api/investments/${id}`);
+  return res.json();
+}
+
+export async function createInvestmentApi(inv: Omit<Investment, 'id' | 'created_at' | 'updated_at'>): Promise<{ id: number }> {
+  const res = await fetch('/api/investments', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(inv),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: 'Failed to create investment' }));
+    throw new Error(err.error || 'Failed to create investment');
+  }
+  return res.json();
+}
+
+export async function updateInvestmentApi(id: number, inv: Partial<Investment>): Promise<void> {
+  await fetch(`/api/investments/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(inv),
+  });
+}
+
+export async function deleteInvestmentApi(id: number): Promise<void> {
+  await fetch(`/api/investments/${id}`, { method: 'DELETE' });
+}
+
+export async function fetchPortfolioSummary(): Promise<PortfolioSummary> {
+  const res = await fetch('/api/investments/summary');
+  return res.json();
 }

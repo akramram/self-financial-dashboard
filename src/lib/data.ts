@@ -62,6 +62,31 @@ export interface RecurringTransaction {
   created_at: string;
 }
 
+export interface Investment {
+  id: number;
+  name: string;
+  ticker: string;
+  type: 'stock' | 'crypto' | 'etf' | 'bond' | 'mutual_fund' | 'real_estate' | 'other';
+  quantity: number;
+  avg_purchase_price: number;
+  current_price: number;
+  currency: string;
+  platform: string;
+  notes: string;
+  purchase_date: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PortfolioSummary {
+  totalInvested: number;
+  totalCurrentValue: number;
+  totalGainLoss: number;
+  totalGainLossPct: number;
+  holdingsCount: number;
+  byType: Record<string, { invested: number; currentValue: number; count: number }>;
+}
+
 export const initialTransactions: Transaction[] = transactionsJson as Transaction[];
 export const initialNetworth: NetworthRecord[] = networthJson as NetworthRecord[];
 export const initialMonthlySummary: MonthlySummary[] = monthlySummaryJson as unknown as MonthlySummary[];

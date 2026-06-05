@@ -83,10 +83,27 @@ export function initSchema() {
       updated_at TEXT DEFAULT CURRENT_TIMESTAMP
     );
 
+    CREATE TABLE IF NOT EXISTS investments (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      ticker TEXT NOT NULL DEFAULT '',
+      type TEXT NOT NULL DEFAULT 'stock' CHECK(type IN ('stock', 'crypto', 'etf', 'bond', 'mutual_fund', 'real_estate', 'other')),
+      quantity REAL NOT NULL DEFAULT 0,
+      avg_purchase_price REAL NOT NULL DEFAULT 0,
+      current_price REAL NOT NULL DEFAULT 0,
+      currency TEXT NOT NULL DEFAULT 'IDR',
+      platform TEXT NOT NULL DEFAULT '',
+      notes TEXT NOT NULL DEFAULT '',
+      purchase_date TEXT NOT NULL DEFAULT '',
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+    );
+
     CREATE INDEX IF NOT EXISTS idx_tx_month ON transactions(month);
     CREATE INDEX IF NOT EXISTS idx_tx_type ON transactions(type);
     CREATE INDEX IF NOT EXISTS idx_tx_date ON transactions(date);
     CREATE INDEX IF NOT EXISTS idx_goals_completed ON goals(completed);
+    CREATE INDEX IF NOT EXISTS idx_investments_type ON investments(type);
   `);
 }
 
@@ -609,5 +626,102 @@ export function getSpendingVelocity(month: string) {
     velocity_vs_history: historicalAvgDaily > 0
       ? ((currentAvgDaily - historicalAvgDaily) / historicalAvgDaily) * 100
       : 0,
+  };
+}
+
+// ─── Investments CRUD ──────────────────────────────────────────────────────
+
+export function getInvestments() {
+  return db.prepare('SELECT * FROM investments ORDER BY type ASC, name ASC').all() as any[];
+}
+
+export function getInvestmentById(id: number) {
+  return db.prepare('SELECT * FROM investments WHERE id = ?').get(id) as any;
+}
+
+export function insertInvestment(inv: {
+  name: string;
+  ticker?: string;
+  type?: string;
+  quantity?: number;
+  avg_purchase_price?: number;
+  current_price?: number;
+  currency?: string;
+  platform?: string;
+  notes?: string;
+  purchase_date?: string;
+}) {
+  const stmt = db.prepare(`
+    INSERT INTO investments (name, ticker, type, quantity, avg_purchase_price, current_price, currency, platform, notes, purchase_date)
+    VALUES (@name, @ticker, @type, @quantity, @avg_purchase_price, @current_price, @currency, @platform, @notes, @purchase_date)
+  `);
+  const result = stmt.run({
+    name: inv.name,
+    ticker: inv.ticker ?? '',
+    type: inv.type ?? 'stock',
+    quantity: Number(inv.quantity ?? 0),
+    avg_purchase_price: Number(inv.avg_purchase_price ?? 0),
+    current_price: Number(inv.current_price ?? 0),
+    currency: inv.currency ?? 'IDR',
+    platform: inv.platform ?? '',
+    notes: inv.notes ?? '',
+    purchase_date: inv.purchase_date ?? '',
+  });
+  return result.lastInsertRowid as number;
+}
+
+export function updateInvestment(id: number, inv: Partial<{
+  name: string;
+  ticker: string;
+  type: string;
+  quantity: number;
+  avg_purchase_price: number;
+  current_price: number;
+  currency: string;
+  platform: string;
+  notes: string;
+  purchase_date: string;
+}>) {
+  const fields = Object.keys(inv).filter((k) => k !== 'id');
+  if (fields.length === 0) return;
+  const setClause = fields.map((f) => `${f} = @${f}`).join(', ');
+  const stmt = db.prepare(`UPDATE investments SET ${setClause}, updated_at = CURRENT_TIMESTAMP WHERE id = @id`);
+  stmt.run({ ...inv, id });
+}
+
+export function deleteInvestment(id: number) {
+  db.prepare('DELETE FROM investments WHERE id = ?').run(id);
+}
+
+export function getPortfolioSummary() {
+  const rows = db.prepare('SELECT * FROM investments').all() as any[];
+  let totalInvested = 0;
+  let totalCurrentValue = 0;
+  const byType: Record<string, { invested: number; currentValue: number; count: number }> = {};
+
+  for (const row of rows) {
+    const invested = row.avg_purchase_price * row.quantity;
+    const currentValue = row.current_price * row.quantity;
+    totalInvested += invested;
+    totalCurrentValue += currentValue;
+
+    if (!byType[row.type]) {
+      byType[row.type] = { invested: 0, currentValue: 0, count: 0 };
+    }
+    byType[row.type].invested += invested;
+    byType[row.type].currentValue += currentValue;
+    byType[row.type].count++;
+  }
+
+  const totalGainLoss = totalCurrentValue - totalInvested;
+  const totalGainLossPct = totalInvested > 0 ? (totalGainLoss / totalInvested) * 100 : 0;
+
+  return {
+    totalInvested,
+    totalCurrentValue,
+    totalGainLoss,
+    totalGainLossPct,
+    holdingsCount: rows.length,
+    byType,
   };
 }
