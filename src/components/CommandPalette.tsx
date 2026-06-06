@@ -25,6 +25,7 @@ const ALL_ITEMS: CommandItem[] = [
   { id: 'yearly', label: 'Yearly Report', description: 'Annual spending summary', icon: '📆', group: 'pages', href: '/yearly' },
   { id: 'health', label: 'Health Score', description: 'Financial health assessment', icon: '❤️', group: 'pages', href: '/health' },
   { id: 'forecast', label: 'Forecast', description: 'Spending predictions and projections', icon: '🔮', group: 'pages', href: '/forecast' },
+  { id: 'fire', label: 'FIRE Calculator', description: 'Financial Independence Retire Early calculator', icon: '🔥', group: 'pages', href: '/fire' },
   { id: 'settings', label: 'Settings', description: 'Categories, income, and preferences', icon: '⚙️', group: 'pages', href: '/settings' },
   // Actions
   { id: 'add-data', label: 'Add Data', description: 'Add transaction or net worth entry', shortcut: '⌘N', icon: '➕', group: 'actions', href: '/add' },

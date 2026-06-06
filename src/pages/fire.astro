@@ -1,0 +1,17 @@
+---
+import Layout from '../layouts/Layout.astro';
+import FireCalculator from '../components/FireCalculator';
+---
+
+<Layout title="FIRE Calculator - Financial Dashboard">
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold flex items-center gap-2">
+      <span>🔥</span> FIRE Calculator
+    </h1>
+    <p class="text-slate-500 dark:text-slate-400 text-sm">
+      Financial Independence, Retire Early. See how far you are from financial freedom and what it will take to get there.
+    </p>
+  </div>
+
+  <FireCalculator client:load />
+</Layout>
