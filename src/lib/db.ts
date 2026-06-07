@@ -580,14 +580,14 @@ export function getCumulativeDailySpending(month: string) {
 
 export function getAllMonthsWithSpending() {
   return db.prepare(`
-    SELECT DISTINCT month FROM transactions ORDER BY MIN(COALESCE(created_time, date)) ASC
+    SELECT month FROM transactions GROUP BY month ORDER BY MIN(COALESCE(created_time, date)) ASC
   `).all() as any[];
 }
 
 export function getSpendingVelocity(month: string) {
   // Get spending for current and previous months to compute velocity
   const months = db.prepare(`
-    SELECT DISTINCT month FROM transactions ORDER BY MIN(COALESCE(created_time, date)) DESC LIMIT 4
+    SELECT month FROM transactions GROUP BY month ORDER BY MIN(COALESCE(created_time, date)) DESC LIMIT 4
   `).all() as any[];
 
   const monthOrder = months.map((m) => m.month);
