@@ -10,6 +10,7 @@ import SavingsRateChart from './SavingsRateChart';
 import FinancialInsights from './FinancialInsights';
 import OutcomeBarChart from './OutcomeBarChart';
 import MonthKickoffModal from './MonthKickoffModal';
+import DashboardSummaryCards from './DashboardSummaryCards';
 import { fetchRecurringTransactions } from '../lib/api';
 import { useSortState } from '../hooks/useSortState';
 import SortableHeader from './SortableHeader';
@@ -300,6 +301,13 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
           setKickoffBanner(null);
           window.location.reload();
         }}
+      />
+
+      {/* Dashboard Summary Cards with Sparklines */}
+      <DashboardSummaryCards
+        summaries={summaries}
+        networth={networth}
+        activeMonth={isAllTime ? activeSummary?.month : filterMonth}
       />
 
       {/* Financial Insights */}
