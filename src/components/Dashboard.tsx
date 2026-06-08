@@ -11,6 +11,7 @@ import FinancialInsights from './FinancialInsights';
 import OutcomeBarChart from './OutcomeBarChart';
 import MonthKickoffModal from './MonthKickoffModal';
 import DashboardSummaryCards from './DashboardSummaryCards';
+import SpendingPulse from './SpendingPulse';
 import { fetchRecurringTransactions } from '../lib/api';
 import { useSortState } from '../hooks/useSortState';
 import SortableHeader from './SortableHeader';
@@ -307,6 +308,12 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
       <DashboardSummaryCards
         summaries={summaries}
         networth={networth}
+        activeMonth={isAllTime ? activeSummary?.month : filterMonth}
+      />
+
+      {/* Spending Pulse — real-time burn rate gauge */}
+      <SpendingPulse
+        summaries={summaries}
         activeMonth={isAllTime ? activeSummary?.month : filterMonth}
       />
 
