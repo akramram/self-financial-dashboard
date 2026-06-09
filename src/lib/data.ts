@@ -14,6 +14,7 @@ export interface Transaction {
   payment_method: string;
   done: boolean;
   created_time: string;
+  notes?: string;
 }
 
 export interface NetworthRecord {

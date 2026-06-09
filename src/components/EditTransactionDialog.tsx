@@ -142,6 +142,18 @@ export default function EditTransactionDialog({
               ))}
             </select>
           </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="edit-notes" className="text-xs text-muted-foreground">Notes</Label>
+            <textarea
+              id="edit-notes"
+              value={transaction.notes ?? ''}
+              onChange={(e) => onChange('notes', e.target.value)}
+              rows={3}
+              className="flex min-h-[60px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-y"
+              placeholder="Optional notes..."
+            />
+          </div>
         </div>
 
         <DialogFooter className="gap-2 sm:gap-0">

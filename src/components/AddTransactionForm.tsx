@@ -44,6 +44,7 @@ export default function AddTransactionForm() {
   const [amount, setAmount] = useState('');
   const [type, setType] = useState<'cash' | 'credit_expense' | 'credit_payment'>('credit_expense');
   const [done, setDone] = useState(true);
+  const [notes, setNotes] = useState('');
   const [message, setMessage] = useState('');
   const [showDuplicateDialog, setShowDuplicateDialog] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -67,6 +68,7 @@ export default function AddTransactionForm() {
       type,
       payment_method: type === 'cash' ? 'Cash' : 'Credit',
       done,
+      notes: notes.trim() || undefined,
       created_time: new Date().toISOString(),
     };
   };
@@ -95,6 +97,7 @@ export default function AddTransactionForm() {
     setTitle('');
     setCategory('');
     setAmount('');
+    setNotes('');
     setTimeout(() => setMessage(''), 3000);
     titleRef.current?.focus();
   };
@@ -112,6 +115,7 @@ export default function AddTransactionForm() {
       setTitle('');
       setCategory('');
       setAmount('');
+      setNotes('');
       setTimeout(() => setMessage(''), 3000);
       titleRef.current?.focus();
     } else {
@@ -216,6 +220,17 @@ export default function AddTransactionForm() {
               onCheckedChange={(v) => setDone(!!v)}
             />
             <Label htmlFor="done" className="text-sm text-slate-600 dark:text-slate-300">Paid / Done</Label>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label>Notes</Label>
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              rows={2}
+              className="flex min-h-[48px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-y"
+              placeholder="Optional notes about this transaction..."
+            />
           </div>
 
           <Button type="submit" className="w-full">

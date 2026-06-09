@@ -29,6 +29,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { StickyNote } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -514,7 +515,14 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
                         {row.done ? 'Paid' : 'Unpaid'}
                       </Button>
                     </TableCell>
-                    <TableCell>{row.title}</TableCell>
+                    <TableCell>
+                      <span>{row.title}</span>
+                      {row.notes && (
+                        <span className="inline-flex ml-1.5 align-middle" title={row.notes}>
+                          <StickyNote className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400 inline" />
+                        </span>
+                      )}
+                    </TableCell>
                     <TableCell>
                       <Badge
                         variant="secondary"

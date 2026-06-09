@@ -5,6 +5,7 @@ import { formatIdr } from '../lib/utils';
 import { useSortState } from '../hooks/useSortState';
 import SortableHeader from './SortableHeader';
 import EditTransactionDialog from './EditTransactionDialog';
+import { StickyNote } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -133,7 +134,7 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
   if (search.trim()) {
     const q = search.toLowerCase();
     filtered = filtered.filter((t) =>
-      t.title.toLowerCase().includes(q) || t.category.toLowerCase().includes(q)
+      t.title.toLowerCase().includes(q) || t.category.toLowerCase().includes(q) || (t.notes || '').toLowerCase().includes(q)
     );
   }
   if (dateFrom) {
@@ -253,6 +254,7 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
               type: t.type,
               category: t.category,
               paid: t.done,
+              notes: t.notes || '',
             }));
             if (exportData.length === 0) {
               alert('No transactions found for this month');
@@ -392,7 +394,14 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
                     </Button>
                   </TableCell>
                   {showMonth && <TableCell className="font-medium">{row.month}</TableCell>}
-                  <TableCell>{row.title}</TableCell>
+                  <TableCell>
+                    <span>{row.title}</span>
+                    {row.notes && (
+                      <span className="inline-flex ml-1.5 align-middle" title={row.notes}>
+                        <StickyNote className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400 inline" />
+                      </span>
+                    )}
+                  </TableCell>
                   <TableCell>
                     <Badge
                       variant="secondary"

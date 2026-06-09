@@ -105,6 +105,9 @@ export function initSchema() {
     CREATE INDEX IF NOT EXISTS idx_goals_completed ON goals(completed);
     CREATE INDEX IF NOT EXISTS idx_investments_type ON investments(type);
   `);
+
+  // Migrations for columns added after initial schema
+  try { db.exec('ALTER TABLE transactions ADD COLUMN notes TEXT DEFAULT \'\''); } catch (_) { /* already exists */ }
 }
 
 export function getTransactions(filters?: { month?: string; type?: string; search?: string; category?: string }) {
@@ -144,8 +147,8 @@ export function insertTransaction(tx: Omit<any, 'id'>) {
   const normalized = normalizeTx(tx);
   if (!normalized.created_time) normalized.created_time = new Date().toISOString();
   const stmt = db.prepare(`
-    INSERT INTO transactions (month, date, title, category, amount, currency, type, payment_method, done, created_time)
-    VALUES (@month, @date, @title, @category, @amount, @currency, @type, @payment_method, @done, @created_time)
+    INSERT INTO transactions (month, date, title, category, amount, currency, type, payment_method, done, created_time, notes)
+    VALUES (@month, @date, @title, @category, @amount, @currency, @type, @payment_method, @done, @created_time, @notes)
   `);
   const result = stmt.run(normalized);
   return result.lastInsertRowid as number;
@@ -153,7 +156,7 @@ export function insertTransaction(tx: Omit<any, 'id'>) {
 
 export function updateTransaction(id: number, tx: Partial<any>) {
   const normalized = normalizeTx(tx);
-  const fields = Object.keys(normalized).filter((k) => k !== 'id');
+  const fields = Object.keys(normalized).filter((k) => k !== 'id' && k !== 'created_time');
   if (fields.length === 0) return;
   const setClause = fields.map((f) => `${f} = @${f}`).join(', ');
   const stmt = db.prepare(`UPDATE transactions SET ${setClause} WHERE id = @id`);
