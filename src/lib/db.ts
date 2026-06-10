@@ -173,6 +173,21 @@ export function deleteTransactionsBulk(ids: number[]) {
   db.prepare(`DELETE FROM transactions WHERE id IN (${placeholders})`).run(...ids);
 }
 
+export function updateTransactionsBulk(ids: number[], updates: Partial<any>) {
+  if (ids.length === 0) return { changes: 0 };
+  const normalized = normalizeTx(updates);
+  const fields = Object.keys(normalized).filter((k) => k !== 'id' && k !== 'created_time');
+  if (fields.length === 0) return { changes: 0 };
+  // Use positional placeholders for both SET values and IN clause
+  const setParts = fields.map((f) => `${f} = ?`);
+  const setClause = setParts.join(', ');
+  const idPlaceholders = ids.map(() => '?').join(',');
+  const values = fields.map((f) => normalized[f]);
+  const stmt = db.prepare(`UPDATE transactions SET ${setClause} WHERE id IN (${idPlaceholders})`);
+  const result = stmt.run(...values, ...ids);
+  return { changes: result.changes };
+}
+
 export function findDuplicateTransaction(tx: { title: string; amount: number; category: string; type: string }, hours = 24) {
   const since = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
   const row = db.prepare(

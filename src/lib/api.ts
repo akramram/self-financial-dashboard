@@ -108,6 +108,15 @@ export async function deleteTransactionsBulkApi(ids: number[]): Promise<void> {
   });
 }
 
+export async function updateTransactionsBulkApi(ids: number[], updates: Partial<Transaction>): Promise<{ updated: number }> {
+  const res = await fetch('/api/transactions', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ids, updates }),
+  });
+  return res.json();
+}
+
 export interface MonthlyIncome {
   month: string;
   date: string;

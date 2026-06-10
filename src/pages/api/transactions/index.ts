@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { db, getTransactions, insertTransaction, updateTransaction, deleteTransaction, deleteTransactionsBulk, getTransactionById, findDuplicateTransaction } from '../../../lib/db';
+import { db, getTransactions, insertTransaction, updateTransaction, deleteTransaction, deleteTransactionsBulk, updateTransactionsBulk, getTransactionById, findDuplicateTransaction } from '../../../lib/db';
 
 export const GET: APIRoute = async ({ request }) => {
   const url = new URL(request.url);
@@ -30,6 +30,28 @@ export const POST: APIRoute = async ({ request }) => {
   const id = insertTransaction(body);
   return new Response(JSON.stringify({ id, ...body }), {
     status: 201,
+    headers: { 'Content-Type': 'application/json' },
+  });
+};
+
+export const PUT: APIRoute = async ({ request }) => {
+  const body = await request.json();
+  const ids = body.ids as number[];
+  const updates = body.updates;
+  if (!Array.isArray(ids) || ids.length === 0) {
+    return new Response(JSON.stringify({ error: 'ids array required' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+  if (!updates || Object.keys(updates).length === 0) {
+    return new Response(JSON.stringify({ error: 'updates object required' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+  const result = updateTransactionsBulk(ids, updates);
+  return new Response(JSON.stringify({ success: true, updated: result.changes }), {
     headers: { 'Content-Type': 'application/json' },
   });
 };

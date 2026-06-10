@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import type { Transaction, Category } from '../lib/data';
-import { updateTransactionApi, deleteTransactionApi, toggleTransactionDoneApi, deleteTransactionsBulkApi, fetchCategories } from '../lib/api';
+import { updateTransactionApi, deleteTransactionApi, toggleTransactionDoneApi, deleteTransactionsBulkApi, updateTransactionsBulkApi, fetchCategories } from '../lib/api';
 import { formatIdr } from '../lib/utils';
 import { useSortState } from '../hooks/useSortState';
 import SortableHeader from './SortableHeader';
@@ -66,6 +66,7 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editForm, setEditForm] = useState<Partial<Transaction>>({});
   const [selected, setSelected] = useState<Set<number>>(new Set());
+  const [bulkCategory, setBulkCategory] = useState<string>('');
   const [categories, setCategories] = useState<Category[]>([]);
   const rowsPerPage = 25;
   const { toggleSort, sortData, isSorted } = useSortState();
@@ -211,6 +212,15 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
     window.location.reload();
   };
 
+  const handleBulkCategoryChange = async (newCategory: string) => {
+    if (!newCategory || selected.size === 0) return;
+    if (!confirm(`Reassign ${selected.size} transaction(s) to category "${newCategory}"?`)) return;
+    await updateTransactionsBulkApi(Array.from(selected), { category: newCategory });
+    setBulkCategory('');
+    setSelected(new Set());
+    window.location.reload();
+  };
+
   return (
     <div>
       <div className="flex flex-col sm:flex-row gap-3 mb-4">
@@ -322,8 +332,18 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
       </div>
 
       {selected.size > 0 && (
-        <div className="flex items-center gap-3 mb-3">
+        <div className="flex items-center gap-3 mb-3 flex-wrap">
           <span className="text-sm text-slate-600 dark:text-slate-300">{selected.size} selected</span>
+          <Select value={bulkCategory} onValueChange={handleBulkCategoryChange}>
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder="Reassign category..." />
+            </SelectTrigger>
+            <SelectContent>
+              {categories.map((cat) => (
+                <SelectItem key={cat.name} value={cat.name}>{cat.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <Button size="sm" variant="destructive" onClick={handleBulkDelete}>
             Delete Selected
           </Button>
