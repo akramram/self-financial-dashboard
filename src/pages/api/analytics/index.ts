@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { getDailySpending, getDayOfWeekSpending, getTransactionStats, getSpendingVelocity } from '../../../lib/db';
+import { getDailySpending, getDayOfWeekSpending, getTransactionStats, getSpendingVelocity, getTitleSpending } from '../../../lib/db';
 
 export const GET: APIRoute = async ({ request }) => {
   const url = new URL(request.url);
@@ -16,8 +16,9 @@ export const GET: APIRoute = async ({ request }) => {
   const dow = getDayOfWeekSpending();
   const stats = getTransactionStats(month);
   const velocity = getSpendingVelocity(month);
+  const titleSpending = getTitleSpending(month);
 
-  return new Response(JSON.stringify({ daily, dow, stats, velocity }), {
+  return new Response(JSON.stringify({ daily, dow, stats, velocity, titleSpending }), {
     headers: { 'Content-Type': 'application/json' },
   });
 };

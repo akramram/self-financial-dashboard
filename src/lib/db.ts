@@ -140,6 +140,7 @@ export function getTransactionById(id: number) {
 function normalizeTx(tx: any) {
   const copy = { ...tx };
   if (typeof copy.done === 'boolean') copy.done = copy.done ? 1 : 0;
+  if (copy.notes === undefined) copy.notes = '';
   return copy;
 }
 
@@ -645,6 +646,24 @@ export function getSpendingVelocity(month: string) {
       ? ((currentAvgDaily - historicalAvgDaily) / historicalAvgDaily) * 100
       : 0,
   };
+}
+
+export function getTitleSpending(month: string) {
+  return db.prepare(`
+    SELECT
+      title,
+      category,
+      SUM(CASE WHEN done = 1 THEN amount ELSE 0 END) as paid_amount,
+      SUM(amount) as total_amount,
+      COUNT(*) as tx_count,
+      AVG(amount) as avg_amount,
+      MAX(amount) as max_amount,
+      MIN(amount) as min_amount
+    FROM transactions
+    WHERE month = ?
+    GROUP BY title
+    ORDER BY SUM(CASE WHEN done = 1 THEN amount ELSE 0 END) DESC
+  `).all(month) as any[];
 }
 
 // ─── Investments CRUD ──────────────────────────────────────────────────────

@@ -104,11 +104,23 @@ interface Velocity {
   velocity_vs_history: number;
 }
 
+interface TitleSpending {
+  title: string;
+  category: string;
+  paid_amount: number;
+  total_amount: number;
+  tx_count: number;
+  avg_amount: number;
+  max_amount: number;
+  min_amount: number;
+}
+
 interface AnalyticsData {
   daily: DailySpending[];
   dow: DayOfWeekRow[];
   stats: TxStats;
   velocity: Velocity;
+  titleSpending: TitleSpending[];
 }
 
 interface Props {
@@ -204,7 +216,37 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
     );
   }
 
-  const { daily, dow, stats, velocity } = data;
+  const { daily, dow, stats, velocity, titleSpending } = data;
+
+  // ─── Top Merchants (Title Spending) ───────────────────────────────────
+  const topMerchants = useMemo(() => {
+    if (!titleSpending || titleSpending.length === 0) return [];
+    return titleSpending
+      .filter((t) => t.paid_amount > 0)
+      .slice(0, 10);
+  }, [titleSpending]);
+
+  const merchantChartData = useMemo(() => {
+    if (topMerchants.length === 0) return null;
+    // Reverse for horizontal bar (bottom = largest)
+    const reversed = [...topMerchants].reverse();
+    return {
+      labels: reversed.map((t) => t.title.length > 25 ? t.title.slice(0, 25) + '...' : t.title),
+      datasets: [
+        {
+          label: 'Paid Amount',
+          data: reversed.map((t) => t.paid_amount),
+          backgroundColor: reversed.map((t) => {
+            const catColor = categoryMap[t.category]?.color;
+            if (catColor) return catColor + 'CC';
+            return 'rgba(99, 102, 241, 0.7)';
+          }),
+          borderRadius: 4,
+          borderSkipped: false,
+        },
+      ],
+    };
+  }, [topMerchants, categoryMap]);
 
   // ─── Daily Spending Line Chart ─────────────────────────────────────────
   const dailyChartData = {
@@ -640,6 +682,108 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
           </div>
         </CardContent>
       </Card>
+
+      {/* ─── Top Merchants ──────────────────────────────────────────────── */}
+      {topMerchants.length > 0 && (
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base font-semibold flex items-center gap-2">
+              <Hash className="w-4 h-4 text-slate-500" />
+              Top Merchants
+            </CardTitle>
+            <p className="text-xs text-slate-400">
+              Where your money went this period — grouped by transaction title.
+            </p>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+              {/* Horizontal bar chart */}
+              {merchantChartData && (
+                <div className="lg:col-span-3 h-[320px]">
+                  <Bar
+                    data={merchantChartData}
+                    options={{
+                      indexAxis: 'y' as const,
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                          callbacks: {
+                            label: (ctx) => {
+                              const idx = ctx.dataIndex;
+                              const merchant = topMerchants[topMerchants.length - 1 - idx];
+                              if (!merchant) return formatIdr(ctx.raw as number);
+                              return [
+                                `Total: ${formatIdr(merchant.paid_amount)}`,
+                                `Transactions: ${merchant.tx_count}`,
+                                `Avg: ${formatIdr(merchant.avg_amount)}`,
+                                `Category: ${merchant.category}`,
+                              ];
+                            },
+                          },
+                        },
+                      },
+                      scales: {
+                        x: {
+                          beginAtZero: true,
+                          ticks: {
+                            font: { size: 10 },
+                            callback: (val) => {
+                              const n = Number(val);
+                              if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+                              if (n >= 1_000) return `${(n / 1_000).toFixed(0)}K`;
+                              return val;
+                            },
+                          },
+                        },
+                        y: {
+                          ticks: { font: { size: 10 } },
+                        },
+                      },
+                    }}
+                  />
+                </div>
+              )}
+              {/* Table summary */}
+              <div className="lg:col-span-2">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs">Merchant</TableHead>
+                      <TableHead className="text-xs text-right">Spent</TableHead>
+                      <TableHead className="text-xs text-right">#</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {topMerchants.map((m) => (
+                      <TableRow key={m.title}>
+                        <TableCell className="text-xs py-1.5">
+                          <div className="flex items-center gap-1.5">
+                            <span
+                              className="w-2 h-2 rounded-full shrink-0"
+                              style={{ backgroundColor: categoryMap[m.category]?.color || '#64748b' }}
+                            />
+                            <span className="truncate max-w-[140px]" title={m.title}>
+                              {m.title}
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-xs text-right font-medium py-1.5">
+                          {formatIdr(m.paid_amount)}
+                        </TableCell>
+                        <TableCell className="text-xs text-right text-slate-400 py-1.5">
+                          {m.tx_count}x
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* ─── Category Drill-down Dialog ────────────────────────────────── */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
