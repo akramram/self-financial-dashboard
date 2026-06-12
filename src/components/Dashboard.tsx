@@ -12,6 +12,7 @@ import OutcomeBarChart from './OutcomeBarChart';
 import MonthKickoffModal from './MonthKickoffModal';
 import DashboardSummaryCards from './DashboardSummaryCards';
 import SpendingPulse from './SpendingPulse';
+import AnomalyAlerts from './AnomalyAlerts';
 import { fetchRecurringTransactions } from '../lib/api';
 import { useSortState } from '../hooks/useSortState';
 import SortableHeader from './SortableHeader';
@@ -316,6 +317,11 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
       <SpendingPulse
         summaries={summaries}
         activeMonth={isAllTime ? activeSummary?.month : filterMonth}
+      />
+
+      {/* Anomaly Detection — flag unusual transactions */}
+      <AnomalyAlerts
+        month={isAllTime ? activeSummary?.month : filterMonth}
       />
 
       {/* Financial Insights */}

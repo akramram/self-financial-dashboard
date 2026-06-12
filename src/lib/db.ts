@@ -762,3 +762,120 @@ export function getPortfolioSummary() {
     byType,
   };
 }
+
+// ─── Anomaly Detection ──────────────────────────────────────────────────────
+
+export interface Anomaly {
+  id: number;
+  title: string;
+  category: string;
+  amount: number;
+  type: string;
+  created_time: string;
+  reason: 'amount_spike' | 'new_merchant' | 'category_outlier';
+  severity: 'high' | 'medium' | 'low';
+  detail: string; // human-readable explanation
+}
+
+export function getAnomalies(month: string): Anomaly[] {
+  // Get all paid transactions for the current month
+  const currentTxs = db.prepare(`
+    SELECT id, title, category, amount, type, created_time, done
+    FROM transactions WHERE month = ? AND done = 1
+  `).all(month) as any[];
+
+  if (currentTxs.length === 0) return [];
+
+  // Get all historical months (excluding current)
+  const historicalMonths = db.prepare(`
+    SELECT DISTINCT month FROM transactions WHERE month != ? ORDER BY month ASC
+  `).all(month) as { month: string }[];
+
+  // Get all historical paid transactions
+  const allHistorical = historicalMonths.length > 0
+    ? db.prepare(`
+        SELECT id, title, category, amount, type, created_time
+        FROM transactions WHERE month != ? AND done = 1
+      `).all(month) as any[]
+    : [];
+
+  // Compute per-category stats (mean, stddev) from historical data
+  const catStats: Record<string, { mean: number; stddev: number; amounts: number[] }> = {};
+  for (const tx of allHistorical) {
+    if (!catStats[tx.category]) catStats[tx.category] = { mean: 0, stddev: 0, amounts: [] };
+    catStats[tx.category].amounts.push(tx.amount);
+  }
+
+  for (const cat of Object.keys(catStats)) {
+    const amounts = catStats[cat].amounts;
+    const n = amounts.length;
+    const mean = amounts.reduce((s, a) => s + a, 0) / n;
+    catStats[cat].mean = mean;
+    if (n > 1) {
+      const variance = amounts.reduce((s, a) => s + (a - mean) ** 2, 0) / (n - 1);
+      catStats[cat].stddev = Math.sqrt(variance);
+    } else {
+      catStats[cat].stddev = mean * 0.5; // fallback: 50% of mean
+    }
+  }
+
+  // Set of all historical titles for "new merchant" detection
+  const historicalTitles = new Set(allHistorical.map((tx) => tx.title.toLowerCase().trim()));
+
+  const anomalies: Anomaly[] = [];
+
+  for (const tx of currentTxs) {
+    const stats = catStats[tx.category];
+
+    // --- Amount spike detection ---
+    if (stats && stats.amounts.length >= 2) {
+      const threshold = stats.mean + 2.5 * stats.stddev;
+      if (tx.amount > threshold && tx.amount > stats.mean * 1.5) {
+        const zScore = stats.stddev > 0 ? ((tx.amount - stats.mean) / stats.stddev) : 0;
+        anomalies.push({
+          id: tx.id,
+          title: tx.title,
+          category: tx.category,
+          amount: tx.amount,
+          type: tx.type,
+          created_time: tx.created_time,
+          reason: 'amount_spike',
+          severity: zScore > 4 ? 'high' : zScore > 3 ? 'medium' : 'low',
+          detail: `${zScore.toFixed(1)}x above avg (avg ${formatIdrShort(stats.mean)}, this ${formatIdrShort(tx.amount)})`,
+        });
+        continue; // Don't double-flag
+      }
+    }
+
+    // --- New merchant detection ---
+    const titleKey = tx.title.toLowerCase().trim();
+    if (!historicalTitles.has(titleKey) && historicalTitles.size > 0) {
+      // Only flag if the amount is non-trivial (> 10k IDR)
+      if (tx.amount > 10000) {
+        anomalies.push({
+          id: tx.id,
+          title: tx.title,
+          category: tx.category,
+          amount: tx.amount,
+          type: tx.type,
+          created_time: tx.created_time,
+          reason: 'new_merchant',
+          severity: tx.amount > 500000 ? 'medium' : 'low',
+          detail: `First time seeing "${tx.title}" — new spending pattern?`,
+        });
+      }
+    }
+
+    // --- Category outlier (category exists historically but never in this month range) ---
+    // This is a softer signal — skip for now to avoid noise
+  }
+
+  return anomalies;
+}
+
+/** Internal helper for formatting amounts in anomaly detail strings */
+function formatIdrShort(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(0)}K`;
+  return Math.round(n).toString();
+}
