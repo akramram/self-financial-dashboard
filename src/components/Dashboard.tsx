@@ -260,7 +260,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
       {/* Month Filter */}
       <div className="flex items-center gap-3">
         <Label className="text-sm font-medium text-slate-600 dark:text-slate-300">Period:</Label>
-        <Select value={filterMonth} onValueChange={(v) => { setFilterMonth(v); setTxPage(1); }}>
+        <Select value={filterPeriodId} onValueChange={(v) => { setFilterMonth(v); setTxPage(1); }}>
           <SelectTrigger className="w-[160px]">
             <SelectValue />
           </SelectTrigger>
@@ -318,18 +318,18 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
       <DashboardSummaryCards
         summaries={summaries}
         networth={networth}
-        activeMonth={isAllTime ? activeSummary?.month : filterMonth}
+        activeMonth={activeSummary?.month}
       />
 
       {/* Spending Pulse — real-time burn rate gauge */}
       <SpendingPulse
         summaries={summaries}
-        activeMonth={isAllTime ? activeSummary?.month : filterMonth}
+        activeMonth={activeSummary?.month}
       />
 
       {/* Anomaly Detection — flag unusual transactions */}
       <AnomalyAlerts
-        month={isAllTime ? activeSummary?.month : filterMonth}
+        month={activeSummary?.month}
       />
 
       {/* Financial Insights */}
@@ -338,7 +338,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
         networth={networth}
         summaries={summaries}
         categories={categories}
-        activeMonth={isAllTime ? activeSummary?.month : filterMonth}
+        activeMonth={activeSummary?.month}
       />
 
       {/* Outcome Breakdown — TOP */}
@@ -684,10 +684,10 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{selectedCategory} — {isAllTime ? activeSummary?.month : filterMonth}</DialogTitle>
+            <DialogTitle>{selectedCategory} — {isAllTime ? activeSummary?.month : filterPeriodId}</DialogTitle>
             <DialogDescription>
               {(() => {
-                const targetMonth = isAllTime ? activeSummary?.month : filterMonth;
+                const targetMonth = isAllTime ? activeSummary?.month : filterPeriodId;
                 const catTxs = transactions.filter((t) => t.category === selectedCategory && t.month === targetMonth);
                 const total = catTxs.reduce((sum, t) => sum + t.amount, 0);
                 return `${catTxs.length} transaction${catTxs.length !== 1 ? 's' : ''} • Total: ${formatIdr(total)}`;
@@ -710,7 +710,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
 
           <div className="mt-2">
             {(() => {
-              const targetMonth = isAllTime ? activeSummary?.month : filterMonth;
+              const targetMonth = isAllTime ? activeSummary?.month : filterPeriodId;
               const catTxs = transactions
                 .filter((t) => t.category === selectedCategory && t.month === targetMonth)
                 .sort((a, b) => parseCreatedTime(b).getTime() - parseCreatedTime(a).getTime());

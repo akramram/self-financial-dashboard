@@ -1354,7 +1354,7 @@ function Dashboard({ transactions, networth, summaries }) {
   return /* @__PURE__ */ jsxs("div", { className: "space-y-6", children: [
     /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3", children: [
       /* @__PURE__ */ jsx(Label, { className: "text-sm font-medium text-slate-600 dark:text-slate-300", children: "Period:" }),
-      /* @__PURE__ */ jsxs(Select, { value: filterMonth, onValueChange: (v) => {
+      /* @__PURE__ */ jsxs(Select, { value: filterPeriodId, onValueChange: (v) => {
         setFilterMonth(v);
         setTxPage(1);
       }, children: [
@@ -1424,20 +1424,20 @@ function Dashboard({ transactions, networth, summaries }) {
       {
         summaries,
         networth,
-        activeMonth: isAllTime ? activeSummary?.month : filterMonth
+        activeMonth: activeSummary?.month
       }
     ),
     /* @__PURE__ */ jsx(
       SpendingPulse,
       {
         summaries,
-        activeMonth: isAllTime ? activeSummary?.month : filterMonth
+        activeMonth: activeSummary?.month
       }
     ),
     /* @__PURE__ */ jsx(
       AnomalyAlerts,
       {
-        month: isAllTime ? activeSummary?.month : filterMonth
+        month: activeSummary?.month
       }
     ),
     /* @__PURE__ */ jsx(
@@ -1447,7 +1447,7 @@ function Dashboard({ transactions, networth, summaries }) {
         networth,
         summaries,
         categories,
-        activeMonth: isAllTime ? activeSummary?.month : filterMonth
+        activeMonth: activeSummary?.month
       }
     ),
     /* @__PURE__ */ jsxs("div", { className: "bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6", children: [
@@ -1727,10 +1727,10 @@ function Dashboard({ transactions, networth, summaries }) {
         /* @__PURE__ */ jsxs(DialogTitle, { children: [
           selectedCategory,
           " — ",
-          isAllTime ? activeSummary?.month : filterMonth
+          isAllTime ? activeSummary?.month : filterPeriodId
         ] }),
         /* @__PURE__ */ jsx(DialogDescription, { children: (() => {
-          const targetMonth = isAllTime ? activeSummary?.month : filterMonth;
+          const targetMonth = isAllTime ? activeSummary?.month : filterPeriodId;
           const catTxs = transactions.filter((t) => t.category === selectedCategory && t.month === targetMonth);
           const total = catTxs.reduce((sum, t) => sum + t.amount, 0);
           return `${catTxs.length} transaction${catTxs.length !== 1 ? "s" : ""} • Total: ${formatIdr(total)}`;
@@ -1749,7 +1749,7 @@ function Dashboard({ transactions, networth, summaries }) {
         )
       ] }),
       /* @__PURE__ */ jsx("div", { className: "mt-2", children: (() => {
-        const targetMonth = isAllTime ? activeSummary?.month : filterMonth;
+        const targetMonth = isAllTime ? activeSummary?.month : filterPeriodId;
         const catTxs = transactions.filter((t) => t.category === selectedCategory && t.month === targetMonth).sort((a, b) => parseCreatedTime(b).getTime() - parseCreatedTime(a).getTime());
         if (catTxs.length === 0) {
           return /* @__PURE__ */ jsx("p", { className: "text-sm text-slate-500", children: "No transactions found for this category." });
