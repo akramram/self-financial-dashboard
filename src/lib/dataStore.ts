@@ -84,7 +84,7 @@ function recalcNetworthMoM(records: NetworthRecord[]): NetworthRecord[] {
 
 export function addNetworth(record: NetworthRecord) {
   const all = getNetworth();
-  const idx = all.findIndex((n) => n.month === record.month);
+  const idx = all.findIndex((n) => n.period_id === record.period_id);
   let updated: NetworthRecord[];
   if (idx >= 0) {
     updated = [...all];
@@ -97,9 +97,9 @@ export function addNetworth(record: NetworthRecord) {
   recalcSummaries();
 }
 
-export function updateNetworthRecord(month: string, breakdown: Record<string, number>) {
+export function updateNetworthRecord(periodId: number, breakdown: Record<string, number>) {
   const all = getNetworth();
-  const idx = all.findIndex((n) => n.month === month);
+  const idx = all.findIndex((n) => n.period_id === periodId);
   if (idx < 0) return;
   const total = Object.values(breakdown).reduce((s, v) => s + v, 0);
   all[idx] = { ...all[idx], breakdown, total };
@@ -142,7 +142,7 @@ export function recalcSummaries() {
     return da.getTime() - db.getTime();
   });
 
-  const summaries: MonthlySummary[] = months.map((month) => {
+  const summaries: MonthlySummary[] = months.map((month, idx) => {
     const monthTx = transactions.filter((t) => t.month === month);
     const cash = monthTx.filter((t) => t.type === 'cash').reduce((s, t) => s + t.amount, 0);
     const credit_payment = monthTx.filter((t) => t.type === 'credit_payment').reduce((s, t) => s + t.amount, 0);
@@ -163,7 +163,11 @@ export function recalcSummaries() {
 
     const nw = networth.find((n) => n.month === month);
 
+    // Use a synthetic period_id based on array index + 1
+    const period_id = monthTx[0]?.period_id ?? (idx + 1);
+
     return {
+      period_id,
       month,
       date: getMonthDate(month),
       income,

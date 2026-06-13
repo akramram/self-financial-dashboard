@@ -1,13 +1,23 @@
 import type { APIRoute } from 'astro';
-import { db, getTransactions, insertTransaction, updateTransaction, deleteTransaction, deleteTransactionsBulk, updateTransactionsBulk, getTransactionById, findDuplicateTransaction } from '../../../lib/db';
+import { db, getTransactions, insertTransaction, updateTransaction, deleteTransaction, deleteTransactionsBulk, updateTransactionsBulk, getTransactionById, findDuplicateTransaction, ensurePeriod, getPeriodByMonth } from '../../../lib/db';
 
 export const GET: APIRoute = async ({ request }) => {
   const url = new URL(request.url);
   const month = url.searchParams.get('month') || undefined;
+  const periodIdStr = url.searchParams.get('period_id') || undefined;
   const type = url.searchParams.get('type') || undefined;
   const search = url.searchParams.get('search') || undefined;
   const category = url.searchParams.get('category') || undefined;
-  const rows = getTransactions({ month, type, search, category });
+
+  let periodId: number | undefined;
+  if (periodIdStr) {
+    periodId = parseInt(periodIdStr, 10);
+  } else if (month) {
+    const period = getPeriodByMonth(month);
+    periodId = period?.id;
+  }
+
+  const rows = getTransactions({ periodId, type, search, category });
   return new Response(JSON.stringify(rows), {
     headers: { 'Content-Type': 'application/json' },
   });
@@ -27,7 +37,16 @@ export const POST: APIRoute = async ({ request }) => {
       headers: { 'Content-Type': 'application/json' },
     });
   }
-  const id = insertTransaction(body);
+
+  // Resolve period_id: if body has month, ensure period exists and get its id
+  let period_id = body.period_id;
+  if (!period_id && body.month) {
+    period_id = ensurePeriod(body.month);
+  }
+  const txData = { ...body, period_id };
+  delete txData.month; // remove legacy month field
+
+  const id = insertTransaction(txData);
   return new Response(JSON.stringify({ id, ...body }), {
     status: 201,
     headers: { 'Content-Type': 'application/json' },

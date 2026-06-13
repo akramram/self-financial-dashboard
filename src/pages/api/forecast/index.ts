@@ -9,34 +9,46 @@ import {
   getCumulativeDailySpending,
   getAllMonthsWithSpending,
   getSpendingVelocity,
+  getPeriodByMonth,
 } from '../../../lib/db';
 
 export const GET: APIRoute = async ({ request }) => {
   const url = new URL(request.url);
   const month = url.searchParams.get('month');
+  const periodIdStr = url.searchParams.get('period_id');
 
   // Get all months to determine available options
   const allMonths = getAllMonthsWithSpending().map((r: any) => r.month);
   const targetMonth = month || (allMonths.length > 0 ? allMonths[allMonths.length - 1] : '');
 
-  if (!targetMonth) {
+  // Resolve period_id
+  let periodId: number | null = null;
+  if (periodIdStr) {
+    periodId = parseInt(periodIdStr, 10);
+  } else if (targetMonth) {
+    const period = getPeriodByMonth(targetMonth);
+    periodId = period?.id ?? null;
+  }
+
+  if (periodId === null || isNaN(periodId)) {
     return new Response(JSON.stringify({ allMonths, forecast: null }), {
       headers: { 'Content-Type': 'application/json' },
     });
   }
 
+  const pid: number = periodId;
+
   // 1. Cumulative daily spending for trajectory chart
-  const cumulative = getCumulativeDailySpending(targetMonth);
+  const cumulative = getCumulativeDailySpending(pid);
   const daysWithData = cumulative.length;
 
-  // 2. Current month's transactions
-  const transactions = getTransactions({ month: targetMonth });
-  const allPaid = transactions.filter((t) => t.done);
-  const totalSpent = allPaid.reduce((s, t) => s + t.amount, 0);
-  const totalUnpaid = transactions.filter((t) => !t.done).reduce((s, t) => s + t.amount, 0);
+  // 2. Current period's transactions
+  const transactions = getTransactions({ periodId: pid });
+  const allPaid = transactions.filter((t: any) => t.done);
+  const totalSpent = allPaid.reduce((s: number, t: any) => s + t.amount, 0);
+  const totalUnpaid = transactions.filter((t: any) => !t.done).reduce((s: number, t: any) => s + t.amount, 0);
 
-  // 3. Estimate period length (based on salary period convention: ~30 days)
-  // Use actual day spread if available, otherwise default to 30
+  // 3. Estimate period length
   let periodLength = 30;
   if (cumulative.length > 1) {
     const firstDay = new Date(cumulative[0].day);
@@ -48,13 +60,12 @@ export const GET: APIRoute = async ({ request }) => {
   const daysElapsed = daysWithData;
   const daysRemaining = Math.max(0, periodLength - daysElapsed);
 
-  // 4. Compute projection using linear regression on cumulative data
+  // 4. Compute projection using linear regression
   let projectedTotal = totalSpent;
   let projectionConfidence = 'low';
   const dailyAvg = daysElapsed > 0 ? totalSpent / daysElapsed : 0;
 
   if (daysElapsed >= 3) {
-    // Simple linear regression on cumulative daily data
     const n = cumulative.length;
     let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
     for (let i = 0; i < n; i++) {
@@ -69,7 +80,6 @@ export const GET: APIRoute = async ({ request }) => {
       const intercept = (sumY - slope * sumX) / n;
       projectedTotal = Math.max(0, intercept + slope * (periodLength - 1));
 
-      // Estimate confidence based on R²
       const meanY = sumY / n;
       let ssRes = 0, ssTot = 0;
       for (let i = 0; i < n; i++) {
@@ -92,20 +102,19 @@ export const GET: APIRoute = async ({ request }) => {
   // 5. Compare with historical average
   const recentMonthly = getRecentMonthlyTotals(6);
   const historicalAvg = recentMonthly.length > 0
-    ? recentMonthly.reduce((s, m) => s + m.daily_avg, 0) / recentMonthly.length
+    ? recentMonthly.reduce((s: number, m: any) => s + m.daily_avg, 0) / recentMonthly.length
     : 0;
   const velocityVsHistory = historicalAvg > 0 ? ((dailyAvg - historicalAvg) / historicalAvg) * 100 : 0;
 
   // 6. Category-level budget burn rate
   const categories = getCategories();
-  const catSpending = getMonthlySpendingByCategory(targetMonth);
+  const catSpending = getMonthlySpendingByCategory(pid);
   const catMap: Record<string, { spent: number; projected: number }> = {};
 
   for (const row of catSpending) {
     if (!catMap[row.category]) catMap[row.category] = { spent: 0, projected: 0 };
     catMap[row.category].spent += row.spent;
   }
-  // Project category spending proportionally
   for (const cat of Object.keys(catMap)) {
     if (totalSpent > 0 && daysElapsed > 0) {
       const catDailyAvg = catMap[cat].spent / daysElapsed;
@@ -116,8 +125,8 @@ export const GET: APIRoute = async ({ request }) => {
   }
 
   const budgetStatus = categories
-    .filter((c) => c.monthly_limit > 0)
-    .map((c) => {
+    .filter((c: any) => c.monthly_limit > 0)
+    .map((c: any) => {
       const spent = catMap[c.name]?.spent || 0;
       const projected = catMap[c.name]?.projected || 0;
       const limit = c.monthly_limit;
@@ -141,17 +150,17 @@ export const GET: APIRoute = async ({ request }) => {
     });
 
   // 7. Credit card utilization
-  const credit = getCreditStatus(targetMonth);
+  const credit = getCreditStatus(pid);
   const creditOutstanding = credit.credit_expenses_paid - credit.credit_payments_paid;
   const creditUtilization = credit.credit_expenses_paid > 0
     ? (creditOutstanding / credit.credit_expenses_paid) * 100
     : 0;
 
-  // 8. Spending velocity (reuse existing function)
-  const velocity = getSpendingVelocity(targetMonth);
+  // 8. Spending velocity
+  const velocity = getSpendingVelocity(pid);
 
-  // 9. Generate projected trajectory points for chart
-  const projectedTrajectory = [];
+  // 9. Generate projected trajectory points
+  const projectedTrajectory: any[] = [];
   if (cumulative.length > 0 && daysRemaining > 0) {
     const lastPoint = cumulative[cumulative.length - 1];
     const lastDay = new Date(lastPoint.day).getTime();
@@ -168,7 +177,6 @@ export const GET: APIRoute = async ({ request }) => {
   // 10. Alerts
   const alerts: { type: 'info' | 'warning' | 'danger'; message: string }[] = [];
 
-  // Budget alerts
   for (const bs of budgetStatus) {
     if (bs.status === 'critical') {
       alerts.push({
@@ -188,7 +196,6 @@ export const GET: APIRoute = async ({ request }) => {
     }
   }
 
-  // Velocity alerts
   if (velocityVsHistory > 30) {
     alerts.push({
       type: 'warning',
@@ -201,11 +208,10 @@ export const GET: APIRoute = async ({ request }) => {
     });
   }
 
-  // Unpaid alerts
   if (totalUnpaid > 0) {
     alerts.push({
       type: 'info',
-      message: `${transactions.filter((t) => !t.done).length} unpaid transactions totaling ${formatAlertAmt(totalUnpaid)} not included in projections`,
+      message: `${transactions.filter((t: any) => !t.done).length} unpaid transactions totaling ${formatAlertAmt(totalUnpaid)} not included in projections`,
     });
   }
 
@@ -220,6 +226,7 @@ export const GET: APIRoute = async ({ request }) => {
 
   const forecast = {
     month: targetMonth,
+    period_id: pid,
     daysElapsed,
     periodLength,
     daysRemaining,

@@ -4,7 +4,7 @@ import 'kleur/colors';
 import { f as formatIdr, g as getActivePeriod, $ as $$Layout } from '../chunks/utils_Blj5YLOJ.mjs';
 import { jsx, jsxs, Fragment } from 'react/jsx-runtime';
 import { useMemo, useState, useEffect, useCallback } from 'react';
-import { F as kickoffMonth, f as fetchCategories, n as fetchRecurringTransactions, A as toggleTransactionDoneApi, B as deleteTransactionApi, C as updateTransactionApi } from '../chunks/api_BDzHS_4o.mjs';
+import { F as kickoffMonth, f as fetchCategories, n as fetchRecurringTransactions, A as toggleTransactionDoneApi, B as deleteTransactionApi, C as updateTransactionApi } from '../chunks/api_n5hUqc9e.mjs';
 import { Chart, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement, Filler } from 'chart.js';
 import { Bar, Doughnut, Line } from 'react-chartjs-2';
 import { N as NetworthChart } from '../chunks/NetworthChart_DqHJPjvg.mjs';
@@ -20,7 +20,7 @@ import { E as EditTransactionDialog } from '../chunks/EditTransactionDialog_BMEo
 import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_C3KRA4ed.mjs';
 import '../chunks/checkbox_CDAgyxgq.mjs';
 import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_CRipy8Bp.mjs';
-import { n as getTransactions, o as getNetworth, g as getMonthlySummary, d as db } from '../chunks/db_D20tYf13.mjs';
+import { p as getTransactions, q as getNetworth, g as getMonthlySummary, d as db } from '../chunks/db_B4_3wji-.mjs';
 export { renderers } from '../renderers.mjs';
 
 Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -1207,31 +1207,38 @@ function Dashboard({ transactions, networth, summaries }) {
     const { month, year } = getActivePeriod();
     return `${month} ${year}`;
   }, []);
-  const dbMonths = useMemo(() => [...summaries].map((s) => s.month), [summaries]);
-  const months = useMemo(() => {
-    const set = new Set(dbMonths);
-    const list = set.has(activePeriod) ? [activePeriod, ...dbMonths.filter((m) => m !== activePeriod).reverse()] : [activePeriod, ...dbMonths.reverse()];
-    return list;
-  }, [dbMonths, activePeriod]);
-  const [filterMonth, setFilterMonth] = useState("all");
-  const isAllTime = filterMonth === "all";
+  useMemo(() => {
+    const seen = /* @__PURE__ */ new Set();
+    return summaries.filter((s) => {
+      if (seen.has(s.period_id)) return false;
+      seen.add(s.period_id);
+      return true;
+    }).map((s) => ({ id: s.period_id, month: s.month })).reverse();
+  }, [summaries]);
+  useMemo(
+    () => summaries.find((s) => s.month === activePeriod)?.period_id ?? null,
+    [summaries, activePeriod]
+  );
+  const [filterPeriodId, setFilterPeriodId] = useState(null);
+  const [filterAllTime, setFilterAllTime] = useState(true);
+  const isAllTime = filterAllTime;
   const activeSummary = useMemo(() => {
     if (isAllTime) return summaries[summaries.length - 1];
-    return summaries.find((s) => s.month === filterMonth) ?? summaries[summaries.length - 1];
-  }, [filterMonth, summaries, isAllTime]);
+    return summaries.find((s) => s.period_id === filterPeriodId) ?? summaries[summaries.length - 1];
+  }, [filterPeriodId, summaries, isAllTime]);
   const filteredSummaries = useMemo(() => {
     if (isAllTime) return summaries;
-    return summaries.filter((s) => s.month === filterMonth);
-  }, [filterMonth, summaries, isAllTime]);
+    return summaries.filter((s) => s.period_id === filterPeriodId);
+  }, [filterPeriodId, summaries, isAllTime]);
   const filteredNetworth = useMemo(() => {
     if (isAllTime) return networth;
-    return networth.filter((n) => n.month === filterMonth);
-  }, [filterMonth, networth, isAllTime]);
+    return networth.filter((n) => n.period_id === filterPeriodId);
+  }, [filterPeriodId, networth, isAllTime]);
   const filteredTransactions = useMemo(() => {
     if (!activeSummary) return [];
-    if (isAllTime) return transactions.filter((t) => t.month === activeSummary.month);
-    return transactions.filter((t) => t.month === filterMonth);
-  }, [filterMonth, transactions, activeSummary, isAllTime]);
+    if (isAllTime) return transactions.filter((t) => t.period_id === activeSummary.period_id);
+    return transactions.filter((t) => t.period_id === filterPeriodId);
+  }, [filterPeriodId, transactions, activeSummary, isAllTime]);
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({});
   const startEdit = (row) => {
@@ -1775,7 +1782,7 @@ const $$Index = createComponent(($$result, $$props, $$slots) => {
   const transactions = getTransactions();
   const networth = getNetworth();
   const summaries = getMonthlySummary();
-  const incomeRows = db.prepare("SELECT month, income FROM monthly_income").all();
+  const incomeRows = db.prepare("SELECT mi.period_id, mi.income, p.month FROM monthly_income mi JOIN periods p ON mi.period_id = p.id").all();
   const incomeMap = new Map(incomeRows.map((r) => [r.month, r.income]));
   for (const s of summaries) {
     const income = incomeMap.get(s.month) || 0;

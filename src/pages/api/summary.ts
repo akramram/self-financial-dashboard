@@ -3,12 +3,15 @@ import { db, getMonthlySummary } from '../../lib/db';
 
 export const GET: APIRoute = async () => {
   const summaries = getMonthlySummary();
-  // Enrich with income from monthly_income table
-  const incomeRows = db.prepare('SELECT month, income FROM monthly_income').all() as any[];
-  const incomeMap = new Map(incomeRows.map((r) => [r.month, r.income]));
+  // Enrich with income from monthly_income table (now uses period_id)
+  const incomeRows = db.prepare(`
+    SELECT mi.period_id, mi.income
+    FROM monthly_income mi
+  `).all() as any[];
+  const incomeMap = new Map(incomeRows.map((r) => [r.period_id, r.income]));
 
   for (const s of summaries) {
-    const income = incomeMap.get(s.month) || 0;
+    const income = incomeMap.get(s.period_id) || 0;
     s.income = income;
     s.savings = income - s.outcome.total;
     s.savings_rate_pct = income > 0 ? Number(((s.savings / income) * 100).toFixed(2)) : 0;

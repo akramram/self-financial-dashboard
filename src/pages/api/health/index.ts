@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { getMonthlySummary, getCategories, getNetworth, db } from '../../../lib/db';
+import { getMonthlySummary, getCategories, getNetworth, db, getPeriodByMonth } from '../../../lib/db';
 
 interface HealthFactor {
   name: string;
@@ -16,6 +16,7 @@ interface HealthResult {
   gradeColor: string;
   factors: HealthFactor[];
   month: string;
+  period_id: number;
   prevScore: number | null;
   trend: 'up' | 'down' | 'stable' | 'new';
   tips: string[];
@@ -26,12 +27,10 @@ function clamp(val: number, min: number, max: number) {
 }
 
 function linearScore(value: number, ranges: [number, number][]): number {
-  // ranges: [[threshold, score], ...] - last range is the floor
   for (let i = 0; i < ranges.length - 1; i++) {
     const [thresh, score] = ranges[i];
     if (value >= thresh) {
       const [nextThresh, nextScore] = ranges[i + 1];
-      // Interpolate between this and next
       const t = clamp((value - thresh) / (nextThresh - thresh), 0, 1);
       return Math.round(score + t * (nextScore - score));
     }
@@ -41,24 +40,40 @@ function linearScore(value: number, ranges: [number, number][]): number {
 
 export const GET: APIRoute = async ({ url }) => {
   const monthParam = url.searchParams.get('month');
+  const periodIdParam = url.searchParams.get('period_id');
   const summaries = getMonthlySummary();
   const categories = getCategories();
   const networth = getNetworth();
 
-  // Enrich summaries with income
-  const incomeRows = db.prepare('SELECT month, income FROM monthly_income').all() as any[];
-  const incomeMap = new Map(incomeRows.map((r) => [r.month, r.income]));
+  // Enrich summaries with income from monthly_income (which uses period_id)
+  const incomeRows = db.prepare(`
+    SELECT mi.period_id, mi.income, p.month 
+    FROM monthly_income mi JOIN periods p ON mi.period_id = p.id
+  `).all() as any[];
+  // Build maps by both period_id and month
+  const incomeByPeriodId = new Map<number, number>();
+  const incomeByMonth = new Map<string, number>();
+  for (const r of incomeRows) {
+    incomeByPeriodId.set(r.period_id, r.income);
+    incomeByMonth.set(r.month, r.income);
+  }
   for (const s of summaries) {
-    const income = incomeMap.get(s.month) || 0;
+    const income = incomeByPeriodId.get(s.period_id) || incomeByMonth.get(s.month) || 0;
     s.income = income;
     s.savings = income - s.outcome.total;
     s.savings_rate_pct = income > 0 ? Number(((s.savings / income) * 100).toFixed(2)) : 0;
   }
 
   // Pick target month (latest or specified)
-  const targetMonth = monthParam
-    ? summaries.find((s) => s.month === monthParam)
-    : summaries[summaries.length - 1];
+  let targetMonth: any;
+  if (periodIdParam) {
+    targetMonth = summaries.find((s) => s.period_id === parseInt(periodIdParam, 10));
+  } else if (monthParam) {
+    targetMonth = summaries.find((s) => s.month === monthParam);
+  }
+  if (!targetMonth) {
+    targetMonth = summaries[summaries.length - 1];
+  }
 
   if (!targetMonth) {
     return new Response(JSON.stringify({ error: 'No data available' }), { status: 404 });
@@ -66,7 +81,7 @@ export const GET: APIRoute = async ({ url }) => {
 
   const factors: HealthFactor[] = [];
   const tips: string[] = [];
-  const catMap = new Map(categories.map((c) => [c.name, c]));
+  const catMap = new Map(categories.map((c: any) => [c.name, c]));
 
   // ── Factor 1: Savings Rate (0-20) ─────────────────────────────────
   const savingsRate = targetMonth.savings_rate_pct;
@@ -97,9 +112,9 @@ export const GET: APIRoute = async ({ url }) => {
   if (savingsRate < 0) tips.push('⚠️ You are spending more than you earn. Review expenses urgently.');
 
   // ── Factor 2: Budget Adherence (0-20) ─────────────────────────────
-  let budgetScore = 10; // neutral baseline
+  let budgetScore = 10;
   const catTotals = targetMonth.category_totals || {};
-  const catsWithBudgets = categories.filter((c) => c.monthly_limit > 0);
+  const catsWithBudgets = categories.filter((c: any) => c.monthly_limit > 0);
   const overspentCats: string[] = [];
   const nearLimitCats: string[] = [];
 
@@ -118,7 +133,7 @@ export const GET: APIRoute = async ({ url }) => {
     }
     budgetScore = Math.round((withinBudget / total) * 20);
   } else {
-    budgetScore = 12; // neutral if no budgets set
+    budgetScore = 12;
   }
   budgetScore = clamp(budgetScore, 0, 20);
 
@@ -141,9 +156,9 @@ export const GET: APIRoute = async ({ url }) => {
   if (catsWithBudgets.length === 0) tips.push('Set monthly limits for your categories in Settings.');
 
   // ── Factor 3: Networth Growth (0-20) ─────────────────────────────
-  let nwScore = 10; // neutral
-  const currentNW = networth.find((n) => n.month === targetMonth.month);
-  const nwIdx = networth.findIndex((n) => n.month === targetMonth.month);
+  let nwScore = 10;
+  const currentNW = networth.find((n: any) => n.period_id === targetMonth.period_id);
+  const nwIdx = networth.findIndex((n: any) => n.period_id === targetMonth.period_id);
   let nwDetail = 'No networth data';
 
   if (currentNW) {
@@ -208,15 +223,14 @@ export const GET: APIRoute = async ({ url }) => {
 
   // ── Factor 5: Consistency (0-20) ─────────────────────────────────
   let consistencyScore = 10;
-  const monthIdx = summaries.findIndex((s) => s.month === targetMonth.month);
+  const monthIdx = summaries.findIndex((s: any) => s.period_id === targetMonth.period_id);
   let consistencyDetail = 'Need more months of data';
 
   if (monthIdx >= 2) {
-    // Look at last 3 months of savings rates
     const last3 = summaries.slice(Math.max(0, monthIdx - 2), monthIdx + 1);
-    const rates = last3.map((s) => s.savings_rate_pct);
-    const avg = rates.reduce((a, b) => a + b, 0) / rates.length;
-    const variance = rates.reduce((sum, r) => sum + Math.pow(r - avg, 2), 0) / rates.length;
+    const rates = last3.map((s: any) => s.savings_rate_pct);
+    const avg = rates.reduce((a: number, b: number) => a + b, 0) / rates.length;
+    const variance = rates.reduce((sum: number, r: number) => sum + Math.pow(r - avg, 2), 0) / rates.length;
     const stdDev = Math.sqrt(variance);
 
     if (stdDev < 5) consistencyScore = 20;
@@ -260,7 +274,6 @@ export const GET: APIRoute = async ({ url }) => {
 
   if (monthIdx > 0) {
     const prevMonth = summaries[monthIdx - 1];
-    // Calculate prev score from existing data
     const prevIncome = prevMonth.income;
     const prevSavingsRate = prevMonth.savings_rate_pct;
     let prevSavingsScore: number;
@@ -271,8 +284,8 @@ export const GET: APIRoute = async ({ url }) => {
     else prevSavingsScore = 0;
 
     let prevNW2 = 10;
-    const prevNetworth = networth.find((n) => n.month === prevMonth.month);
-    const prevNWIdx = networth.findIndex((n) => n.month === prevMonth.month);
+    const prevNetworth = networth.find((n: any) => n.period_id === prevMonth.period_id);
+    const prevNWIdx = networth.findIndex((n: any) => n.period_id === prevMonth.period_id);
     if (prevNetworth && prevNWIdx > 0) {
       const ppNW = networth[prevNWIdx - 1];
       const chg = ppNW.total > 0 ? ((prevNetworth.total - ppNW.total) / ppNW.total) * 100 : 0;
@@ -295,7 +308,6 @@ export const GET: APIRoute = async ({ url }) => {
       else prevSpendScore = 0;
     }
 
-    // Approximate prev budget score
     let prevBudgetScore = 10;
     if (catsWithBudgets.length > 0) {
       const prevCatTotals = prevMonth.category_totals || {};
@@ -320,13 +332,14 @@ export const GET: APIRoute = async ({ url }) => {
     gradeColor,
     factors,
     month: targetMonth.month,
+    period_id: targetMonth.period_id,
     prevScore,
     trend,
     tips,
   };
 
   // Also compute scores for all months for trend chart
-  const allMonthScores: { month: string; score: number }[] = [];
+  const allMonthScores: { month: string; period_id: number; score: number }[] = [];
   for (let i = 0; i < summaries.length; i++) {
     const s = summaries[i];
     const inc = s.income;
@@ -350,8 +363,8 @@ export const GET: APIRoute = async ({ url }) => {
     }
 
     let ns2 = 10;
-    const nwk = networth.find((n) => n.month === s.month);
-    const nIdx = networth.findIndex((n) => n.month === s.month);
+    const nwk = networth.find((n: any) => n.period_id === s.period_id);
+    const nIdx = networth.findIndex((n: any) => n.period_id === s.period_id);
     if (nwk && nIdx > 0) {
       const pnw = networth[nIdx - 1];
       const cp = pnw.total > 0 ? ((nwk.total - pnw.total) / pnw.total) * 100 : 0;
@@ -377,9 +390,9 @@ export const GET: APIRoute = async ({ url }) => {
     let cs2 = 10;
     if (i >= 2) {
       const l3 = summaries.slice(Math.max(0, i - 2), i + 1);
-      const rs = l3.map((x) => x.savings_rate_pct);
-      const a = rs.reduce((a2, b2) => a2 + b2, 0) / rs.length;
-      const v = rs.reduce((sum, r) => sum + Math.pow(r - a, 2), 0) / rs.length;
+      const rs = l3.map((x: any) => x.savings_rate_pct);
+      const a = rs.reduce((a2: number, b2: number) => a2 + b2, 0) / rs.length;
+      const v = rs.reduce((sum: number, r: number) => sum + Math.pow(r - a, 2), 0) / rs.length;
       const sd = Math.sqrt(v);
       if (sd < 5) cs2 = 20;
       else if (sd < 10) cs2 = 16;
@@ -390,6 +403,7 @@ export const GET: APIRoute = async ({ url }) => {
 
     allMonthScores.push({
       month: s.month,
+      period_id: s.period_id,
       score: clamp(ss2 + bs2 + ns2 + sp2 + cs2, 0, 100),
     });
   }

@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { insertTransaction, upsertNetworth, upsertMonthlyIncome } from '../../lib/db';
+import { insertTransaction, upsertNetworth, upsertMonthlyIncome, ensurePeriod } from '../../lib/db';
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -27,8 +27,10 @@ export const POST: APIRoute = async ({ request }) => {
             errors++;
             continue;
           }
+          // Convert month string to period_id
+          const period_id = ensurePeriod(String(row.month));
           insertTransaction({
-            month: String(row.month),
+            period_id,
             date: String(row.date),
             title: String(row.title),
             category: String(row.category),
@@ -51,8 +53,10 @@ export const POST: APIRoute = async ({ request }) => {
             errors++;
             continue;
           }
+          // Convert month string to period_id
+          const period_id = ensurePeriod(String(row.month));
           upsertNetworth({
-            month: String(row.month),
+            period_id,
             date: String(row.date),
             total: Number(row.total),
             currency: String(row.currency || 'IDR'),
@@ -72,8 +76,10 @@ export const POST: APIRoute = async ({ request }) => {
             errors++;
             continue;
           }
+          // Convert month string to period_id
+          const period_id = ensurePeriod(String(row.month));
           upsertMonthlyIncome({
-            month: String(row.month),
+            period_id,
             date: String(row.date),
             income: Number(row.income),
             other_income: row.other_income != null ? Number(row.other_income) : 0,

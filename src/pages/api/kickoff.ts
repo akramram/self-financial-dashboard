@@ -1,21 +1,30 @@
 import type { APIRoute } from 'astro';
-import { db, getRecurringTransactions, insertTransaction, upsertMonthlyIncome, getMonthlyIncomeByMonth } from '../../lib/db';
+import { db, getRecurringTransactions, insertTransaction, upsertMonthlyIncome, getMonthlyIncome, ensurePeriod, getPeriodByMonth } from '../../lib/db';
 
 export const GET: APIRoute = async () => {
-  // Return the latest month that has transactions or income
-  const txMonth = db.prepare("SELECT month FROM transactions ORDER BY date DESC LIMIT 1").get() as any;
-  const incomeMonth = db.prepare("SELECT month FROM monthly_income ORDER BY date DESC LIMIT 1").get() as any;
-  const latestMonth = txMonth?.month || incomeMonth?.month || null;
+  // Return the latest period that has transactions or income
+  const latestPeriod = db.prepare(`
+    SELECT p.id, p.month 
+    FROM periods p
+    WHERE p.id IN (SELECT DISTINCT period_id FROM transactions)
+       OR p.id IN (SELECT DISTINCT period_id FROM monthly_income)
+    ORDER BY p.start_date DESC LIMIT 1
+  `).get() as any;
+
+  const latestMonth = latestPeriod?.month || null;
 
   // Compute next month
   let nextMonth: string | null = null;
+  let nextPeriodId: number | null = null;
   if (latestMonth) {
     const d = new Date(latestMonth + ' 1');
     d.setMonth(d.getMonth() + 1);
     nextMonth = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    const nextPeriod = getPeriodByMonth(nextMonth);
+    nextPeriodId = nextPeriod?.id ?? null;
   }
 
-  const hasNextMonth = nextMonth ? !!getMonthlyIncomeByMonth(nextMonth) || !!(db.prepare("SELECT 1 FROM transactions WHERE month = ? LIMIT 1").get(nextMonth)) : false;
+  const hasNextMonth = nextPeriodId ? true : false;
 
   return new Response(JSON.stringify({ latestMonth, nextMonth, hasNextMonth }), {
     headers: { 'Content-Type': 'application/json' },
@@ -34,15 +43,18 @@ export const POST: APIRoute = async ({ request }) => {
     });
   }
 
+  // Ensure period exists
+  const period_id = ensurePeriod(month);
+
   // Parse month to get date — periods start on the 21st (salary cycle)
   const monthDate = new Date(month + ' 1');
   const mm = String(monthDate.getMonth() + 1).padStart(2, '0');
   const yyyy = monthDate.getFullYear();
   const dateStr = `${yyyy}-${mm}-21`;
 
-  // Check if month already has income
-  const existingIncome = getMonthlyIncomeByMonth(month);
-  const existingTx = db.prepare("SELECT 1 FROM transactions WHERE month = ? LIMIT 1").get(month);
+  // Check if period already has income or transactions
+  const existingIncome = db.prepare('SELECT 1 FROM monthly_income WHERE period_id = ?').get(period_id);
+  const existingTx = db.prepare('SELECT 1 FROM transactions WHERE period_id = ? LIMIT 1').get(period_id);
   if (existingIncome || existingTx) {
     return new Response(JSON.stringify({ error: 'Month already exists' }), {
       status: 409,
@@ -52,7 +64,7 @@ export const POST: APIRoute = async ({ request }) => {
 
   // Create monthly income record
   upsertMonthlyIncome({
-    month,
+    period_id,
     date: dateStr,
     income: salary,
     other_income: 0,
@@ -63,7 +75,7 @@ export const POST: APIRoute = async ({ request }) => {
   const now = new Date().toISOString();
   for (const r of recurring) {
     insertTransaction({
-      month,
+      period_id,
       date: dateStr,
       title: r.title,
       category: r.category,
@@ -79,6 +91,7 @@ export const POST: APIRoute = async ({ request }) => {
   return new Response(JSON.stringify({
     success: true,
     month,
+    period_id,
     salary,
     preloaded: recurring.length,
   }), {

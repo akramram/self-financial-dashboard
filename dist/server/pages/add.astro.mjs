@@ -4,7 +4,7 @@ import 'kleur/colors';
 import { g as getActivePeriod, $ as $$Layout } from '../chunks/utils_Blj5YLOJ.mjs';
 import { jsxs, jsx } from 'react/jsx-runtime';
 import { useState, useRef, useEffect } from 'react';
-import { f as fetchCategories, a as fetchNetworth, c as createNetworth } from '../chunks/api_BDzHS_4o.mjs';
+import { f as fetchCategories, a as fetchNetworth, c as createNetworth } from '../chunks/api_n5hUqc9e.mjs';
 import { C as Card, a as CardHeader, b as CardTitle, c as CardContent, d as CardDescription } from '../chunks/card_CrN9uNe-.mjs';
 import { I as Input } from '../chunks/input_oLb95eej.mjs';
 import { B as Button } from '../chunks/button_Vng4eZC1.mjs';

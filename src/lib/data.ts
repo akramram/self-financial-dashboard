@@ -4,7 +4,8 @@ import monthlySummaryJson from '../data/monthly_summary.json';
 
 export interface Transaction {
   id: number;
-  month: string;
+  period_id: number;
+  month: string;  // display label, kept for backward compat
   date: string;
   title: string;
   category: string;
@@ -18,7 +19,8 @@ export interface Transaction {
 }
 
 export interface NetworthRecord {
-  month: string;
+  period_id: number;
+  month: string;  // display label from periods table
   date: string;
   total: number;
   currency: string;
@@ -28,8 +30,11 @@ export interface NetworthRecord {
 }
 
 export interface MonthlySummary {
-  month: string;
+  period_id: number;
+  month: string;  // display label
   date: string;
+  start_date?: string;
+  end_date?: string;
   income: number;
   outcome: {
     cash: number;

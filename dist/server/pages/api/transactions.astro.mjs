@@ -1,13 +1,21 @@
-import { X as deleteTransactionsBulk, n as getTransactions, Y as findDuplicateTransaction, A as insertTransaction, Z as updateTransactionsBulk } from '../../chunks/db_D20tYf13.mjs';
+import { _ as deleteTransactionsBulk, b as getPeriodByMonth, p as getTransactions, $ as findDuplicateTransaction, C as ensurePeriod, D as insertTransaction, a0 as updateTransactionsBulk } from '../../chunks/db_B4_3wji-.mjs';
 export { renderers } from '../../renderers.mjs';
 
 const GET = async ({ request }) => {
   const url = new URL(request.url);
   const month = url.searchParams.get("month") || void 0;
+  const periodIdStr = url.searchParams.get("period_id") || void 0;
   const type = url.searchParams.get("type") || void 0;
   const search = url.searchParams.get("search") || void 0;
   const category = url.searchParams.get("category") || void 0;
-  const rows = getTransactions({ month, type, search, category });
+  let periodId;
+  if (periodIdStr) {
+    periodId = parseInt(periodIdStr, 10);
+  } else if (month) {
+    const period = getPeriodByMonth(month);
+    periodId = period?.id;
+  }
+  const rows = getTransactions({ periodId, type, search, category });
   return new Response(JSON.stringify(rows), {
     headers: { "Content-Type": "application/json" }
   });
@@ -26,7 +34,13 @@ const POST = async ({ request }) => {
       headers: { "Content-Type": "application/json" }
     });
   }
-  const id = insertTransaction(body);
+  let period_id = body.period_id;
+  if (!period_id && body.month) {
+    period_id = ensurePeriod(body.month);
+  }
+  const txData = { ...body, period_id };
+  delete txData.month;
+  const id = insertTransaction(txData);
   return new Response(JSON.stringify({ id, ...body }), {
     status: 201,
     headers: { "Content-Type": "application/json" }

@@ -21,6 +21,9 @@ export function formatNumber(n: number | undefined | null): string {
  * The period is named after the month it ends in (the 20th).
  * If today is >= 21 → next calendar month.
  * If today is < 21  → current calendar month.
+ *
+ * Returns the month string for use with getPeriodByMonth() on the server,
+ * or for display purposes on the client.
  */
 export function getActivePeriod(): { month: string; year: number } {
   const now = new Date();
@@ -37,6 +40,15 @@ export function getActivePeriod(): { month: string; year: number } {
     month: now.toLocaleDateString('en-US', { month: 'long' }),
     year: now.getFullYear(),
   };
+}
+
+/**
+ * Formats the active period as "Month Year" string (e.g., "June 2026").
+ * Client-side compatible (no DB call).
+ */
+export function getActivePeriodMonth(): string {
+  const { month, year } = getActivePeriod();
+  return `${month} ${year}`;
 }
 
 export function getMonthSortKey(monthName: string): number {

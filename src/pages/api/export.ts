@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { getTransactions, getNetworth, getMonthlySummary, db } from '../../lib/db';
+import { getTransactions, getNetworth, getMonthlySummary, db, getAllPeriods } from '../../lib/db';
 
 function toCsv(rows: Record<string, any>[], headers: string[]): string {
   const escape = (val: any) => {
@@ -19,13 +19,18 @@ export const GET: APIRoute = async ({ request }) => {
   const type = url.searchParams.get('type') || 'all';
   const dateSuffix = new Date().toISOString().slice(0, 10);
 
+  // Build period_id → month lookup
+  const periods = getAllPeriods();
+  const periodMap = new Map(periods.map((p: any) => [p.id, p.month]));
+
   if (format === 'csv') {
     if (type === 'transactions' || type === 'all') {
       const transactions = getTransactions();
-      const headers = ['id', 'month', 'date', 'title', 'category', 'amount', 'currency', 'type', 'payment_method', 'done', 'created_time'];
+      const headers = ['id', 'period_id', 'month', 'date', 'title', 'category', 'amount', 'currency', 'type', 'payment_method', 'done', 'created_time'];
       const rows = transactions.map((t: any) => ({
         id: t.id,
-        month: t.month,
+        period_id: t.period_id,
+        month: periodMap.get(t.period_id) || '',
         date: t.date,
         title: t.title,
         category: t.category,
@@ -47,8 +52,9 @@ export const GET: APIRoute = async ({ request }) => {
 
     if (type === 'networth') {
       const networth = getNetworth();
-      const headers = ['month', 'date', 'total', 'currency', 'month_over_month_change', 'month_over_month_pct'];
+      const headers = ['period_id', 'month', 'date', 'total', 'currency', 'month_over_month_change', 'month_over_month_pct'];
       const rows = networth.map((n: any) => ({
+        period_id: n.period_id,
         month: n.month,
         date: n.date,
         total: n.total,
@@ -67,16 +73,20 @@ export const GET: APIRoute = async ({ request }) => {
 
     if (type === 'summary') {
       const monthlySummary = getMonthlySummary();
-      const incomeRows = db.prepare('SELECT month, income FROM monthly_income').all() as any[];
-      const incomeMap = new Map(incomeRows.map((r) => [r.month, r.income]));
+      const incomeRows = db.prepare(`
+        SELECT mi.period_id, mi.income
+        FROM monthly_income mi
+      `).all() as any[];
+      const incomeMap = new Map(incomeRows.map((r) => [r.period_id, r.income]));
       for (const s of monthlySummary) {
-        const income = incomeMap.get(s.month) || 0;
+        const income = incomeMap.get(s.period_id) || 0;
         s.income = income;
         s.savings = income - s.outcome.total;
         s.savings_rate_pct = income > 0 ? Number(((s.savings / income) * 100).toFixed(2)) : 0;
       }
-      const headers = ['month', 'date', 'income', 'outcome_cash', 'outcome_credit_payment', 'outcome_credit_expenses', 'outcome_total', 'savings', 'savings_rate_pct', 'networth'];
+      const headers = ['period_id', 'month', 'date', 'income', 'outcome_cash', 'outcome_credit_payment', 'outcome_credit_expenses', 'outcome_total', 'savings', 'savings_rate_pct', 'networth'];
       const rows = monthlySummary.map((s: any) => ({
+        period_id: s.period_id,
         month: s.month,
         date: s.date,
         income: s.income,
@@ -104,10 +114,13 @@ export const GET: APIRoute = async ({ request }) => {
   const transactions = getTransactions();
   const networth = getNetworth();
   const monthlySummary = getMonthlySummary();
-  const incomeRows = db.prepare('SELECT month, income FROM monthly_income').all() as any[];
-  const incomeMap = new Map(incomeRows.map((r) => [r.month, r.income]));
+  const incomeRows = db.prepare(`
+    SELECT mi.period_id, mi.income
+    FROM monthly_income mi
+  `).all() as any[];
+  const incomeMap = new Map(incomeRows.map((r) => [r.period_id, r.income]));
   for (const s of monthlySummary) {
-    const income = incomeMap.get(s.month) || 0;
+    const income = incomeMap.get(s.period_id) || 0;
     s.income = income;
     s.savings = income - s.outcome.total;
     s.savings_rate_pct = income > 0 ? Number(((s.savings / income) * 100).toFixed(2)) : 0;

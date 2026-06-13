@@ -10,9 +10,16 @@ initSchema();
 
 export function initSchema() {
   db.exec(`
+    CREATE TABLE IF NOT EXISTS periods (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      month TEXT NOT NULL UNIQUE,
+      start_date TEXT NOT NULL,
+      end_date TEXT NOT NULL
+    );
+
     CREATE TABLE IF NOT EXISTS transactions (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      month TEXT NOT NULL,
+      period_id INTEGER NOT NULL REFERENCES periods(id),
       date TEXT NOT NULL,
       title TEXT NOT NULL,
       category TEXT NOT NULL,
@@ -25,7 +32,7 @@ export function initSchema() {
     );
 
     CREATE TABLE IF NOT EXISTS networth (
-      month TEXT PRIMARY KEY,
+      period_id INTEGER PRIMARY KEY REFERENCES periods(id),
       date TEXT NOT NULL,
       total REAL NOT NULL,
       currency TEXT NOT NULL DEFAULT 'IDR',
@@ -34,11 +41,10 @@ export function initSchema() {
     );
 
     CREATE TABLE IF NOT EXISTS networth_breakdown (
-      month TEXT NOT NULL,
+      period_id INTEGER NOT NULL REFERENCES periods(id),
       investment TEXT NOT NULL,
       value REAL NOT NULL,
-      PRIMARY KEY (month, investment),
-      FOREIGN KEY (month) REFERENCES networth(month) ON DELETE CASCADE
+      PRIMARY KEY (period_id, investment)
     );
 
     CREATE TABLE IF NOT EXISTS categories (
@@ -50,7 +56,7 @@ export function initSchema() {
     );
 
     CREATE TABLE IF NOT EXISTS monthly_income (
-      month TEXT PRIMARY KEY,
+      period_id INTEGER PRIMARY KEY REFERENCES periods(id),
       date TEXT NOT NULL,
       income REAL NOT NULL DEFAULT 0,
       other_income REAL NOT NULL DEFAULT 0
@@ -99,7 +105,7 @@ export function initSchema() {
       updated_at TEXT DEFAULT CURRENT_TIMESTAMP
     );
 
-    CREATE INDEX IF NOT EXISTS idx_tx_month ON transactions(month);
+    CREATE INDEX IF NOT EXISTS idx_tx_period ON transactions(period_id);
     CREATE INDEX IF NOT EXISTS idx_tx_type ON transactions(type);
     CREATE INDEX IF NOT EXISTS idx_tx_date ON transactions(date);
     CREATE INDEX IF NOT EXISTS idx_goals_completed ON goals(completed);
@@ -110,12 +116,86 @@ export function initSchema() {
   try { db.exec('ALTER TABLE transactions ADD COLUMN notes TEXT DEFAULT \'\''); } catch (_) { /* already exists */ }
 }
 
-export function getTransactions(filters?: { month?: string; type?: string; search?: string; category?: string }) {
+// ─── Period helpers ─────────────────────────────────────────────────────────
+
+export function getPeriodById(id: number) {
+  return db.prepare('SELECT * FROM periods WHERE id = ?').get(id) as any;
+}
+
+export function getPeriodByMonth(month: string) {
+  return db.prepare('SELECT * FROM periods WHERE month = ?').get(month) as any;
+}
+
+export function getAllPeriods() {
+  return db.prepare('SELECT * FROM periods ORDER BY start_date ASC').all() as any[];
+}
+
+/** Get the active salary period (21st→20th cycle). Returns period row if it exists, null otherwise. */
+export function getActivePeriod() {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = now.getMonth() + 1; // 1-12
+  const d = now.getDate();
+
+  let periodMonth: number, periodYear: number;
+  if (d >= 21) {
+    // New period starts — named after NEXT month
+    periodMonth = m + 1;
+    periodYear = y;
+    if (periodMonth > 12) { periodMonth = 1; periodYear = y + 1; }
+  } else {
+    periodMonth = m;
+    periodYear = y;
+  }
+
+  const monthNames = ['January','February','March','April','May','June',
+    'July','August','September','October','November','December'];
+  const monthStr = `${monthNames[periodMonth - 1]} ${periodYear}`;
+  return db.prepare('SELECT * FROM periods WHERE month = ?').get(monthStr) as any;
+}
+
+/** Get active period ID. Returns null if period doesn't exist yet. */
+export function getActivePeriodId(): number | null {
+  const p = getActivePeriod();
+  return p ? p.id : null;
+}
+
+/** Ensure a period row exists for the given month string. Returns the period id. */
+export function ensurePeriod(month: string): number {
+  let p = db.prepare('SELECT id FROM periods WHERE month = ?').get(month) as any;
+  if (p) return p.id;
+
+  // Compute dates from month name
+  const monthNames = ['January','February','March','April','May','June',
+    'July','August','September','October','November','December'];
+  // Also handle alternate spellings
+  const altNames: Record<string,string> = { 'Oktober': 'October' };
+
+  const parts = month.split(' ');
+  if (parts.length !== 2) throw new Error(`Cannot parse month: "${month}"`);
+  let idx = monthNames.indexOf(parts[0]);
+  if (idx === -1) idx = monthNames.indexOf(altNames[parts[0]] || '');
+  if (idx === -1) throw new Error(`Unknown month name: "${parts[0]}"`);
+  const year = parseInt(parts[1], 10);
+  const m = idx + 1;
+
+  const endDate = `${year}-${String(m).padStart(2,'0')}-20`;
+  let prevM = m - 1, prevY = year;
+  if (prevM === 0) { prevM = 12; prevY = year - 1; }
+  const startDate = `${prevY}-${String(prevM).padStart(2,'0')}-21`;
+
+  db.prepare('INSERT INTO periods (month, start_date, end_date) VALUES (?, ?, ?)').run(month, startDate, endDate);
+  return (db.prepare('SELECT id FROM periods WHERE month = ?').get(month) as any).id;
+}
+
+// ─── Transactions CRUD ──────────────────────────────────────────────────────
+
+export function getTransactions(filters?: { periodId?: number; type?: string; search?: string; category?: string }) {
   let sql = 'SELECT * FROM transactions WHERE 1=1';
   const params: any[] = [];
-  if (filters?.month) {
-    sql += ' AND month = ?';
-    params.push(filters.month);
+  if (filters?.periodId) {
+    sql += ' AND period_id = ?';
+    params.push(filters.periodId);
   }
   if (filters?.type) {
     sql += ' AND type = ?';
@@ -148,8 +228,8 @@ export function insertTransaction(tx: Omit<any, 'id'>) {
   const normalized = normalizeTx(tx);
   if (!normalized.created_time) normalized.created_time = new Date().toISOString();
   const stmt = db.prepare(`
-    INSERT INTO transactions (month, date, title, category, amount, currency, type, payment_method, done, created_time, notes)
-    VALUES (@month, @date, @title, @category, @amount, @currency, @type, @payment_method, @done, @created_time, @notes)
+    INSERT INTO transactions (period_id, date, title, category, amount, currency, type, payment_method, done, created_time, notes)
+    VALUES (@period_id, @date, @title, @category, @amount, @currency, @type, @payment_method, @done, @created_time, @notes)
   `);
   const result = stmt.run(normalized);
   return result.lastInsertRowid as number;
@@ -179,7 +259,6 @@ export function updateTransactionsBulk(ids: number[], updates: Partial<any>) {
   const normalized = normalizeTx(updates);
   const fields = Object.keys(normalized).filter((k) => k !== 'id' && k !== 'created_time');
   if (fields.length === 0) return { changes: 0 };
-  // Use positional placeholders for both SET values and IN clause
   const setParts = fields.map((f) => `${f} = ?`);
   const setClause = setParts.join(', ');
   const idPlaceholders = ids.map(() => '?').join(',');
@@ -197,49 +276,61 @@ export function findDuplicateTransaction(tx: { title: string; amount: number; ca
   return row ? (row as any).id : null;
 }
 
+// ─── Networth CRUD ──────────────────────────────────────────────────────────
+
 export function getNetworth() {
-  const rows = db.prepare('SELECT * FROM networth ORDER BY date ASC').all() as any[];
+  const rows = db.prepare(`
+    SELECT n.*, p.month, p.start_date, p.end_date
+    FROM networth n JOIN periods p ON n.period_id = p.id
+    ORDER BY p.start_date ASC
+  `).all() as any[];
   for (const row of rows) {
-    const breakdown = db.prepare('SELECT investment, value FROM networth_breakdown WHERE month = ?').all(row.month) as any[];
+    const breakdown = db.prepare('SELECT investment, value FROM networth_breakdown WHERE period_id = ?').all(row.period_id) as any[];
     row.breakdown = Object.fromEntries(breakdown.map((b) => [b.investment, b.value]));
   }
   return rows;
 }
 
-export function getNetworthByMonth(month: string) {
-  const row = db.prepare('SELECT * FROM networth WHERE month = ?').get(month) as any;
+export function getNetworthByPeriod(periodId: number) {
+  const row = db.prepare(`
+    SELECT n.*, p.month, p.start_date, p.end_date
+    FROM networth n JOIN periods p ON n.period_id = p.id
+    WHERE n.period_id = ?
+  `).get(periodId) as any;
   if (!row) return null;
-  const breakdown = db.prepare('SELECT investment, value FROM networth_breakdown WHERE month = ?').all(month) as any[];
+  const breakdown = db.prepare('SELECT investment, value FROM networth_breakdown WHERE period_id = ?').all(periodId) as any[];
   row.breakdown = Object.fromEntries(breakdown.map((b) => [b.investment, b.value]));
   return row;
 }
 
 export function upsertNetworth(record: any) {
-  const existing = db.prepare('SELECT month FROM networth WHERE month = ?').get(record.month);
+  const existing = db.prepare('SELECT period_id FROM networth WHERE period_id = ?').get(record.period_id);
   if (existing) {
     db.prepare(`
       UPDATE networth SET date = @date, total = @total, currency = @currency,
       month_over_month_change = @month_over_month_change, month_over_month_pct = @month_over_month_pct
-      WHERE month = @month
+      WHERE period_id = @period_id
     `).run(record);
-    db.prepare('DELETE FROM networth_breakdown WHERE month = ?').run(record.month);
+    db.prepare('DELETE FROM networth_breakdown WHERE period_id = ?').run(record.period_id);
   } else {
     db.prepare(`
-      INSERT INTO networth (month, date, total, currency, month_over_month_change, month_over_month_pct)
-      VALUES (@month, @date, @total, @currency, @month_over_month_change, @month_over_month_pct)
+      INSERT INTO networth (period_id, date, total, currency, month_over_month_change, month_over_month_pct)
+      VALUES (@period_id, @date, @total, @currency, @month_over_month_change, @month_over_month_pct)
     `).run(record);
   }
   const insertBreakdown = db.prepare(`
-    INSERT INTO networth_breakdown (month, investment, value) VALUES (@month, @investment, @value)
+    INSERT INTO networth_breakdown (period_id, investment, value) VALUES (@period_id, @investment, @value)
   `);
   for (const [investment, value] of Object.entries(record.breakdown || {})) {
-    insertBreakdown.run({ month: record.month, investment, value: value as number });
+    insertBreakdown.run({ period_id: record.period_id, investment, value: value as number });
   }
 }
 
-export function deleteNetworth(month: string) {
-  db.prepare('DELETE FROM networth WHERE month = ?').run(month);
+export function deleteNetworth(periodId: number) {
+  db.prepare('DELETE FROM networth WHERE period_id = ?').run(periodId);
 }
+
+// ─── Categories CRUD ───────────────────────────────────────────────────────
 
 export function getCategories() {
   return db.prepare('SELECT * FROM categories ORDER BY name ASC').all() as any[];
@@ -278,20 +369,26 @@ export function deleteCategory(id: number) {
   db.prepare('DELETE FROM categories WHERE id = ?').run(id);
 }
 
+// ─── Monthly Summary ────────────────────────────────────────────────────────
+
 export function getMonthlySummary() {
-  const months = db.prepare(`
-    SELECT DISTINCT month, MIN(date) as date FROM transactions GROUP BY month ORDER BY MIN(date) ASC
+  // Iterate over periods that have transactions
+  const periodRows = db.prepare(`
+    SELECT DISTINCT p.id, p.month, p.start_date, p.end_date
+    FROM periods p
+    INNER JOIN transactions t ON t.period_id = p.id
+    ORDER BY p.start_date ASC
   `).all() as any[];
 
   const summaries = [];
-  for (const { month, date } of months) {
-    const tx = db.prepare('SELECT * FROM transactions WHERE month = ? AND done = 1').all(month) as any[];
+  for (const p of periodRows) {
+    const tx = db.prepare('SELECT * FROM transactions WHERE period_id = ? AND done = 1').all(p.id) as any[];
     const cash = tx.filter((t) => t.type === 'cash').reduce((s, t) => s + t.amount, 0);
     const credit_payment = tx.filter((t) => t.type === 'credit_payment').reduce((s, t) => s + t.amount, 0);
     const credit_expenses = tx.filter((t) => t.type === 'credit_expense').reduce((s, t) => s + t.amount, 0);
     const total_outcome = cash + credit_payment;
 
-    const nw = db.prepare('SELECT total FROM networth WHERE month = ?').get(month) as any;
+    const nw = db.prepare('SELECT total FROM networth WHERE period_id = ?').get(p.id) as any;
 
     const category_totals: Record<string, number> = {};
     tx.filter((t) => t.type === 'cash' || t.type === 'credit_expense' || t.type === 'credit_payment').forEach((t) => {
@@ -299,8 +396,11 @@ export function getMonthlySummary() {
     });
 
     summaries.push({
-      month,
-      date,
+      period_id: p.id,
+      month: p.month,
+      date: p.start_date,
+      start_date: p.start_date,
+      end_date: p.end_date,
       income: 0,
       outcome: { cash, credit_payment, credit_expenses, total: total_outcome },
       savings: 0,
@@ -312,31 +412,41 @@ export function getMonthlySummary() {
   return summaries;
 }
 
+// ─── Monthly Income CRUD ────────────────────────────────────────────────────
+
 export function getMonthlyIncome() {
-  return db.prepare('SELECT * FROM monthly_income ORDER BY date ASC').all() as any[];
+  return db.prepare(`
+    SELECT mi.*, p.month, p.start_date, p.end_date
+    FROM monthly_income mi JOIN periods p ON mi.period_id = p.id
+    ORDER BY p.start_date ASC
+  `).all() as any[];
 }
 
-export function getMonthlyIncomeByMonth(month: string) {
-  return db.prepare('SELECT * FROM monthly_income WHERE month = ?').get(month) as any;
+export function getMonthlyIncomeByPeriod(periodId: number) {
+  return db.prepare(`
+    SELECT mi.*, p.month, p.start_date, p.end_date
+    FROM monthly_income mi JOIN periods p ON mi.period_id = p.id
+    WHERE mi.period_id = ?
+  `).get(periodId) as any;
 }
 
-export function upsertMonthlyIncome(record: { month: string; date: string; income: number; other_income?: number }) {
-  const existing = db.prepare('SELECT month FROM monthly_income WHERE month = ?').get(record.month);
+export function upsertMonthlyIncome(record: { period_id: number; date: string; income: number; other_income?: number }) {
+  const existing = db.prepare('SELECT period_id FROM monthly_income WHERE period_id = ?').get(record.period_id);
   if (existing) {
     db.prepare(`
-      UPDATE monthly_income SET date = @date, income = @income, other_income = @other_income WHERE month = @month
+      UPDATE monthly_income SET date = @date, income = @income, other_income = @other_income WHERE period_id = @period_id
     `).run({
-      month: record.month,
+      period_id: record.period_id,
       date: record.date,
       income: record.income,
       other_income: record.other_income ?? 0,
     });
   } else {
     db.prepare(`
-      INSERT INTO monthly_income (month, date, income, other_income)
-      VALUES (@month, @date, @income, @other_income)
+      INSERT INTO monthly_income (period_id, date, income, other_income)
+      VALUES (@period_id, @date, @income, @other_income)
     `).run({
-      month: record.month,
+      period_id: record.period_id,
       date: record.date,
       income: record.income,
       other_income: record.other_income ?? 0,
@@ -344,9 +454,11 @@ export function upsertMonthlyIncome(record: { month: string; date: string; incom
   }
 }
 
-export function deleteMonthlyIncome(month: string) {
-  db.prepare('DELETE FROM monthly_income WHERE month = ?').run(month);
+export function deleteMonthlyIncome(periodId: number) {
+  db.prepare('DELETE FROM monthly_income WHERE period_id = ?').run(periodId);
 }
+
+// ─── Recurring Transactions ─────────────────────────────────────────────────
 
 export function getRecurringTransactions() {
   return db.prepare('SELECT * FROM recurring_transactions ORDER BY active DESC, created_at ASC').all() as any[];
@@ -386,16 +498,22 @@ export function deleteRecurringTransaction(id: number) {
   db.prepare('DELETE FROM recurring_transactions WHERE id = ?').run(id);
 }
 
+// ─── Networth MoM ───────────────────────────────────────────────────────────
+
 export function recalcNetworthMoM() {
-  const rows = db.prepare('SELECT month, date, total FROM networth ORDER BY date ASC').all() as any[];
+  const rows = db.prepare(`
+    SELECT n.period_id, n.total, p.start_date
+    FROM networth n JOIN periods p ON n.period_id = p.id
+    ORDER BY p.start_date ASC
+  `).all() as any[];
   let prev: number | null = null;
   for (const row of rows) {
     if (prev === null) {
-      db.prepare('UPDATE networth SET month_over_month_change = NULL, month_over_month_pct = NULL WHERE month = ?').run(row.month);
+      db.prepare('UPDATE networth SET month_over_month_change = NULL, month_over_month_pct = NULL WHERE period_id = ?').run(row.period_id);
     } else {
       const change = Number((row.total - prev).toFixed(2));
       const pct = prev > 0 ? Number(((row.total - prev) / prev * 100).toFixed(2)) : null;
-      db.prepare('UPDATE networth SET month_over_month_change = ?, month_over_month_pct = ? WHERE month = ?').run(change, pct, row.month);
+      db.prepare('UPDATE networth SET month_over_month_change = ?, month_over_month_pct = ? WHERE period_id = ?').run(change, pct, row.period_id);
     }
     prev = row.total;
   }
@@ -462,7 +580,7 @@ export function deleteGoal(id: number) {
 
 // ─── Analytics helpers ──────────────────────────────────────────────────────
 
-export function getDailySpending(month: string) {
+export function getDailySpending(periodId: number) {
   return db.prepare(`
     SELECT
       SUBSTR(COALESCE(created_time, date), 1, 10) AS day,
@@ -470,10 +588,10 @@ export function getDailySpending(month: string) {
       SUM(CASE WHEN done = 1 THEN amount ELSE 0 END) AS paid_amount,
       SUM(amount) AS total_amount
     FROM transactions
-    WHERE month = ?
+    WHERE period_id = ?
     GROUP BY day
     ORDER BY day ASC
-  `).all(month) as any[];
+  `).all(periodId) as any[];
 }
 
 export function getDayOfWeekSpending() {
@@ -490,11 +608,11 @@ export function getDayOfWeekSpending() {
   `).all() as any[];
 }
 
-export function getTransactionStats(month: string) {
+export function getTransactionStats(periodId: number) {
   const rows = db.prepare(`
     SELECT amount, category, title, type, done, COALESCE(created_time, date) AS tx_date
-    FROM transactions WHERE month = ?
-  `).all(month) as any[];
+    FROM transactions WHERE period_id = ?
+  `).all(periodId) as any[];
 
   if (rows.length === 0) {
     return {
@@ -536,60 +654,64 @@ export function getTransactionStats(month: string) {
 
 // ─── Forecast helpers ──────────────────────────────────────────────────────
 
-export function getMonthlySpendingByCategory(month: string) {
+export function getMonthlySpendingByCategory(periodId: number) {
   const rows = db.prepare(`
     SELECT category, type, SUM(CASE WHEN done = 1 THEN amount ELSE 0 END) AS spent,
            SUM(amount) AS total_amount, COUNT(*) AS tx_count
-    FROM transactions WHERE month = ?
+    FROM transactions WHERE period_id = ?
     GROUP BY category, type
-  `).all(month) as any[];
+  `).all(periodId) as any[];
   return rows;
 }
 
-export function getCreditStatus(month: string) {
+export function getCreditStatus(periodId: number) {
   const row = db.prepare(`
     SELECT
       SUM(CASE WHEN type = 'credit_expense' AND done = 1 THEN amount ELSE 0 END) AS credit_expenses_paid,
       SUM(CASE WHEN type = 'credit_expense' THEN amount ELSE 0 END) AS credit_expenses_total,
       SUM(CASE WHEN type = 'credit_payment' AND done = 1 THEN amount ELSE 0 END) AS credit_payments_paid,
       SUM(CASE WHEN type = 'credit_payment' THEN amount ELSE 0 END) AS credit_payments_total
-    FROM transactions WHERE month = ?
-  `).get(month) as any;
+    FROM transactions WHERE period_id = ?
+  `).get(periodId) as any;
   return row || { credit_expenses_paid: 0, credit_expenses_total: 0, credit_payments_paid: 0, credit_payments_total: 0 };
 }
 
 export function getRecentMonthlyTotals(limit = 6) {
-  const months = db.prepare(`
-    SELECT DISTINCT month, MIN(COALESCE(created_time, date)) AS month_start
-    FROM transactions GROUP BY month ORDER BY MIN(COALESCE(created_time, date)) DESC LIMIT ?
+  const periodRows = db.prepare(`
+    SELECT DISTINCT p.id, p.month, p.start_date, MIN(t.created_time) AS first_tx
+    FROM periods p
+    INNER JOIN transactions t ON t.period_id = p.id
+    GROUP BY p.id
+    ORDER BY p.start_date DESC LIMIT ?
   `).all(limit) as any[];
 
   const result = [];
-  for (const { month, month_start } of months) {
+  for (const p of periodRows) {
     const row = db.prepare(`
       SELECT SUM(CASE WHEN done = 1 THEN amount ELSE 0 END) AS total,
              MIN(COALESCE(created_time, date)) AS earliest,
              MAX(COALESCE(created_time, date)) AS latest
-      FROM transactions WHERE month = ?
-    `).get(month) as any;
+      FROM transactions WHERE period_id = ?
+    `).get(p.id) as any;
     if (row && row.earliest) {
       const earliest = new Date(row.earliest);
       const latest = new Date(row.latest);
       const days = Math.max(1, Math.ceil((latest.getTime() - earliest.getTime()) / (1000 * 60 * 60 * 24)) + 1);
       result.push({
-        month,
+        period_id: p.id,
+        month: p.month,
         total: row.total || 0,
         days,
         daily_avg: (row.total || 0) / days,
-        month_start,
+        month_start: p.start_date,
       });
     }
   }
   return result.reverse(); // chronological order
 }
 
-export function getCumulativeDailySpending(month: string) {
-  const daily = getDailySpending(month);
+export function getCumulativeDailySpending(periodId: number) {
+  const daily = getDailySpending(periodId);
   let cumulative = 0;
   return daily.map((d: any) => {
     cumulative += d.paid_amount;
@@ -599,27 +721,35 @@ export function getCumulativeDailySpending(month: string) {
 
 export function getAllMonthsWithSpending() {
   return db.prepare(`
-    SELECT month FROM transactions GROUP BY month ORDER BY MIN(COALESCE(created_time, date)) ASC
+    SELECT p.id AS period_id, p.month, p.start_date, p.end_date
+    FROM periods p
+    INNER JOIN transactions t ON t.period_id = p.id
+    GROUP BY p.id
+    ORDER BY p.start_date ASC
   `).all() as any[];
 }
 
-export function getSpendingVelocity(month: string) {
-  // Get spending for current and previous months to compute velocity
-  const months = db.prepare(`
-    SELECT month FROM transactions GROUP BY month ORDER BY MIN(COALESCE(created_time, date)) DESC LIMIT 4
+export function getSpendingVelocity(periodId: number) {
+  // Get spending for current and previous periods to compute velocity
+  const periodRows = db.prepare(`
+    SELECT DISTINCT p.id, p.month, p.start_date
+    FROM periods p
+    INNER JOIN transactions t ON t.period_id = p.id
+    GROUP BY p.id
+    ORDER BY p.start_date DESC LIMIT 4
   `).all() as any[];
 
-  const monthOrder = months.map((m) => m.month);
-  const currentIdx = monthOrder.indexOf(month);
+  const periodIds = periodRows.map((p) => p.id);
+  const currentIdx = periodIds.indexOf(periodId);
 
-  const currentDaily = getDailySpending(month);
+  const currentDaily = getDailySpending(periodId);
   const daysWithSpending = currentDaily.filter((d) => d.paid_amount > 0);
 
   // Compute average daily spend from history
-  const allDays: { month: string; day: string; paid_amount: number }[] = [];
-  for (const m of monthOrder) {
-    const daily = getDailySpending(m);
-    daily.forEach((d) => allDays.push({ month: m, day: d.day, paid_amount: d.paid_amount }));
+  const allDays: { period_id: number; day: string; paid_amount: number }[] = [];
+  for (const pid of periodIds) {
+    const daily = getDailySpending(pid);
+    daily.forEach((d) => allDays.push({ period_id: pid, day: d.day, paid_amount: d.paid_amount }));
   }
 
   const allSpendingDays = allDays.filter((d) => d.paid_amount > 0);
@@ -631,7 +761,6 @@ export function getSpendingVelocity(month: string) {
     ? daysWithSpending.reduce((s, d) => s + d.paid_amount, 0) / daysWithSpending.length
     : 0;
 
-  // Compute cumulative spending to detect velocity trend
   const cumulative = currentDaily.reduce((s, d) => s + d.paid_amount, 0);
   const totalDaysInPeriod = currentDaily.length || 1;
 
@@ -641,14 +770,14 @@ export function getSpendingVelocity(month: string) {
     days_with_spending: daysWithSpending.length,
     days_tracked: currentDaily.length,
     cumulative_spend: cumulative,
-    projected_monthly: currentAvgDaily * 30, // rough projection
+    projected_monthly: currentAvgDaily * 30,
     velocity_vs_history: historicalAvgDaily > 0
       ? ((currentAvgDaily - historicalAvgDaily) / historicalAvgDaily) * 100
       : 0,
   };
 }
 
-export function getTitleSpending(month: string) {
+export function getTitleSpending(periodId: number) {
   return db.prepare(`
     SELECT
       title,
@@ -660,10 +789,10 @@ export function getTitleSpending(month: string) {
       MAX(amount) as max_amount,
       MIN(amount) as min_amount
     FROM transactions
-    WHERE month = ?
+    WHERE period_id = ?
     GROUP BY title
     ORDER BY SUM(CASE WHEN done = 1 THEN amount ELSE 0 END) DESC
-  `).all(month) as any[];
+  `).all(periodId) as any[];
 }
 
 // ─── Investments CRUD ──────────────────────────────────────────────────────
@@ -774,32 +903,36 @@ export interface Anomaly {
   created_time: string;
   reason: 'amount_spike' | 'new_merchant' | 'category_outlier';
   severity: 'high' | 'medium' | 'low';
-  detail: string; // human-readable explanation
+  detail: string;
 }
 
-export function getAnomalies(month: string): Anomaly[] {
-  // Get all paid transactions for the current month
+export function getAnomalies(periodId: number): Anomaly[] {
   const currentTxs = db.prepare(`
     SELECT id, title, category, amount, type, created_time, done
-    FROM transactions WHERE month = ? AND done = 1
-  `).all(month) as any[];
+    FROM transactions WHERE period_id = ? AND done = 1
+  `).all(periodId) as any[];
 
   if (currentTxs.length === 0) return [];
 
-  // Get all historical months (excluding current)
-  const historicalMonths = db.prepare(`
-    SELECT DISTINCT month FROM transactions WHERE month != ? ORDER BY month ASC
-  `).all(month) as { month: string }[];
+  // Get all historical periods (excluding current)
+  const historicalPeriods = db.prepare(`
+    SELECT DISTINCT p.id
+    FROM periods p
+    INNER JOIN transactions t ON t.period_id = p.id
+    WHERE p.id != ?
+    ORDER BY p.start_date ASC
+  `).all(periodId) as { id: number }[];
 
-  // Get all historical paid transactions
-  const allHistorical = historicalMonths.length > 0
+  const histIds = historicalPeriods.map((p) => p.id);
+
+  const allHistorical = histIds.length > 0
     ? db.prepare(`
         SELECT id, title, category, amount, type, created_time
-        FROM transactions WHERE month != ? AND done = 1
-      `).all(month) as any[]
+        FROM transactions WHERE period_id IN (${histIds.map(() => '?').join(',')}) AND done = 1
+      `).all(...histIds) as any[]
     : [];
 
-  // Compute per-category stats (mean, stddev) from historical data
+  // Compute per-category stats
   const catStats: Record<string, { mean: number; stddev: number; amounts: number[] }> = {};
   for (const tx of allHistorical) {
     if (!catStats[tx.category]) catStats[tx.category] = { mean: 0, stddev: 0, amounts: [] };
@@ -815,19 +948,16 @@ export function getAnomalies(month: string): Anomaly[] {
       const variance = amounts.reduce((s, a) => s + (a - mean) ** 2, 0) / (n - 1);
       catStats[cat].stddev = Math.sqrt(variance);
     } else {
-      catStats[cat].stddev = mean * 0.5; // fallback: 50% of mean
+      catStats[cat].stddev = mean * 0.5;
     }
   }
 
-  // Set of all historical titles for "new merchant" detection
   const historicalTitles = new Set(allHistorical.map((tx) => tx.title.toLowerCase().trim()));
-
   const anomalies: Anomaly[] = [];
 
   for (const tx of currentTxs) {
     const stats = catStats[tx.category];
 
-    // --- Amount spike detection ---
     if (stats && stats.amounts.length >= 2) {
       const threshold = stats.mean + 2.5 * stats.stddev;
       if (tx.amount > threshold && tx.amount > stats.mean * 1.5) {
@@ -843,14 +973,12 @@ export function getAnomalies(month: string): Anomaly[] {
           severity: zScore > 4 ? 'high' : zScore > 3 ? 'medium' : 'low',
           detail: `${zScore.toFixed(1)}x above avg (avg ${formatIdrShort(stats.mean)}, this ${formatIdrShort(tx.amount)})`,
         });
-        continue; // Don't double-flag
+        continue;
       }
     }
 
-    // --- New merchant detection ---
     const titleKey = tx.title.toLowerCase().trim();
     if (!historicalTitles.has(titleKey) && historicalTitles.size > 0) {
-      // Only flag if the amount is non-trivial (> 10k IDR)
       if (tx.amount > 10000) {
         anomalies.push({
           id: tx.id,
@@ -865,15 +993,11 @@ export function getAnomalies(month: string): Anomaly[] {
         });
       }
     }
-
-    // --- Category outlier (category exists historically but never in this month range) ---
-    // This is a softer signal — skip for now to avoid noise
   }
 
   return anomalies;
 }
 
-/** Internal helper for formatting amounts in anomaly detail strings */
 function formatIdrShort(n: number): string {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
   if (n >= 1_000) return `${(n / 1_000).toFixed(0)}K`;

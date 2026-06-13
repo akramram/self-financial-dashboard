@@ -71,39 +71,47 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
     const { month, year } = getActivePeriod();
     return `${month} ${year}`;
   }, []);
-  const dbMonths = useMemo(() => [...summaries].map((s) => s.month), [summaries]);
-  const months = useMemo(() => {
-    // Active period first (even if no data yet), then existing DB months in reverse
-    const set = new Set(dbMonths);
-    const list = set.has(activePeriod)
-      ? [activePeriod, ...dbMonths.filter((m) => m !== activePeriod).reverse()]
-      : [activePeriod, ...dbMonths.reverse()];
-    return list;
-  }, [dbMonths, activePeriod]);
-  const [filterMonth, setFilterMonth] = useState<string>('all');
+  // Build period options: { id, month } pairs from summaries
+  const periodOptions = useMemo(() => {
+    const seen = new Set<number>();
+    return summaries
+      .filter((s) => {
+        if (seen.has(s.period_id)) return false;
+        seen.add(s.period_id);
+        return true;
+      })
+      .map((s) => ({ id: s.period_id, month: s.month }))
+      .reverse();
+  }, [summaries]);
+  const activePeriodId = useMemo(
+    () => summaries.find((s) => s.month === activePeriod)?.period_id ?? null,
+    [summaries, activePeriod]
+  );
+  const [filterPeriodId, setFilterPeriodId] = useState<number | null>(null);
+  const [filterAllTime, setFilterAllTime] = useState(true);
 
-  const isAllTime = filterMonth === 'all';
+  const isAllTime = filterAllTime;
 
   const activeSummary = useMemo(() => {
     if (isAllTime) return summaries[summaries.length - 1];
-    return summaries.find((s) => s.month === filterMonth) ?? summaries[summaries.length - 1];
-  }, [filterMonth, summaries, isAllTime]);
+    return summaries.find((s) => s.period_id === filterPeriodId) ?? summaries[summaries.length - 1];
+  }, [filterPeriodId, summaries, isAllTime]);
 
   const filteredSummaries = useMemo(() => {
     if (isAllTime) return summaries;
-    return summaries.filter((s) => s.month === filterMonth);
-  }, [filterMonth, summaries, isAllTime]);
+    return summaries.filter((s) => s.period_id === filterPeriodId);
+  }, [filterPeriodId, summaries, isAllTime]);
 
   const filteredNetworth = useMemo(() => {
     if (isAllTime) return networth;
-    return networth.filter((n) => n.month === filterMonth);
-  }, [filterMonth, networth, isAllTime]);
+    return networth.filter((n) => n.period_id === filterPeriodId);
+  }, [filterPeriodId, networth, isAllTime]);
 
   const filteredTransactions = useMemo(() => {
     if (!activeSummary) return [];
-    if (isAllTime) return transactions.filter((t) => t.month === activeSummary.month);
-    return transactions.filter((t) => t.month === filterMonth);
-  }, [filterMonth, transactions, activeSummary, isAllTime]);
+    if (isAllTime) return transactions.filter((t) => t.period_id === activeSummary.period_id);
+    return transactions.filter((t) => t.period_id === filterPeriodId);
+  }, [filterPeriodId, transactions, activeSummary, isAllTime]);
 
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editForm, setEditForm] = useState<Partial<Transaction>>({});

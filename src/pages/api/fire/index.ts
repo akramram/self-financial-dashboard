@@ -69,10 +69,13 @@ export const GET: APIRoute = async ({ request }) => {
     ? networthRecords[networthRecords.length - 1] 
     : null;
 
-  // Get income
-  const incomeRows = db.prepare('SELECT month, income FROM monthly_income').all() as any[];
-  const incomeMap = new Map(incomeRows.map((r) => [r.month, r.income]));
-  const monthlyIncome = incomeMap.get(latestSummary.month) || 0;
+  // Get income (now uses period_id, joined with periods for month lookup)
+  const incomeRows = db.prepare(`
+    SELECT mi.period_id, mi.income, p.month
+    FROM monthly_income mi JOIN periods p ON mi.period_id = p.id
+  `).all() as any[];
+  const incomeMap = new Map(incomeRows.map((r) => [r.period_id, r.income]));
+  const monthlyIncome = incomeMap.get(latestSummary.period_id) || 0;
 
   // Calculate core metrics
   const monthlyExpenses = latestSummary.outcome.total;

@@ -1,4 +1,4 @@
-import { n as getTransactions, o as getNetworth, g as getMonthlySummary, d as db } from '../../chunks/db_D20tYf13.mjs';
+import { o as getAllPeriods, p as getTransactions, q as getNetworth, g as getMonthlySummary, d as db } from '../../chunks/db_B4_3wji-.mjs';
 export { renderers } from '../../renderers.mjs';
 
 function toCsv(rows, headers) {
@@ -17,13 +17,16 @@ const GET = async ({ request }) => {
   const format = url.searchParams.get("format") || "json";
   const type = url.searchParams.get("type") || "all";
   const dateSuffix = (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
+  const periods = getAllPeriods();
+  const periodMap = new Map(periods.map((p) => [p.id, p.month]));
   if (format === "csv") {
     if (type === "transactions" || type === "all") {
       const transactions2 = getTransactions();
-      const headers = ["id", "month", "date", "title", "category", "amount", "currency", "type", "payment_method", "done", "created_time"];
+      const headers = ["id", "period_id", "month", "date", "title", "category", "amount", "currency", "type", "payment_method", "done", "created_time"];
       const rows = transactions2.map((t) => ({
         id: t.id,
-        month: t.month,
+        period_id: t.period_id,
+        month: periodMap.get(t.period_id) || "",
         date: t.date,
         title: t.title,
         category: t.category,
@@ -44,8 +47,9 @@ const GET = async ({ request }) => {
     }
     if (type === "networth") {
       const networth2 = getNetworth();
-      const headers = ["month", "date", "total", "currency", "month_over_month_change", "month_over_month_pct"];
+      const headers = ["period_id", "month", "date", "total", "currency", "month_over_month_change", "month_over_month_pct"];
       const rows = networth2.map((n) => ({
+        period_id: n.period_id,
         month: n.month,
         date: n.date,
         total: n.total,
@@ -63,16 +67,20 @@ const GET = async ({ request }) => {
     }
     if (type === "summary") {
       const monthlySummary2 = getMonthlySummary();
-      const incomeRows2 = db.prepare("SELECT month, income FROM monthly_income").all();
-      const incomeMap2 = new Map(incomeRows2.map((r) => [r.month, r.income]));
+      const incomeRows2 = db.prepare(`
+        SELECT mi.period_id, mi.income
+        FROM monthly_income mi
+      `).all();
+      const incomeMap2 = new Map(incomeRows2.map((r) => [r.period_id, r.income]));
       for (const s of monthlySummary2) {
-        const income = incomeMap2.get(s.month) || 0;
+        const income = incomeMap2.get(s.period_id) || 0;
         s.income = income;
         s.savings = income - s.outcome.total;
         s.savings_rate_pct = income > 0 ? Number((s.savings / income * 100).toFixed(2)) : 0;
       }
-      const headers = ["month", "date", "income", "outcome_cash", "outcome_credit_payment", "outcome_credit_expenses", "outcome_total", "savings", "savings_rate_pct", "networth"];
+      const headers = ["period_id", "month", "date", "income", "outcome_cash", "outcome_credit_payment", "outcome_credit_expenses", "outcome_total", "savings", "savings_rate_pct", "networth"];
       const rows = monthlySummary2.map((s) => ({
+        period_id: s.period_id,
         month: s.month,
         date: s.date,
         income: s.income,
@@ -97,10 +105,13 @@ const GET = async ({ request }) => {
   const transactions = getTransactions();
   const networth = getNetworth();
   const monthlySummary = getMonthlySummary();
-  const incomeRows = db.prepare("SELECT month, income FROM monthly_income").all();
-  const incomeMap = new Map(incomeRows.map((r) => [r.month, r.income]));
+  const incomeRows = db.prepare(`
+    SELECT mi.period_id, mi.income
+    FROM monthly_income mi
+  `).all();
+  const incomeMap = new Map(incomeRows.map((r) => [r.period_id, r.income]));
   for (const s of monthlySummary) {
-    const income = incomeMap.get(s.month) || 0;
+    const income = incomeMap.get(s.period_id) || 0;
     s.income = income;
     s.savings = income - s.outcome.total;
     s.savings_rate_pct = income > 0 ? Number((s.savings / income * 100).toFixed(2)) : 0;

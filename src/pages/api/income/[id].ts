@@ -1,15 +1,15 @@
 import type { APIRoute } from 'astro';
-import { getMonthlyIncomeByMonth, upsertMonthlyIncome, deleteMonthlyIncome } from '../../../lib/db';
+import { getMonthlyIncomeByPeriod, upsertMonthlyIncome, deleteMonthlyIncome } from '../../../lib/db';
 
 export const GET: APIRoute = async ({ params }) => {
-  const month = params.month;
-  if (!month) {
-    return new Response(JSON.stringify({ error: 'Month is required' }), {
+  const id = parseInt(params.id as string, 10);
+  if (isNaN(id)) {
+    return new Response(JSON.stringify({ error: 'Invalid period_id' }), {
       status: 400,
       headers: { 'Content-Type': 'application/json' },
     });
   }
-  const row = getMonthlyIncomeByMonth(decodeURIComponent(month));
+  const row = getMonthlyIncomeByPeriod(id);
   if (!row) {
     return new Response(JSON.stringify({ error: 'Not found' }), {
       status: 404,
@@ -22,9 +22,9 @@ export const GET: APIRoute = async ({ params }) => {
 };
 
 export const PUT: APIRoute = async ({ request, params }) => {
-  const month = params.month;
-  if (!month) {
-    return new Response(JSON.stringify({ error: 'Month is required' }), {
+  const id = parseInt(params.id as string, 10);
+  if (isNaN(id)) {
+    return new Response(JSON.stringify({ error: 'Invalid period_id' }), {
       status: 400,
       headers: { 'Content-Type': 'application/json' },
     });
@@ -37,7 +37,7 @@ export const PUT: APIRoute = async ({ request, params }) => {
     });
   }
   upsertMonthlyIncome({
-    month: decodeURIComponent(month),
+    period_id: id,
     date: body.date || new Date().toISOString().slice(0, 10),
     income: Number(body.income),
     other_income: body.other_income != null ? Number(body.other_income) : 0,
@@ -48,14 +48,14 @@ export const PUT: APIRoute = async ({ request, params }) => {
 };
 
 export const DELETE: APIRoute = async ({ params }) => {
-  const month = params.month;
-  if (!month) {
-    return new Response(JSON.stringify({ error: 'Month is required' }), {
+  const id = parseInt(params.id as string, 10);
+  if (isNaN(id)) {
+    return new Response(JSON.stringify({ error: 'Invalid period_id' }), {
       status: 400,
       headers: { 'Content-Type': 'application/json' },
     });
   }
-  deleteMonthlyIncome(decodeURIComponent(month));
+  deleteMonthlyIncome(id);
   return new Response(JSON.stringify({ success: true }), {
     headers: { 'Content-Type': 'application/json' },
   });

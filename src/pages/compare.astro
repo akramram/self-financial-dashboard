@@ -9,7 +9,7 @@ const summaries = getMonthlySummary();
 const categories = getCategories();
 
 // Enrich summaries with income from DB
-const incomeRows = db.prepare('SELECT month, income FROM monthly_income').all() as any[];
+const incomeRows = db.prepare('SELECT mi.period_id, mi.income, p.month FROM monthly_income mi JOIN periods p ON mi.period_id = p.id').all() as any[];
 const incomeMap = new Map(incomeRows.map((r) => [r.month, r.income]));
 for (const s of summaries) {
   const income = incomeMap.get(s.month) || 0;

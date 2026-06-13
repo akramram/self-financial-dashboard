@@ -1,6 +1,6 @@
 import { renderers } from './renderers.mjs';
 import { c as createExports, s as serverEntrypointModule } from './chunks/_@astrojs-ssr-adapter_B35HkTHX.mjs';
-import { manifest } from './manifest_XAAoMLgI.mjs';
+import { manifest } from './manifest_Dk9O-kDO.mjs';
 
 const _page0 = () => import('./pages/_image.astro.mjs');
 const _page1 = () => import('./pages/add.astro.mjs');
@@ -16,13 +16,13 @@ const _page10 = () => import('./pages/api/goals/_id_.astro.mjs');
 const _page11 = () => import('./pages/api/goals.astro.mjs');
 const _page12 = () => import('./pages/api/health.astro.mjs');
 const _page13 = () => import('./pages/api/import.astro.mjs');
-const _page14 = () => import('./pages/api/income/_month_.astro.mjs');
+const _page14 = () => import('./pages/api/income/_id_.astro.mjs');
 const _page15 = () => import('./pages/api/income.astro.mjs');
 const _page16 = () => import('./pages/api/investments/summary.astro.mjs');
 const _page17 = () => import('./pages/api/investments/_id_.astro.mjs');
 const _page18 = () => import('./pages/api/investments.astro.mjs');
 const _page19 = () => import('./pages/api/kickoff.astro.mjs');
-const _page20 = () => import('./pages/api/networth/_month_.astro.mjs');
+const _page20 = () => import('./pages/api/networth/_id_.astro.mjs');
 const _page21 = () => import('./pages/api/networth.astro.mjs');
 const _page22 = () => import('./pages/api/recurring/_id_.astro.mjs');
 const _page23 = () => import('./pages/api/recurring.astro.mjs');
@@ -61,13 +61,13 @@ const pageMap = new Map([
     ["src/pages/api/goals/index.ts", _page11],
     ["src/pages/api/health/index.ts", _page12],
     ["src/pages/api/import.ts", _page13],
-    ["src/pages/api/income/[month].ts", _page14],
+    ["src/pages/api/income/[id].ts", _page14],
     ["src/pages/api/income/index.ts", _page15],
     ["src/pages/api/investments/summary.ts", _page16],
     ["src/pages/api/investments/[id].ts", _page17],
     ["src/pages/api/investments/index.ts", _page18],
     ["src/pages/api/kickoff.ts", _page19],
-    ["src/pages/api/networth/[month].ts", _page20],
+    ["src/pages/api/networth/[id].ts", _page20],
     ["src/pages/api/networth/index.ts", _page21],
     ["src/pages/api/recurring/[id].ts", _page22],
     ["src/pages/api/recurring/index.ts", _page23],

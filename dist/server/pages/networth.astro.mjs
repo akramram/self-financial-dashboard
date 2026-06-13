@@ -10,7 +10,7 @@ import { Doughnut, Bar } from 'react-chartjs-2';
 import { u as useSortState, S as SortableHeader } from '../chunks/SortableHeader_CFrJuLsX.mjs';
 import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_C3KRA4ed.mjs';
 import { B as Button } from '../chunks/button_Vng4eZC1.mjs';
-import { o as getNetworth } from '../chunks/db_D20tYf13.mjs';
+import { q as getNetworth } from '../chunks/db_B4_3wji-.mjs';
 export { renderers } from '../renderers.mjs';
 
 Chart.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, PointElement, LineElement);

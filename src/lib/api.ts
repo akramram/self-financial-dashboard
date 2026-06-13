@@ -1,8 +1,8 @@
 import type { Transaction, NetworthRecord, MonthlySummary, Category, Investment, PortfolioSummary } from './data';
 
-export async function fetchTransactions(filters?: { month?: string; type?: string; search?: string; category?: string }): Promise<Transaction[]> {
+export async function fetchTransactions(filters?: { periodId?: number; type?: string; search?: string; category?: string }): Promise<Transaction[]> {
   const params = new URLSearchParams();
-  if (filters?.month) params.set('month', filters.month);
+  if (filters?.periodId) params.set('period_id', String(filters.periodId));
   if (filters?.type) params.set('type', filters.type);
   if (filters?.search) params.set('search', filters.search);
   if (filters?.category) params.set('category', filters.category);
@@ -57,16 +57,16 @@ export async function createNetworth(record: NetworthRecord): Promise<void> {
   });
 }
 
-export async function updateNetworthApi(month: string, record: Partial<NetworthRecord>): Promise<void> {
-  await fetch(`/api/networth/${encodeURIComponent(month)}`, {
+export async function updateNetworthApi(periodId: number, record: Partial<NetworthRecord>): Promise<void> {
+  await fetch(`/api/networth/${periodId}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(record),
   });
 }
 
-export async function deleteNetworthApi(month: string): Promise<void> {
-  await fetch(`/api/networth/${encodeURIComponent(month)}`, { method: 'DELETE' });
+export async function deleteNetworthApi(periodId: number): Promise<void> {
+  await fetch(`/api/networth/${periodId}`, { method: 'DELETE' });
 }
 
 export async function fetchSummaries(): Promise<MonthlySummary[]> {
@@ -118,6 +118,7 @@ export async function updateTransactionsBulkApi(ids: number[], updates: Partial<
 }
 
 export interface MonthlyIncome {
+  period_id: number;
   month: string;
   date: string;
   income: number;
@@ -137,16 +138,16 @@ export async function upsertMonthlyIncomeApi(record: Omit<MonthlyIncome, 'other_
   });
 }
 
-export async function updateMonthlyIncomeApi(month: string, record: Partial<MonthlyIncome>): Promise<void> {
-  await fetch(`/api/income/${encodeURIComponent(month)}`, {
+export async function updateMonthlyIncomeApi(periodId: number, record: Partial<MonthlyIncome>): Promise<void> {
+  await fetch(`/api/income/${periodId}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(record),
   });
 }
 
-export async function deleteMonthlyIncomeApi(month: string): Promise<void> {
-  await fetch(`/api/income/${encodeURIComponent(month)}`, { method: 'DELETE' });
+export async function deleteMonthlyIncomeApi(periodId: number): Promise<void> {
+  await fetch(`/api/income/${periodId}`, { method: 'DELETE' });
 }
 
 export interface RecurringTransaction {
@@ -216,6 +217,7 @@ export async function fetchKickoffStatus(): Promise<KickoffStatus> {
 export interface KickoffResult {
   success: boolean;
   month: string;
+  period_id: number;
   salary: number;
   preloaded: number;
 }

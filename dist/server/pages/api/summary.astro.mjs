@@ -1,12 +1,15 @@
-import { g as getMonthlySummary, d as db } from '../../chunks/db_D20tYf13.mjs';
+import { g as getMonthlySummary, d as db } from '../../chunks/db_B4_3wji-.mjs';
 export { renderers } from '../../renderers.mjs';
 
 const GET = async () => {
   const summaries = getMonthlySummary();
-  const incomeRows = db.prepare("SELECT month, income FROM monthly_income").all();
-  const incomeMap = new Map(incomeRows.map((r) => [r.month, r.income]));
+  const incomeRows = db.prepare(`
+    SELECT mi.period_id, mi.income
+    FROM monthly_income mi
+  `).all();
+  const incomeMap = new Map(incomeRows.map((r) => [r.period_id, r.income]));
   for (const s of summaries) {
-    const income = incomeMap.get(s.month) || 0;
+    const income = incomeMap.get(s.period_id) || 0;
     s.income = income;
     s.savings = income - s.outcome.total;
     s.savings_rate_pct = income > 0 ? Number((s.savings / income * 100).toFixed(2)) : 0;
