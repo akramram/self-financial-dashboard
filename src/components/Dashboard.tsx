@@ -687,8 +687,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
             <DialogTitle>{selectedCategory} — {activeSummary?.month}</DialogTitle>
             <DialogDescription>
               {(() => {
-                const targetMonth = isAllTime ? activeSummary?.month : filterPeriodId;
-                const catTxs = transactions.filter((t) => t.category === selectedCategory && t.month === targetMonth);
+                const catTxs = transactions.filter((t) => t.category === selectedCategory && t.period_id === activeSummary?.period_id);
                 const total = catTxs.reduce((sum, t) => sum + t.amount, 0);
                 return `${catTxs.length} transaction${catTxs.length !== 1 ? 's' : ''} • Total: ${formatIdr(total)}`;
               })()}
@@ -710,9 +709,8 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
 
           <div className="mt-2">
             {(() => {
-              const targetMonth = isAllTime ? activeSummary?.month : filterPeriodId;
               const catTxs = transactions
-                .filter((t) => t.category === selectedCategory && t.month === targetMonth)
+                .filter((t) => t.category === selectedCategory && t.period_id === activeSummary?.period_id)
                 .sort((a, b) => parseCreatedTime(b).getTime() - parseCreatedTime(a).getTime());
               if (catTxs.length === 0) {
                 return <p className="text-sm text-slate-500">No transactions found for this category.</p>;
