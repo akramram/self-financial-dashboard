@@ -1,25 +1,25 @@
 /* empty css                               */
 import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BN-0jZ66.mjs';
 import 'kleur/colors';
-import { f as formatIdr, g as getActivePeriod, $ as $$Layout } from '../chunks/utils_CjI_A0_k.mjs';
+import { f as formatIdr, g as getActivePeriod, $ as $$Layout } from '../chunks/utils_Y21joGcU.mjs';
 import { jsx, jsxs, Fragment } from 'react/jsx-runtime';
 import { useMemo, useState, useEffect, useCallback } from 'react';
 import { F as kickoffMonth, f as fetchCategories, n as fetchRecurringTransactions, A as toggleTransactionDoneApi, B as deleteTransactionApi, C as updateTransactionApi } from '../chunks/api_n5hUqc9e.mjs';
 import { Chart, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement, Filler } from 'chart.js';
 import { Bar, Doughnut, Line } from 'react-chartjs-2';
-import { N as NetworthChart } from '../chunks/NetworthChart_CLj_hk2x.mjs';
-import { C as Card, a as CardHeader, b as CardTitle, c as CardContent } from '../chunks/card_oxq1BWU6.mjs';
-import { B as Badge } from '../chunks/badge_DQpt_kZQ.mjs';
+import { N as NetworthChart } from '../chunks/NetworthChart_Gozs5uLQ.mjs';
+import { C as Card, a as CardHeader, b as CardTitle, c as CardContent } from '../chunks/card_B2l53C5a.mjs';
+import { B as Badge } from '../chunks/badge_YSTf0UJ6.mjs';
 import { AlertTriangle, TrendingUp, TrendingDown, Receipt, CheckCircle, PiggyBank, Wallet, DollarSign, BarChart3, Gauge, Clock, Activity, X, ChevronUp, ChevronDown, ShoppingBag, StickyNote } from 'lucide-react';
-import { B as Button } from '../chunks/button_Di4nlt-C.mjs';
-import { I as Input } from '../chunks/input_BOzr8-Z1.mjs';
-import { L as Label } from '../chunks/label_aZjtjMNF.mjs';
-import { D as Dialog, a as DialogContent, b as DialogHeader, c as DialogTitle, d as DialogDescription } from '../chunks/dialog_B5w1_0HH.mjs';
-import { u as useSortState, S as SortableHeader } from '../chunks/SortableHeader_Df8oxM-d.mjs';
-import { E as EditTransactionDialog } from '../chunks/EditTransactionDialog_DlfGtg9K.mjs';
-import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_uhqG26zf.mjs';
-import '../chunks/checkbox_CeB9_ST2.mjs';
-import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_whj_IU0P.mjs';
+import { B as Button } from '../chunks/button_ggfKrUNv.mjs';
+import { I as Input } from '../chunks/input_DnZKLWYU.mjs';
+import { L as Label } from '../chunks/label_OcnW5WOo.mjs';
+import { D as Dialog, a as DialogContent, b as DialogHeader, c as DialogTitle, d as DialogDescription } from '../chunks/dialog_DfMno1mY.mjs';
+import { u as useSortState, S as SortableHeader } from '../chunks/SortableHeader_BhkB3apU.mjs';
+import { E as EditTransactionDialog } from '../chunks/EditTransactionDialog_RclloCXP.mjs';
+import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_CCSrKi0d.mjs';
+import '../chunks/checkbox_Chb43CU7.mjs';
+import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_B5dRDjp1.mjs';
 import { p as getTransactions, q as getNetworth, g as getMonthlySummary, d as db } from '../chunks/db_B4_3wji-.mjs';
 export { renderers } from '../renderers.mjs';
 
@@ -1195,6 +1195,157 @@ function AnomalyAlerts({ month }) {
   ] });
 }
 
+const STORAGE_KEY = "budget-alerts-dismissed";
+function getDismissedAlerts() {
+  if (typeof window === "undefined") return {};
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+  } catch {
+    return {};
+  }
+}
+function dismissAlert(periodId, category) {
+  const key = `${periodId}:${category}`;
+  const dismissed = getDismissedAlerts();
+  dismissed[key] = true;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(dismissed));
+}
+function BudgetAlerts({ summaries, categories, activeMonth }) {
+  const [collapsed, setCollapsed] = useState(false);
+  const [dismissed, setDismissed] = useState({});
+  useEffect(() => {
+    setDismissed(getDismissedAlerts());
+  }, []);
+  const alerts = useMemo(() => {
+    const activeSummary = activeMonth ? summaries.find((s) => s.month === activeMonth) : summaries[summaries.length - 1];
+    if (!activeSummary?.category_totals) return [];
+    const categoryMap = {};
+    categories.forEach((c) => {
+      categoryMap[c.name] = c;
+    });
+    const results = [];
+    for (const [cat, amount] of Object.entries(activeSummary.category_totals)) {
+      const catDef = categoryMap[cat];
+      const limit = catDef?.monthly_limit ?? 0;
+      if (limit <= 0 || amount <= 0) continue;
+      const pct = amount / limit * 100;
+      if (pct < 80) continue;
+      const dismissKey = `${activeSummary.period_id}:${cat}`;
+      if (dismissed[dismissKey]) continue;
+      results.push({
+        category: cat,
+        spent: amount,
+        limit,
+        pct: Math.round(pct * 10) / 10,
+        isOver: amount > limit,
+        color: catDef?.color || "#94a3b8"
+      });
+    }
+    results.sort((a, b) => {
+      if (a.isOver !== b.isOver) return a.isOver ? -1 : 1;
+      return b.pct - a.pct;
+    });
+    return results;
+  }, [summaries, categories, activeMonth, dismissed]);
+  const handleDismiss = (periodId, category) => {
+    dismissAlert(periodId, category);
+    setDismissed(getDismissedAlerts());
+  };
+  if (alerts.length === 0) return null;
+  const overCount = alerts.filter((a) => a.isOver).length;
+  const approachingCount = alerts.filter((a) => !a.isOver).length;
+  return /* @__PURE__ */ jsxs(Card, { className: "border-l-4 border-l-red-500 dark:border-l-red-400 shadow-md", children: [
+    /* @__PURE__ */ jsx(CardHeader, { className: "pb-2", children: /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
+      /* @__PURE__ */ jsxs(CardTitle, { className: "flex items-center gap-2 text-base", children: [
+        /* @__PURE__ */ jsx(AlertTriangle, { className: "h-5 w-5 text-red-500 dark:text-red-400" }),
+        "Budget Alerts",
+        overCount > 0 && /* @__PURE__ */ jsxs(Badge, { variant: "destructive", className: "ml-1", children: [
+          overCount,
+          " over"
+        ] }),
+        approachingCount > 0 && /* @__PURE__ */ jsxs(Badge, { variant: "outline", className: "ml-1 border-amber-400 text-amber-600 dark:text-amber-400", children: [
+          approachingCount,
+          " approaching"
+        ] })
+      ] }),
+      /* @__PURE__ */ jsx(
+        Button,
+        {
+          variant: "ghost",
+          size: "sm",
+          onClick: () => setCollapsed(!collapsed),
+          className: "h-7 w-7 p-0",
+          "aria-label": collapsed ? "Expand" : "Collapse",
+          children: collapsed ? /* @__PURE__ */ jsx(ChevronDown, { className: "h-4 w-4" }) : /* @__PURE__ */ jsx(ChevronUp, { className: "h-4 w-4" })
+        }
+      )
+    ] }) }),
+    !collapsed && /* @__PURE__ */ jsx(CardContent, { className: "pt-0 pb-4", children: /* @__PURE__ */ jsx("div", { className: "space-y-3", children: alerts.map((alert) => {
+      const visualPct = Math.min(100, alert.pct);
+      const barColor = alert.isOver ? "bg-red-500" : alert.pct >= 90 ? "bg-orange-500" : "bg-amber-500";
+      const bgColor = alert.isOver ? "bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800" : "bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800";
+      const textColor = alert.isOver ? "text-red-700 dark:text-red-300" : "text-amber-700 dark:text-amber-300";
+      return /* @__PURE__ */ jsxs(
+        "div",
+        {
+          className: `relative rounded-lg border p-3 ${bgColor}`,
+          children: [
+            /* @__PURE__ */ jsx(
+              "button",
+              {
+                onClick: () => handleDismiss(
+                  summaries.find((s) => s.month === activeMonth)?.period_id ?? 0,
+                  alert.category
+                ),
+                className: "absolute top-2 right-2 p-0.5 rounded hover:bg-black/10 dark:hover:bg-white/10 transition",
+                "aria-label": `Dismiss ${alert.category} alert`,
+                children: /* @__PURE__ */ jsx(X, { className: "h-3.5 w-3.5 opacity-50" })
+              }
+            ),
+            /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 mb-2", children: [
+              /* @__PURE__ */ jsx(
+                "div",
+                {
+                  className: "w-3 h-3 rounded-full shrink-0",
+                  style: { backgroundColor: alert.color }
+                }
+              ),
+              /* @__PURE__ */ jsx("span", { className: "font-semibold text-sm", children: alert.category }),
+              alert.isOver ? /* @__PURE__ */ jsxs(Badge, { variant: "destructive", className: "text-xs h-5", children: [
+                /* @__PURE__ */ jsx(TrendingUp, { className: "h-3 w-3 mr-0.5" }),
+                "Over budget"
+              ] }) : /* @__PURE__ */ jsx(Badge, { variant: "outline", className: "text-xs h-5 border-amber-400 text-amber-600 dark:text-amber-400", children: "Approaching limit" })
+            ] }),
+            /* @__PURE__ */ jsxs("div", { className: "flex justify-between text-xs mb-1.5", children: [
+              /* @__PURE__ */ jsxs("span", { className: textColor, children: [
+                formatIdr(alert.spent),
+                " spent"
+              ] }),
+              /* @__PURE__ */ jsxs("span", { className: `font-semibold ${textColor}`, children: [
+                alert.pct,
+                "% of ",
+                formatIdr(alert.limit)
+              ] })
+            ] }),
+            /* @__PURE__ */ jsx("div", { className: "w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2", children: /* @__PURE__ */ jsx(
+              "div",
+              {
+                className: `${barColor} h-2 rounded-full transition-all`,
+                style: { width: `${visualPct}%` }
+              }
+            ) }),
+            alert.isOver && /* @__PURE__ */ jsxs("p", { className: "text-xs text-red-600 dark:text-red-400 mt-1.5", children: [
+              formatIdr(alert.spent - alert.limit),
+              " over the monthly limit"
+            ] })
+          ]
+        },
+        alert.category
+      );
+    }) }) })
+  ] });
+}
+
 function parseCreatedTime(tx) {
   if (tx.created_time) {
     const d = new Date(tx.created_time);
@@ -1439,6 +1590,14 @@ function Dashboard({ transactions, networth, summaries }) {
       AnomalyAlerts,
       {
         month: activeSummary?.month
+      }
+    ),
+    /* @__PURE__ */ jsx(
+      BudgetAlerts,
+      {
+        summaries,
+        categories,
+        activeMonth: activeSummary?.month
       }
     ),
     /* @__PURE__ */ jsx(
