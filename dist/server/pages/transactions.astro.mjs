@@ -1,17 +1,20 @@
 /* empty css                               */
 import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BN-0jZ66.mjs';
 import 'kleur/colors';
-import { f as formatIdr, $ as $$Layout } from '../chunks/utils_BV3uP8cD.mjs';
+import { f as formatIdr, $ as $$Layout } from '../chunks/utils_Blj5YLOJ.mjs';
 import { jsxs, jsx } from 'react/jsx-runtime';
-import { useState, useEffect, useMemo } from 'react';
-import { f as fetchCategories, v as toggleTransactionDoneApi, w as deleteTransactionApi, x as updateTransactionApi, y as deleteTransactionsBulkApi } from '../chunks/api_CHTFnAPN.mjs';
-import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_B7HsFEUM.mjs';
-import { I as Input } from '../chunks/input_CMjf0MNb.mjs';
-import { B as Button } from '../chunks/button_DWaBi1j-.mjs';
-import { B as Badge } from '../chunks/badge_Ck18rsVk.mjs';
-import { C as Checkbox } from '../chunks/checkbox_BpCKnwT9.mjs';
-import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_DvSVMMD5.mjs';
-import { c as getTransactions } from '../chunks/db_Ccs3-dKx.mjs';
+import { useState, useCallback, useEffect, useMemo } from 'react';
+import { f as fetchCategories, A as toggleTransactionDoneApi, B as deleteTransactionApi, C as updateTransactionApi, D as deleteTransactionsBulkApi, E as updateTransactionsBulkApi } from '../chunks/api_BDzHS_4o.mjs';
+import { u as useSortState, S as SortableHeader } from '../chunks/SortableHeader_CFrJuLsX.mjs';
+import { E as EditTransactionDialog } from '../chunks/EditTransactionDialog_BMEoXFU2.mjs';
+import { StickyNote } from 'lucide-react';
+import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_C3KRA4ed.mjs';
+import { I as Input } from '../chunks/input_oLb95eej.mjs';
+import { B as Button } from '../chunks/button_Vng4eZC1.mjs';
+import { B as Badge } from '../chunks/badge_CkSn0lpM.mjs';
+import { C as Checkbox } from '../chunks/checkbox_CDAgyxgq.mjs';
+import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_CRipy8Bp.mjs';
+import { n as getTransactions } from '../chunks/db_D20tYf13.mjs';
 export { renderers } from '../renderers.mjs';
 
 function parseCreatedTime(tx) {
@@ -21,11 +24,6 @@ function parseCreatedTime(tx) {
   }
   return new Date(tx.date);
 }
-const TYPE_OPTIONS = [
-  { value: "cash", label: "Cash" },
-  { value: "credit_expense", label: "Credit Expense" },
-  { value: "credit_payment", label: "Credit Payment" }
-];
 function TransactionTable({ transactions, showMonth = true }) {
   const getInitialState = () => {
     if (typeof window === "undefined") return { page: 1, filterType: "all", filterMonth: "all", search: "", dateFrom: "", dateTo: "", amountMin: "", amountMax: "" };
@@ -53,8 +51,30 @@ function TransactionTable({ transactions, showMonth = true }) {
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({});
   const [selected, setSelected] = useState(/* @__PURE__ */ new Set());
+  const [bulkCategory, setBulkCategory] = useState("");
   const [categories, setCategories] = useState([]);
   const rowsPerPage = 25;
+  const { toggleSort, sortData, isSorted } = useSortState();
+  const getCellValue = useCallback((t, key) => {
+    switch (key) {
+      case "paid":
+        return t.done ? 1 : 0;
+      case "month":
+        return t.month;
+      case "title":
+        return t.title;
+      case "category":
+        return t.category;
+      case "date":
+        return new Date(t.created_time || t.date).getTime();
+      case "amount":
+        return t.amount;
+      case "type":
+        return t.type;
+      default:
+        return "";
+    }
+  }, []);
   useEffect(() => {
     fetchCategories().then(setCategories).catch(() => {
     });
@@ -100,12 +120,12 @@ function TransactionTable({ transactions, showMonth = true }) {
     });
   }, [transactions]);
   const sorted = useMemo(() => {
-    return [...transactions].sort((a, b) => {
-      const da = parseCreatedTime(a);
-      const db = parseCreatedTime(b);
-      return db.getTime() - da.getTime();
-    });
-  }, [transactions]);
+    return sortData(
+      transactions,
+      getCellValue,
+      (data) => [...data].sort((a, b) => parseCreatedTime(b).getTime() - parseCreatedTime(a).getTime())
+    );
+  }, [transactions, sortData, getCellValue]);
   let filtered = sorted;
   if (filterType !== "all") {
     filtered = filtered.filter((t) => t.type === filterType);
@@ -116,7 +136,7 @@ function TransactionTable({ transactions, showMonth = true }) {
   if (search.trim()) {
     const q = search.toLowerCase();
     filtered = filtered.filter(
-      (t) => t.title.toLowerCase().includes(q) || t.category.toLowerCase().includes(q)
+      (t) => t.title.toLowerCase().includes(q) || t.category.toLowerCase().includes(q) || (t.notes || "").toLowerCase().includes(q)
     );
   }
   if (dateFrom) {
@@ -184,6 +204,14 @@ function TransactionTable({ transactions, showMonth = true }) {
     setSelected(/* @__PURE__ */ new Set());
     window.location.reload();
   };
+  const handleBulkCategoryChange = async (newCategory) => {
+    if (!newCategory || selected.size === 0) return;
+    if (!confirm(`Reassign ${selected.size} transaction(s) to category "${newCategory}"?`)) return;
+    await updateTransactionsBulkApi(Array.from(selected), { category: newCategory });
+    setBulkCategory("");
+    setSelected(/* @__PURE__ */ new Set());
+    window.location.reload();
+  };
   return /* @__PURE__ */ jsxs("div", { children: [
     /* @__PURE__ */ jsxs("div", { className: "flex flex-col sm:flex-row gap-3 mb-4", children: [
       /* @__PURE__ */ jsx(
@@ -233,7 +261,8 @@ function TransactionTable({ transactions, showMonth = true }) {
               amount: t.amount,
               type: t.type,
               category: t.category,
-              paid: t.done
+              paid: t.done,
+              notes: t.notes || ""
             }));
             if (exportData.length === 0) {
               alert("No transactions found for this month");
@@ -324,10 +353,14 @@ function TransactionTable({ transactions, showMonth = true }) {
         }
       )
     ] }),
-    selected.size > 0 && /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3 mb-3", children: [
+    selected.size > 0 && /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3 mb-3 flex-wrap", children: [
       /* @__PURE__ */ jsxs("span", { className: "text-sm text-slate-600 dark:text-slate-300", children: [
         selected.size,
         " selected"
+      ] }),
+      /* @__PURE__ */ jsxs(Select, { value: bulkCategory, onValueChange: handleBulkCategoryChange, children: [
+        /* @__PURE__ */ jsx(SelectTrigger, { className: "w-[200px]", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Reassign category..." }) }),
+        /* @__PURE__ */ jsx(SelectContent, { children: categories.map((cat) => /* @__PURE__ */ jsx(SelectItem, { value: cat.name, children: cat.name }, cat.name)) })
       ] }),
       /* @__PURE__ */ jsx(Button, { size: "sm", variant: "destructive", onClick: handleBulkDelete, children: "Delete Selected" })
     ] }),
@@ -341,88 +374,18 @@ function TransactionTable({ transactions, showMonth = true }) {
             "aria-label": "Select all"
           }
         ) }),
-        /* @__PURE__ */ jsx(TableHead, { children: "Paid" }),
-        showMonth && /* @__PURE__ */ jsx(TableHead, { children: "Month" }),
-        /* @__PURE__ */ jsx(TableHead, { children: "Title" }),
-        /* @__PURE__ */ jsx(TableHead, { children: "Category" }),
-        /* @__PURE__ */ jsx(TableHead, { children: "Date" }),
-        /* @__PURE__ */ jsx(TableHead, { className: "text-right", children: "Amount" }),
-        /* @__PURE__ */ jsx(TableHead, { children: "Type" }),
+        /* @__PURE__ */ jsx(SortableHeader, { sortKey: "paid", currentDirection: isSorted("paid"), onSort: toggleSort, children: "Paid" }),
+        showMonth && /* @__PURE__ */ jsx(SortableHeader, { sortKey: "month", currentDirection: isSorted("month"), onSort: toggleSort, children: "Month" }),
+        /* @__PURE__ */ jsx(SortableHeader, { sortKey: "title", currentDirection: isSorted("title"), onSort: toggleSort, children: "Title" }),
+        /* @__PURE__ */ jsx(SortableHeader, { sortKey: "category", currentDirection: isSorted("category"), onSort: toggleSort, children: "Category" }),
+        /* @__PURE__ */ jsx(SortableHeader, { sortKey: "date", currentDirection: isSorted("date"), onSort: toggleSort, children: "Date" }),
+        /* @__PURE__ */ jsx(SortableHeader, { sortKey: "amount", currentDirection: isSorted("amount"), onSort: toggleSort, className: "text-right", children: "Amount" }),
+        /* @__PURE__ */ jsx(SortableHeader, { sortKey: "type", currentDirection: isSorted("type"), onSort: toggleSort, children: "Type" }),
         /* @__PURE__ */ jsx(TableHead, {})
       ] }) }),
       /* @__PURE__ */ jsx(TableBody, { children: pageRows.map((row) => {
-        const isEditing = editingId === row.id;
         const createdDate = parseCreatedTime(row);
         const dateStr = isNaN(createdDate.getTime()) ? row.date : createdDate.toLocaleDateString("id-ID", { year: "numeric", month: "short", day: "numeric" });
-        if (isEditing) {
-          return /* @__PURE__ */ jsxs(TableRow, { className: "bg-muted/30", children: [
-            /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(Checkbox, { checked: selected.has(row.id), disabled: true }) }),
-            /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
-              /* @__PURE__ */ jsx(
-                Checkbox,
-                {
-                  checked: !!editForm.done,
-                  onCheckedChange: (v) => handleChange("done", !!v)
-                }
-              ),
-              /* @__PURE__ */ jsx("span", { className: "text-xs", children: editForm.done ? "Paid" : "Unpaid" })
-            ] }) }),
-            showMonth && /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(
-              Input,
-              {
-                type: "text",
-                value: editForm.month ?? "",
-                onChange: (e) => handleChange("month", e.target.value),
-                className: "h-8 text-xs"
-              }
-            ) }),
-            /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(
-              Input,
-              {
-                type: "text",
-                value: editForm.title ?? "",
-                onChange: (e) => handleChange("title", e.target.value),
-                className: "h-8 text-xs"
-              }
-            ) }),
-            /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(
-              Input,
-              {
-                type: "text",
-                value: editForm.category ?? "",
-                onChange: (e) => handleChange("category", e.target.value),
-                className: "h-8 text-xs"
-              }
-            ) }),
-            /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(
-              Input,
-              {
-                type: "text",
-                value: editForm.created_time ?? "",
-                onChange: (e) => handleChange("created_time", e.target.value),
-                placeholder: "Created time",
-                className: "h-8 text-xs"
-              }
-            ) }),
-            /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(
-              Input,
-              {
-                type: "number",
-                value: editForm.amount ?? 0,
-                onChange: (e) => handleChange("amount", Number(e.target.value)),
-                className: "h-8 text-xs text-right"
-              }
-            ) }),
-            /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsxs(Select, { value: editForm.type ?? "cash", onValueChange: (v) => handleChange("type", v), children: [
-              /* @__PURE__ */ jsx(SelectTrigger, { className: "h-8 text-xs", children: /* @__PURE__ */ jsx(SelectValue, {}) }),
-              /* @__PURE__ */ jsx(SelectContent, { children: TYPE_OPTIONS.map((opt) => /* @__PURE__ */ jsx(SelectItem, { value: opt.value, children: opt.label }, opt.value)) })
-            ] }) }),
-            /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsxs("div", { className: "flex gap-1", children: [
-              /* @__PURE__ */ jsx(Button, { size: "sm", className: "h-7 text-xs", onClick: saveEdit, children: "Save" }),
-              /* @__PURE__ */ jsx(Button, { size: "sm", variant: "secondary", className: "h-7 text-xs", onClick: cancelEdit, children: "Cancel" })
-            ] }) })
-          ] }, row.id);
-        }
         const typeClass = row.type === "cash" ? "text-blue-600 dark:text-blue-400" : row.type === "credit_payment" ? "text-amber-600 dark:text-amber-400" : "text-purple-600 dark:text-purple-400";
         const typeLabel = row.type === "cash" ? "Cash" : row.type === "credit_payment" ? "Credit Pay" : "Credit";
         return /* @__PURE__ */ jsxs(TableRow, { children: [
@@ -448,7 +411,10 @@ function TransactionTable({ transactions, showMonth = true }) {
             }
           ) }),
           showMonth && /* @__PURE__ */ jsx(TableCell, { className: "font-medium", children: row.month }),
-          /* @__PURE__ */ jsx(TableCell, { children: row.title }),
+          /* @__PURE__ */ jsxs(TableCell, { children: [
+            /* @__PURE__ */ jsx("span", { children: row.title }),
+            row.notes && /* @__PURE__ */ jsx("span", { className: "inline-flex ml-1.5 align-middle", title: row.notes, children: /* @__PURE__ */ jsx(StickyNote, { className: "w-3.5 h-3.5 text-amber-500 dark:text-amber-400 inline" }) })
+          ] }),
           /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(
             Badge,
             {
@@ -506,7 +472,20 @@ function TransactionTable({ transactions, showMonth = true }) {
           }
         )
       ] })
-    ] })
+    ] }),
+    /* @__PURE__ */ jsx(
+      EditTransactionDialog,
+      {
+        open: editingId !== null,
+        transaction: editForm,
+        onChange: handleChange,
+        onSave: saveEdit,
+        onCancel: cancelEdit,
+        showMonth,
+        months: monthOptions,
+        categories: categories.map((c) => c.name)
+      }
+    )
   ] });
 }
 

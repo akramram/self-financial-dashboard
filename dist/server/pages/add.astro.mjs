@@ -1,18 +1,18 @@
 /* empty css                               */
 import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BN-0jZ66.mjs';
 import 'kleur/colors';
-import { g as getActivePeriod, $ as $$Layout } from '../chunks/utils_BV3uP8cD.mjs';
+import { g as getActivePeriod, $ as $$Layout } from '../chunks/utils_Blj5YLOJ.mjs';
 import { jsxs, jsx } from 'react/jsx-runtime';
 import { useState, useRef, useEffect } from 'react';
-import { f as fetchCategories, a as fetchNetworth, c as createNetworth } from '../chunks/api_CHTFnAPN.mjs';
-import { C as Card, a as CardHeader, b as CardTitle, c as CardContent, d as CardDescription } from '../chunks/card_C3MBU-yw.mjs';
-import { I as Input } from '../chunks/input_CMjf0MNb.mjs';
-import { B as Button } from '../chunks/button_DWaBi1j-.mjs';
-import { L as Label } from '../chunks/label_Bi9dl2vq.mjs';
-import { B as Badge } from '../chunks/badge_Ck18rsVk.mjs';
-import { C as Checkbox } from '../chunks/checkbox_BpCKnwT9.mjs';
-import { D as Dialog, a as DialogContent, b as DialogHeader, c as DialogTitle, d as DialogDescription, e as DialogFooter } from '../chunks/dialog_rV5Ycyo9.mjs';
-import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_DvSVMMD5.mjs';
+import { f as fetchCategories, a as fetchNetworth, c as createNetworth } from '../chunks/api_BDzHS_4o.mjs';
+import { C as Card, a as CardHeader, b as CardTitle, c as CardContent, d as CardDescription } from '../chunks/card_CrN9uNe-.mjs';
+import { I as Input } from '../chunks/input_oLb95eej.mjs';
+import { B as Button } from '../chunks/button_Vng4eZC1.mjs';
+import { L as Label } from '../chunks/label_CRCDuHdH.mjs';
+import { B as Badge } from '../chunks/badge_CkSn0lpM.mjs';
+import { C as Checkbox } from '../chunks/checkbox_CDAgyxgq.mjs';
+import { D as Dialog, a as DialogContent, b as DialogHeader, c as DialogTitle, d as DialogDescription, e as DialogFooter } from '../chunks/dialog_Bann-NOl.mjs';
+import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_CRipy8Bp.mjs';
 export { renderers } from '../renderers.mjs';
 
 const MONTH_OPTIONS$1 = [
@@ -43,6 +43,7 @@ function AddTransactionForm() {
   const [amount, setAmount] = useState("");
   const [type, setType] = useState("credit_expense");
   const [done, setDone] = useState(true);
+  const [notes, setNotes] = useState("");
   const [message, setMessage] = useState("");
   const [showDuplicateDialog, setShowDuplicateDialog] = useState(false);
   const [categories, setCategories] = useState([]);
@@ -65,6 +66,7 @@ function AddTransactionForm() {
       type,
       payment_method: type === "cash" ? "Cash" : "Credit",
       done,
+      notes: notes.trim() || void 0,
       created_time: (/* @__PURE__ */ new Date()).toISOString()
     };
   };
@@ -92,6 +94,7 @@ function AddTransactionForm() {
     setTitle("");
     setCategory("");
     setAmount("");
+    setNotes("");
     setTimeout(() => setMessage(""), 3e3);
     titleRef.current?.focus();
   };
@@ -108,6 +111,7 @@ function AddTransactionForm() {
       setTitle("");
       setCategory("");
       setAmount("");
+      setNotes("");
       setTimeout(() => setMessage(""), 3e3);
       titleRef.current?.focus();
     } else {
@@ -197,6 +201,19 @@ function AddTransactionForm() {
           }
         ),
         /* @__PURE__ */ jsx(Label, { htmlFor: "done", className: "text-sm text-slate-600 dark:text-slate-300", children: "Paid / Done" })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "space-y-1.5", children: [
+        /* @__PURE__ */ jsx(Label, { children: "Notes" }),
+        /* @__PURE__ */ jsx(
+          "textarea",
+          {
+            value: notes,
+            onChange: (e) => setNotes(e.target.value),
+            rows: 2,
+            className: "flex min-h-[48px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-y",
+            placeholder: "Optional notes about this transaction..."
+          }
+        )
       ] }),
       /* @__PURE__ */ jsx(Button, { type: "submit", className: "w-full", children: "Add Transaction" })
     ] }) }),

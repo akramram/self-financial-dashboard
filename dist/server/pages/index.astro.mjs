@@ -1,24 +1,26 @@
 /* empty css                               */
 import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BN-0jZ66.mjs';
 import 'kleur/colors';
-import { f as formatIdr, $ as $$Layout } from '../chunks/utils_BV3uP8cD.mjs';
-import { jsx, jsxs } from 'react/jsx-runtime';
-import { useMemo, useState, useEffect } from 'react';
-import { z as kickoffMonth, f as fetchCategories, i as fetchRecurringTransactions, v as toggleTransactionDoneApi, w as deleteTransactionApi, x as updateTransactionApi } from '../chunks/api_CHTFnAPN.mjs';
+import { f as formatIdr, g as getActivePeriod, $ as $$Layout } from '../chunks/utils_Blj5YLOJ.mjs';
+import { jsx, jsxs, Fragment } from 'react/jsx-runtime';
+import { useMemo, useState, useEffect, useCallback } from 'react';
+import { F as kickoffMonth, f as fetchCategories, n as fetchRecurringTransactions, A as toggleTransactionDoneApi, B as deleteTransactionApi, C as updateTransactionApi } from '../chunks/api_BDzHS_4o.mjs';
 import { Chart, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement, Filler } from 'chart.js';
 import { Bar, Doughnut, Line } from 'react-chartjs-2';
-import { N as NetworthChart } from '../chunks/NetworthChart_OJTqMG_T.mjs';
-import { C as Card, a as CardHeader, b as CardTitle, c as CardContent } from '../chunks/card_C3MBU-yw.mjs';
-import { B as Badge } from '../chunks/badge_Ck18rsVk.mjs';
-import { AlertTriangle, TrendingUp, TrendingDown, Receipt, CheckCircle, PiggyBank, Wallet } from 'lucide-react';
-import { B as Button } from '../chunks/button_DWaBi1j-.mjs';
-import { I as Input } from '../chunks/input_CMjf0MNb.mjs';
-import { L as Label } from '../chunks/label_Bi9dl2vq.mjs';
-import { D as Dialog, a as DialogContent, b as DialogHeader, c as DialogTitle, d as DialogDescription } from '../chunks/dialog_rV5Ycyo9.mjs';
-import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_B7HsFEUM.mjs';
-import { C as Checkbox } from '../chunks/checkbox_BpCKnwT9.mjs';
-import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_DvSVMMD5.mjs';
-import { c as getTransactions, e as getNetworth, f as getMonthlySummary, h as db } from '../chunks/db_Ccs3-dKx.mjs';
+import { N as NetworthChart } from '../chunks/NetworthChart_DqHJPjvg.mjs';
+import { C as Card, a as CardHeader, b as CardTitle, c as CardContent } from '../chunks/card_CrN9uNe-.mjs';
+import { B as Badge } from '../chunks/badge_CkSn0lpM.mjs';
+import { AlertTriangle, TrendingUp, TrendingDown, Receipt, CheckCircle, PiggyBank, Wallet, DollarSign, BarChart3, Gauge, Clock, Activity, X, ChevronUp, ChevronDown, ShoppingBag, StickyNote } from 'lucide-react';
+import { B as Button } from '../chunks/button_Vng4eZC1.mjs';
+import { I as Input } from '../chunks/input_oLb95eej.mjs';
+import { L as Label } from '../chunks/label_CRCDuHdH.mjs';
+import { D as Dialog, a as DialogContent, b as DialogHeader, c as DialogTitle, d as DialogDescription } from '../chunks/dialog_Bann-NOl.mjs';
+import { u as useSortState, S as SortableHeader } from '../chunks/SortableHeader_CFrJuLsX.mjs';
+import { E as EditTransactionDialog } from '../chunks/EditTransactionDialog_BMEoXFU2.mjs';
+import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_C3KRA4ed.mjs';
+import '../chunks/checkbox_CDAgyxgq.mjs';
+import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_CRipy8Bp.mjs';
+import { n as getTransactions, o as getNetworth, g as getMonthlySummary, d as db } from '../chunks/db_D20tYf13.mjs';
 export { renderers } from '../renderers.mjs';
 
 Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -648,6 +650,551 @@ function MonthKickoffModal({ open, onOpenChange, nextMonth, recurringCount, onSu
   ] }) });
 }
 
+Chart.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Filler);
+function Sparkline({ data, color, height = 48, width = 100 }) {
+  const clean = data.filter((v) => isFinite(v));
+  if (clean.length < 2) return null;
+  clean.length >= 2 && clean[clean.length - 1] >= clean[0];
+  const chartData = {
+    labels: clean.map((_, i) => `p${i}`),
+    datasets: [
+      {
+        data: clean,
+        borderColor: color,
+        backgroundColor: `${color}22`,
+        borderWidth: 1.5,
+        pointRadius: 0,
+        pointHoverRadius: 3,
+        pointHoverBackgroundColor: color,
+        tension: 0.4,
+        fill: true
+      }
+    ]
+  };
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: { duration: 400 },
+    plugins: {
+      legend: { display: false },
+      tooltip: { enabled: false }
+    },
+    scales: {
+      x: { display: false },
+      y: { display: false, beginAtZero: false }
+    },
+    elements: {
+      line: {
+        borderColor: color
+      }
+    }
+  };
+  return /* @__PURE__ */ jsx("div", { style: { width, height }, className: "shrink-0", children: /* @__PURE__ */ jsx(Line, { data: chartData, options }) });
+}
+
+function DashboardSummaryCards({ summaries, networth, activeMonth }) {
+  const cards = useMemo(() => {
+    const result = [];
+    const sorted = [...summaries].sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+    const last6 = sorted.slice(-6);
+    last6.map((s) => s.month);
+    const currentIdx = sorted.findIndex((s) => s.month === activeMonth);
+    const currentSummary = currentIdx >= 0 ? sorted[currentIdx] : sorted[sorted.length - 1];
+    const prevSummary = currentIdx > 0 ? sorted[currentIdx - 1] : null;
+    const nwSorted = [...networth].sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+    const nwLast6 = nwSorted.slice(-6);
+    const nwCurrent = nwSorted.find((n) => n.month === activeMonth) ?? nwSorted[nwSorted.length - 1];
+    const nwPrevIdx = nwSorted.findIndex((n) => n.month === activeMonth);
+    const nwPrev = nwPrevIdx > 0 ? nwSorted[nwPrevIdx - 1] : null;
+    if (currentSummary) {
+      const income = currentSummary.income ?? 0;
+      const prevIncome = prevSummary?.income ?? 0;
+      const incomeDelta = income - prevIncome;
+      const incomeDeltaPct = prevIncome > 0 ? incomeDelta / prevIncome * 100 : income > 0 ? 100 : 0;
+      result.push({
+        label: "Income",
+        value: formatIdr(income),
+        delta: incomeDelta >= 0 ? `+${formatIdr(incomeDelta)}` : formatIdr(incomeDelta),
+        deltaPct: incomeDeltaPct >= 0 ? `+${incomeDeltaPct.toFixed(1)}%` : `${incomeDeltaPct.toFixed(1)}%`,
+        isPositive: incomeDelta >= 0,
+        sparklineData: last6.map((s) => s.income ?? 0),
+        color: "#10b981",
+        icon: /* @__PURE__ */ jsx(DollarSign, { className: "w-5 h-5" })
+      });
+    }
+    if (currentSummary) {
+      const outcome = currentSummary.outcome?.total ?? 0;
+      const prevOutcome = prevSummary?.outcome?.total ?? 0;
+      const outcomeDelta = outcome - prevOutcome;
+      const outcomeDeltaPct = prevOutcome > 0 ? outcomeDelta / prevOutcome * 100 : outcome > 0 ? 100 : 0;
+      result.push({
+        label: "Spending",
+        value: formatIdr(outcome),
+        delta: outcomeDelta >= 0 ? `+${formatIdr(outcomeDelta)}` : formatIdr(outcomeDelta),
+        deltaPct: outcomeDeltaPct >= 0 ? `+${outcomeDeltaPct.toFixed(1)}%` : `${outcomeDeltaPct.toFixed(1)}%`,
+        isPositive: outcomeDelta <= 0,
+        // Lower spending is positive
+        sparklineData: last6.map((s) => s.outcome?.total ?? 0),
+        color: "#ef4444",
+        icon: /* @__PURE__ */ jsx(Wallet, { className: "w-5 h-5" })
+      });
+    }
+    if (currentSummary) {
+      const income = currentSummary.income ?? 0;
+      const outcome = currentSummary.outcome?.total ?? 0;
+      const savingsRate = income > 0 ? (income - outcome) / income * 100 : 0;
+      const prevIncome = prevSummary?.income ?? 0;
+      const prevOutcome = prevSummary?.outcome?.total ?? 0;
+      const prevSavingsRate = prevIncome > 0 ? (prevIncome - prevOutcome) / prevIncome * 100 : 0;
+      const srDelta = savingsRate - prevSavingsRate;
+      result.push({
+        label: "Savings Rate",
+        value: `${savingsRate.toFixed(1)}%`,
+        delta: srDelta >= 0 ? `+${srDelta.toFixed(1)}pp` : `${srDelta.toFixed(1)}pp`,
+        deltaPct: "",
+        isPositive: srDelta >= 0,
+        sparklineData: last6.map((s) => {
+          const inc = s.income ?? 0;
+          const out = s.outcome?.total ?? 0;
+          return inc > 0 ? (inc - out) / inc * 100 : 0;
+        }),
+        color: "#6366f1",
+        icon: /* @__PURE__ */ jsx(PiggyBank, { className: "w-5 h-5" })
+      });
+    }
+    if (nwCurrent) {
+      const nw = nwCurrent.total ?? 0;
+      const prevNw = nwPrev?.total ?? 0;
+      const nwDelta = nw - prevNw;
+      const nwDeltaPct = prevNw > 0 ? nwDelta / prevNw * 100 : nw > 0 ? 100 : 0;
+      result.push({
+        label: "Net Worth",
+        value: formatIdr(nw),
+        delta: nwDelta >= 0 ? `+${formatIdr(nwDelta)}` : formatIdr(nwDelta),
+        deltaPct: nwDeltaPct >= 0 ? `+${nwDeltaPct.toFixed(1)}%` : `${nwDeltaPct.toFixed(1)}%`,
+        isPositive: nwDelta >= 0,
+        sparklineData: nwLast6.map((n) => n.total ?? 0),
+        color: "#3b82f6",
+        icon: /* @__PURE__ */ jsx(BarChart3, { className: "w-5 h-5" })
+      });
+    }
+    return result;
+  }, [summaries, networth, activeMonth]);
+  if (cards.length === 0) return null;
+  return /* @__PURE__ */ jsx("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6", children: cards.map((card) => /* @__PURE__ */ jsxs(
+    "div",
+    {
+      className: "bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-5 relative overflow-hidden hover:shadow-md transition-shadow",
+      children: [
+        /* @__PURE__ */ jsx(
+          "div",
+          {
+            className: "absolute top-0 left-0 right-0 h-1",
+            style: { backgroundColor: card.color }
+          }
+        ),
+        /* @__PURE__ */ jsxs("div", { className: "flex items-start justify-between", children: [
+          /* @__PURE__ */ jsxs("div", { className: "flex-1 min-w-0", children: [
+            /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 mb-1", children: [
+              /* @__PURE__ */ jsx("span", { className: "text-slate-400 dark:text-slate-500", children: card.icon }),
+              /* @__PURE__ */ jsx("p", { className: "text-sm font-medium text-slate-500 dark:text-slate-400 truncate", children: card.label })
+            ] }),
+            /* @__PURE__ */ jsx("p", { className: "text-2xl font-bold mt-1 truncate", children: card.value }),
+            /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-1.5 mt-1", children: [
+              /* @__PURE__ */ jsxs(
+                "span",
+                {
+                  className: `inline-flex items-center gap-0.5 text-xs font-semibold ${card.isPositive ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`,
+                  children: [
+                    card.isPositive ? /* @__PURE__ */ jsx(TrendingUp, { className: "w-3.5 h-3.5" }) : /* @__PURE__ */ jsx(TrendingDown, { className: "w-3.5 h-3.5" }),
+                    card.delta
+                  ]
+                }
+              ),
+              card.deltaPct && /* @__PURE__ */ jsx(
+                "span",
+                {
+                  className: `text-xs font-medium ${card.isPositive ? "text-emerald-500/70 dark:text-emerald-400/70" : "text-red-500/70 dark:text-red-400/70"}`,
+                  children: card.deltaPct
+                }
+              )
+            ] })
+          ] }),
+          /* @__PURE__ */ jsx("div", { className: "ml-2 shrink-0 self-end", children: /* @__PURE__ */ jsx(Sparkline, { data: card.sparklineData, color: card.color, height: 40, width: 72 }) })
+        ] })
+      ]
+    },
+    card.label
+  )) });
+}
+
+function getPeriodDates(activeMonth) {
+  const parts = activeMonth.split(" ");
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+  ];
+  const monthIdx = monthNames.indexOf(parts[0]);
+  const year = parseInt(parts[1] || String((/* @__PURE__ */ new Date()).getFullYear()), 10);
+  if (monthIdx < 0) {
+    const now = /* @__PURE__ */ new Date();
+    return {
+      start: new Date(now.getFullYear(), now.getMonth(), 21),
+      end: new Date(now.getFullYear(), now.getMonth() + 1, 20)
+    };
+  }
+  const startMonth = monthIdx === 0 ? 11 : monthIdx - 1;
+  const startYear = monthIdx === 0 ? year - 1 : year;
+  const start = new Date(startYear, startMonth, 21);
+  const end = new Date(year, monthIdx, 20, 23, 59, 59, 999);
+  return { start, end };
+}
+function SpendingPulse({ summaries, activeMonth }) {
+  const pulse = useMemo(() => {
+    const summary = summaries.find((s) => s.month === activeMonth);
+    if (!summary) return null;
+    const income = summary.income ?? 0;
+    if (income <= 0) return null;
+    const { start, end } = getPeriodDates(activeMonth);
+    const now = /* @__PURE__ */ new Date();
+    const effectiveNow = now < start ? start : now > end ? end : now;
+    const daysTotal = Math.ceil((end.getTime() - start.getTime()) / (1e3 * 60 * 60 * 24)) + 1;
+    const daysElapsed = Math.max(1, Math.ceil((effectiveNow.getTime() - start.getTime()) / (1e3 * 60 * 60 * 24)) + 1);
+    const daysRemaining = Math.max(0, daysTotal - daysElapsed);
+    const pctTimeElapsed = Math.min(100, daysElapsed / daysTotal * 100);
+    const dailyBudget = income / daysTotal;
+    const expectedSpend = dailyBudget * daysElapsed;
+    const actualSpend = summary.outcome?.total ?? 0;
+    const pacePct = expectedSpend > 0 ? actualSpend / expectedSpend * 100 : 0;
+    const projectedTotal = daysElapsed > 0 ? actualSpend / daysElapsed * daysTotal : 0;
+    let status = "on-track";
+    if (pacePct < 90) status = "under";
+    else if (pacePct > 110) status = "over";
+    return {
+      daysElapsed,
+      daysTotal,
+      daysRemaining,
+      pctTimeElapsed,
+      dailyBudget,
+      expectedSpend,
+      actualSpend,
+      pacePct,
+      projectedTotal,
+      status,
+      income
+    };
+  }, [summaries, activeMonth]);
+  if (!pulse) return null;
+  const statusConfig = {
+    "under": {
+      color: "text-emerald-600 dark:text-emerald-400",
+      bg: "bg-emerald-50 dark:bg-emerald-900/20",
+      border: "border-emerald-200 dark:border-emerald-800",
+      bar: "bg-emerald-500",
+      track: "bg-emerald-100 dark:bg-emerald-800/50",
+      icon: /* @__PURE__ */ jsx(TrendingDown, { className: "w-5 h-5" }),
+      label: "Spending slower than expected",
+      badge: "Under Pace"
+    },
+    "on-track": {
+      color: "text-amber-600 dark:text-amber-400",
+      bg: "bg-amber-50 dark:bg-amber-900/20",
+      border: "border-amber-200 dark:border-amber-800",
+      bar: "bg-amber-500",
+      track: "bg-amber-100 dark:bg-amber-800/50",
+      icon: /* @__PURE__ */ jsx(Activity, { className: "w-5 h-5" }),
+      label: "Spending on pace with the period",
+      badge: "On Track"
+    },
+    "over": {
+      color: "text-red-600 dark:text-red-400",
+      bg: "bg-red-50 dark:bg-red-900/20",
+      border: "border-red-200 dark:border-red-800",
+      bar: "bg-red-500",
+      track: "bg-red-100 dark:bg-red-800/50",
+      icon: /* @__PURE__ */ jsx(TrendingUp, { className: "w-5 h-5" }),
+      label: "Spending faster than expected",
+      badge: "Over Pace"
+    }
+  };
+  const cfg = statusConfig[pulse.status];
+  const gaugeRadius = 70;
+  const gaugeStroke = 10;
+  const gaugeCenter = 80;
+  const gaugeCircumference = 2 * Math.PI * gaugeRadius;
+  const gaugeArcLength = gaugeCircumference * 0.5;
+  const clampedPace = Math.max(0, Math.min(200, pulse.pacePct));
+  const gaugePct = clampedPace / 200;
+  const gaugeOffset = gaugeArcLength * (1 - gaugePct);
+  const gaugeColor = pulse.status === "under" ? "#10b981" : pulse.status === "on-track" ? "#f59e0b" : "#ef4444";
+  return /* @__PURE__ */ jsxs("div", { className: `rounded-xl border ${cfg.border} ${cfg.bg} p-5 relative overflow-hidden`, children: [
+    /* @__PURE__ */ jsx("div", { className: `absolute top-0 left-0 right-0 h-1 ${cfg.bar}` }),
+    /* @__PURE__ */ jsxs("div", { className: "flex flex-col lg:flex-row items-start gap-6", children: [
+      /* @__PURE__ */ jsxs("div", { className: "flex-1 min-w-0 space-y-3", children: [
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
+          /* @__PURE__ */ jsx(Gauge, { className: `w-5 h-5 ${cfg.color}` }),
+          /* @__PURE__ */ jsx("h3", { className: "text-sm font-semibold text-slate-700 dark:text-slate-200", children: "Spending Pulse" }),
+          /* @__PURE__ */ jsx("span", { className: `text-[11px] font-semibold px-2 py-0.5 rounded-full ${cfg.bg} border ${cfg.border} ${cfg.color}`, children: cfg.badge })
+        ] }),
+        /* @__PURE__ */ jsxs("p", { className: "text-xs text-slate-500 dark:text-slate-400", children: [
+          cfg.label,
+          " — you've spent ",
+          pulse.pacePct.toFixed(0),
+          "% of the expected amount for this point in the period."
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-2 gap-3 pt-1", children: [
+          /* @__PURE__ */ jsxs("div", { className: "bg-white/60 dark:bg-slate-800/60 rounded-lg p-2.5", children: [
+            /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 mb-1", children: [
+              /* @__PURE__ */ jsx(Clock, { className: "w-3.5 h-3.5" }),
+              "Time Elapsed"
+            ] }),
+            /* @__PURE__ */ jsxs("p", { className: "text-base font-bold text-slate-800 dark:text-slate-100", children: [
+              "Day ",
+              pulse.daysElapsed,
+              " of ",
+              pulse.daysTotal
+            ] }),
+            /* @__PURE__ */ jsxs("p", { className: "text-xs text-slate-500", children: [
+              pulse.pctTimeElapsed.toFixed(0),
+              "% through period"
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: "bg-white/60 dark:bg-slate-800/60 rounded-lg p-2.5", children: [
+            /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 mb-1", children: [
+              /* @__PURE__ */ jsx(Activity, { className: "w-3.5 h-3.5" }),
+              "Spend vs Expected"
+            ] }),
+            /* @__PURE__ */ jsx("p", { className: "text-base font-bold text-slate-800 dark:text-slate-100", children: formatIdr(pulse.actualSpend) }),
+            /* @__PURE__ */ jsxs("p", { className: "text-xs text-slate-500", children: [
+              "Expected: ",
+              formatIdr(pulse.expectedSpend)
+            ] })
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400", children: [
+          /* @__PURE__ */ jsx("span", { children: "Projected period total:" }),
+          /* @__PURE__ */ jsx("span", { className: `font-semibold ${pulse.projectedTotal > pulse.income ? "text-red-600 dark:text-red-400" : "text-emerald-600 dark:text-emerald-400"}`, children: formatIdr(pulse.projectedTotal) }),
+          /* @__PURE__ */ jsx("span", { children: "vs" }),
+          /* @__PURE__ */ jsx("span", { className: "font-semibold text-slate-700 dark:text-slate-300", children: formatIdr(pulse.income) }),
+          /* @__PURE__ */ jsx("span", { children: "income" })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "shrink-0 flex flex-col items-center", children: [
+        /* @__PURE__ */ jsxs("svg", { width: "160", height: "110", viewBox: "0 0 160 110", children: [
+          /* @__PURE__ */ jsx(
+            "path",
+            {
+              d: `M ${gaugeCenter - gaugeRadius} ${gaugeCenter} A ${gaugeRadius} ${gaugeRadius} 0 0 1 ${gaugeCenter + gaugeRadius} ${gaugeCenter}`,
+              fill: "none",
+              stroke: "currentColor",
+              strokeWidth: gaugeStroke,
+              className: "text-slate-200 dark:text-slate-700",
+              strokeLinecap: "round"
+            }
+          ),
+          /* @__PURE__ */ jsx(
+            "path",
+            {
+              d: `M ${gaugeCenter - gaugeRadius} ${gaugeCenter} A ${gaugeRadius} ${gaugeRadius} 0 0 1 ${gaugeCenter + gaugeRadius} ${gaugeCenter}`,
+              fill: "none",
+              stroke: gaugeColor,
+              strokeWidth: gaugeStroke,
+              strokeLinecap: "round",
+              strokeDasharray: `${gaugeArcLength} ${gaugeCircumference}`,
+              strokeDashoffset: gaugeOffset,
+              style: { transition: "stroke-dashoffset 0.8s ease-out" }
+            }
+          ),
+          /* @__PURE__ */ jsx("text", { x: gaugeCenter, y: gaugeCenter - 15, textAnchor: "middle", className: "fill-slate-400 dark:fill-slate-500", style: { fontSize: "11px" }, children: "PACE" }),
+          /* @__PURE__ */ jsxs("text", { x: gaugeCenter, y: gaugeCenter + 12, textAnchor: "middle", className: "fill-slate-800 dark:fill-slate-100", style: { fontSize: "22px", fontWeight: "bold" }, children: [
+            pulse.pacePct.toFixed(0),
+            "%"
+          ] }),
+          /* @__PURE__ */ jsx("text", { x: gaugeCenter - gaugeRadius, y: gaugeCenter + 22, textAnchor: "middle", className: "fill-slate-400 dark:fill-slate-500", style: { fontSize: "10px" }, children: "0%" }),
+          /* @__PURE__ */ jsx("text", { x: gaugeCenter + gaugeRadius, y: gaugeCenter + 22, textAnchor: "middle", className: "fill-slate-400 dark:fill-slate-500", style: { fontSize: "10px" }, children: "200%" })
+        ] }),
+        /* @__PURE__ */ jsx("p", { className: "text-[11px] text-slate-400 dark:text-slate-500 mt-1", children: "% of expected spend" })
+      ] })
+    ] }),
+    /* @__PURE__ */ jsxs("div", { className: "mt-4 pt-3 border-t border-slate-200/50 dark:border-slate-700/50 space-y-2", children: [
+      /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-xs", children: [
+        /* @__PURE__ */ jsx("span", { className: "w-16 text-slate-500 dark:text-slate-400 shrink-0", children: "Time" }),
+        /* @__PURE__ */ jsx("div", { className: "flex-1 bg-slate-200 dark:bg-slate-700 rounded-full h-1.5", children: /* @__PURE__ */ jsx(
+          "div",
+          {
+            className: "bg-blue-400 dark:bg-blue-500 h-1.5 rounded-full transition-all",
+            style: { width: `${pulse.pctTimeElapsed}%` }
+          }
+        ) }),
+        /* @__PURE__ */ jsxs("span", { className: "w-10 text-right font-medium text-slate-600 dark:text-slate-300", children: [
+          pulse.pctTimeElapsed.toFixed(0),
+          "%"
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-xs", children: [
+        /* @__PURE__ */ jsx("span", { className: "w-16 text-slate-500 dark:text-slate-400 shrink-0", children: "Spend" }),
+        /* @__PURE__ */ jsx("div", { className: "flex-1 bg-slate-200 dark:bg-slate-700 rounded-full h-1.5", children: /* @__PURE__ */ jsx(
+          "div",
+          {
+            className: `h-1.5 rounded-full transition-all ${cfg.bar}`,
+            style: { width: `${Math.min(100, pulse.actualSpend / pulse.income * 100)}%` }
+          }
+        ) }),
+        /* @__PURE__ */ jsxs("span", { className: "w-10 text-right font-medium text-slate-600 dark:text-slate-300", children: [
+          (pulse.actualSpend / pulse.income * 100).toFixed(0),
+          "%"
+        ] })
+      ] })
+    ] })
+  ] });
+}
+
+const SEVERITY_COLORS = {
+  high: "border-red-300 bg-red-50 dark:border-red-800 dark:bg-red-950/30",
+  medium: "border-amber-300 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/30",
+  low: "border-blue-300 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/30"
+};
+const SEVERITY_BADGE = {
+  high: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300",
+  medium: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
+  low: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"
+};
+const REASON_LABELS = {
+  amount_spike: "Unusual Amount",
+  new_merchant: "New Merchant",
+  category_outlier: "Category Outlier"
+};
+const REASON_ICONS = {
+  amount_spike: /* @__PURE__ */ jsx(TrendingUp, { className: "w-4 h-4" }),
+  new_merchant: /* @__PURE__ */ jsx(ShoppingBag, { className: "w-4 h-4" }),
+  category_outlier: /* @__PURE__ */ jsx(AlertTriangle, { className: "w-4 h-4" })
+};
+function AnomalyAlerts({ month }) {
+  const [anomalies, setAnomalies] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [dismissed, setDismissed] = useState(/* @__PURE__ */ new Set());
+  const [expanded, setExpanded] = useState(false);
+  useEffect(() => {
+    if (!month) return;
+    setLoading(true);
+    setDismissed(/* @__PURE__ */ new Set());
+    fetch(`/api/anomalies?month=${encodeURIComponent(month)}`).then((res) => res.json()).then((data) => {
+      if (Array.isArray(data)) setAnomalies(data);
+      else setAnomalies([]);
+    }).catch(() => setAnomalies([])).finally(() => setLoading(false));
+  }, [month]);
+  const dismiss = (id) => {
+    setDismissed((prev) => {
+      const next = new Set(prev);
+      next.add(id);
+      return next;
+    });
+  };
+  const visible = anomalies.filter((a) => !dismissed.has(a.id));
+  if (loading) return null;
+  if (visible.length === 0) return null;
+  const highCount = visible.filter((a) => a.severity === "high").length;
+  const mediumCount = visible.filter((a) => a.severity === "medium").length;
+  const displayItems = expanded ? visible : visible.slice(0, 3);
+  return /* @__PURE__ */ jsxs(Card, { className: "border-amber-200 dark:border-amber-800", children: [
+    /* @__PURE__ */ jsxs(CardHeader, { className: "pb-2", children: [
+      /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
+        /* @__PURE__ */ jsxs(CardTitle, { className: "text-base font-semibold flex items-center gap-2", children: [
+          /* @__PURE__ */ jsx(AlertTriangle, { className: "w-4 h-4 text-amber-500" }),
+          "Spending Anomalies Detected"
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
+          highCount > 0 && /* @__PURE__ */ jsxs(Badge, { variant: "destructive", className: "text-[10px] px-1.5 py-0", children: [
+            highCount,
+            " high"
+          ] }),
+          mediumCount > 0 && /* @__PURE__ */ jsxs(Badge, { className: "text-[10px] px-1.5 py-0 bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300", children: [
+            mediumCount,
+            " medium"
+          ] }),
+          /* @__PURE__ */ jsxs("span", { className: "text-xs text-slate-400", children: [
+            visible.length,
+            " total"
+          ] })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsx("p", { className: "text-xs text-slate-400", children: "These transactions look unusual compared to your historical spending patterns." })
+    ] }),
+    /* @__PURE__ */ jsxs(CardContent, { className: "space-y-2", children: [
+      displayItems.map((anomaly) => /* @__PURE__ */ jsxs(
+        "div",
+        {
+          className: `flex items-start gap-3 p-3 rounded-lg border ${SEVERITY_COLORS[anomaly.severity]} transition`,
+          children: [
+            /* @__PURE__ */ jsx("div", { className: "shrink-0 mt-0.5", children: REASON_ICONS[anomaly.reason] }),
+            /* @__PURE__ */ jsxs("div", { className: "flex-1 min-w-0", children: [
+              /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 flex-wrap", children: [
+                /* @__PURE__ */ jsx("span", { className: "font-medium text-sm text-slate-800 dark:text-slate-200 truncate", children: anomaly.title }),
+                /* @__PURE__ */ jsx(
+                  Badge,
+                  {
+                    variant: "outline",
+                    className: `text-[10px] px-1.5 py-0 ${SEVERITY_BADGE[anomaly.severity]}`,
+                    children: REASON_LABELS[anomaly.reason]
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 mt-1 text-xs text-slate-500 dark:text-slate-400", children: [
+                /* @__PURE__ */ jsx("span", { children: formatIdr(anomaly.amount) }),
+                /* @__PURE__ */ jsx("span", { children: "·" }),
+                /* @__PURE__ */ jsx("span", { children: anomaly.category })
+              ] }),
+              /* @__PURE__ */ jsx("p", { className: "text-xs text-slate-400 dark:text-slate-500 mt-0.5", children: anomaly.detail })
+            ] }),
+            /* @__PURE__ */ jsx(
+              "button",
+              {
+                onClick: () => dismiss(anomaly.id),
+                className: "shrink-0 p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700 transition",
+                title: "Dismiss",
+                children: /* @__PURE__ */ jsx(X, { className: "w-3.5 h-3.5 text-slate-400" })
+              }
+            )
+          ]
+        },
+        anomaly.id
+      )),
+      visible.length > 3 && /* @__PURE__ */ jsx(
+        Button,
+        {
+          variant: "ghost",
+          size: "sm",
+          className: "w-full text-xs text-slate-500",
+          onClick: () => setExpanded(!expanded),
+          children: expanded ? /* @__PURE__ */ jsxs(Fragment, { children: [
+            /* @__PURE__ */ jsx(ChevronUp, { className: "w-3.5 h-3.5 mr-1" }),
+            "Show fewer"
+          ] }) : /* @__PURE__ */ jsxs(Fragment, { children: [
+            /* @__PURE__ */ jsx(ChevronDown, { className: "w-3.5 h-3.5 mr-1" }),
+            "Show all ",
+            visible.length,
+            " anomalies"
+          ] })
+        }
+      )
+    ] })
+  ] });
+}
+
 function parseCreatedTime(tx) {
   if (tx.created_time) {
     const d = new Date(tx.created_time);
@@ -655,13 +1202,17 @@ function parseCreatedTime(tx) {
   }
   return new Date(tx.date);
 }
-const TYPE_OPTIONS = [
-  { value: "cash", label: "Cash" },
-  { value: "credit_expense", label: "Credit Expense" },
-  { value: "credit_payment", label: "Credit Payment" }
-];
 function Dashboard({ transactions, networth, summaries }) {
-  const months = useMemo(() => [...summaries].reverse().map((s) => s.month), [summaries]);
+  const activePeriod = useMemo(() => {
+    const { month, year } = getActivePeriod();
+    return `${month} ${year}`;
+  }, []);
+  const dbMonths = useMemo(() => [...summaries].map((s) => s.month), [summaries]);
+  const months = useMemo(() => {
+    const set = new Set(dbMonths);
+    const list = set.has(activePeriod) ? [activePeriod, ...dbMonths.filter((m) => m !== activePeriod).reverse()] : [activePeriod, ...dbMonths.reverse()];
+    return list;
+  }, [dbMonths, activePeriod]);
   const [filterMonth, setFilterMonth] = useState("all");
   const isAllTime = filterMonth === "all";
   const activeSummary = useMemo(() => {
@@ -758,11 +1309,32 @@ function Dashboard({ transactions, networth, summaries }) {
     });
     return map;
   }, [categories]);
+  const { toggleSort, sortData, isSorted } = useSortState();
+  const getTxCellValue = useCallback((t, key) => {
+    switch (key) {
+      case "paid":
+        return t.done ? 1 : 0;
+      case "title":
+        return t.title;
+      case "category":
+        return t.category;
+      case "date":
+        return new Date(t.created_time || t.date).getTime();
+      case "amount":
+        return t.amount;
+      case "type":
+        return t.type;
+      default:
+        return "";
+    }
+  }, []);
   const sortedTransactions = useMemo(() => {
-    return [...filteredTransactions].sort(
-      (a, b) => parseCreatedTime(b).getTime() - parseCreatedTime(a).getTime()
+    return sortData(
+      filteredTransactions,
+      getTxCellValue,
+      (data) => [...data].sort((a, b) => parseCreatedTime(b).getTime() - parseCreatedTime(a).getTime())
     );
-  }, [filteredTransactions]);
+  }, [filteredTransactions, sortData, getTxCellValue]);
   const totalTxPages = Math.max(1, Math.ceil(sortedTransactions.length / txPerPage));
   const pagedTransactions = sortedTransactions.slice(
     (txPage - 1) * txPerPage,
@@ -838,6 +1410,27 @@ function Dashboard({ transactions, networth, summaries }) {
           setKickoffBanner(null);
           window.location.reload();
         }
+      }
+    ),
+    /* @__PURE__ */ jsx(
+      DashboardSummaryCards,
+      {
+        summaries,
+        networth,
+        activeMonth: isAllTime ? activeSummary?.month : filterMonth
+      }
+    ),
+    /* @__PURE__ */ jsx(
+      SpendingPulse,
+      {
+        summaries,
+        activeMonth: isAllTime ? activeSummary?.month : filterMonth
+      }
+    ),
+    /* @__PURE__ */ jsx(
+      AnomalyAlerts,
+      {
+        month: isAllTime ? activeSummary?.month : filterMonth
       }
     ),
     /* @__PURE__ */ jsx(
@@ -955,78 +1548,19 @@ function Dashboard({ transactions, networth, summaries }) {
       ] }),
       /* @__PURE__ */ jsx("div", { className: "overflow-x-auto", children: /* @__PURE__ */ jsxs(Table, { children: [
         /* @__PURE__ */ jsx(TableHeader, { children: /* @__PURE__ */ jsxs(TableRow, { children: [
-          /* @__PURE__ */ jsx(TableHead, { children: "Paid" }),
-          /* @__PURE__ */ jsx(TableHead, { children: "Title" }),
-          /* @__PURE__ */ jsx(TableHead, { children: "Category" }),
-          /* @__PURE__ */ jsx(TableHead, { children: "Date" }),
-          /* @__PURE__ */ jsx(TableHead, { className: "text-right", children: "Amount" }),
-          /* @__PURE__ */ jsx(TableHead, { children: "Type" }),
+          /* @__PURE__ */ jsx(SortableHeader, { sortKey: "paid", currentDirection: isSorted("paid"), onSort: toggleSort, children: "Paid" }),
+          /* @__PURE__ */ jsx(SortableHeader, { sortKey: "title", currentDirection: isSorted("title"), onSort: toggleSort, children: "Title" }),
+          /* @__PURE__ */ jsx(SortableHeader, { sortKey: "category", currentDirection: isSorted("category"), onSort: toggleSort, children: "Category" }),
+          /* @__PURE__ */ jsx(SortableHeader, { sortKey: "date", currentDirection: isSorted("date"), onSort: toggleSort, children: "Date" }),
+          /* @__PURE__ */ jsx(SortableHeader, { sortKey: "amount", currentDirection: isSorted("amount"), onSort: toggleSort, className: "text-right", children: "Amount" }),
+          /* @__PURE__ */ jsx(SortableHeader, { sortKey: "type", currentDirection: isSorted("type"), onSort: toggleSort, children: "Type" }),
           /* @__PURE__ */ jsx(TableHead, {})
         ] }) }),
         /* @__PURE__ */ jsx(TableBody, { children: pagedTransactions.map((row) => {
-          const isEditing = editingId === row.id;
-          const typeClass = row.type === "cash" ? "text-blue-600 dark:text-blue-400" : row.type === "credit_payment" ? "text-amber-600 dark:text-amber-400" : "text-purple-600 dark:text-purple-400";
-          const typeLabel = row.type === "cash" ? "Cash" : row.type === "credit_payment" ? "Credit Pay" : "Credit";
           const createdDate = parseCreatedTime(row);
           const dateStr = isNaN(createdDate.getTime()) ? row.date : createdDate.toLocaleDateString("id-ID", { year: "numeric", month: "short", day: "numeric" });
-          if (isEditing) {
-            return /* @__PURE__ */ jsxs(TableRow, { className: "bg-muted/30", children: [
-              /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
-                /* @__PURE__ */ jsx(
-                  Checkbox,
-                  {
-                    checked: !!editForm.done,
-                    onCheckedChange: (v) => handleChange("done", !!v)
-                  }
-                ),
-                /* @__PURE__ */ jsx("span", { className: "text-xs", children: editForm.done ? "Paid" : "Unpaid" })
-              ] }) }),
-              /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(
-                Input,
-                {
-                  type: "text",
-                  value: editForm.title ?? "",
-                  onChange: (e) => handleChange("title", e.target.value),
-                  className: "h-8 text-xs"
-                }
-              ) }),
-              /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(
-                Input,
-                {
-                  type: "text",
-                  value: editForm.category ?? "",
-                  onChange: (e) => handleChange("category", e.target.value),
-                  className: "h-8 text-xs"
-                }
-              ) }),
-              /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(
-                Input,
-                {
-                  type: "text",
-                  value: editForm.created_time ?? "",
-                  onChange: (e) => handleChange("created_time", e.target.value),
-                  className: "h-8 text-xs"
-                }
-              ) }),
-              /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(
-                Input,
-                {
-                  type: "number",
-                  value: editForm.amount ?? 0,
-                  onChange: (e) => handleChange("amount", Number(e.target.value)),
-                  className: "h-8 text-xs text-right"
-                }
-              ) }),
-              /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsxs(Select, { value: editForm.type ?? "cash", onValueChange: (v) => handleChange("type", v), children: [
-                /* @__PURE__ */ jsx(SelectTrigger, { className: "h-8 text-xs", children: /* @__PURE__ */ jsx(SelectValue, {}) }),
-                /* @__PURE__ */ jsx(SelectContent, { children: TYPE_OPTIONS.map((opt) => /* @__PURE__ */ jsx(SelectItem, { value: opt.value, children: opt.label }, opt.value)) })
-              ] }) }),
-              /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsxs("div", { className: "flex gap-1", children: [
-                /* @__PURE__ */ jsx(Button, { size: "sm", className: "h-7 text-xs", onClick: saveEdit, children: "Save" }),
-                /* @__PURE__ */ jsx(Button, { size: "sm", variant: "secondary", className: "h-7 text-xs", onClick: cancelEdit, children: "Cancel" })
-              ] }) })
-            ] }, row.id);
-          }
+          const typeClass = row.type === "cash" ? "text-blue-600 dark:text-blue-400" : row.type === "credit_payment" ? "text-amber-600 dark:text-amber-400" : "text-purple-600 dark:text-purple-400";
+          const typeLabel = row.type === "cash" ? "Cash" : row.type === "credit_payment" ? "Credit Pay" : "Credit";
           return /* @__PURE__ */ jsxs(TableRow, { children: [
             /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(
               Button,
@@ -1041,7 +1575,10 @@ function Dashboard({ transactions, networth, summaries }) {
                 children: row.done ? "Paid" : "Unpaid"
               }
             ) }),
-            /* @__PURE__ */ jsx(TableCell, { children: row.title }),
+            /* @__PURE__ */ jsxs(TableCell, { children: [
+              /* @__PURE__ */ jsx("span", { children: row.title }),
+              row.notes && /* @__PURE__ */ jsx("span", { className: "inline-flex ml-1.5 align-middle", title: row.notes, children: /* @__PURE__ */ jsx(StickyNote, { className: "w-3.5 h-3.5 text-amber-500 dark:text-amber-400 inline" }) })
+            ] }),
             /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(
               Badge,
               {
@@ -1068,6 +1605,18 @@ function Dashboard({ transactions, networth, summaries }) {
           ] }, row.id);
         }) })
       ] }) }),
+      /* @__PURE__ */ jsx(
+        EditTransactionDialog,
+        {
+          open: editingId !== null,
+          transaction: editForm,
+          onChange: handleChange,
+          onSave: saveEdit,
+          onCancel: cancelEdit,
+          months,
+          categories: categories.map((c) => c.name)
+        }
+      ),
       sortedTransactions.length > txPerPage && /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between mt-4", children: [
         /* @__PURE__ */ jsxs("p", { className: "text-xs text-slate-500 dark:text-slate-400", children: [
           "Showing ",
