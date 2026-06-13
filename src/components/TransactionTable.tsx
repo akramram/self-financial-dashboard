@@ -29,6 +29,7 @@ import {
 interface Props {
   transactions: Transaction[];
   showMonth?: boolean;
+  periods?: { period_id: number; month: string }[];
 }
 
 function parseCreatedTime(tx: Transaction): Date {
@@ -39,14 +40,25 @@ function parseCreatedTime(tx: Transaction): Date {
   return new Date(tx.date);
 }
 
-export default function TransactionTable({ transactions, showMonth = true }: Props) {
+export default function TransactionTable({ transactions, showMonth = true, periods = [] }: Props) {
+  // Build lookup maps from periods
+  const periodIdToMonth = useMemo(() => {
+    const map = new Map<number, string>();
+    periods.forEach((p) => map.set(p.period_id, p.month));
+    return map;
+  }, [periods]);
+
+  const monthOptions = useMemo(() => {
+    return [...periods].sort((a, b) => b.period_id - a.period_id);
+  }, [periods]);
+
   const getInitialState = () => {
-    if (typeof window === 'undefined') return { page: 1, filterType: 'all', filterMonth: 'all', search: '', dateFrom: '', dateTo: '', amountMin: '', amountMax: '' };
+    if (typeof window === 'undefined') return { page: 1, filterType: 'all', filterPeriodId: 'all', search: '', dateFrom: '', dateTo: '', amountMin: '', amountMax: '' };
     const params = new URLSearchParams(window.location.search);
     return {
       page: Math.max(1, parseInt(params.get('page') || '1', 10) || 1),
       filterType: params.get('type') || 'all',
-      filterMonth: params.get('month') || 'all',
+      filterPeriodId: params.get('period_id') || 'all',
       search: params.get('search') || '',
       dateFrom: params.get('dateFrom') || '',
       dateTo: params.get('dateTo') || '',
@@ -57,7 +69,7 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
   const initial = getInitialState();
   const [page, setPage] = useState(initial.page);
   const [filterType, setFilterType] = useState<string>(initial.filterType);
-  const [filterMonth, setFilterMonth] = useState<string>(initial.filterMonth);
+  const [filterPeriodId, setFilterPeriodId] = useState<string>(initial.filterPeriodId);
   const [search, setSearch] = useState(initial.search);
   const [dateFrom, setDateFrom] = useState(initial.dateFrom);
   const [dateTo, setDateTo] = useState(initial.dateTo);
@@ -74,7 +86,7 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
   const getCellValue = useCallback((t: Transaction, key: string): string | number => {
     switch (key) {
       case 'paid': return t.done ? 1 : 0;
-      case 'month': return t.month;
+      case 'month': return periodIdToMonth.get(t.period_id) || '';
       case 'title': return t.title;
       case 'category': return t.category;
       case 'date': return new Date(t.created_time || t.date).getTime();
@@ -82,7 +94,7 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
       case 'type': return t.type;
       default: return '';
     }
-  }, []);
+  }, [periodIdToMonth]);
 
   useEffect(() => {
     fetchCategories().then(setCategories).catch(() => {});
@@ -93,31 +105,16 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
     const params = new URLSearchParams(window.location.search);
     if (page > 1) params.set('page', String(page)); else params.delete('page');
     if (filterType !== 'all') params.set('type', filterType); else params.delete('type');
-    if (filterMonth !== 'all') params.set('month', filterMonth); else params.delete('month');
+    if (filterPeriodId !== 'all') params.set('period_id', filterPeriodId); else params.delete('period_id');
     if (search.trim()) params.set('search', search.trim()); else params.delete('search');
     if (dateFrom) params.set('dateFrom', dateFrom); else params.delete('dateFrom');
     if (dateTo) params.set('dateTo', dateTo); else params.delete('dateTo');
     if (amountMin) params.set('amountMin', amountMin); else params.delete('amountMin');
     if (amountMax) params.set('amountMax', amountMax); else params.delete('amountMax');
-    const newUrl = `${window.location.pathname}${params.toString() ? '?' + params.toString() : ''}`;
-    window.history.replaceState({}, '', newUrl);
-  }, [page, filterType, filterMonth, search, dateFrom, dateTo, amountMin, amountMax]);
-
-  const categoryMap = useMemo(() => {
-    const map: Record<string, Category> = {};
-    categories.forEach((c) => { map[c.name] = c; });
-    return map;
-  }, [categories]);
-
-  const monthOptions = useMemo(() => {
-    const set = new Set<string>();
-    transactions.forEach((t) => { if (t.month) set.add(t.month); });
-    return Array.from(set).sort((a, b) => {
-      const da = new Date(a);
-      const db = new Date(b);
-      return db.getTime() - da.getTime();
-    });
-  }, [transactions]);
+    const qs = params.toString();
+    const url = window.location.pathname + (qs ? '?' + qs : '');
+    window.history.replaceState(null, '', url);
+  }, [page, filterType, filterPeriodId, search, dateFrom, dateTo, amountMin, amountMax]);
 
   const sorted = useMemo(() => {
     return sortData(transactions, getCellValue, (data) =>
@@ -129,8 +126,9 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
   if (filterType !== 'all') {
     filtered = filtered.filter((t) => t.type === filterType);
   }
-  if (filterMonth !== 'all') {
-    filtered = filtered.filter((t) => t.month === filterMonth);
+  if (filterPeriodId !== 'all') {
+    const pid = parseInt(filterPeriodId, 10);
+    filtered = filtered.filter((t) => t.period_id === pid);
   }
   if (search.trim()) {
     const q = search.toLowerCase();
@@ -147,77 +145,58 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
     filtered = filtered.filter((t) => new Date(t.date).getTime() <= toTime);
   }
   if (amountMin) {
-    const min = Number(amountMin);
+    const min = parseFloat(amountMin);
     if (!isNaN(min)) filtered = filtered.filter((t) => t.amount >= min);
   }
   if (amountMax) {
-    const max = Number(amountMax);
+    const max = parseFloat(amountMax);
     if (!isNaN(max)) filtered = filtered.filter((t) => t.amount <= max);
   }
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
-  const start = (page - 1) * rowsPerPage;
-  const pageRows = filtered.slice(start, start + rowsPerPage);
-
-  const startEdit = (row: Transaction) => {
-    setEditingId(row.id);
-    setEditForm({ ...row });
-  };
-
-  const cancelEdit = () => {
-    setEditingId(null);
-    setEditForm({});
-  };
-
-  const saveEdit = async () => {
-    if (!editForm.id) return;
-    const original = transactions.find((t) => t.id === editForm.id);
-    if (!original) return;
-    const updated: Transaction = { ...original, ...(editForm as Transaction) };
-    await updateTransactionApi(updated.id, updated);
-    setEditingId(null);
-    setEditForm({});
-    window.location.reload();
-  };
-
-  const handleChange = (field: keyof Transaction, value: string | number | boolean) => {
-    setEditForm((prev) => ({ ...prev, [field]: value }));
-  };
+  const safePage = Math.min(page, totalPages);
+  const pageRows = filtered.slice((safePage - 1) * rowsPerPage, safePage * rowsPerPage);
 
   const toggleSelect = (id: number) => {
     setSelected((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      if (next.has(id)) next.delete(id); else next.add(id);
       return next;
     });
   };
 
   const toggleSelectAll = () => {
-    const allSelected = pageRows.every((r) => selected.has(r.id));
-    setSelected((prev) => {
-      const next = new Set(prev);
-      pageRows.forEach((r) => {
-        if (allSelected) next.delete(r.id);
-        else next.add(r.id);
-      });
-      return next;
-    });
+    if (selected.size === pageRows.length) {
+      setSelected(new Set());
+    } else {
+      setSelected(new Set(pageRows.map((r) => r.id)));
+    }
+  };
+
+  const handleSave = async () => {
+    if (!editingId) return;
+    const { id, ...updates } = editForm as any;
+    // Convert period_id to number if present
+    if (updates.period_id) updates.period_id = Number(updates.period_id);
+    await updateTransactionApi(editingId, updates);
+    setEditingId(null);
+    setEditForm({});
+    window.location.reload();
   };
 
   const handleBulkDelete = async () => {
+    if (selected.size === 0) return;
     if (!confirm(`Delete ${selected.size} transactions?`)) return;
     await deleteTransactionsBulkApi(Array.from(selected));
     setSelected(new Set());
     window.location.reload();
   };
 
-  const handleBulkCategoryChange = async (newCategory: string) => {
-    if (!newCategory || selected.size === 0) return;
-    if (!confirm(`Reassign ${selected.size} transaction(s) to category "${newCategory}"?`)) return;
-    await updateTransactionsBulkApi(Array.from(selected), { category: newCategory });
-    setBulkCategory('');
+  const handleBulkCategory = async () => {
+    if (selected.size === 0 || !bulkCategory) return;
+    await updateTransactionsBulkApi(Array.from(selected), { category: bulkCategory });
     setSelected(new Set());
+    setBulkCategory('');
     window.location.reload();
   };
 
@@ -225,15 +204,14 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
     <div>
       <div className="flex flex-col sm:flex-row gap-3 mb-4">
         <Input
-          type="text"
           placeholder="Search title or category..."
           value={search}
           onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-          className="flex-1"
+          className="max-w-xs"
         />
         <Select value={filterType} onValueChange={(v) => { setFilterType(v); setPage(1); }}>
-          <SelectTrigger className="w-[160px]">
-            <SelectValue />
+          <SelectTrigger className="w-[140px]">
+            <SelectValue placeholder="All Types" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Types</SelectItem>
@@ -242,14 +220,14 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
             <SelectItem value="credit_payment">Credit Payment</SelectItem>
           </SelectContent>
         </Select>
-        <Select value={filterMonth} onValueChange={(v) => { setFilterMonth(v); setPage(1); }}>
+        <Select value={filterPeriodId} onValueChange={(v) => { setFilterPeriodId(v); setPage(1); }}>
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="All Months" />
+            <SelectValue placeholder="All Periods" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Months</SelectItem>
-            {monthOptions.map((m) => (
-              <SelectItem key={m} value={m}>{m}</SelectItem>
+            <SelectItem value="all">All Periods</SelectItem>
+            {monthOptions.map((p) => (
+              <SelectItem key={p.period_id} value={p.period_id.toString()}>{p.month}</SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -265,15 +243,16 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
               category: t.category,
               paid: t.done,
               notes: t.notes || '',
+              period: periodIdToMonth.get(t.period_id) || '',
             }));
             if (exportData.length === 0) {
-              alert('No transactions found for this month');
+              alert('No transactions found for this period');
               return;
             }
             const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
-            const fileName = filterMonth !== 'all' ? `transactions-${filterMonth}.json` : 'transactions-all.json';
+            const fileName = filterPeriodId !== 'all' ? `transactions-${filterPeriodId}.json` : 'transactions-all.json';
             a.href = url;
             a.download = fileName;
             document.body.appendChild(a);
@@ -287,76 +266,49 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3 mb-4">
-        <Input
-          type="date"
-          placeholder="From date"
-          value={dateFrom}
-          onChange={(e) => { setDateFrom(e.target.value); setPage(1); }}
-          className="w-full sm:w-[150px]"
-        />
-        <Input
-          type="date"
-          placeholder="To date"
-          value={dateTo}
-          onChange={(e) => { setDateTo(e.target.value); setPage(1); }}
-          className="w-full sm:w-[150px]"
-        />
-        <Input
-          type="number"
-          placeholder="Min amount"
-          value={amountMin}
-          onChange={(e) => { setAmountMin(e.target.value); setPage(1); }}
-          className="w-full sm:w-[130px]"
-        />
-        <Input
-          type="number"
-          placeholder="Max amount"
-          value={amountMax}
-          onChange={(e) => { setAmountMax(e.target.value); setPage(1); }}
-          className="w-full sm:w-[130px]"
-        />
-        <Button
-          size="sm"
-          variant="secondary"
-          onClick={() => {
-            setDateFrom('');
-            setDateTo('');
-            setAmountMin('');
-            setAmountMax('');
-            setPage(1);
-          }}
-          className="shrink-0"
-        >
-          Clear Ranges
-        </Button>
+        <div className="flex gap-2 items-center">
+          <label className="text-xs text-slate-500">From</label>
+          <Input type="date" value={dateFrom} onChange={(e) => { setDateFrom(e.target.value); setPage(1); }} className="w-auto text-xs" />
+          <label className="text-xs text-slate-500">To</label>
+          <Input type="date" value={dateTo} onChange={(e) => { setDateTo(e.target.value); setPage(1); }} className="w-auto text-xs" />
+        </div>
+        <div className="flex gap-2 items-center">
+          <label className="text-xs text-slate-500">Min</label>
+          <Input type="number" placeholder="Amount" value={amountMin} onChange={(e) => { setAmountMin(e.target.value); setPage(1); }} className="w-28 text-xs" />
+          <label className="text-xs text-slate-500">Max</label>
+          <Input type="number" placeholder="Amount" value={amountMax} onChange={(e) => { setAmountMax(e.target.value); setPage(1); }} className="w-28 text-xs" />
+        </div>
       </div>
 
       {selected.size > 0 && (
-        <div className="flex items-center gap-3 mb-3 flex-wrap">
-          <span className="text-sm text-slate-600 dark:text-slate-300">{selected.size} selected</span>
-          <Select value={bulkCategory} onValueChange={handleBulkCategoryChange}>
-            <SelectTrigger className="w-[200px]">
-              <SelectValue placeholder="Reassign category..." />
-            </SelectTrigger>
-            <SelectContent>
-              {categories.map((cat) => (
-                <SelectItem key={cat.name} value={cat.name}>{cat.name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <div className="flex gap-2 mb-4 items-center">
+          <span className="text-xs text-slate-500">{selected.size} selected</span>
+          <select
+            value={bulkCategory}
+            onChange={(e) => setBulkCategory(e.target.value)}
+            className="text-xs border rounded px-2 py-1"
+          >
+            <option value="">Change category...</option>
+            {categories.map((c) => (
+              <option key={c.id} value={c.name}>{c.name}</option>
+            ))}
+          </select>
+          <Button size="sm" variant="outline" onClick={handleBulkCategory} disabled={!bulkCategory}>
+            Apply
+          </Button>
           <Button size="sm" variant="destructive" onClick={handleBulkDelete}>
-            Delete Selected
+            Delete
           </Button>
         </div>
       )}
 
-      <div className="rounded-xl border">
+      <div className="overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead className="w-10">
                 <Checkbox
-                  checked={pageRows.length > 0 && pageRows.every((r) => selected.has(r.id))}
+                  checked={selected.size === pageRows.length && pageRows.length > 0}
                   onCheckedChange={toggleSelectAll}
                   aria-label="Select all"
                 />
@@ -413,40 +365,42 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
                       {row.done ? 'Paid' : 'Unpaid'}
                     </Button>
                   </TableCell>
-                  {showMonth && <TableCell className="font-medium">{row.month}</TableCell>}
+                  {showMonth && <TableCell className="font-medium">{periodIdToMonth.get(row.period_id) || ''}</TableCell>}
                   <TableCell>
                     <span>{row.title}</span>
                     {row.notes && (
-                      <span className="inline-flex ml-1.5 align-middle" title={row.notes}>
-                        <StickyNote className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400 inline" />
-                      </span>
+                      <StickyNote className="inline ml-1.5 align-middle w-3.5 h-3.5 text-amber-500 dark:text-amber-400" title={row.notes} />
                     )}
                   </TableCell>
                   <TableCell>
-                    <Badge
-                      variant="secondary"
-                      style={{
-                        backgroundColor: categoryMap[row.category]?.color || undefined,
-                        color: categoryMap[row.category]?.color ? '#fff' : undefined,
-                      }}
-                    >
-                      {row.category}
-                    </Badge>
+                    <Badge variant="secondary">{row.category}</Badge>
                   </TableCell>
                   <TableCell className="text-muted-foreground text-xs">{dateStr}</TableCell>
                   <TableCell className="font-medium text-right">{formatIdr(row.amount)}</TableCell>
                   <TableCell className={`${typeClass} text-xs font-semibold uppercase`}>{typeLabel}</TableCell>
                   <TableCell>
                     <div className="flex gap-2">
-                      <Button variant="ghost" size="sm" className="h-7 text-xs text-blue-500 hover:text-blue-700" onClick={() => startEdit(row)}>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => {
+                          setEditingId(row.id);
+                          setEditForm({ ...row });
+                        }}
+                        className="h-7 text-xs text-blue-500 hover:text-blue-700"
+                      >
                         Edit
                       </Button>
-                      <Button variant="ghost" size="sm" className="h-7 text-xs text-red-500 hover:text-red-700" onClick={async () => {
-                        if (confirm('Delete this transaction?')) {
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={async () => {
+                          if (!confirm('Delete?')) return;
                           await deleteTransactionApi(row.id);
                           window.location.reload();
-                        }
-                      }}>
+                        }}
+                        className="h-7 text-xs text-red-500 hover:text-red-700"
+                      >
                         Delete
                       </Button>
                     </div>
@@ -458,40 +412,43 @@ export default function TransactionTable({ transactions, showMonth = true }: Pro
         </Table>
       </div>
 
-      <div className="flex justify-between items-center mt-4">
-        <span className="text-xs text-muted-foreground">
-          Showing {start + 1}-{Math.min(start + rowsPerPage, filtered.length)} of {filtered.length}
-        </span>
-        <div className="flex gap-2">
+      <div className="flex items-center justify-between mt-4">
+        <p className="text-xs text-slate-500 dark:text-slate-400">
+          Showing {(safePage - 1) * rowsPerPage + 1}–{Math.min(safePage * rowsPerPage, filtered.length)} of {filtered.length}
+        </p>
+        <div className="flex items-center gap-2">
           <Button
-            variant="outline"
             size="sm"
+            variant="outline"
             onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={page === 1}
+            disabled={safePage <= 1}
           >
-            Prev
+            Previous
           </Button>
+          <span className="text-xs text-slate-500 dark:text-slate-400 min-w-[3rem] text-center">
+            {safePage} / {totalPages}
+          </span>
           <Button
-            variant="outline"
             size="sm"
+            variant="outline"
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-            disabled={page === totalPages}
+            disabled={safePage >= totalPages}
           >
             Next
           </Button>
         </div>
       </div>
 
-      <EditTransactionDialog
-        open={editingId !== null}
-        transaction={editForm}
-        onChange={handleChange}
-        onSave={saveEdit}
-        onCancel={cancelEdit}
-        showMonth={showMonth}
-        months={monthOptions}
-        categories={categories.map(c => c.name)}
-      />
+      {editingId && (
+        <EditTransactionDialog
+          open={true}
+          transaction={editForm}
+          onChange={(field, value) => setEditForm((prev) => ({ ...prev, [field]: value }))}
+          onSave={handleSave}
+          onCancel={() => { setEditingId(null); setEditForm({}); }}
+          months={monthOptions.map((p) => p.month)}
+        />
+      )}
     </div>
   );
 }

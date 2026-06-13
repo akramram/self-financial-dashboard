@@ -1,17 +1,11 @@
 import React from 'react';
 import type { Transaction } from '../lib/data';
+import { formatIdr } from '../lib/utils';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from '@/components/ui/dialog';
 
 const TYPE_OPTIONS = [
   { value: 'cash', label: 'Cash' },
@@ -27,6 +21,7 @@ interface Props {
   onCancel: () => void;
   showMonth?: boolean;
   months?: string[];
+  periods?: { period_id: number; month: string }[];
   categories?: string[];
 }
 
@@ -38,22 +33,25 @@ export default function EditTransactionDialog({
   onCancel,
   showMonth = false,
   months = [],
+  periods = [],
   categories = [],
 }: Props) {
   if (!transaction) return null;
+
+  // Build periods list from months if periods not provided (backward compat)
+  const periodOptions = periods.length > 0
+    ? periods
+    : months.map((m, i) => ({ period_id: i, month: m }));
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) onCancel(); }}>
       <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
           <DialogTitle>Edit Transaction</DialogTitle>
-          <DialogDescription>
-            Modify transaction details below. Changes are saved immediately.
-          </DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-4 py-2">
-          <div className="flex items-center gap-3">
+        <div className="grid gap-4 py-4">
+          <div className="flex items-center gap-2">
             <Checkbox
               id="edit-done"
               checked={!!transaction.done}
@@ -66,16 +64,16 @@ export default function EditTransactionDialog({
 
           {showMonth && (
             <div className="grid gap-2">
-              <Label htmlFor="edit-month" className="text-xs text-muted-foreground">Month</Label>
+              <Label htmlFor="edit-period" className="text-xs text-muted-foreground">Period</Label>
               <select
-                id="edit-month"
-                value={transaction.month ?? ''}
-                onChange={(e) => onChange('month', e.target.value)}
+                id="edit-period"
+                value={transaction.period_id ?? ''}
+                onChange={(e) => onChange('period_id', parseInt(e.target.value))}
                 className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
               >
-                <option value="" disabled>Select month</option>
-                {months.map((m) => (
-                  <option key={m} value={m}>{m}</option>
+                <option value="" disabled>Select period</option>
+                {periodOptions.map((p) => (
+                  <option key={p.period_id} value={p.period_id}>{p.month}</option>
                 ))}
               </select>
             </div>
@@ -109,23 +107,12 @@ export default function EditTransactionDialog({
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="edit-date" className="text-xs text-muted-foreground">Date</Label>
-            <Input
-              id="edit-date"
-              type="date"
-              value={transaction.created_time ? transaction.created_time.slice(0, 10) : ''}
-              onChange={(e) => onChange('created_time', e.target.value ? e.target.value + 'T12:00:00.000Z' : (transaction.created_time ?? ''))}
-            />
-          </div>
-
-          <div className="grid gap-2">
             <Label htmlFor="edit-amount" className="text-xs text-muted-foreground">Amount</Label>
             <Input
               id="edit-amount"
               type="number"
-              value={transaction.amount ?? 0}
-              onChange={(e) => onChange('amount', Number(e.target.value))}
-              className="text-right"
+              value={transaction.amount ?? ''}
+              onChange={(e) => onChange('amount', parseFloat(e.target.value) || 0)}
             />
           </div>
 
@@ -133,7 +120,7 @@ export default function EditTransactionDialog({
             <Label htmlFor="edit-type" className="text-xs text-muted-foreground">Type</Label>
             <select
               id="edit-type"
-              value={transaction.type ?? 'cash'}
+              value={transaction.type ?? ''}
               onChange={(e) => onChange('type', e.target.value)}
               className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
             >
@@ -144,22 +131,30 @@ export default function EditTransactionDialog({
           </div>
 
           <div className="grid gap-2">
+            <Label htmlFor="edit-payment" className="text-xs text-muted-foreground">Payment Method</Label>
+            <Input
+              id="edit-payment"
+              type="text"
+              value={transaction.payment_method ?? ''}
+              onChange={(e) => onChange('payment_method', e.target.value)}
+            />
+          </div>
+
+          <div className="grid gap-2">
             <Label htmlFor="edit-notes" className="text-xs text-muted-foreground">Notes</Label>
-            <textarea
+            <Input
               id="edit-notes"
+              type="text"
               value={transaction.notes ?? ''}
               onChange={(e) => onChange('notes', e.target.value)}
-              rows={3}
-              className="flex min-h-[60px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-y"
-              placeholder="Optional notes..."
             />
           </div>
         </div>
 
-        <DialogFooter className="gap-2 sm:gap-0">
-          <Button variant="secondary" onClick={onCancel}>Cancel</Button>
+        <div className="flex justify-end gap-2">
+          <Button variant="outline" onClick={onCancel}>Cancel</Button>
           <Button onClick={onSave}>Save</Button>
-        </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   );

@@ -1,25 +1,25 @@
 /* empty css                               */
 import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BN-0jZ66.mjs';
 import 'kleur/colors';
-import { f as formatIdr, g as getActivePeriod, $ as $$Layout } from '../chunks/utils_Blj5YLOJ.mjs';
+import { f as formatIdr, g as getActivePeriod, $ as $$Layout } from '../chunks/utils_CjI_A0_k.mjs';
 import { jsx, jsxs, Fragment } from 'react/jsx-runtime';
 import { useMemo, useState, useEffect, useCallback } from 'react';
 import { F as kickoffMonth, f as fetchCategories, n as fetchRecurringTransactions, A as toggleTransactionDoneApi, B as deleteTransactionApi, C as updateTransactionApi } from '../chunks/api_n5hUqc9e.mjs';
 import { Chart, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement, Filler } from 'chart.js';
 import { Bar, Doughnut, Line } from 'react-chartjs-2';
-import { N as NetworthChart } from '../chunks/NetworthChart_DqHJPjvg.mjs';
-import { C as Card, a as CardHeader, b as CardTitle, c as CardContent } from '../chunks/card_CrN9uNe-.mjs';
-import { B as Badge } from '../chunks/badge_CkSn0lpM.mjs';
+import { N as NetworthChart } from '../chunks/NetworthChart_CLj_hk2x.mjs';
+import { C as Card, a as CardHeader, b as CardTitle, c as CardContent } from '../chunks/card_oxq1BWU6.mjs';
+import { B as Badge } from '../chunks/badge_DQpt_kZQ.mjs';
 import { AlertTriangle, TrendingUp, TrendingDown, Receipt, CheckCircle, PiggyBank, Wallet, DollarSign, BarChart3, Gauge, Clock, Activity, X, ChevronUp, ChevronDown, ShoppingBag, StickyNote } from 'lucide-react';
-import { B as Button } from '../chunks/button_Vng4eZC1.mjs';
-import { I as Input } from '../chunks/input_oLb95eej.mjs';
-import { L as Label } from '../chunks/label_CRCDuHdH.mjs';
-import { D as Dialog, a as DialogContent, b as DialogHeader, c as DialogTitle, d as DialogDescription } from '../chunks/dialog_Bann-NOl.mjs';
-import { u as useSortState, S as SortableHeader } from '../chunks/SortableHeader_CFrJuLsX.mjs';
-import { E as EditTransactionDialog } from '../chunks/EditTransactionDialog_BMEoXFU2.mjs';
-import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_C3KRA4ed.mjs';
-import '../chunks/checkbox_CDAgyxgq.mjs';
-import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_CRipy8Bp.mjs';
+import { B as Button } from '../chunks/button_Di4nlt-C.mjs';
+import { I as Input } from '../chunks/input_BOzr8-Z1.mjs';
+import { L as Label } from '../chunks/label_aZjtjMNF.mjs';
+import { D as Dialog, a as DialogContent, b as DialogHeader, c as DialogTitle, d as DialogDescription } from '../chunks/dialog_B5w1_0HH.mjs';
+import { u as useSortState, S as SortableHeader } from '../chunks/SortableHeader_Df8oxM-d.mjs';
+import { E as EditTransactionDialog } from '../chunks/EditTransactionDialog_DlfGtg9K.mjs';
+import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_uhqG26zf.mjs';
+import '../chunks/checkbox_CeB9_ST2.mjs';
+import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_whj_IU0P.mjs';
 import { p as getTransactions, q as getNetworth, g as getMonthlySummary, d as db } from '../chunks/db_B4_3wji-.mjs';
 export { renderers } from '../renderers.mjs';
 
@@ -1355,6 +1355,7 @@ function Dashboard({ transactions, networth, summaries }) {
     /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3", children: [
       /* @__PURE__ */ jsx(Label, { className: "text-sm font-medium text-slate-600 dark:text-slate-300", children: "Period:" }),
       /* @__PURE__ */ jsxs(Select, { value: filterPeriodId?.toString() ?? "all", onValueChange: (v) => {
+        setFilterAllTime(v === "all");
         setFilterPeriodId(v === "all" ? null : parseInt(v));
         setTxPage(1);
       }, children: [
@@ -1620,7 +1621,7 @@ function Dashboard({ transactions, networth, summaries }) {
           onChange: handleChange,
           onSave: saveEdit,
           onCancel: cancelEdit,
-          months: summaries.map((s) => s.month),
+          periods: summaries.map((s) => ({ period_id: s.period_id, month: s.month })),
           categories: categories.map((c) => c.name)
         }
       ),
@@ -1727,7 +1728,7 @@ function Dashboard({ transactions, networth, summaries }) {
         /* @__PURE__ */ jsxs(DialogTitle, { children: [
           selectedCategory,
           " — ",
-          isAllTime ? activeSummary?.month : filterPeriodId
+          activeSummary?.month
         ] }),
         /* @__PURE__ */ jsx(DialogDescription, { children: (() => {
           const targetMonth = isAllTime ? activeSummary?.month : filterPeriodId;

@@ -260,7 +260,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
       {/* Month Filter */}
       <div className="flex items-center gap-3">
         <Label className="text-sm font-medium text-slate-600 dark:text-slate-300">Period:</Label>
-        <Select value={filterPeriodId?.toString() ?? "all"} onValueChange={(v) => { setFilterPeriodId(v === "all" ? null : parseInt(v)); setTxPage(1); }}>
+        <Select value={filterPeriodId?.toString() ?? "all"} onValueChange={(v) => { setFilterAllTime(v === "all"); setFilterPeriodId(v === "all" ? null : parseInt(v)); setTxPage(1); }}>
           <SelectTrigger className="w-[160px]">
             <SelectValue />
           </SelectTrigger>
@@ -575,7 +575,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
           onChange={handleChange}
           onSave={saveEdit}
           onCancel={cancelEdit}
-          months={summaries.map(s => s.month)}
+          periods={summaries.map(s => ({ period_id: s.period_id, month: s.month }))}
           categories={categories.map(c => c.name)}
         />
 
@@ -684,7 +684,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{selectedCategory} — {isAllTime ? activeSummary?.month : filterPeriodId}</DialogTitle>
+            <DialogTitle>{selectedCategory} — {activeSummary?.month}</DialogTitle>
             <DialogDescription>
               {(() => {
                 const targetMonth = isAllTime ? activeSummary?.month : filterPeriodId;

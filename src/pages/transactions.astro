@@ -1,9 +1,10 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import TransactionTable from '../components/TransactionTable';
-import { getTransactions } from '../lib/db';
+import { getTransactions, getAllPeriods } from '../lib/db';
 
 const transactions = getTransactions();
+const periods = getAllPeriods().map((p: any) => ({ period_id: p.id, month: p.month }));
 ---
 
 <Layout title="Transactions">
@@ -16,6 +17,7 @@ const transactions = getTransactions();
     <TransactionTable
       transactions={transactions}
       showMonth={true}
+      periods={periods}
       client:load
     />
   </div>

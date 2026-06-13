@@ -1,20 +1,20 @@
 /* empty css                               */
 import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BN-0jZ66.mjs';
 import 'kleur/colors';
-import { f as formatIdr, $ as $$Layout } from '../chunks/utils_Blj5YLOJ.mjs';
+import { f as formatIdr, $ as $$Layout } from '../chunks/utils_CjI_A0_k.mjs';
 import { jsxs, jsx } from 'react/jsx-runtime';
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useMemo, useState, useCallback, useEffect } from 'react';
 import { f as fetchCategories, A as toggleTransactionDoneApi, B as deleteTransactionApi, C as updateTransactionApi, D as deleteTransactionsBulkApi, E as updateTransactionsBulkApi } from '../chunks/api_n5hUqc9e.mjs';
-import { u as useSortState, S as SortableHeader } from '../chunks/SortableHeader_CFrJuLsX.mjs';
-import { E as EditTransactionDialog } from '../chunks/EditTransactionDialog_BMEoXFU2.mjs';
+import { u as useSortState, S as SortableHeader } from '../chunks/SortableHeader_Df8oxM-d.mjs';
+import { E as EditTransactionDialog } from '../chunks/EditTransactionDialog_DlfGtg9K.mjs';
 import { StickyNote } from 'lucide-react';
-import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_C3KRA4ed.mjs';
-import { I as Input } from '../chunks/input_oLb95eej.mjs';
-import { B as Button } from '../chunks/button_Vng4eZC1.mjs';
-import { B as Badge } from '../chunks/badge_CkSn0lpM.mjs';
-import { C as Checkbox } from '../chunks/checkbox_CDAgyxgq.mjs';
-import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_CRipy8Bp.mjs';
-import { p as getTransactions } from '../chunks/db_B4_3wji-.mjs';
+import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_uhqG26zf.mjs';
+import { I as Input } from '../chunks/input_BOzr8-Z1.mjs';
+import { B as Button } from '../chunks/button_Di4nlt-C.mjs';
+import { B as Badge } from '../chunks/badge_DQpt_kZQ.mjs';
+import { C as Checkbox } from '../chunks/checkbox_CeB9_ST2.mjs';
+import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_whj_IU0P.mjs';
+import { p as getTransactions, o as getAllPeriods } from '../chunks/db_B4_3wji-.mjs';
 export { renderers } from '../renderers.mjs';
 
 function parseCreatedTime(tx) {
@@ -24,14 +24,22 @@ function parseCreatedTime(tx) {
   }
   return new Date(tx.date);
 }
-function TransactionTable({ transactions, showMonth = true }) {
+function TransactionTable({ transactions, showMonth = true, periods = [] }) {
+  const periodIdToMonth = useMemo(() => {
+    const map = /* @__PURE__ */ new Map();
+    periods.forEach((p) => map.set(p.period_id, p.month));
+    return map;
+  }, [periods]);
+  const monthOptions = useMemo(() => {
+    return [...periods].sort((a, b) => b.period_id - a.period_id);
+  }, [periods]);
   const getInitialState = () => {
-    if (typeof window === "undefined") return { page: 1, filterType: "all", filterMonth: "all", search: "", dateFrom: "", dateTo: "", amountMin: "", amountMax: "" };
+    if (typeof window === "undefined") return { page: 1, filterType: "all", filterPeriodId: "all", search: "", dateFrom: "", dateTo: "", amountMin: "", amountMax: "" };
     const params = new URLSearchParams(window.location.search);
     return {
       page: Math.max(1, parseInt(params.get("page") || "1", 10) || 1),
       filterType: params.get("type") || "all",
-      filterMonth: params.get("month") || "all",
+      filterPeriodId: params.get("period_id") || "all",
       search: params.get("search") || "",
       dateFrom: params.get("dateFrom") || "",
       dateTo: params.get("dateTo") || "",
@@ -42,7 +50,7 @@ function TransactionTable({ transactions, showMonth = true }) {
   const initial = getInitialState();
   const [page, setPage] = useState(initial.page);
   const [filterType, setFilterType] = useState(initial.filterType);
-  const [filterMonth, setFilterMonth] = useState(initial.filterMonth);
+  const [filterPeriodId, setFilterPeriodId] = useState(initial.filterPeriodId);
   const [search, setSearch] = useState(initial.search);
   const [dateFrom, setDateFrom] = useState(initial.dateFrom);
   const [dateTo, setDateTo] = useState(initial.dateTo);
@@ -60,7 +68,7 @@ function TransactionTable({ transactions, showMonth = true }) {
       case "paid":
         return t.done ? 1 : 0;
       case "month":
-        return t.month;
+        return periodIdToMonth.get(t.period_id) || "";
       case "title":
         return t.title;
       case "category":
@@ -74,7 +82,7 @@ function TransactionTable({ transactions, showMonth = true }) {
       default:
         return "";
     }
-  }, []);
+  }, [periodIdToMonth]);
   useEffect(() => {
     fetchCategories().then(setCategories).catch(() => {
     });
@@ -86,8 +94,8 @@ function TransactionTable({ transactions, showMonth = true }) {
     else params.delete("page");
     if (filterType !== "all") params.set("type", filterType);
     else params.delete("type");
-    if (filterMonth !== "all") params.set("month", filterMonth);
-    else params.delete("month");
+    if (filterPeriodId !== "all") params.set("period_id", filterPeriodId);
+    else params.delete("period_id");
     if (search.trim()) params.set("search", search.trim());
     else params.delete("search");
     if (dateFrom) params.set("dateFrom", dateFrom);
@@ -98,27 +106,10 @@ function TransactionTable({ transactions, showMonth = true }) {
     else params.delete("amountMin");
     if (amountMax) params.set("amountMax", amountMax);
     else params.delete("amountMax");
-    const newUrl = `${window.location.pathname}${params.toString() ? "?" + params.toString() : ""}`;
-    window.history.replaceState({}, "", newUrl);
-  }, [page, filterType, filterMonth, search, dateFrom, dateTo, amountMin, amountMax]);
-  const categoryMap = useMemo(() => {
-    const map = {};
-    categories.forEach((c) => {
-      map[c.name] = c;
-    });
-    return map;
-  }, [categories]);
-  const monthOptions = useMemo(() => {
-    const set = /* @__PURE__ */ new Set();
-    transactions.forEach((t) => {
-      if (t.month) set.add(t.month);
-    });
-    return Array.from(set).sort((a, b) => {
-      const da = new Date(a);
-      const db = new Date(b);
-      return db.getTime() - da.getTime();
-    });
-  }, [transactions]);
+    const qs = params.toString();
+    const url = window.location.pathname + (qs ? "?" + qs : "");
+    window.history.replaceState(null, "", url);
+  }, [page, filterType, filterPeriodId, search, dateFrom, dateTo, amountMin, amountMax]);
   const sorted = useMemo(() => {
     return sortData(
       transactions,
@@ -130,8 +121,9 @@ function TransactionTable({ transactions, showMonth = true }) {
   if (filterType !== "all") {
     filtered = filtered.filter((t) => t.type === filterType);
   }
-  if (filterMonth !== "all") {
-    filtered = filtered.filter((t) => t.month === filterMonth);
+  if (filterPeriodId !== "all") {
+    const pid = parseInt(filterPeriodId, 10);
+    filtered = filtered.filter((t) => t.period_id === pid);
   }
   if (search.trim()) {
     const q = search.toLowerCase();
@@ -148,37 +140,16 @@ function TransactionTable({ transactions, showMonth = true }) {
     filtered = filtered.filter((t) => new Date(t.date).getTime() <= toTime);
   }
   if (amountMin) {
-    const min = Number(amountMin);
+    const min = parseFloat(amountMin);
     if (!isNaN(min)) filtered = filtered.filter((t) => t.amount >= min);
   }
   if (amountMax) {
-    const max = Number(amountMax);
+    const max = parseFloat(amountMax);
     if (!isNaN(max)) filtered = filtered.filter((t) => t.amount <= max);
   }
   const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
-  const start = (page - 1) * rowsPerPage;
-  const pageRows = filtered.slice(start, start + rowsPerPage);
-  const startEdit = (row) => {
-    setEditingId(row.id);
-    setEditForm({ ...row });
-  };
-  const cancelEdit = () => {
-    setEditingId(null);
-    setEditForm({});
-  };
-  const saveEdit = async () => {
-    if (!editForm.id) return;
-    const original = transactions.find((t) => t.id === editForm.id);
-    if (!original) return;
-    const updated = { ...original, ...editForm };
-    await updateTransactionApi(updated.id, updated);
-    setEditingId(null);
-    setEditForm({});
-    window.location.reload();
-  };
-  const handleChange = (field, value) => {
-    setEditForm((prev) => ({ ...prev, [field]: value }));
-  };
+  const safePage = Math.min(page, totalPages);
+  const pageRows = filtered.slice((safePage - 1) * rowsPerPage, safePage * rowsPerPage);
   const toggleSelect = (id) => {
     setSelected((prev) => {
       const next = new Set(prev);
@@ -188,28 +159,33 @@ function TransactionTable({ transactions, showMonth = true }) {
     });
   };
   const toggleSelectAll = () => {
-    const allSelected = pageRows.every((r) => selected.has(r.id));
-    setSelected((prev) => {
-      const next = new Set(prev);
-      pageRows.forEach((r) => {
-        if (allSelected) next.delete(r.id);
-        else next.add(r.id);
-      });
-      return next;
-    });
+    if (selected.size === pageRows.length) {
+      setSelected(/* @__PURE__ */ new Set());
+    } else {
+      setSelected(new Set(pageRows.map((r) => r.id)));
+    }
+  };
+  const handleSave = async () => {
+    if (!editingId) return;
+    const { id, ...updates } = editForm;
+    if (updates.period_id) updates.period_id = Number(updates.period_id);
+    await updateTransactionApi(editingId, updates);
+    setEditingId(null);
+    setEditForm({});
+    window.location.reload();
   };
   const handleBulkDelete = async () => {
+    if (selected.size === 0) return;
     if (!confirm(`Delete ${selected.size} transactions?`)) return;
     await deleteTransactionsBulkApi(Array.from(selected));
     setSelected(/* @__PURE__ */ new Set());
     window.location.reload();
   };
-  const handleBulkCategoryChange = async (newCategory) => {
-    if (!newCategory || selected.size === 0) return;
-    if (!confirm(`Reassign ${selected.size} transaction(s) to category "${newCategory}"?`)) return;
-    await updateTransactionsBulkApi(Array.from(selected), { category: newCategory });
-    setBulkCategory("");
+  const handleBulkCategory = async () => {
+    if (selected.size === 0 || !bulkCategory) return;
+    await updateTransactionsBulkApi(Array.from(selected), { category: bulkCategory });
     setSelected(/* @__PURE__ */ new Set());
+    setBulkCategory("");
     window.location.reload();
   };
   return /* @__PURE__ */ jsxs("div", { children: [
@@ -217,21 +193,20 @@ function TransactionTable({ transactions, showMonth = true }) {
       /* @__PURE__ */ jsx(
         Input,
         {
-          type: "text",
           placeholder: "Search title or category...",
           value: search,
           onChange: (e) => {
             setSearch(e.target.value);
             setPage(1);
           },
-          className: "flex-1"
+          className: "max-w-xs"
         }
       ),
       /* @__PURE__ */ jsxs(Select, { value: filterType, onValueChange: (v) => {
         setFilterType(v);
         setPage(1);
       }, children: [
-        /* @__PURE__ */ jsx(SelectTrigger, { className: "w-[160px]", children: /* @__PURE__ */ jsx(SelectValue, {}) }),
+        /* @__PURE__ */ jsx(SelectTrigger, { className: "w-[140px]", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "All Types" }) }),
         /* @__PURE__ */ jsxs(SelectContent, { children: [
           /* @__PURE__ */ jsx(SelectItem, { value: "all", children: "All Types" }),
           /* @__PURE__ */ jsx(SelectItem, { value: "cash", children: "Cash" }),
@@ -239,14 +214,14 @@ function TransactionTable({ transactions, showMonth = true }) {
           /* @__PURE__ */ jsx(SelectItem, { value: "credit_payment", children: "Credit Payment" })
         ] })
       ] }),
-      /* @__PURE__ */ jsxs(Select, { value: filterMonth, onValueChange: (v) => {
-        setFilterMonth(v);
+      /* @__PURE__ */ jsxs(Select, { value: filterPeriodId, onValueChange: (v) => {
+        setFilterPeriodId(v);
         setPage(1);
       }, children: [
-        /* @__PURE__ */ jsx(SelectTrigger, { className: "w-[180px]", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "All Months" }) }),
+        /* @__PURE__ */ jsx(SelectTrigger, { className: "w-[180px]", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "All Periods" }) }),
         /* @__PURE__ */ jsxs(SelectContent, { children: [
-          /* @__PURE__ */ jsx(SelectItem, { value: "all", children: "All Months" }),
-          monthOptions.map((m) => /* @__PURE__ */ jsx(SelectItem, { value: m, children: m }, m))
+          /* @__PURE__ */ jsx(SelectItem, { value: "all", children: "All Periods" }),
+          monthOptions.map((p) => /* @__PURE__ */ jsx(SelectItem, { value: p.period_id.toString(), children: p.month }, p.period_id))
         ] })
       ] }),
       /* @__PURE__ */ jsx(
@@ -262,16 +237,17 @@ function TransactionTable({ transactions, showMonth = true }) {
               type: t.type,
               category: t.category,
               paid: t.done,
-              notes: t.notes || ""
+              notes: t.notes || "",
+              period: periodIdToMonth.get(t.period_id) || ""
             }));
             if (exportData.length === 0) {
-              alert("No transactions found for this month");
+              alert("No transactions found for this period");
               return;
             }
             const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
-            const fileName = filterMonth !== "all" ? `transactions-${filterMonth}.json` : "transactions-all.json";
+            const fileName = filterPeriodId !== "all" ? `transactions-${filterPeriodId}.json` : "transactions-all.json";
             a.href = url;
             a.download = fileName;
             document.body.appendChild(a);
@@ -284,92 +260,57 @@ function TransactionTable({ transactions, showMonth = true }) {
       )
     ] }),
     /* @__PURE__ */ jsxs("div", { className: "flex flex-col sm:flex-row gap-3 mb-4", children: [
-      /* @__PURE__ */ jsx(
-        Input,
-        {
-          type: "date",
-          placeholder: "From date",
-          value: dateFrom,
-          onChange: (e) => {
-            setDateFrom(e.target.value);
-            setPage(1);
-          },
-          className: "w-full sm:w-[150px]"
-        }
-      ),
-      /* @__PURE__ */ jsx(
-        Input,
-        {
-          type: "date",
-          placeholder: "To date",
-          value: dateTo,
-          onChange: (e) => {
-            setDateTo(e.target.value);
-            setPage(1);
-          },
-          className: "w-full sm:w-[150px]"
-        }
-      ),
-      /* @__PURE__ */ jsx(
-        Input,
-        {
-          type: "number",
-          placeholder: "Min amount",
-          value: amountMin,
-          onChange: (e) => {
-            setAmountMin(e.target.value);
-            setPage(1);
-          },
-          className: "w-full sm:w-[130px]"
-        }
-      ),
-      /* @__PURE__ */ jsx(
-        Input,
-        {
-          type: "number",
-          placeholder: "Max amount",
-          value: amountMax,
-          onChange: (e) => {
-            setAmountMax(e.target.value);
-            setPage(1);
-          },
-          className: "w-full sm:w-[130px]"
-        }
-      ),
-      /* @__PURE__ */ jsx(
-        Button,
-        {
-          size: "sm",
-          variant: "secondary",
-          onClick: () => {
-            setDateFrom("");
-            setDateTo("");
-            setAmountMin("");
-            setAmountMax("");
-            setPage(1);
-          },
-          className: "shrink-0",
-          children: "Clear Ranges"
-        }
-      )
+      /* @__PURE__ */ jsxs("div", { className: "flex gap-2 items-center", children: [
+        /* @__PURE__ */ jsx("label", { className: "text-xs text-slate-500", children: "From" }),
+        /* @__PURE__ */ jsx(Input, { type: "date", value: dateFrom, onChange: (e) => {
+          setDateFrom(e.target.value);
+          setPage(1);
+        }, className: "w-auto text-xs" }),
+        /* @__PURE__ */ jsx("label", { className: "text-xs text-slate-500", children: "To" }),
+        /* @__PURE__ */ jsx(Input, { type: "date", value: dateTo, onChange: (e) => {
+          setDateTo(e.target.value);
+          setPage(1);
+        }, className: "w-auto text-xs" })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "flex gap-2 items-center", children: [
+        /* @__PURE__ */ jsx("label", { className: "text-xs text-slate-500", children: "Min" }),
+        /* @__PURE__ */ jsx(Input, { type: "number", placeholder: "Amount", value: amountMin, onChange: (e) => {
+          setAmountMin(e.target.value);
+          setPage(1);
+        }, className: "w-28 text-xs" }),
+        /* @__PURE__ */ jsx("label", { className: "text-xs text-slate-500", children: "Max" }),
+        /* @__PURE__ */ jsx(Input, { type: "number", placeholder: "Amount", value: amountMax, onChange: (e) => {
+          setAmountMax(e.target.value);
+          setPage(1);
+        }, className: "w-28 text-xs" })
+      ] })
     ] }),
-    selected.size > 0 && /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3 mb-3 flex-wrap", children: [
-      /* @__PURE__ */ jsxs("span", { className: "text-sm text-slate-600 dark:text-slate-300", children: [
+    selected.size > 0 && /* @__PURE__ */ jsxs("div", { className: "flex gap-2 mb-4 items-center", children: [
+      /* @__PURE__ */ jsxs("span", { className: "text-xs text-slate-500", children: [
         selected.size,
         " selected"
       ] }),
-      /* @__PURE__ */ jsxs(Select, { value: bulkCategory, onValueChange: handleBulkCategoryChange, children: [
-        /* @__PURE__ */ jsx(SelectTrigger, { className: "w-[200px]", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Reassign category..." }) }),
-        /* @__PURE__ */ jsx(SelectContent, { children: categories.map((cat) => /* @__PURE__ */ jsx(SelectItem, { value: cat.name, children: cat.name }, cat.name)) })
-      ] }),
-      /* @__PURE__ */ jsx(Button, { size: "sm", variant: "destructive", onClick: handleBulkDelete, children: "Delete Selected" })
+      /* @__PURE__ */ jsxs(
+        "select",
+        {
+          value: bulkCategory,
+          onChange: (e) => setBulkCategory(e.target.value),
+          className: "text-xs border rounded px-2 py-1",
+          children: [
+            /* @__PURE__ */ jsx("option", { value: "", children: "Change category..." }),
+            categories.map((c) => /* @__PURE__ */ jsx("option", { value: c.name, children: c.name }, c.id))
+          ]
+        }
+      ),
+      /* @__PURE__ */ jsx(Button, { size: "sm", variant: "outline", onClick: handleBulkCategory, disabled: !bulkCategory, children: "Apply" }),
+      /* @__PURE__ */ jsx(Button, { size: "sm", variant: "destructive", onClick: handleBulkDelete, children: "Delete" })
     ] }),
-    /* @__PURE__ */ jsx("div", { className: "rounded-xl border", children: /* @__PURE__ */ jsxs(Table, { children: [
+    /* @__PURE__ */ jsx("div", { className: "overflow-x-auto", children: /* @__PURE__ */ jsxs(Table, { children: [
       /* @__PURE__ */ jsx(TableHeader, { children: /* @__PURE__ */ jsxs(TableRow, { children: [
         /* @__PURE__ */ jsx(TableHead, { className: "w-10", children: /* @__PURE__ */ jsx(
           Checkbox,
           {
-            checked: pageRows.length > 0 && pageRows.every((r) => selected.has(r.id)),
+            checked: selected.size === pageRows.length && pageRows.length > 0,
             onCheckedChange: toggleSelectAll,
             "aria-label": "Select all"
           }
@@ -410,80 +351,96 @@ function TransactionTable({ transactions, showMonth = true }) {
               children: row.done ? "Paid" : "Unpaid"
             }
           ) }),
-          showMonth && /* @__PURE__ */ jsx(TableCell, { className: "font-medium", children: row.month }),
+          showMonth && /* @__PURE__ */ jsx(TableCell, { className: "font-medium", children: periodIdToMonth.get(row.period_id) || "" }),
           /* @__PURE__ */ jsxs(TableCell, { children: [
             /* @__PURE__ */ jsx("span", { children: row.title }),
-            row.notes && /* @__PURE__ */ jsx("span", { className: "inline-flex ml-1.5 align-middle", title: row.notes, children: /* @__PURE__ */ jsx(StickyNote, { className: "w-3.5 h-3.5 text-amber-500 dark:text-amber-400 inline" }) })
+            row.notes && /* @__PURE__ */ jsx(StickyNote, { className: "inline ml-1.5 align-middle w-3.5 h-3.5 text-amber-500 dark:text-amber-400", title: row.notes })
           ] }),
-          /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(
-            Badge,
-            {
-              variant: "secondary",
-              style: {
-                backgroundColor: categoryMap[row.category]?.color || void 0,
-                color: categoryMap[row.category]?.color ? "#fff" : void 0
-              },
-              children: row.category
-            }
-          ) }),
+          /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(Badge, { variant: "secondary", children: row.category }) }),
           /* @__PURE__ */ jsx(TableCell, { className: "text-muted-foreground text-xs", children: dateStr }),
           /* @__PURE__ */ jsx(TableCell, { className: "font-medium text-right", children: formatIdr(row.amount) }),
           /* @__PURE__ */ jsx(TableCell, { className: `${typeClass} text-xs font-semibold uppercase`, children: typeLabel }),
           /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsxs("div", { className: "flex gap-2", children: [
-            /* @__PURE__ */ jsx(Button, { variant: "ghost", size: "sm", className: "h-7 text-xs text-blue-500 hover:text-blue-700", onClick: () => startEdit(row), children: "Edit" }),
-            /* @__PURE__ */ jsx(Button, { variant: "ghost", size: "sm", className: "h-7 text-xs text-red-500 hover:text-red-700", onClick: async () => {
-              if (confirm("Delete this transaction?")) {
-                await deleteTransactionApi(row.id);
-                window.location.reload();
+            /* @__PURE__ */ jsx(
+              Button,
+              {
+                size: "sm",
+                variant: "ghost",
+                onClick: () => {
+                  setEditingId(row.id);
+                  setEditForm({ ...row });
+                },
+                className: "h-7 text-xs text-blue-500 hover:text-blue-700",
+                children: "Edit"
               }
-            }, children: "Delete" })
+            ),
+            /* @__PURE__ */ jsx(
+              Button,
+              {
+                size: "sm",
+                variant: "ghost",
+                onClick: async () => {
+                  if (!confirm("Delete?")) return;
+                  await deleteTransactionApi(row.id);
+                  window.location.reload();
+                },
+                className: "h-7 text-xs text-red-500 hover:text-red-700",
+                children: "Delete"
+              }
+            )
           ] }) })
         ] }, row.id);
       }) })
     ] }) }),
-    /* @__PURE__ */ jsxs("div", { className: "flex justify-between items-center mt-4", children: [
-      /* @__PURE__ */ jsxs("span", { className: "text-xs text-muted-foreground", children: [
+    /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between mt-4", children: [
+      /* @__PURE__ */ jsxs("p", { className: "text-xs text-slate-500 dark:text-slate-400", children: [
         "Showing ",
-        start + 1,
-        "-",
-        Math.min(start + rowsPerPage, filtered.length),
+        (safePage - 1) * rowsPerPage + 1,
+        "–",
+        Math.min(safePage * rowsPerPage, filtered.length),
         " of ",
         filtered.length
       ] }),
-      /* @__PURE__ */ jsxs("div", { className: "flex gap-2", children: [
+      /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
         /* @__PURE__ */ jsx(
           Button,
           {
-            variant: "outline",
             size: "sm",
+            variant: "outline",
             onClick: () => setPage((p) => Math.max(1, p - 1)),
-            disabled: page === 1,
-            children: "Prev"
+            disabled: safePage <= 1,
+            children: "Previous"
           }
         ),
+        /* @__PURE__ */ jsxs("span", { className: "text-xs text-slate-500 dark:text-slate-400 min-w-[3rem] text-center", children: [
+          safePage,
+          " / ",
+          totalPages
+        ] }),
         /* @__PURE__ */ jsx(
           Button,
           {
-            variant: "outline",
             size: "sm",
+            variant: "outline",
             onClick: () => setPage((p) => Math.min(totalPages, p + 1)),
-            disabled: page === totalPages,
+            disabled: safePage >= totalPages,
             children: "Next"
           }
         )
       ] })
     ] }),
-    /* @__PURE__ */ jsx(
+    editingId && /* @__PURE__ */ jsx(
       EditTransactionDialog,
       {
-        open: editingId !== null,
+        open: true,
         transaction: editForm,
-        onChange: handleChange,
-        onSave: saveEdit,
-        onCancel: cancelEdit,
-        showMonth,
-        months: monthOptions,
-        categories: categories.map((c) => c.name)
+        onChange: (field, value) => setEditForm((prev) => ({ ...prev, [field]: value })),
+        onSave: handleSave,
+        onCancel: () => {
+          setEditingId(null);
+          setEditForm({});
+        },
+        months: monthOptions.map((p) => p.month)
       }
     )
   ] });
@@ -491,7 +448,8 @@ function TransactionTable({ transactions, showMonth = true }) {
 
 const $$Transactions = createComponent(($$result, $$props, $$slots) => {
   const transactions = getTransactions();
-  return renderTemplate`${renderComponent($$result, "Layout", $$Layout, { "title": "Transactions" }, { "default": ($$result2) => renderTemplate` ${maybeRenderHead()}<div class="mb-6"> <h1 class="text-2xl font-bold">Transactions</h1> <p class="text-slate-500 dark:text-slate-400 text-sm">All cash and credit expenses</p> </div> <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6"> ${renderComponent($$result2, "TransactionTable", TransactionTable, { "transactions": transactions, "showMonth": true, "client:load": true, "client:component-hydration": "load", "client:component-path": "/Users/user/hermes-workspace/self-financial-dashboard/src/components/TransactionTable", "client:component-export": "default" })} </div> ` })}`;
+  const periods = getAllPeriods().map((p) => ({ period_id: p.id, month: p.month }));
+  return renderTemplate`${renderComponent($$result, "Layout", $$Layout, { "title": "Transactions" }, { "default": ($$result2) => renderTemplate` ${maybeRenderHead()}<div class="mb-6"> <h1 class="text-2xl font-bold">Transactions</h1> <p class="text-slate-500 dark:text-slate-400 text-sm">All cash and credit expenses</p> </div> <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6"> ${renderComponent($$result2, "TransactionTable", TransactionTable, { "transactions": transactions, "showMonth": true, "periods": periods, "client:load": true, "client:component-hydration": "load", "client:component-path": "/Users/user/hermes-workspace/self-financial-dashboard/src/components/TransactionTable", "client:component-export": "default" })} </div> ` })}`;
 }, "/Users/user/hermes-workspace/self-financial-dashboard/src/pages/transactions.astro", void 0);
 
 const $$file = "/Users/user/hermes-workspace/self-financial-dashboard/src/pages/transactions.astro";
