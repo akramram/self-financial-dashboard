@@ -260,14 +260,14 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
       {/* Month Filter */}
       <div className="flex items-center gap-3">
         <Label className="text-sm font-medium text-slate-600 dark:text-slate-300">Period:</Label>
-        <Select value={filterPeriodId} onValueChange={(v) => { setFilterMonth(v); setTxPage(1); }}>
+        <Select value={filterPeriodId?.toString() ?? "all"} onValueChange={(v) => { setFilterPeriodId(v === "all" ? null : parseInt(v)); setTxPage(1); }}>
           <SelectTrigger className="w-[160px]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All-time</SelectItem>
-            {months.map((m) => (
-              <SelectItem key={m} value={m}>{m}</SelectItem>
+            {periodOptions.map((p) => (
+              <SelectItem key={p.id} value={p.id.toString()}>{p.month}</SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -575,7 +575,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
           onChange={handleChange}
           onSave={saveEdit}
           onCancel={cancelEdit}
-          months={months}
+          months={summaries.map(s => s.month)}
           categories={categories.map(c => c.name)}
         />
 

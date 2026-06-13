@@ -1207,7 +1207,7 @@ function Dashboard({ transactions, networth, summaries }) {
     const { month, year } = getActivePeriod();
     return `${month} ${year}`;
   }, []);
-  useMemo(() => {
+  const periodOptions = useMemo(() => {
     const seen = /* @__PURE__ */ new Set();
     return summaries.filter((s) => {
       if (seen.has(s.period_id)) return false;
@@ -1354,14 +1354,14 @@ function Dashboard({ transactions, networth, summaries }) {
   return /* @__PURE__ */ jsxs("div", { className: "space-y-6", children: [
     /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3", children: [
       /* @__PURE__ */ jsx(Label, { className: "text-sm font-medium text-slate-600 dark:text-slate-300", children: "Period:" }),
-      /* @__PURE__ */ jsxs(Select, { value: filterPeriodId, onValueChange: (v) => {
-        setFilterMonth(v);
+      /* @__PURE__ */ jsxs(Select, { value: filterPeriodId?.toString() ?? "all", onValueChange: (v) => {
+        setFilterPeriodId(v === "all" ? null : parseInt(v));
         setTxPage(1);
       }, children: [
         /* @__PURE__ */ jsx(SelectTrigger, { className: "w-[160px]", children: /* @__PURE__ */ jsx(SelectValue, {}) }),
         /* @__PURE__ */ jsxs(SelectContent, { children: [
           /* @__PURE__ */ jsx(SelectItem, { value: "all", children: "All-time" }),
-          months.map((m) => /* @__PURE__ */ jsx(SelectItem, { value: m, children: m }, m))
+          periodOptions.map((p) => /* @__PURE__ */ jsx(SelectItem, { value: p.id.toString(), children: p.month }, p.id))
         ] })
       ] })
     ] }),
@@ -1620,7 +1620,7 @@ function Dashboard({ transactions, networth, summaries }) {
           onChange: handleChange,
           onSave: saveEdit,
           onCancel: cancelEdit,
-          months,
+          months: summaries.map((s) => s.month),
           categories: categories.map((c) => c.name)
         }
       ),
