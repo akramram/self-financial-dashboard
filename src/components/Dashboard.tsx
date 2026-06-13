@@ -13,6 +13,7 @@ import MonthKickoffModal from './MonthKickoffModal';
 import DashboardSummaryCards from './DashboardSummaryCards';
 import SpendingPulse from './SpendingPulse';
 import AnomalyAlerts from './AnomalyAlerts';
+import BudgetAlerts from './BudgetAlerts';
 import { fetchRecurringTransactions } from '../lib/api';
 import { useSortState } from '../hooks/useSortState';
 import SortableHeader from './SortableHeader';
@@ -330,6 +331,13 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
       {/* Anomaly Detection — flag unusual transactions */}
       <AnomalyAlerts
         month={activeSummary?.month}
+      />
+
+      {/* Budget Alerts — surface categories over/approaching limits */}
+      <BudgetAlerts
+        summaries={summaries}
+        categories={categories}
+        activeMonth={activeSummary?.month}
       />
 
       {/* Financial Insights */}
