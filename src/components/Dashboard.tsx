@@ -16,8 +16,10 @@ import AnomalyAlerts from './AnomalyAlerts';
 import BudgetAlerts from './BudgetAlerts';
 import { fetchRecurringTransactions } from '../lib/api';
 import { useSortState } from '../hooks/useSortState';
+import { useCollapsibleWidgets } from '../hooks/useCollapsibleWidgets';
 import SortableHeader from './SortableHeader';
 import EditTransactionDialog from './EditTransactionDialog';
+import CollapsibleSection from './CollapsibleSection';
 import {
   Table,
   TableBody,
@@ -226,6 +228,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
   }, [categories]);
 
   const { toggleSort, sortData, isSorted } = useSortState();
+  const { isCollapsed, toggle, expandAll, collapseAll } = useCollapsibleWidgets();
 
   const getTxCellValue = useCallback((t: Transaction, key: string): string | number => {
     switch (key) {
@@ -315,32 +318,79 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
         }}
       />
 
+      {/* Widget Collapse Controls */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-slate-400 dark:text-slate-500">Widgets:</span>
+          <Button variant="ghost" size="sm" onClick={expandAll} className="h-7 text-xs text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
+            Expand All
+          </Button>
+          <Button variant="ghost" size="sm" onClick={collapseAll} className="h-7 text-xs text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
+            Collapse All
+          </Button>
+        </div>
+      </div>
+
       {/* Dashboard Summary Cards with Sparklines */}
+      <CollapsibleSection
+        id="summary-cards"
+        title="Summary Cards"
+        isCollapsed={isCollapsed('summary-cards')}
+        onToggle={() => toggle('summary-cards')}
+      >
       <DashboardSummaryCards
         summaries={summaries}
         networth={networth}
         activeMonth={activeSummary?.month}
       />
+      </CollapsibleSection>
 
       {/* Spending Pulse — real-time burn rate gauge */}
+      <CollapsibleSection
+        id="spending-pulse"
+        title="Spending Pulse"
+        isCollapsed={isCollapsed('spending-pulse')}
+        onToggle={() => toggle('spending-pulse')}
+      >
       <SpendingPulse
         summaries={summaries}
         activeMonth={activeSummary?.month}
       />
+      </CollapsibleSection>
 
       {/* Anomaly Detection — flag unusual transactions */}
+      <CollapsibleSection
+        id="anomaly-alerts"
+        title="Anomaly Alerts"
+        isCollapsed={isCollapsed('anomaly-alerts')}
+        onToggle={() => toggle('anomaly-alerts')}
+      >
       <AnomalyAlerts
         month={activeSummary?.month}
       />
+      </CollapsibleSection>
 
       {/* Budget Alerts — surface categories over/approaching limits */}
+      <CollapsibleSection
+        id="budget-alerts"
+        title="Budget Alerts"
+        isCollapsed={isCollapsed('budget-alerts')}
+        onToggle={() => toggle('budget-alerts')}
+      >
       <BudgetAlerts
         summaries={summaries}
         categories={categories}
         activeMonth={activeSummary?.month}
       />
+      </CollapsibleSection>
 
       {/* Financial Insights */}
+      <CollapsibleSection
+        id="financial-insights"
+        title="Financial Insights"
+        isCollapsed={isCollapsed('financial-insights')}
+        onToggle={() => toggle('financial-insights')}
+      >
       <FinancialInsights
         transactions={transactions}
         networth={networth}
@@ -348,11 +398,16 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
         categories={categories}
         activeMonth={activeSummary?.month}
       />
+      </CollapsibleSection>
 
       {/* Outcome Breakdown — TOP */}
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
-        <h2 className="text-lg font-semibold mb-4">Outcome Breakdown ({latest?.month})</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+      <CollapsibleSection
+        id="outcome-breakdown"
+        title={`Outcome Breakdown (${latest?.month})`}
+        isCollapsed={isCollapsed('outcome-breakdown')}
+        onToggle={() => toggle('outcome-breakdown')}
+      >
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
           {/* Total Income */}
           <div>
             <div className="flex justify-between text-sm mb-1">
@@ -481,15 +536,17 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
             </div>
           )}
         </div>
-      </div>
+      </CollapsibleSection>
 
       {/* Recent Transactions — TOP (paginated) */}
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold">Transactions ({latest?.month})</h2>
-          <a href="/transactions" className="text-xs text-blue-500 hover:text-blue-700">View all →</a>
-        </div>
-        <div className="overflow-x-auto">
+      <CollapsibleSection
+        id="transactions-table"
+        title={`Transactions (${latest?.month})`}
+        isCollapsed={isCollapsed('transactions-table')}
+        onToggle={() => toggle('transactions-table')}
+        badge={<a href="/transactions" className="text-xs text-blue-500 hover:text-blue-700 font-normal ml-2">View all →</a>}
+      >
+      <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
@@ -616,7 +673,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
             </div>
           </div>
         )}
-      </div>
+      </CollapsibleSection>
 
       {/* Outcome Chart */}
       <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
