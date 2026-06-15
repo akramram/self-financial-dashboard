@@ -1,14 +1,15 @@
 /* empty css                               */
 import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BN-0jZ66.mjs';
 import 'kleur/colors';
-import { f as formatIdr, $ as $$Layout } from '../chunks/utils_CXkjZU_f.mjs';
+import { f as formatIdr, $ as $$Layout } from '../chunks/utils_CS_NAiYc.mjs';
 import { jsxs, jsx } from 'react/jsx-runtime';
 import { useMemo, useState } from 'react';
-import { C as Card, a as CardHeader, b as CardTitle, c as CardContent } from '../chunks/card_CxLAH05O.mjs';
-import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_tB8UlsQW.mjs';
-import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_DkMcun2x.mjs';
-import { B as Badge } from '../chunks/badge_Cv7tJFLH.mjs';
-import { Wallet, Receipt, PiggyBank, TrendingUp, Landmark, Banknote, CreditCard, TrendingDown } from 'lucide-react';
+import { C as Card, a as CardHeader, b as CardTitle, c as CardContent } from '../chunks/card_DffXpfhT.mjs';
+import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_DWTbmS1e.mjs';
+import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_DAWfnRUr.mjs';
+import { B as Badge } from '../chunks/badge_BUvRBBXW.mjs';
+import { B as Button } from '../chunks/button_uxMUSjfb.mjs';
+import { ArrowLeftRight, Wallet, Receipt, PiggyBank, TrendingUp, Landmark, Banknote, CreditCard, TrendingDown } from 'lucide-react';
 import { p as getTransactions, q as getNetworth, g as getMonthlySummary, a as getCategories, d as db } from '../chunks/db_B4_3wji-.mjs';
 export { renderers } from '../renderers.mjs';
 
@@ -33,14 +34,16 @@ function MonthComparison({ transactions, networth, summaries, categories }) {
   const months = useMemo(() => {
     return [...summaries].reverse().map((s) => s.month);
   }, [summaries]);
-  const [leftMonth, setLeftMonth] = useState(months[months.length - 2] ?? months[0] ?? "");
-  const [rightMonth, setRightMonth] = useState(months[months.length - 1] ?? months[0] ?? "");
+  const [leftMonth, setLeftMonth] = useState(months[1] ?? months[0] ?? "");
+  const [rightMonth, setRightMonth] = useState(months[0] ?? "");
   const leftSummary = useMemo(() => summaries.find((s) => s.month === leftMonth), [summaries, leftMonth]);
   const rightSummary = useMemo(() => summaries.find((s) => s.month === rightMonth), [summaries, rightMonth]);
   const leftNetworth = useMemo(() => networth.find((n) => n.month === leftMonth), [networth, leftMonth]);
   const rightNetworth = useMemo(() => networth.find((n) => n.month === rightMonth), [networth, rightMonth]);
-  const leftTxs = useMemo(() => transactions.filter((t) => t.month === leftMonth), [transactions, leftMonth]);
-  const rightTxs = useMemo(() => transactions.filter((t) => t.month === rightMonth), [transactions, rightMonth]);
+  const leftPeriodId = leftSummary?.period_id;
+  const rightPeriodId = rightSummary?.period_id;
+  const leftTxs = useMemo(() => transactions.filter((t) => t.period_id === leftPeriodId), [transactions, leftPeriodId]);
+  const rightTxs = useMemo(() => transactions.filter((t) => t.period_id === rightPeriodId), [transactions, rightPeriodId]);
   const categoryMap = useMemo(() => {
     const map = {};
     categories.forEach((c) => {
@@ -93,6 +96,10 @@ function MonthComparison({ transactions, networth, summaries, categories }) {
       ] })
     ] })
   ] }) });
+  const handleSwap = () => {
+    setLeftMonth(rightMonth);
+    setRightMonth(leftMonth);
+  };
   return /* @__PURE__ */ jsxs("div", { className: "space-y-6", children: [
     /* @__PURE__ */ jsxs("div", { className: "flex flex-col sm:flex-row items-start sm:items-center gap-4", children: [
       /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3", children: [
@@ -102,7 +109,20 @@ function MonthComparison({ transactions, networth, summaries, categories }) {
           /* @__PURE__ */ jsx(SelectContent, { children: months.map((m) => /* @__PURE__ */ jsx(SelectItem, { value: m, children: m }, m)) })
         ] })
       ] }),
-      /* @__PURE__ */ jsx("div", { className: "hidden sm:block text-slate-400", children: "vs" }),
+      /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
+        /* @__PURE__ */ jsx("span", { className: "hidden sm:inline text-slate-400", children: "vs" }),
+        /* @__PURE__ */ jsx(
+          Button,
+          {
+            variant: "ghost",
+            size: "icon",
+            className: "h-8 w-8",
+            onClick: handleSwap,
+            title: "Swap months",
+            children: /* @__PURE__ */ jsx(ArrowLeftRight, { className: "w-4 h-4" })
+          }
+        )
+      ] }),
       /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3", children: [
         /* @__PURE__ */ jsx("label", { className: "text-sm font-medium text-slate-600 dark:text-slate-300", children: "Month B:" }),
         /* @__PURE__ */ jsxs(Select, { value: rightMonth, onValueChange: setRightMonth, children: [

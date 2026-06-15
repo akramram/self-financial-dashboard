@@ -358,31 +358,32 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
       />
       </CollapsibleSection>
 
-      {/* Anomaly Detection — flag unusual transactions */}
-      <CollapsibleSection
-        id="anomaly-alerts"
-        title="Anomaly Alerts"
-        isCollapsed={isCollapsed('anomaly-alerts')}
-        onToggle={() => toggle('anomaly-alerts')}
-      >
-      <AnomalyAlerts
-        month={activeSummary?.month}
-      />
-      </CollapsibleSection>
+      {/* Anomaly & Budget Alerts — side by side */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <CollapsibleSection
+          id="anomaly-alerts"
+          title="Anomaly Alerts"
+          isCollapsed={isCollapsed('anomaly-alerts')}
+          onToggle={() => toggle('anomaly-alerts')}
+        >
+        <AnomalyAlerts
+          month={activeSummary?.month}
+        />
+        </CollapsibleSection>
 
-      {/* Budget Alerts — surface categories over/approaching limits */}
-      <CollapsibleSection
-        id="budget-alerts"
-        title="Budget Alerts"
-        isCollapsed={isCollapsed('budget-alerts')}
-        onToggle={() => toggle('budget-alerts')}
-      >
-      <BudgetAlerts
-        summaries={summaries}
-        categories={categories}
-        activeMonth={activeSummary?.month}
-      />
-      </CollapsibleSection>
+        <CollapsibleSection
+          id="budget-alerts"
+          title="Budget Alerts"
+          isCollapsed={isCollapsed('budget-alerts')}
+          onToggle={() => toggle('budget-alerts')}
+        >
+        <BudgetAlerts
+          summaries={summaries}
+          categories={categories}
+          activeMonth={activeSummary?.month}
+        />
+        </CollapsibleSection>
+      </div>
 
       {/* Financial Insights */}
       <CollapsibleSection

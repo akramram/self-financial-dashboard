@@ -18,7 +18,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { ArrowUpRight, ArrowDownRight, Minus, TrendingUp, TrendingDown, Wallet, PiggyBank, Landmark, Receipt, CreditCard, Banknote } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { ArrowUpRight, ArrowDownRight, Minus, TrendingUp, TrendingDown, Wallet, PiggyBank, Landmark, Receipt, CreditCard, Banknote, ArrowLeftRight } from 'lucide-react';
 
 interface Props {
   transactions: Transaction[];
@@ -81,16 +82,19 @@ export default function MonthComparison({ transactions, networth, summaries, cat
     return [...summaries].reverse().map((s) => s.month);
   }, [summaries]);
 
-  const [leftMonth, setLeftMonth] = useState<string>(months[months.length - 2] ?? months[0] ?? '');
-  const [rightMonth, setRightMonth] = useState<string>(months[months.length - 1] ?? months[0] ?? '');
+  const [leftMonth, setLeftMonth] = useState<string>(months[1] ?? months[0] ?? '');
+  const [rightMonth, setRightMonth] = useState<string>(months[0] ?? '');
 
   const leftSummary = useMemo(() => summaries.find((s) => s.month === leftMonth), [summaries, leftMonth]);
   const rightSummary = useMemo(() => summaries.find((s) => s.month === rightMonth), [summaries, rightMonth]);
   const leftNetworth = useMemo(() => networth.find((n) => n.month === leftMonth), [networth, leftMonth]);
   const rightNetworth = useMemo(() => networth.find((n) => n.month === rightMonth), [networth, rightMonth]);
 
-  const leftTxs = useMemo(() => transactions.filter((t) => t.month === leftMonth), [transactions, leftMonth]);
-  const rightTxs = useMemo(() => transactions.filter((t) => t.month === rightMonth), [transactions, rightMonth]);
+  const leftPeriodId = leftSummary?.period_id;
+  const rightPeriodId = rightSummary?.period_id;
+
+  const leftTxs = useMemo(() => transactions.filter((t) => t.period_id === leftPeriodId), [transactions, leftPeriodId]);
+  const rightTxs = useMemo(() => transactions.filter((t) => t.period_id === rightPeriodId), [transactions, rightPeriodId]);
 
   const categoryMap = useMemo(() => {
     const map: Record<string, Category> = {};
@@ -163,6 +167,11 @@ export default function MonthComparison({ transactions, networth, summaries, cat
     </Card>
   );
 
+  const handleSwap = () => {
+    setLeftMonth(rightMonth);
+    setRightMonth(leftMonth);
+  };
+
   return (
     <div className="space-y-6">
       {/* Month Selectors */}
@@ -180,7 +189,18 @@ export default function MonthComparison({ transactions, networth, summaries, cat
             </SelectContent>
           </Select>
         </div>
-        <div className="hidden sm:block text-slate-400">vs</div>
+        <div className="flex items-center gap-2">
+          <span className="hidden sm:inline text-slate-400">vs</span>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={handleSwap}
+            title="Swap months"
+          >
+            <ArrowLeftRight className="w-4 h-4" />
+          </Button>
+        </div>
         <div className="flex items-center gap-3">
           <label className="text-sm font-medium text-slate-600 dark:text-slate-300">Month B:</label>
           <Select value={rightMonth} onValueChange={setRightMonth}>

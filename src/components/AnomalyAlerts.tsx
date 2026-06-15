@@ -46,11 +46,13 @@ export default function AnomalyAlerts({ month }: Props) {
   const [loading, setLoading] = useState(true);
   const [dismissed, setDismissed] = useState<Set<number>>(new Set());
   const [expanded, setExpanded] = useState(false);
+  const [severityFilter, setSeverityFilter] = useState<Anomaly['severity'] | null>(null);
 
   useEffect(() => {
     if (!month) return;
     setLoading(true);
     setDismissed(new Set());
+    setSeverityFilter(null);
     fetch(`/api/anomalies?month=${encodeURIComponent(month)}`)
       .then((res) => res.json())
       .then((data) => {
@@ -69,7 +71,15 @@ export default function AnomalyAlerts({ month }: Props) {
     });
   };
 
+  const toggleFilter = (severity: Anomaly['severity']) => {
+    setSeverityFilter((prev) => (prev === severity ? null : severity));
+    setExpanded(false);
+  };
+
   const visible = anomalies.filter((a) => !dismissed.has(a.id));
+  const filtered = severityFilter
+    ? visible.filter((a) => a.severity === severityFilter)
+    : visible;
 
   if (loading) return null; // Silent loading — don't show spinner for this
 
@@ -77,7 +87,8 @@ export default function AnomalyAlerts({ month }: Props) {
 
   const highCount = visible.filter((a) => a.severity === 'high').length;
   const mediumCount = visible.filter((a) => a.severity === 'medium').length;
-  const displayItems = expanded ? visible : visible.slice(0, 3);
+  const lowCount = visible.filter((a) => a.severity === 'low').length;
+  const displayItems = expanded ? filtered : filtered.slice(0, 3);
 
   return (
     <Card className="border-amber-200 dark:border-amber-800">
@@ -89,16 +100,50 @@ export default function AnomalyAlerts({ month }: Props) {
           </CardTitle>
           <div className="flex items-center gap-2">
             {highCount > 0 && (
-              <Badge variant="destructive" className="text-[10px] px-1.5 py-0">
+              <button
+                onClick={() => toggleFilter('high')}
+                className={`text-[10px] px-1.5 py-0 rounded-full font-medium transition cursor-pointer border ${
+                  severityFilter === 'high'
+                    ? 'bg-red-600 text-white border-red-600 ring-2 ring-red-300'
+                    : 'bg-red-100 text-red-700 border-red-200 hover:bg-red-200 dark:bg-red-900/40 dark:text-red-300 dark:border-red-800 dark:hover:bg-red-900/60'
+                }`}
+              >
                 {highCount} high
-              </Badge>
+              </button>
             )}
             {mediumCount > 0 && (
-              <Badge className="text-[10px] px-1.5 py-0 bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
+              <button
+                onClick={() => toggleFilter('medium')}
+                className={`text-[10px] px-1.5 py-0 rounded-full font-medium transition cursor-pointer border ${
+                  severityFilter === 'medium'
+                    ? 'bg-amber-600 text-white border-amber-600 ring-2 ring-amber-300'
+                    : 'bg-amber-100 text-amber-700 border-amber-200 hover:bg-amber-200 dark:bg-amber-900/40 dark:text-amber-300 dark:border-amber-800 dark:hover:bg-amber-900/60'
+                }`}
+              >
                 {mediumCount} medium
-              </Badge>
+              </button>
             )}
-            <span className="text-xs text-slate-400">{visible.length} total</span>
+            {lowCount > 0 && (
+              <button
+                onClick={() => toggleFilter('low')}
+                className={`text-[10px] px-1.5 py-0 rounded-full font-medium transition cursor-pointer border ${
+                  severityFilter === 'low'
+                    ? 'bg-blue-600 text-white border-blue-600 ring-2 ring-blue-300'
+                    : 'bg-blue-100 text-blue-700 border-blue-200 hover:bg-blue-200 dark:bg-blue-900/40 dark:text-blue-300 dark:border-blue-800 dark:hover:bg-blue-900/60'
+                }`}
+              >
+                {lowCount} low
+              </button>
+            )}
+            {severityFilter && (
+              <button
+                onClick={() => setSeverityFilter(null)}
+                className="text-[10px] px-1.5 py-0 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 underline"
+              >
+                clear
+              </button>
+            )}
+            <span className="text-xs text-slate-400">{filtered.length} of {visible.length}</span>
           </div>
         </div>
         <p className="text-xs text-slate-400">
@@ -106,7 +151,12 @@ export default function AnomalyAlerts({ month }: Props) {
         </p>
       </CardHeader>
       <CardContent className="space-y-2">
-        {displayItems.map((anomaly) => (
+        {filtered.length === 0 ? (
+          <p className="text-xs text-slate-400 text-center py-3">
+            No {severityFilter} severity anomalies found.
+          </p>
+        ) : (
+          displayItems.map((anomaly) => (
           <div
             key={anomaly.id}
             className={`flex items-start gap-3 p-3 rounded-lg border ${SEVERITY_COLORS[anomaly.severity]} transition`}
@@ -143,9 +193,10 @@ export default function AnomalyAlerts({ month }: Props) {
               <X className="w-3.5 h-3.5 text-slate-400" />
             </button>
           </div>
-        ))}
+        )))}
 
-        {visible.length > 3 && (
+
+        {filtered.length > 3 && (
           <Button
             variant="ghost"
             size="sm"
@@ -160,7 +211,7 @@ export default function AnomalyAlerts({ month }: Props) {
             ) : (
               <>
                 <ChevronDown className="w-3.5 h-3.5 mr-1" />
-                Show all {visible.length} anomalies
+                Show all {filtered.length} anomalies
               </>
             )}
           </Button>

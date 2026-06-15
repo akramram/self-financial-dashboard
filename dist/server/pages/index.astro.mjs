@@ -1,25 +1,25 @@
 /* empty css                               */
 import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BN-0jZ66.mjs';
 import 'kleur/colors';
-import { f as formatIdr, g as getActivePeriod, $ as $$Layout } from '../chunks/utils_CXkjZU_f.mjs';
+import { f as formatIdr, g as getActivePeriod, $ as $$Layout } from '../chunks/utils_CS_NAiYc.mjs';
 import { jsx, jsxs, Fragment } from 'react/jsx-runtime';
 import { useMemo, useState, useEffect, useCallback } from 'react';
-import { F as kickoffMonth, f as fetchCategories, n as fetchRecurringTransactions, A as toggleTransactionDoneApi, B as deleteTransactionApi, C as updateTransactionApi } from '../chunks/api_n5hUqc9e.mjs';
+import { A as kickoffMonth, f as fetchCategories, i as fetchRecurringTransactions, v as toggleTransactionDoneApi, w as deleteTransactionApi, x as updateTransactionApi } from '../chunks/api_CEy8D9Rv.mjs';
 import { Chart, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement, Filler } from 'chart.js';
 import { Bar, Doughnut, Line } from 'react-chartjs-2';
-import { N as NetworthChart } from '../chunks/NetworthChart_AWM4c0cS.mjs';
-import { C as Card, a as CardHeader, b as CardTitle, c as CardContent } from '../chunks/card_CxLAH05O.mjs';
-import { B as Badge } from '../chunks/badge_Cv7tJFLH.mjs';
+import { N as NetworthChart } from '../chunks/NetworthChart_B9BJxM8D.mjs';
+import { C as Card, a as CardHeader, b as CardTitle, c as CardContent } from '../chunks/card_DffXpfhT.mjs';
+import { B as Badge } from '../chunks/badge_BUvRBBXW.mjs';
 import { AlertTriangle, TrendingUp, TrendingDown, Receipt, CheckCircle, PiggyBank, Wallet, DollarSign, BarChart3, Gauge, Clock, Activity, X, ChevronUp, ChevronDown, ShoppingBag, ChevronRight, StickyNote } from 'lucide-react';
-import { B as Button } from '../chunks/button_9ql4Vl4Q.mjs';
-import { I as Input } from '../chunks/input_D8tTzDdf.mjs';
-import { L as Label } from '../chunks/label_DUNKnuNW.mjs';
-import { D as Dialog, a as DialogContent, b as DialogHeader, c as DialogTitle, d as DialogDescription } from '../chunks/dialog_D0tDKD7N.mjs';
-import { u as useSortState, S as SortableHeader } from '../chunks/SortableHeader_DIfs2sdr.mjs';
-import { E as EditTransactionDialog } from '../chunks/EditTransactionDialog_CNdsbPeq.mjs';
-import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_DkMcun2x.mjs';
-import '../chunks/checkbox_Dx5d9wva.mjs';
-import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_tB8UlsQW.mjs';
+import { B as Button } from '../chunks/button_uxMUSjfb.mjs';
+import { I as Input } from '../chunks/input_6zQN70xj.mjs';
+import { L as Label } from '../chunks/label_YfmURmWR.mjs';
+import { D as Dialog, a as DialogContent, b as DialogHeader, c as DialogTitle, d as DialogDescription } from '../chunks/dialog_BGZIjKD-.mjs';
+import { u as useSortState, S as SortableHeader } from '../chunks/SortableHeader_xUJEDrNx.mjs';
+import { E as EditTransactionDialog } from '../chunks/EditTransactionDialog_T9YLY7qh.mjs';
+import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_DAWfnRUr.mjs';
+import '../chunks/checkbox_NvLsOild.mjs';
+import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_DWTbmS1e.mjs';
 import { p as getTransactions, q as getNetworth, g as getMonthlySummary, d as db } from '../chunks/db_B4_3wji-.mjs';
 export { renderers } from '../renderers.mjs';
 
@@ -1088,10 +1088,12 @@ function AnomalyAlerts({ month }) {
   const [loading, setLoading] = useState(true);
   const [dismissed, setDismissed] = useState(/* @__PURE__ */ new Set());
   const [expanded, setExpanded] = useState(false);
+  const [severityFilter, setSeverityFilter] = useState(null);
   useEffect(() => {
     if (!month) return;
     setLoading(true);
     setDismissed(/* @__PURE__ */ new Set());
+    setSeverityFilter(null);
     fetch(`/api/anomalies?month=${encodeURIComponent(month)}`).then((res) => res.json()).then((data) => {
       if (Array.isArray(data)) setAnomalies(data);
       else setAnomalies([]);
@@ -1104,12 +1106,18 @@ function AnomalyAlerts({ month }) {
       return next;
     });
   };
+  const toggleFilter = (severity) => {
+    setSeverityFilter((prev) => prev === severity ? null : severity);
+    setExpanded(false);
+  };
   const visible = anomalies.filter((a) => !dismissed.has(a.id));
+  const filtered = severityFilter ? visible.filter((a) => a.severity === severityFilter) : visible;
   if (loading) return null;
   if (visible.length === 0) return null;
   const highCount = visible.filter((a) => a.severity === "high").length;
   const mediumCount = visible.filter((a) => a.severity === "medium").length;
-  const displayItems = expanded ? visible : visible.slice(0, 3);
+  const lowCount = visible.filter((a) => a.severity === "low").length;
+  const displayItems = expanded ? filtered : filtered.slice(0, 3);
   return /* @__PURE__ */ jsxs(Card, { className: "border-amber-200 dark:border-amber-800", children: [
     /* @__PURE__ */ jsxs(CardHeader, { className: "pb-2", children: [
       /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
@@ -1118,24 +1126,62 @@ function AnomalyAlerts({ month }) {
           "Spending Anomalies Detected"
         ] }),
         /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
-          highCount > 0 && /* @__PURE__ */ jsxs(Badge, { variant: "destructive", className: "text-[10px] px-1.5 py-0", children: [
-            highCount,
-            " high"
-          ] }),
-          mediumCount > 0 && /* @__PURE__ */ jsxs(Badge, { className: "text-[10px] px-1.5 py-0 bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300", children: [
-            mediumCount,
-            " medium"
-          ] }),
+          highCount > 0 && /* @__PURE__ */ jsxs(
+            "button",
+            {
+              onClick: () => toggleFilter("high"),
+              className: `text-[10px] px-1.5 py-0 rounded-full font-medium transition cursor-pointer border ${severityFilter === "high" ? "bg-red-600 text-white border-red-600 ring-2 ring-red-300" : "bg-red-100 text-red-700 border-red-200 hover:bg-red-200 dark:bg-red-900/40 dark:text-red-300 dark:border-red-800 dark:hover:bg-red-900/60"}`,
+              children: [
+                highCount,
+                " high"
+              ]
+            }
+          ),
+          mediumCount > 0 && /* @__PURE__ */ jsxs(
+            "button",
+            {
+              onClick: () => toggleFilter("medium"),
+              className: `text-[10px] px-1.5 py-0 rounded-full font-medium transition cursor-pointer border ${severityFilter === "medium" ? "bg-amber-600 text-white border-amber-600 ring-2 ring-amber-300" : "bg-amber-100 text-amber-700 border-amber-200 hover:bg-amber-200 dark:bg-amber-900/40 dark:text-amber-300 dark:border-amber-800 dark:hover:bg-amber-900/60"}`,
+              children: [
+                mediumCount,
+                " medium"
+              ]
+            }
+          ),
+          lowCount > 0 && /* @__PURE__ */ jsxs(
+            "button",
+            {
+              onClick: () => toggleFilter("low"),
+              className: `text-[10px] px-1.5 py-0 rounded-full font-medium transition cursor-pointer border ${severityFilter === "low" ? "bg-blue-600 text-white border-blue-600 ring-2 ring-blue-300" : "bg-blue-100 text-blue-700 border-blue-200 hover:bg-blue-200 dark:bg-blue-900/40 dark:text-blue-300 dark:border-blue-800 dark:hover:bg-blue-900/60"}`,
+              children: [
+                lowCount,
+                " low"
+              ]
+            }
+          ),
+          severityFilter && /* @__PURE__ */ jsx(
+            "button",
+            {
+              onClick: () => setSeverityFilter(null),
+              className: "text-[10px] px-1.5 py-0 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 underline",
+              children: "clear"
+            }
+          ),
           /* @__PURE__ */ jsxs("span", { className: "text-xs text-slate-400", children: [
-            visible.length,
-            " total"
+            filtered.length,
+            " of ",
+            visible.length
           ] })
         ] })
       ] }),
       /* @__PURE__ */ jsx("p", { className: "text-xs text-slate-400", children: "These transactions look unusual compared to your historical spending patterns." })
     ] }),
     /* @__PURE__ */ jsxs(CardContent, { className: "space-y-2", children: [
-      displayItems.map((anomaly) => /* @__PURE__ */ jsxs(
+      filtered.length === 0 ? /* @__PURE__ */ jsxs("p", { className: "text-xs text-slate-400 text-center py-3", children: [
+        "No ",
+        severityFilter,
+        " severity anomalies found."
+      ] }) : displayItems.map((anomaly) => /* @__PURE__ */ jsxs(
         "div",
         {
           className: `flex items-start gap-3 p-3 rounded-lg border ${SEVERITY_COLORS[anomaly.severity]} transition`,
@@ -1173,7 +1219,7 @@ function AnomalyAlerts({ month }) {
         },
         anomaly.id
       )),
-      visible.length > 3 && /* @__PURE__ */ jsx(
+      filtered.length > 3 && /* @__PURE__ */ jsx(
         Button,
         {
           variant: "ghost",
@@ -1186,7 +1232,7 @@ function AnomalyAlerts({ month }) {
           ] }) : /* @__PURE__ */ jsxs(Fragment, { children: [
             /* @__PURE__ */ jsx(ChevronDown, { className: "w-3.5 h-3.5 mr-1" }),
             "Show all ",
-            visible.length,
+            filtered.length,
             " anomalies"
           ] })
         }
@@ -1718,38 +1764,40 @@ function Dashboard({ transactions, networth, summaries }) {
         )
       }
     ),
-    /* @__PURE__ */ jsx(
-      CollapsibleSection,
-      {
-        id: "anomaly-alerts",
-        title: "Anomaly Alerts",
-        isCollapsed: isCollapsed("anomaly-alerts"),
-        onToggle: () => toggle("anomaly-alerts"),
-        children: /* @__PURE__ */ jsx(
-          AnomalyAlerts,
-          {
-            month: activeSummary?.month
-          }
-        )
-      }
-    ),
-    /* @__PURE__ */ jsx(
-      CollapsibleSection,
-      {
-        id: "budget-alerts",
-        title: "Budget Alerts",
-        isCollapsed: isCollapsed("budget-alerts"),
-        onToggle: () => toggle("budget-alerts"),
-        children: /* @__PURE__ */ jsx(
-          BudgetAlerts,
-          {
-            summaries,
-            categories,
-            activeMonth: activeSummary?.month
-          }
-        )
-      }
-    ),
+    /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-2 gap-6", children: [
+      /* @__PURE__ */ jsx(
+        CollapsibleSection,
+        {
+          id: "anomaly-alerts",
+          title: "Anomaly Alerts",
+          isCollapsed: isCollapsed("anomaly-alerts"),
+          onToggle: () => toggle("anomaly-alerts"),
+          children: /* @__PURE__ */ jsx(
+            AnomalyAlerts,
+            {
+              month: activeSummary?.month
+            }
+          )
+        }
+      ),
+      /* @__PURE__ */ jsx(
+        CollapsibleSection,
+        {
+          id: "budget-alerts",
+          title: "Budget Alerts",
+          isCollapsed: isCollapsed("budget-alerts"),
+          onToggle: () => toggle("budget-alerts"),
+          children: /* @__PURE__ */ jsx(
+            BudgetAlerts,
+            {
+              summaries,
+              categories,
+              activeMonth: activeSummary?.month
+            }
+          )
+        }
+      )
+    ] }),
     /* @__PURE__ */ jsx(
       CollapsibleSection,
       {
