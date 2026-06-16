@@ -1,0 +1,60 @@
+---
+import Layout from '../layouts/Layout.astro';
+import MerchantAnalysis from '../components/MerchantAnalysis';
+import {
+  getTransactions,
+  getMonthlySummary,
+  getCategories,
+  getTitleSpending,
+  getAllPeriods,
+  db,
+} from '../lib/db';
+
+const transactions = getTransactions();
+const summaries = getMonthlySummary();
+const categories = getCategories();
+
+// Enrich summaries with income
+const incomeRows = db.prepare(
+  'SELECT mi.period_id, mi.income, p.month FROM monthly_income mi JOIN periods p ON mi.period_id = p.id'
+).all() as any[];
+const incomeMap = new Map(incomeRows.map((r) => [r.month, r.income]));
+for (const s of summaries) {
+  const income = incomeMap.get(s.month) || 0;
+  s.income = income;
+  s.savings = income - s.outcome.total;
+  s.savings_rate_pct =
+    income > 0 ? Number(((s.savings / income) * 100).toFixed(2)) : 0;
+}
+
+// Load merchant data for ALL periods
+const allPeriods = getAllPeriods();
+const merchantData: any[] = [];
+for (const period of allPeriods) {
+  const items = getTitleSpending(period.id);
+  for (const item of items) {
+    merchantData.push({
+      ...item,
+      period_id: period.id,
+      month: period.month,
+    });
+  }
+}
+---
+
+<Layout title="Merchant Analysis - Financial Dashboard">
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold">Merchant Analysis</h1>
+    <p class="text-slate-500 dark:text-slate-400 text-sm">
+      Understand your spending by vendor. See top merchants, new vendors, spending frequency, and trends across periods.
+    </p>
+  </div>
+
+  <MerchantAnalysis
+    transactions={transactions}
+    summaries={summaries}
+    categories={categories}
+    merchantData={merchantData}
+    client:load
+  />
+</Layout>
