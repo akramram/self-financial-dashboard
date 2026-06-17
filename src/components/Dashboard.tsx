@@ -8,6 +8,7 @@ import CategoryChart from './CategoryChart';
 import CategoryTrendChart from './CategoryTrendChart';
 import SavingsRateChart from './SavingsRateChart';
 import FinancialInsights from './FinancialInsights';
+import PeriodVsAverage from './PeriodVsAverage';
 import OutcomeBarChart from './OutcomeBarChart';
 import MonthKickoffModal from './MonthKickoffModal';
 import DashboardSummaryCards from './DashboardSummaryCards';
@@ -714,6 +715,13 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
           )}
         </div>
       </div>
+
+      {/* Period vs Average Comparison */}
+      <PeriodVsAverage
+        summaries={filteredSummaries}
+        categories={categories}
+        activePeriodId={filterPeriodId}
+      />
 
       {/* Summary Cards — BOTTOM */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
