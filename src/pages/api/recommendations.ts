@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { getCategoryStats } from '../../../lib/db';
+import { getCategoryStats } from '../../lib/db';
 
 export const GET: APIRoute = async () => {
   try {
