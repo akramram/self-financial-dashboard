@@ -1003,3 +1003,133 @@ function formatIdrShort(n: number): string {
   if (n >= 1_000) return `${(n / 1_000).toFixed(0)}K`;
   return Math.round(n).toString();
 }
+
+// ─── Budget Recommendations Engine ──────────────────────────────────────────
+
+export interface CategoryStat {
+  categoryId: number;
+  category: string;
+  periodCount: number;
+  totalSpent: number;
+  avgSpent: number;
+  medianSpent: number;
+  p80Spent: number;
+  maxSpent: number;
+  minSpent: number;
+  stdDev: number;
+  trend: 'rising' | 'falling' | 'stable';
+  trendPct: number;       // estimated % change per period
+  volatility: 'low' | 'medium' | 'high';
+  currentLimit: number;   // existing monthly_limit or 0
+  recommendedLimit: number;
+  confidence: 'high' | 'medium' | 'low'; // based on data points
+}
+
+/** Compute category-level statistics across ALL periods for budget recommendations */
+export function getCategoryStats(): CategoryStat[] {
+  // Get per-period spending by category
+  const rows = db.prepare(`
+    SELECT t.period_id, t.category, SUM(t.amount) as spent
+    FROM transactions t
+    WHERE t.done = 1
+      AND t.type IN ('cash', 'credit_expense')
+    GROUP BY t.period_id, t.category
+    ORDER BY t.category, t.period_id
+  `).all() as { period_id: number; category: string; spent: number }[];
+
+  // Group by category
+  const byCategory: Record<string, number[]> = {};
+  for (const row of rows) {
+    if (!byCategory[row.category]) byCategory[row.category] = [];
+    byCategory[row.category].push(row.spent);
+  }
+
+  // Get existing limits
+  const catRows = db.prepare('SELECT id, name, monthly_limit FROM categories').all() as { id: number; name: string; monthly_limit: number }[];
+  const limitMap = new Map(catRows.map((c) => [c.name, c.monthly_limit ?? 0]));
+  const idMap = new Map(catRows.map((c) => [c.name, c.id]));
+
+  const stats: CategoryStat[] = [];
+
+  for (const [category, values] of Object.entries(byCategory)) {
+    if (values.length < 1) continue;
+
+    const sorted = [...values].sort((a, b) => a - b);
+    const n = sorted.length;
+    const total = sorted.reduce((s, v) => s + v, 0);
+    const avg = total / n;
+
+    // Median
+    const mid = Math.floor(n / 2);
+    const median = n % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
+
+    // 80th percentile
+    const p80Idx = Math.ceil(n * 0.8) - 1;
+    const p80 = sorted[Math.min(p80Idx, n - 1)];
+
+    // Standard deviation
+    const variance = sorted.reduce((s, v) => s + (v - avg) ** 2, 0) / n;
+    const stdDev = Math.sqrt(variance);
+
+    // Trend: linear regression across periods (simple slope estimate)
+    let trend: 'rising' | 'falling' | 'stable' = 'stable';
+    let trendPct = 0;
+    if (n >= 3 && avg > 0) {
+      // Compare first half vs second half average
+      const half = Math.floor(n / 2);
+      const firstHalf = sorted.slice(0, half);
+      const secondHalf = sorted.slice(n - half);
+      const firstAvg = firstHalf.reduce((s, v) => s + v, 0) / firstHalf.length;
+      const secondAvg = secondHalf.reduce((s, v) => s + v, 0) / secondHalf.length;
+      if (firstAvg > 0) {
+        trendPct = ((secondAvg - firstAvg) / firstAvg) * 100;
+        if (trendPct > 10) trend = 'rising';
+        else if (trendPct < -10) trend = 'falling';
+        else trend = 'stable';
+      }
+    }
+
+    // Volatility
+    let volatility: 'low' | 'medium' | 'high' = 'medium';
+    if (avg > 0) {
+      const cv = stdDev / avg; // coefficient of variation
+      if (cv < 0.25) volatility = 'low';
+      else if (cv > 0.5) volatility = 'high';
+    }
+
+    // Confidence
+    let confidence: 'high' | 'medium' | 'low' = 'low';
+    if (n >= 12) confidence = 'high';
+    else if (n >= 6) confidence = 'medium';
+
+    // Recommended limit: weighted blend of 80th percentile and average
+    // For stable/low-volatility categories, lean toward p80; for volatile, lean toward avg
+    const recommendedLimit = volatility === 'high'
+      ? Math.round(avg * 1.1)  // volatile: add 10% buffer to average
+      : Math.round(p80 * 0.95); // stable: 95% of p80 (slight stretch)
+
+    stats.push({
+      categoryId: idMap.get(category) ?? 0,
+      category,
+      periodCount: n,
+      totalSpent: total,
+      avgSpent: Math.round(avg),
+      medianSpent: Math.round(median),
+      p80Spent: Math.round(p80),
+      maxSpent: Math.round(sorted[n - 1]),
+      minSpent: Math.round(sorted[0]),
+      stdDev: Math.round(stdDev),
+      trend,
+      trendPct: Math.round(trendPct * 10) / 10,
+      volatility,
+      currentLimit: limitMap.get(category) ?? 0,
+      recommendedLimit,
+      confidence,
+    });
+  }
+
+  // Sort by total spent descending
+  stats.sort((a, b) => b.totalSpent - a.totalSpent);
+
+  return stats;
+}
