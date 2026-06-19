@@ -20,6 +20,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ArrowUpRight, ArrowDownRight, Minus, TrendingUp, TrendingDown, Wallet, PiggyBank, Landmark, Receipt, CreditCard, Banknote, ArrowLeftRight } from 'lucide-react';
+import CategoryRadarChart from './CategoryRadarChart';
 
 interface Props {
   transactions: Transaction[];
@@ -309,6 +310,15 @@ export default function MonthComparison({ transactions, networth, summaries, cat
           </div>
         </CardContent>
       </Card>
+
+      {/* Category Radar Chart */}
+      <CategoryRadarChart
+        leftSummary={leftSummary}
+        rightSummary={rightSummary}
+        leftMonth={leftMonth}
+        rightMonth={rightMonth}
+        categories={categories}
+      />
 
       {/* Category Comparison Table */}
       <Card>
