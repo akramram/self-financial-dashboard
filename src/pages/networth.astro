@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import NetworthChart from '../components/NetworthChart';
 import NetworthComposition from '../components/NetworthComposition';
 import NetworthTable from '../components/NetworthTable';
+import NetworthProjection from '../components/NetworthProjection';
 import { getNetworth } from '../lib/db';
 
 const networth = getNetworth();
@@ -20,6 +21,9 @@ const networthReversed = [...networth].reverse();
     <h2 class="text-lg font-semibold mb-4">Networth Trend</h2>
     <NetworthChart data={networth} client:load />
   </div>
+
+  <!-- Net Worth Projection -->
+  <NetworthProjection data={networth} client:load />
 
   <!-- Portfolio Composition (Donut + Metrics + Stacked Bar) -->
   <NetworthComposition data={networth} client:load />
