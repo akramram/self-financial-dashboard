@@ -332,13 +332,11 @@ export default function RecurringBreakdown() {
           </CardHeader>
           <CardContent>
             {donutData ? (
-              <div className="max-w-[280px] mx-auto" style={{ height: 280 }}>
+              <div className="max-w-[280px] mx-auto">
                 <Doughnut
                   data={donutData}
                   options={{
                     responsive: true,
-                    maintainAspectRatio: false,
-                    animation: false,
                     plugins: {
                       legend: {
                         position: 'bottom',
@@ -389,66 +387,62 @@ export default function RecurringBreakdown() {
           </CardHeader>
           <CardContent>
             {trendData ? (
-              <div style={{ height: 300 }}>
-                <Line
-                  data={trendData}
-                  options={{
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    animation: false,
-                    interaction: {
-                      mode: 'index',
-                      intersect: false,
-                    },
-                    plugins: {
-                      legend: {
-                        position: 'bottom',
-                        labels: {
-                          usePointStyle: true,
-                          padding: 16,
-                        },
+              <Line
+                data={trendData}
+                options={{
+                  responsive: true,
+                  interaction: {
+                    mode: 'index',
+                    intersect: false,
+                  },
+                  plugins: {
+                    legend: {
+                      position: 'bottom',
+                      labels: {
+                        usePointStyle: true,
+                        padding: 16,
                       },
                     },
-                    scales: {
-                      y: {
-                        type: 'linear',
+                  },
+                  scales: {
+                    y: {
+                      type: 'linear',
+                      display: true,
+                      position: 'left',
+                      title: {
                         display: true,
-                        position: 'left',
-                        title: {
-                          display: true,
-                          text: '% of Total',
-                        },
-                        min: 0,
-                        max: 100,
-                        ticks: {
-                          callback: (v) => v + '%',
-                        },
+                        text: '% of Total',
                       },
-                      y1: {
-                        type: 'linear',
+                      min: 0,
+                      max: 100,
+                      ticks: {
+                        callback: (v) => v + '%',
+                      },
+                    },
+                    y1: {
+                      type: 'linear',
+                      display: true,
+                      position: 'right',
+                      title: {
                         display: true,
-                        position: 'right',
-                        title: {
-                          display: true,
-                          text: 'Amount',
-                        },
-                        grid: {
-                          drawOnChartArea: false,
-                        },
-                        ticks: {
-                          callback: (v) => {
-                            const n = v as number;
-                            if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'M';
-                            if (n >= 1_000) return (n / 1_000).toFixed(0) + 'K';
-                            return n.toString();
-                          },
+                        text: 'Amount',
+                      },
+                      grid: {
+                        drawOnChartArea: false,
+                      },
+                      ticks: {
+                        callback: (v) => {
+                          const n = v as number;
+                          if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'M';
+                          if (n >= 1_000) return (n / 1_000).toFixed(0) + 'K';
+                          return n.toString();
                         },
                       },
                     },
-                  }}
+                  },
+                }}
               />
-              </div>
-              ) : (
+            ) : (
               <div className="flex items-center justify-center h-48 text-slate-400">
                 Need at least 2 periods of data
               </div>

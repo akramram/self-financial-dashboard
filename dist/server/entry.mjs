@@ -1,6 +1,6 @@
 import { renderers } from './renderers.mjs';
 import { c as createExports, s as serverEntrypointModule } from './chunks/_@astrojs-ssr-adapter_B35HkTHX.mjs';
-import { manifest } from './manifest_D5YeIHf1.mjs';
+import { manifest } from './manifest_BePJ1u77.mjs';
 
 const _page0 = () => import('./pages/_image.astro.mjs');
 const _page1 = () => import('./pages/add.astro.mjs');
@@ -27,30 +27,28 @@ const _page21 = () => import('./pages/api/networth.astro.mjs');
 const _page22 = () => import('./pages/api/recommendations.astro.mjs');
 const _page23 = () => import('./pages/api/recurring/_id_.astro.mjs');
 const _page24 = () => import('./pages/api/recurring.astro.mjs');
-const _page25 = () => import('./pages/api/recurring-breakdown.astro.mjs');
-const _page26 = () => import('./pages/api/summary.astro.mjs');
-const _page27 = () => import('./pages/api/transactions/_id_.astro.mjs');
-const _page28 = () => import('./pages/api/transactions.astro.mjs');
-const _page29 = () => import('./pages/budget.astro.mjs');
-const _page30 = () => import('./pages/calendar.astro.mjs');
-const _page31 = () => import('./pages/cashflow.astro.mjs');
-const _page32 = () => import('./pages/compare.astro.mjs');
-const _page33 = () => import('./pages/fire.astro.mjs');
-const _page34 = () => import('./pages/forecast.astro.mjs');
-const _page35 = () => import('./pages/goals.astro.mjs');
-const _page36 = () => import('./pages/health.astro.mjs');
-const _page37 = () => import('./pages/merchants.astro.mjs');
-const _page38 = () => import('./pages/networth/edit.astro.mjs');
-const _page39 = () => import('./pages/networth.astro.mjs');
-const _page40 = () => import('./pages/portfolio.astro.mjs');
-const _page41 = () => import('./pages/recommendations.astro.mjs');
-const _page42 = () => import('./pages/recurring.astro.mjs');
-const _page43 = () => import('./pages/report.astro.mjs');
-const _page44 = () => import('./pages/settings.astro.mjs');
-const _page45 = () => import('./pages/spending-mix.astro.mjs');
-const _page46 = () => import('./pages/transactions.astro.mjs');
-const _page47 = () => import('./pages/yearly.astro.mjs');
-const _page48 = () => import('./pages/index.astro.mjs');
+const _page25 = () => import('./pages/api/summary.astro.mjs');
+const _page26 = () => import('./pages/api/transactions/_id_.astro.mjs');
+const _page27 = () => import('./pages/api/transactions.astro.mjs');
+const _page28 = () => import('./pages/budget.astro.mjs');
+const _page29 = () => import('./pages/calendar.astro.mjs');
+const _page30 = () => import('./pages/cashflow.astro.mjs');
+const _page31 = () => import('./pages/compare.astro.mjs');
+const _page32 = () => import('./pages/fire.astro.mjs');
+const _page33 = () => import('./pages/forecast.astro.mjs');
+const _page34 = () => import('./pages/goals.astro.mjs');
+const _page35 = () => import('./pages/health.astro.mjs');
+const _page36 = () => import('./pages/merchants.astro.mjs');
+const _page37 = () => import('./pages/networth/edit.astro.mjs');
+const _page38 = () => import('./pages/networth.astro.mjs');
+const _page39 = () => import('./pages/portfolio.astro.mjs');
+const _page40 = () => import('./pages/recommendations.astro.mjs');
+const _page41 = () => import('./pages/recurring.astro.mjs');
+const _page42 = () => import('./pages/report.astro.mjs');
+const _page43 = () => import('./pages/settings.astro.mjs');
+const _page44 = () => import('./pages/transactions.astro.mjs');
+const _page45 = () => import('./pages/yearly.astro.mjs');
+const _page46 = () => import('./pages/index.astro.mjs');
 
 const pageMap = new Map([
     ["node_modules/astro/dist/assets/endpoint/node.js", _page0],
@@ -78,30 +76,28 @@ const pageMap = new Map([
     ["src/pages/api/recommendations.ts", _page22],
     ["src/pages/api/recurring/[id].ts", _page23],
     ["src/pages/api/recurring/index.ts", _page24],
-    ["src/pages/api/recurring-breakdown.ts", _page25],
-    ["src/pages/api/summary.ts", _page26],
-    ["src/pages/api/transactions/[id].ts", _page27],
-    ["src/pages/api/transactions/index.ts", _page28],
-    ["src/pages/budget.astro", _page29],
-    ["src/pages/calendar.astro", _page30],
-    ["src/pages/cashflow.astro", _page31],
-    ["src/pages/compare.astro", _page32],
-    ["src/pages/fire.astro", _page33],
-    ["src/pages/forecast.astro", _page34],
-    ["src/pages/goals.astro", _page35],
-    ["src/pages/health.astro", _page36],
-    ["src/pages/merchants.astro", _page37],
-    ["src/pages/networth/edit.astro", _page38],
-    ["src/pages/networth.astro", _page39],
-    ["src/pages/portfolio.astro", _page40],
-    ["src/pages/recommendations.astro", _page41],
-    ["src/pages/recurring.astro", _page42],
-    ["src/pages/report.astro", _page43],
-    ["src/pages/settings.astro", _page44],
-    ["src/pages/spending-mix.astro", _page45],
-    ["src/pages/transactions.astro", _page46],
-    ["src/pages/yearly.astro", _page47],
-    ["src/pages/index.astro", _page48]
+    ["src/pages/api/summary.ts", _page25],
+    ["src/pages/api/transactions/[id].ts", _page26],
+    ["src/pages/api/transactions/index.ts", _page27],
+    ["src/pages/budget.astro", _page28],
+    ["src/pages/calendar.astro", _page29],
+    ["src/pages/cashflow.astro", _page30],
+    ["src/pages/compare.astro", _page31],
+    ["src/pages/fire.astro", _page32],
+    ["src/pages/forecast.astro", _page33],
+    ["src/pages/goals.astro", _page34],
+    ["src/pages/health.astro", _page35],
+    ["src/pages/merchants.astro", _page36],
+    ["src/pages/networth/edit.astro", _page37],
+    ["src/pages/networth.astro", _page38],
+    ["src/pages/portfolio.astro", _page39],
+    ["src/pages/recommendations.astro", _page40],
+    ["src/pages/recurring.astro", _page41],
+    ["src/pages/report.astro", _page42],
+    ["src/pages/settings.astro", _page43],
+    ["src/pages/transactions.astro", _page44],
+    ["src/pages/yearly.astro", _page45],
+    ["src/pages/index.astro", _page46]
 ]);
 const serverIslandMap = new Map();
 const _manifest = Object.assign(manifest, {

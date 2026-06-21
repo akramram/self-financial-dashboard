@@ -1,4 +1,4 @@
-import { N as getInvestments, O as insertInvestment } from '../../chunks/db_TxX34wAz.mjs';
+import { N as getInvestments, O as insertInvestment } from '../../chunks/db_DFS0dPqt.mjs';
 export { renderers } from '../../renderers.mjs';
 
 const GET = async () => {
