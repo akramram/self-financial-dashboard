@@ -1,4 +1,4 @@
-import { q as getNetworth, E as upsertNetworth, R as recalcNetworthMoM } from '../../chunks/db_DFS0dPqt.mjs';
+import { q as getNetworth, E as upsertNetworth, R as recalcNetworthMoM } from '../../chunks/db_TxX34wAz.mjs';
 export { renderers } from '../../renderers.mjs';
 
 const GET = async () => {
