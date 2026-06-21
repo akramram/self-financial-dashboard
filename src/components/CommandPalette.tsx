@@ -16,6 +16,7 @@ const ALL_ITEMS: CommandItem[] = [
   { id: 'transactions', label: 'Transactions', description: 'View and manage all transactions', icon: '📋', group: 'pages', href: '/transactions' },
   { id: 'networth', label: 'Net Worth', description: 'Track net worth over time', icon: '💎', group: 'pages', href: '/networth' },
   { id: 'budget', label: 'Budget Report', description: 'Category budget tracking', icon: '📑', group: 'pages', href: '/budget' },
+  { id: 'spending-mix', label: 'Spending Mix', description: 'Recurring vs discretionary breakdown', icon: '🔀', group: 'pages', href: '/spending-mix' },
   { id: 'compare', label: 'Month Comparison', description: 'Compare spending across months', icon: '⚖️', group: 'pages', href: '/compare' },
   { id: 'analytics', label: 'Spending Analytics', description: 'Daily trends and category drill-down', icon: '📈', group: 'pages', href: '/analytics' },
   { id: 'cashflow', label: 'Cash Flow', description: 'Income vs outcome waterfall', icon: '💸', group: 'pages', href: '/cashflow' },

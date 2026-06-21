@@ -1,0 +1,15 @@
+---
+import Layout from '../layouts/Layout.astro';
+import RecurringBreakdown from '../components/RecurringBreakdown';
+---
+
+<Layout title="Spending Mix - Financial Dashboard">
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold">Spending Mix</h1>
+    <p class="text-slate-500 dark:text-slate-400 text-sm">
+      Understand how your spending breaks down between recurring (bills, subscriptions, fixed costs) and discretionary (flexible, one-time) purchases. A higher discretionary share means more financial flexibility.
+    </p>
+  </div>
+
+  <RecurringBreakdown client:load />
+</Layout>

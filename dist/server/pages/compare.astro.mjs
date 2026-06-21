@@ -1,17 +1,154 @@
 /* empty css                               */
 import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BN-0jZ66.mjs';
 import 'kleur/colors';
-import { f as formatIdr, $ as $$Layout } from '../chunks/utils_CS_NAiYc.mjs';
+import { f as formatIdr, $ as $$Layout } from '../chunks/utils_B5Myb6nO.mjs';
 import { jsxs, jsx } from 'react/jsx-runtime';
 import { useMemo, useState } from 'react';
-import { C as Card, a as CardHeader, b as CardTitle, c as CardContent } from '../chunks/card_DffXpfhT.mjs';
-import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_DWTbmS1e.mjs';
-import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_DAWfnRUr.mjs';
-import { B as Badge } from '../chunks/badge_BUvRBBXW.mjs';
-import { B as Button } from '../chunks/button_uxMUSjfb.mjs';
-import { ArrowLeftRight, Wallet, Receipt, PiggyBank, TrendingUp, Landmark, Banknote, CreditCard, TrendingDown } from 'lucide-react';
-import { p as getTransactions, q as getNetworth, g as getMonthlySummary, a as getCategories, d as db } from '../chunks/db_B4_3wji-.mjs';
+import { C as Card, a as CardHeader, b as CardTitle, c as CardContent } from '../chunks/card_DQjFT-ZO.mjs';
+import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_BdQoKGwf.mjs';
+import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_K3ijaacM.mjs';
+import { B as Badge } from '../chunks/badge_D2r9e7Nn.mjs';
+import { B as Button } from '../chunks/button_ya11cJX2.mjs';
+import { Crosshair, ArrowLeftRight, Wallet, Receipt, PiggyBank, TrendingUp, Landmark, Banknote, CreditCard, TrendingDown } from 'lucide-react';
+import { Chart, RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend } from 'chart.js';
+import { Radar } from 'react-chartjs-2';
+import { p as getTransactions, q as getNetworth, g as getMonthlySummary, a as getCategories, d as db } from '../chunks/db_DFS0dPqt.mjs';
 export { renderers } from '../renderers.mjs';
+
+Chart.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
+const FALLBACK_COLORS = [
+  "#3b82f6",
+  "#10b981",
+  "#f59e0b",
+  "#ef4444",
+  "#8b5cf6",
+  "#ec4899",
+  "#06b6d4",
+  "#84cc16",
+  "#f97316",
+  "#6366f1",
+  "#14b8a6",
+  "#a855f7",
+  "#e11d48",
+  "#0ea5e9",
+  "#d946ef"
+];
+function CategoryRadarChart({
+  leftSummary,
+  rightSummary,
+  leftMonth,
+  rightMonth,
+  categories
+}) {
+  const chartData = useMemo(() => {
+    const allCats = /* @__PURE__ */ new Set();
+    if (leftSummary?.category_totals) {
+      Object.keys(leftSummary.category_totals).forEach((c) => allCats.add(c));
+    }
+    if (rightSummary?.category_totals) {
+      Object.keys(rightSummary.category_totals).forEach((c) => allCats.add(c));
+    }
+    const sorted = Array.from(allCats).map((cat) => ({
+      name: cat,
+      left: leftSummary?.category_totals?.[cat] ?? 0,
+      right: rightSummary?.category_totals?.[cat] ?? 0,
+      total: (leftSummary?.category_totals?.[cat] ?? 0) + (rightSummary?.category_totals?.[cat] ?? 0)
+    })).sort((a, b) => b.total - a.total).slice(0, 12);
+    const labels = sorted.map((s) => s.name);
+    const leftValues = sorted.map((s) => s.left);
+    const rightValues = sorted.map((s) => s.right);
+    const colorMap = new Map(categories.map((c) => [c.name, c.color]));
+    const leftColors = sorted.map(
+      (s, i) => colorMap.get(s.name) || FALLBACK_COLORS[i % FALLBACK_COLORS.length]
+    );
+    const rightColors = sorted.map(
+      (s, i) => colorMap.get(s.name) || FALLBACK_COLORS[i % FALLBACK_COLORS.length]
+    );
+    return {
+      labels,
+      datasets: [
+        {
+          label: leftMonth,
+          data: leftValues,
+          backgroundColor: "rgba(59, 130, 246, 0.15)",
+          borderColor: "rgba(59, 130, 246, 0.8)",
+          borderWidth: 2,
+          pointBackgroundColor: leftColors,
+          pointBorderColor: leftColors,
+          pointRadius: 4,
+          pointHoverRadius: 6
+        },
+        {
+          label: rightMonth,
+          data: rightValues,
+          backgroundColor: "rgba(239, 68, 68, 0.1)",
+          borderColor: "rgba(239, 68, 68, 0.8)",
+          borderWidth: 2,
+          pointBackgroundColor: rightColors,
+          pointBorderColor: rightColors,
+          pointRadius: 4,
+          pointHoverRadius: 6
+        }
+      ]
+    };
+  }, [leftSummary, rightSummary, leftMonth, rightMonth, categories]);
+  const hasData = chartData.labels.length > 0;
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      r: {
+        beginAtZero: true,
+        ticks: {
+          display: true,
+          backdropColor: "transparent",
+          font: { size: 10 },
+          callback: (value) => {
+            if (value >= 1e6) return `${(value / 1e6).toFixed(1)}M`;
+            if (value >= 1e3) return `${(value / 1e3).toFixed(0)}K`;
+            return String(value);
+          }
+        },
+        pointLabels: {
+          font: { size: 11, weight: "bold" },
+          color: "#64748b"
+        },
+        grid: {
+          color: "rgba(148, 163, 184, 0.2)"
+        },
+        angleLines: {
+          color: "rgba(148, 163, 184, 0.2)"
+        }
+      }
+    },
+    plugins: {
+      legend: {
+        position: "bottom",
+        labels: {
+          usePointStyle: true,
+          padding: 20,
+          font: { size: 12 }
+        }
+      },
+      tooltip: {
+        callbacks: {
+          label: (ctx) => {
+            const label = ctx.dataset.label || "";
+            const value = ctx.raw;
+            return `${label}: ${formatIdr(value)}`;
+          }
+        }
+      }
+    }
+  };
+  return /* @__PURE__ */ jsxs(Card, { children: [
+    /* @__PURE__ */ jsx(CardHeader, { className: "pb-3", children: /* @__PURE__ */ jsxs(CardTitle, { className: "text-base font-semibold flex items-center gap-2", children: [
+      /* @__PURE__ */ jsx(Crosshair, { className: "w-4 h-4 text-slate-500" }),
+      "Category Spending Radar"
+    ] }) }),
+    /* @__PURE__ */ jsx(CardContent, { children: hasData ? /* @__PURE__ */ jsx("div", { className: "h-[400px] w-full", children: /* @__PURE__ */ jsx(Radar, { data: chartData, options }) }) : /* @__PURE__ */ jsx("div", { className: "flex items-center justify-center h-[200px] text-muted-foreground text-sm", children: "No category data available for the selected periods." }) })
+  ] });
+}
 
 function DeltaValue({ current, previous, isPct, inverse }) {
   if (previous === 0 && current === 0) {
@@ -233,6 +370,16 @@ function MonthComparison({ transactions, networth, summaries, categories }) {
         ] })
       ] }) })
     ] }),
+    /* @__PURE__ */ jsx(
+      CategoryRadarChart,
+      {
+        leftSummary,
+        rightSummary,
+        leftMonth,
+        rightMonth,
+        categories
+      }
+    ),
     /* @__PURE__ */ jsxs(Card, { children: [
       /* @__PURE__ */ jsx(CardHeader, { className: "pb-3", children: /* @__PURE__ */ jsxs(CardTitle, { className: "text-base font-semibold flex items-center gap-2", children: [
         /* @__PURE__ */ jsx(TrendingDown, { className: "w-4 h-4 text-slate-500" }),

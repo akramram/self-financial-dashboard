@@ -1,4 +1,4 @@
-import { x as getGoalById, y as deleteGoal, z as updateGoal } from '../../../chunks/db_B4_3wji-.mjs';
+import { x as getGoalById, y as deleteGoal, z as updateGoal } from '../../../chunks/db_DFS0dPqt.mjs';
 export { renderers } from '../../../renderers.mjs';
 
 const GET = async ({ params }) => {

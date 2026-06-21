@@ -1,4 +1,4 @@
-import { P as getRecurringTransactions, W as insertRecurringTransaction } from '../../chunks/db_B4_3wji-.mjs';
+import { P as getRecurringTransactions, X as insertRecurringTransaction } from '../../chunks/db_DFS0dPqt.mjs';
 export { renderers } from '../../renderers.mjs';
 
 const GET = async () => {

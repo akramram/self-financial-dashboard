@@ -1133,3 +1133,139 @@ export function getCategoryStats(): CategoryStat[] {
 
   return stats;
 }
+
+// ─── Recurring vs Discretionary Breakdown ────────────────────────────────────
+
+export interface RecurringBreakdownPeriod {
+  period_id: number;
+  month: string;
+  recurring: number;
+  discretionary: number;
+  total: number;
+  recurring_pct: number;
+  discretionary_pct: number;
+  recurring_count: number;
+  discretionary_count: number;
+}
+
+export interface RecurringBreakdownTopItem {
+  title: string;
+  category: string;
+  amount: number;
+}
+
+export interface RecurringBreakdown {
+  periods: RecurringBreakdownPeriod[];
+  current: RecurringBreakdownPeriod | null;
+  topRecurring: RecurringBreakdownTopItem[];
+}
+
+export function getRecurringVsDiscretionary(periodId?: number): RecurringBreakdown {
+  // Get all active recurring transaction titles (lowercased for matching)
+  const recurringTitles = db.prepare(
+    "SELECT LOWER(title) as title, title as original_title, category, amount FROM recurring_transactions WHERE active = 1"
+  ).all() as { title: string; original_title: string; category: string; amount: number }[];
+
+  const recurringTitleSet = new Set(recurringTitles.map((r) => r.title));
+
+  // Build a map for top recurring items (use the latest period's data)
+  const recurringAmountMap = new Map<string, number>();
+  for (const r of recurringTitles) {
+    recurringAmountMap.set(r.title, r.amount);
+  }
+
+  // Get all periods with transactions
+  const periodRows = db.prepare(`
+    SELECT DISTINCT p.id, p.month, p.start_date
+    FROM periods p
+    INNER JOIN transactions t ON t.period_id = p.id
+    WHERE t.done = 1 AND t.type IN ('cash', 'credit_expense')
+    ORDER BY p.start_date ASC
+  `).all() as { id: number; month: string; start_date: string }[];
+
+  // If a specific period is requested, filter
+  const targetPeriods = periodId
+    ? periodRows.filter((p) => p.id === periodId)
+    : periodRows;
+
+  const periods: RecurringBreakdownPeriod[] = [];
+
+  for (const p of targetPeriods) {
+    const txs = db.prepare(`
+      SELECT title, category, amount FROM transactions
+      WHERE period_id = ? AND done = 1 AND type IN ('cash', 'credit_expense')
+    `).all(p.id) as { title: string; category: string; amount: number }[];
+
+    let recurring = 0;
+    let discretionary = 0;
+    let recurring_count = 0;
+    let discretionary_count = 0;
+
+    for (const tx of txs) {
+      const titleLower = tx.title.toLowerCase();
+      // Check if this transaction matches a recurring template
+      // Use fuzzy matching: exact match or the recurring title is contained in the transaction title
+      const isRecurring = recurringTitleSet.has(titleLower) ||
+        [...recurringTitleSet].some((rt) => titleLower.includes(rt) || rt.includes(titleLower));
+
+      if (isRecurring) {
+        recurring += tx.amount;
+        recurring_count++;
+      } else {
+        discretionary += tx.amount;
+        discretionary_count++;
+      }
+    }
+
+    const total = recurring + discretionary;
+    periods.push({
+      period_id: p.id,
+      month: p.month,
+      recurring: Math.round(recurring * 100) / 100,
+      discretionary: Math.round(discretionary * 100) / 100,
+      total: Math.round(total * 100) / 100,
+      recurring_pct: total > 0 ? Math.round((recurring / total) * 1000) / 10 : 0,
+      discretionary_pct: total > 0 ? Math.round((discretionary / total) * 1000) / 10 : 0,
+      recurring_count,
+      discretionary_count,
+    });
+  }
+
+  // Current period = last in the list
+  const current = periods.length > 0 ? periods[periods.length - 1] : null;
+
+  // Top recurring items: aggregate across all periods
+  const recurringTotals = new Map<string, { title: string; category: string; amount: number }>();
+  for (const p of periodRows) {
+    const txs = db.prepare(`
+      SELECT title, category, amount FROM transactions
+      WHERE period_id = ? AND done = 1 AND type IN ('cash', 'credit_expense')
+    `).all(p.id) as { title: string; category: string; amount: number }[];
+
+    for (const tx of txs) {
+      const titleLower = tx.title.toLowerCase();
+      const isRecurring = recurringTitleSet.has(titleLower) ||
+        [...recurringTitleSet].some((rt) => titleLower.includes(rt) || rt.includes(titleLower));
+
+      if (isRecurring) {
+        const key = tx.title;
+        const existing = recurringTotals.get(key);
+        if (existing) {
+          existing.amount += tx.amount;
+        } else {
+          recurringTotals.set(key, { title: tx.title, category: tx.category, amount: tx.amount });
+        }
+      }
+    }
+  }
+
+  const topRecurring = [...recurringTotals.values()]
+    .sort((a, b) => b.amount - a.amount)
+    .slice(0, 10)
+    .map((item) => ({
+      ...item,
+      amount: Math.round(item.amount * 100) / 100,
+    }));
+
+  return { periods, current, topRecurring };
+}

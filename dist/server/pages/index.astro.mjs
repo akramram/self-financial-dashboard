@@ -1,26 +1,26 @@
 /* empty css                               */
 import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BN-0jZ66.mjs';
 import 'kleur/colors';
-import { f as formatIdr, g as getActivePeriod, $ as $$Layout } from '../chunks/utils_CS_NAiYc.mjs';
+import { f as formatIdr, g as getActivePeriod, $ as $$Layout } from '../chunks/utils_B5Myb6nO.mjs';
 import { jsx, jsxs, Fragment } from 'react/jsx-runtime';
 import { useMemo, useState, useEffect, useCallback } from 'react';
 import { A as kickoffMonth, f as fetchCategories, i as fetchRecurringTransactions, v as toggleTransactionDoneApi, w as deleteTransactionApi, x as updateTransactionApi } from '../chunks/api_CEy8D9Rv.mjs';
 import { Chart, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement, Filler } from 'chart.js';
 import { Bar, Doughnut, Line } from 'react-chartjs-2';
-import { N as NetworthChart } from '../chunks/NetworthChart_B9BJxM8D.mjs';
-import { C as Card, a as CardHeader, b as CardTitle, c as CardContent } from '../chunks/card_DffXpfhT.mjs';
-import { B as Badge } from '../chunks/badge_BUvRBBXW.mjs';
-import { AlertTriangle, TrendingUp, TrendingDown, Receipt, CheckCircle, PiggyBank, Wallet, DollarSign, BarChart3, Gauge, Clock, Activity, X, ChevronUp, ChevronDown, ShoppingBag, ChevronRight, StickyNote } from 'lucide-react';
-import { B as Button } from '../chunks/button_uxMUSjfb.mjs';
-import { I as Input } from '../chunks/input_6zQN70xj.mjs';
-import { L as Label } from '../chunks/label_YfmURmWR.mjs';
-import { D as Dialog, a as DialogContent, b as DialogHeader, c as DialogTitle, d as DialogDescription } from '../chunks/dialog_BGZIjKD-.mjs';
-import { u as useSortState, S as SortableHeader } from '../chunks/SortableHeader_xUJEDrNx.mjs';
-import { E as EditTransactionDialog } from '../chunks/EditTransactionDialog_T9YLY7qh.mjs';
-import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_DAWfnRUr.mjs';
-import '../chunks/checkbox_NvLsOild.mjs';
-import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_DWTbmS1e.mjs';
-import { p as getTransactions, q as getNetworth, g as getMonthlySummary, d as db } from '../chunks/db_B4_3wji-.mjs';
+import { N as NetworthChart } from '../chunks/NetworthChart_DhFxO-QT.mjs';
+import { C as Card, a as CardHeader, b as CardTitle, c as CardContent } from '../chunks/card_DQjFT-ZO.mjs';
+import { B as Badge } from '../chunks/badge_D2r9e7Nn.mjs';
+import { AlertTriangle, TrendingUp, TrendingDown, Receipt, CheckCircle, PiggyBank, Wallet, BarChart3, DollarSign, Gauge, Clock, Activity, X, ChevronUp, ChevronDown, ShoppingBag, ChevronRight, StickyNote } from 'lucide-react';
+import { B as Button } from '../chunks/button_ya11cJX2.mjs';
+import { I as Input } from '../chunks/input_DA2Rt8Ix.mjs';
+import { L as Label } from '../chunks/label_j0TnC9m7.mjs';
+import { D as Dialog, a as DialogContent, b as DialogHeader, c as DialogTitle, d as DialogDescription } from '../chunks/dialog_0GQsLseB.mjs';
+import { u as useSortState, S as SortableHeader } from '../chunks/SortableHeader_DuMC2LpS.mjs';
+import { E as EditTransactionDialog } from '../chunks/EditTransactionDialog_CEqkImdp.mjs';
+import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_K3ijaacM.mjs';
+import '../chunks/checkbox_XphQCELW.mjs';
+import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_BdQoKGwf.mjs';
+import { p as getTransactions, q as getNetworth, g as getMonthlySummary, d as db } from '../chunks/db_DFS0dPqt.mjs';
 export { renderers } from '../renderers.mjs';
 
 Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -455,6 +455,191 @@ function FinancialInsights({ transactions, networth, summaries, categories, acti
       },
       insight.id
     )) }) })
+  ] });
+}
+
+function PeriodVsAverage({
+  summaries,
+  categories,
+  activePeriodId,
+  lookbackPeriods = 6
+}) {
+  const categoryMap = useMemo(() => {
+    const map = {};
+    categories.forEach((c) => {
+      map[c.name] = c;
+    });
+    return map;
+  }, [categories]);
+  const variances = useMemo(() => {
+    if (!activePeriodId || summaries.length < 2) return [];
+    const currentSummary2 = summaries.find((s) => s.period_id === activePeriodId);
+    if (!currentSummary2 || !currentSummary2.category_totals) return [];
+    const historical = summaries.filter((s) => s.period_id !== activePeriodId && s.category_totals).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, lookbackPeriods);
+    if (historical.length === 0) return [];
+    const allCategories = /* @__PURE__ */ new Set();
+    Object.keys(currentSummary2.category_totals).forEach((c) => allCategories.add(c));
+    historical.forEach((h) => {
+      Object.keys(h.category_totals || {}).forEach((c) => allCategories.add(c));
+    });
+    const result = [];
+    for (const cat of allCategories) {
+      const current = currentSummary2.category_totals[cat] || 0;
+      const historicalValues = historical.map((h) => h.category_totals?.[cat] || 0).filter((v) => v > 0);
+      const count = historicalValues.length;
+      const average = count > 0 ? historicalValues.reduce((sum, v) => sum + v, 0) / count : 0;
+      const variance = current - average;
+      const variancePct = average > 0 ? variance / average * 100 : current > 0 ? 100 : 0;
+      result.push({
+        category: cat,
+        color: categoryMap[cat]?.color || "#6b7280",
+        current,
+        average,
+        variance,
+        variancePct,
+        count
+      });
+    }
+    result.sort((a, b) => Math.abs(b.variance) - Math.abs(a.variance));
+    return result;
+  }, [summaries, activePeriodId, lookbackPeriods, categoryMap]);
+  const currentSummary = useMemo(
+    () => summaries.find((s) => s.period_id === activePeriodId),
+    [summaries, activePeriodId]
+  );
+  const totalCurrent = useMemo(
+    () => variances.reduce((sum, v) => sum + v.current, 0),
+    [variances]
+  );
+  const totalAverage = useMemo(
+    () => variances.reduce((sum, v) => sum + v.average, 0),
+    [variances]
+  );
+  const totalVariance = totalCurrent - totalAverage;
+  const totalVariancePct = totalAverage > 0 ? totalVariance / totalAverage * 100 : 0;
+  if (!activePeriodId || variances.length === 0) {
+    return /* @__PURE__ */ jsxs(Card, { children: [
+      /* @__PURE__ */ jsx(CardHeader, { children: /* @__PURE__ */ jsxs(CardTitle, { className: "flex items-center gap-2 text-base", children: [
+        /* @__PURE__ */ jsx(BarChart3, { className: "h-5 w-5" }),
+        "Period vs Average"
+      ] }) }),
+      /* @__PURE__ */ jsx(CardContent, { children: /* @__PURE__ */ jsx("p", { className: "text-sm text-muted-foreground", children: "Need at least 2 periods of data to compare." }) })
+    ] });
+  }
+  const maxAbsVariance = Math.max(...variances.map((v) => Math.abs(v.variance)), 1);
+  return /* @__PURE__ */ jsxs(Card, { children: [
+    /* @__PURE__ */ jsxs(CardHeader, { className: "pb-2", children: [
+      /* @__PURE__ */ jsxs(CardTitle, { className: "flex items-center gap-2 text-base", children: [
+        /* @__PURE__ */ jsx(BarChart3, { className: "h-5 w-5" }),
+        currentSummary?.month ?? "Current",
+        " vs ",
+        lookbackPeriods,
+        "-Period Average"
+      ] }),
+      /* @__PURE__ */ jsxs("p", { className: "text-xs text-muted-foreground", children: [
+        "Comparing against ",
+        variances[0]?.count ?? 0,
+        " historical period",
+        variances[0]?.count !== 1 ? "s" : "",
+        " · ",
+        "Total:",
+        " ",
+        /* @__PURE__ */ jsxs(
+          "span",
+          {
+            className: `font-semibold ${totalVariance > 0 ? "text-red-600 dark:text-red-400" : "text-emerald-600 dark:text-emerald-400"}`,
+            children: [
+              totalVariance >= 0 ? "+" : "",
+              formatIdr(totalVariance),
+              " (",
+              totalVariancePct >= 0 ? "+" : "",
+              totalVariancePct.toFixed(1),
+              "%)"
+            ]
+          }
+        )
+      ] })
+    ] }),
+    /* @__PURE__ */ jsxs(CardContent, { children: [
+      /* @__PURE__ */ jsx("div", { className: "space-y-3", children: variances.map((v) => {
+        const isUp = v.variance > 0;
+        const isSignificant = Math.abs(v.variancePct) >= 20;
+        const barWidth = Math.min(
+          100,
+          Math.max(5, Math.abs(v.variance) / maxAbsVariance * 100)
+        );
+        return /* @__PURE__ */ jsxs("div", { className: "space-y-1", children: [
+          /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between text-sm", children: [
+            /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 min-w-0", children: [
+              /* @__PURE__ */ jsx(
+                "span",
+                {
+                  className: "w-2.5 h-2.5 rounded-full flex-shrink-0",
+                  style: { backgroundColor: v.color }
+                }
+              ),
+              /* @__PURE__ */ jsx("span", { className: "font-medium truncate", children: v.category }),
+              isSignificant && /* @__PURE__ */ jsxs(
+                Badge,
+                {
+                  variant: "outline",
+                  className: `text-[10px] h-4 px-1.5 flex-shrink-0 ${isUp ? "border-red-300 text-red-600 dark:border-red-700 dark:text-red-400" : "border-emerald-300 text-emerald-600 dark:border-emerald-700 dark:text-emerald-400"}`,
+                  children: [
+                    isUp ? /* @__PURE__ */ jsx(TrendingUp, { className: "h-2.5 w-2.5 mr-0.5" }) : /* @__PURE__ */ jsx(TrendingDown, { className: "h-2.5 w-2.5 mr-0.5" }),
+                    Math.abs(v.variancePct).toFixed(0),
+                    "%"
+                  ]
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-xs text-muted-foreground flex-shrink-0 ml-2", children: [
+              /* @__PURE__ */ jsx("span", { children: formatIdr(v.current) }),
+              /* @__PURE__ */ jsx("span", { className: "text-[10px]", children: "vs" }),
+              /* @__PURE__ */ jsx("span", { children: formatIdr(v.average) })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
+            /* @__PURE__ */ jsxs("div", { className: "relative flex-1 h-5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden", children: [
+              /* @__PURE__ */ jsx(
+                "div",
+                {
+                  className: "absolute top-0 bottom-0 bg-slate-300 dark:bg-slate-600 rounded-full opacity-50",
+                  style: {
+                    width: `${Math.min(100, v.average / Math.max(v.current, v.average) * 100)}%`
+                  }
+                }
+              ),
+              /* @__PURE__ */ jsx(
+                "div",
+                {
+                  className: `absolute top-0 bottom-0 rounded-full transition-all ${isUp ? "bg-red-400 dark:bg-red-500" : "bg-emerald-400 dark:bg-emerald-500"}`,
+                  style: { width: `${barWidth}%`, maxWidth: "100%" }
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxs(
+              "span",
+              {
+                className: `text-xs font-mono font-semibold w-16 text-right flex-shrink-0 ${isUp ? "text-red-600 dark:text-red-400" : "text-emerald-600 dark:text-emerald-400"}`,
+                children: [
+                  v.variance >= 0 ? "+" : "",
+                  v.variancePct.toFixed(0),
+                  "%"
+                ]
+              }
+            )
+          ] }),
+          v.count < lookbackPeriods && v.current > 0 && /* @__PURE__ */ jsxs("p", { className: "text-[10px] text-muted-foreground ml-5", children: [
+            "New category — only ",
+            v.count,
+            " historical period",
+            v.count !== 1 ? "s" : "",
+            " for comparison"
+          ] })
+        ] }, v.category);
+      }) }),
+      variances.length === 0 && /* @__PURE__ */ jsx("p", { className: "text-sm text-muted-foreground text-center py-4", children: "No category data to compare." })
+    ] })
   ] });
 }
 
@@ -2058,6 +2243,14 @@ function Dashboard({ transactions, networth, summaries }) {
         latest?.category_totals && Object.keys(latest.category_totals).length > 0 ? /* @__PURE__ */ jsx(CategoryChart, { data: latest.category_totals, categories, onCategoryClick: openCategoryDialog }) : /* @__PURE__ */ jsx("p", { className: "text-slate-500 text-sm", children: "No category data available." })
       ] })
     ] }),
+    /* @__PURE__ */ jsx(
+      PeriodVsAverage,
+      {
+        summaries: filteredSummaries,
+        categories,
+        activePeriodId: filterPeriodId
+      }
+    ),
     /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4", children: [
       /* @__PURE__ */ jsxs("div", { className: "bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6", children: [
         /* @__PURE__ */ jsxs("p", { className: "text-sm font-medium text-slate-500 dark:text-slate-400", children: [
