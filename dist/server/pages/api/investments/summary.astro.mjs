@@ -1,4 +1,4 @@
-import { J as getPortfolioSummary } from '../../../chunks/db_DFS0dPqt.mjs';
+import { J as getPortfolioSummary } from '../../../chunks/db_535bmtRB.mjs';
 export { renderers } from '../../../renderers.mjs';
 
 const GET = async () => {

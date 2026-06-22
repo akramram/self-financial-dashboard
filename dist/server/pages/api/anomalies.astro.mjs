@@ -1,4 +1,4 @@
-import { b as getPeriodByMonth, j as getAnomalies } from '../../chunks/db_DFS0dPqt.mjs';
+import { b as getPeriodByMonth, j as getAnomalies } from '../../chunks/db_535bmtRB.mjs';
 export { renderers } from '../../renderers.mjs';
 
 const GET = async ({ request }) => {

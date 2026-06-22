@@ -65,6 +65,7 @@ export interface RecurringTransaction {
   payment_method: string;
   done: boolean;
   active: boolean;
+  end_date: string | null;
   created_at: string;
 }
 

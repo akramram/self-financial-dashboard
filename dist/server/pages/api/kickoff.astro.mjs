@@ -1,4 +1,4 @@
-import { d as db, b as getPeriodByMonth, C as ensurePeriod, F as upsertMonthlyIncome, P as getRecurringTransactions, D as insertTransaction } from '../../chunks/db_DFS0dPqt.mjs';
+import { d as db, b as getPeriodByMonth, C as ensurePeriod, F as upsertMonthlyIncome, P as getRecurringTransactions, D as insertTransaction } from '../../chunks/db_535bmtRB.mjs';
 export { renderers } from '../../renderers.mjs';
 
 const GET = async () => {
@@ -53,7 +53,13 @@ const POST = async ({ request }) => {
     income: salary,
     other_income: 0
   });
-  const recurring = getRecurringTransactions().filter((r) => r.active === 1);
+  const allRecurring = getRecurringTransactions().filter((r) => r.active === 1);
+  const recurring = allRecurring.filter((r) => {
+    if (!r.end_date) return true;
+    const endDate = /* @__PURE__ */ new Date(r.end_date + " 1");
+    const newPeriodDate = /* @__PURE__ */ new Date(month + " 1");
+    return endDate >= newPeriodDate;
+  });
   const now = (/* @__PURE__ */ new Date()).toISOString();
   for (const r of recurring) {
     insertTransaction({

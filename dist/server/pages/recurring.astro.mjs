@@ -1,17 +1,17 @@
 /* empty css                               */
 import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BN-0jZ66.mjs';
 import 'kleur/colors';
-import { f as formatIdr, $ as $$Layout } from '../chunks/utils_B5Myb6nO.mjs';
+import { f as formatIdr, $ as $$Layout } from '../chunks/utils_JbfoWkNO.mjs';
 import { jsxs, jsx } from 'react/jsx-runtime';
 import { useState, useEffect } from 'react';
 import { i as fetchRecurringTransactions, f as fetchCategories, j as updateRecurringTransactionApi, k as deleteRecurringTransactionApi, l as createRecurringTransaction } from '../chunks/api_CEy8D9Rv.mjs';
-import { C as Card, a as CardHeader, b as CardTitle, c as CardContent } from '../chunks/card_DQjFT-ZO.mjs';
-import { I as Input } from '../chunks/input_DA2Rt8Ix.mjs';
-import { B as Button } from '../chunks/button_ya11cJX2.mjs';
-import { L as Label } from '../chunks/label_j0TnC9m7.mjs';
-import { C as Checkbox } from '../chunks/checkbox_XphQCELW.mjs';
-import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_BdQoKGwf.mjs';
-import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_K3ijaacM.mjs';
+import { C as Card, a as CardHeader, b as CardTitle, c as CardContent } from '../chunks/card_CCET0Yjm.mjs';
+import { I as Input } from '../chunks/input_CaJO5aUC.mjs';
+import { B as Button } from '../chunks/button_C0m7HTLc.mjs';
+import { L as Label } from '../chunks/label_BCCOrEL_.mjs';
+import { C as Checkbox } from '../chunks/checkbox_qsv5Fa_0.mjs';
+import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_DnqrgBja.mjs';
+import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_DaH70Rt2.mjs';
 export { renderers } from '../renderers.mjs';
 
 const TYPE_OPTIONS = [
@@ -33,7 +33,8 @@ function RecurringManager() {
     amount: "",
     type: "cash",
     payment_method: "Cash",
-    done: false
+    done: false,
+    end_date: ""
   });
   useEffect(() => {
     loadData();
@@ -68,7 +69,8 @@ function RecurringManager() {
         type: editForm.type,
         payment_method: editForm.payment_method,
         done: editForm.done,
-        active: editForm.active
+        active: editForm.active,
+        end_date: editForm.end_date || null
       });
       setEditingId(null);
       setEditForm({});
@@ -107,9 +109,10 @@ function RecurringManager() {
         type: addForm.type,
         payment_method: addForm.payment_method || "Cash",
         done: addForm.done,
-        active: true
+        active: true,
+        end_date: addForm.end_date || null
       });
-      setAddForm({ title: "", category: "", amount: "", type: "cash", payment_method: "Cash", done: false });
+      setAddForm({ title: "", category: "", amount: "", type: "cash", payment_method: "Cash", done: false, end_date: "" });
       setIsAdding(false);
       setError("");
       await loadData();
@@ -194,6 +197,18 @@ function RecurringManager() {
               }
             ),
             /* @__PURE__ */ jsx(Label, { htmlFor: "add-done", className: "cursor-pointer", children: "Mark as paid (for credit expenses)" })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: "space-y-1.5", children: [
+            /* @__PURE__ */ jsx(Label, { children: "End Date (optional)" }),
+            /* @__PURE__ */ jsx(
+              Input,
+              {
+                type: "month",
+                value: addForm.end_date,
+                onChange: (e) => setAddForm((p) => ({ ...p, end_date: e.target.value }))
+              }
+            ),
+            /* @__PURE__ */ jsx("p", { className: "text-xs text-slate-400", children: "Stop auto-adding after this month (e.g., last installment)" })
           ] })
         ] }),
         /* @__PURE__ */ jsx("div", { className: "flex justify-end", children: /* @__PURE__ */ jsx(Button, { size: "sm", onClick: handleAdd, children: "Save Recurring" }) })
@@ -205,10 +220,11 @@ function RecurringManager() {
           /* @__PURE__ */ jsx(TableHead, { children: "Category" }),
           /* @__PURE__ */ jsx(TableHead, { className: "text-right", children: "Amount" }),
           /* @__PURE__ */ jsx(TableHead, { children: "Type" }),
+          /* @__PURE__ */ jsx(TableHead, { children: "End Date" }),
           /* @__PURE__ */ jsx(TableHead, { children: "Paid" }),
           /* @__PURE__ */ jsx(TableHead, { className: "w-32" })
         ] }) }),
-        /* @__PURE__ */ jsx(TableBody, { children: loading ? /* @__PURE__ */ jsx(TableRow, { children: /* @__PURE__ */ jsx(TableCell, { colSpan: 7, className: "text-center text-muted-foreground py-6", children: "Loading..." }) }) : recurring.length === 0 ? /* @__PURE__ */ jsx(TableRow, { children: /* @__PURE__ */ jsx(TableCell, { colSpan: 7, className: "text-center text-muted-foreground py-6", children: "No recurring transactions yet. Add one above." }) }) : recurring.map((item) => {
+        /* @__PURE__ */ jsx(TableBody, { children: loading ? /* @__PURE__ */ jsx(TableRow, { children: /* @__PURE__ */ jsx(TableCell, { colSpan: 8, className: "text-center text-muted-foreground py-6", children: "Loading..." }) }) : recurring.length === 0 ? /* @__PURE__ */ jsx(TableRow, { children: /* @__PURE__ */ jsx(TableCell, { colSpan: 8, className: "text-center text-muted-foreground py-6", children: "No recurring transactions yet. Add one above." }) }) : recurring.map((item) => {
           const isEditing = editingId === item.id;
           if (isEditing) {
             return /* @__PURE__ */ jsxs(TableRow, { className: "bg-muted/30", children: [
@@ -260,6 +276,15 @@ function RecurringManager() {
                 }
               ) }),
               /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(
+                Input,
+                {
+                  type: "month",
+                  value: editForm.end_date ?? "",
+                  onChange: (e) => setEditForm((p) => ({ ...p, end_date: e.target.value || null })),
+                  className: "h-8 text-xs"
+                }
+              ) }),
+              /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(
                 Checkbox,
                 {
                   checked: !!editForm.done,
@@ -284,6 +309,7 @@ function RecurringManager() {
             /* @__PURE__ */ jsx(TableCell, { children: item.category }),
             /* @__PURE__ */ jsx(TableCell, { className: "text-right", children: formatIdr(item.amount) }),
             /* @__PURE__ */ jsx(TableCell, { className: "text-xs", children: item.type === "cash" ? "Cash" : item.type === "credit_expense" ? "Credit" : "Credit Pay" }),
+            /* @__PURE__ */ jsx(TableCell, { className: "text-xs text-slate-400", children: item.end_date || "—" }),
             /* @__PURE__ */ jsx(TableCell, { children: item.done ? /* @__PURE__ */ jsx("span", { className: "text-xs text-emerald-600 font-medium", children: "Paid" }) : /* @__PURE__ */ jsx("span", { className: "text-xs text-slate-400", children: "—" }) }),
             /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsxs("div", { className: "flex gap-2", children: [
               /* @__PURE__ */ jsx(Button, { variant: "ghost", size: "sm", className: "h-7 text-xs text-blue-500 hover:text-blue-700", onClick: () => startEdit(item), children: "Edit" }),
