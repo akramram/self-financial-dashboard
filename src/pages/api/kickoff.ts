@@ -70,8 +70,14 @@ export const POST: APIRoute = async ({ request }) => {
     other_income: 0,
   });
 
-  // Insert active recurring transactions
-  const recurring = getRecurringTransactions().filter((r: any) => r.active === 1);
+  // Insert active recurring transactions (skip those past end_date)
+  const allRecurring = getRecurringTransactions().filter((r: any) => r.active === 1);
+  const recurring = allRecurring.filter((r: any) => {
+    if (!r.end_date) return true;
+    const endDate = new Date(r.end_date + ' 1');
+    const newPeriodDate = new Date(month + ' 1');
+    return endDate >= newPeriodDate;
+  });
   const now = new Date().toISOString();
   for (const r of recurring) {
     insertTransaction({

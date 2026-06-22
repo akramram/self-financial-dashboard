@@ -48,6 +48,7 @@ export default function RecurringManager() {
     type: string;
     payment_method: string;
     done: boolean;
+    end_date: string;
   }>({
     title: '',
     category: '',
@@ -55,6 +56,7 @@ export default function RecurringManager() {
     type: 'cash',
     payment_method: 'Cash',
     done: false,
+    end_date: '',
   });
 
   useEffect(() => {
@@ -95,6 +97,7 @@ export default function RecurringManager() {
         payment_method: editForm.payment_method,
         done: editForm.done,
         active: editForm.active,
+        end_date: editForm.end_date || null,
       });
       setEditingId(null);
       setEditForm({});
@@ -136,8 +139,9 @@ export default function RecurringManager() {
         payment_method: addForm.payment_method || 'Cash',
         done: addForm.done,
         active: true,
+        end_date: addForm.end_date || null,
       });
-      setAddForm({ title: '', category: '', amount: '', type: 'cash', payment_method: 'Cash', done: false });
+      setAddForm({ title: '', category: '', amount: '', type: 'cash', payment_method: 'Cash', done: false, end_date: '' });
       setIsAdding(false);
       setError('');
       await loadData();
@@ -234,6 +238,15 @@ export default function RecurringManager() {
                 />
                 <Label htmlFor="add-done" className="cursor-pointer">Mark as paid (for credit expenses)</Label>
               </div>
+              <div className="space-y-1.5">
+                <Label>End Date (optional)</Label>
+                <Input
+                  type="month"
+                  value={addForm.end_date}
+                  onChange={(e) => setAddForm((p) => ({ ...p, end_date: e.target.value }))}
+                />
+                <p className="text-xs text-slate-400">Stop auto-adding after this month (e.g., last installment)</p>
+              </div>
             </div>
             <div className="flex justify-end">
               <Button size="sm" onClick={handleAdd}>Save Recurring</Button>
@@ -250,6 +263,7 @@ export default function RecurringManager() {
                 <TableHead>Category</TableHead>
                 <TableHead className="text-right">Amount</TableHead>
                 <TableHead>Type</TableHead>
+                <TableHead>End Date</TableHead>
                 <TableHead>Paid</TableHead>
                 <TableHead className="w-32"></TableHead>
               </TableRow>
@@ -257,11 +271,11 @@ export default function RecurringManager() {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center text-muted-foreground py-6">Loading...</TableCell>
+                  <TableCell colSpan={8} className="text-center text-muted-foreground py-6">Loading...</TableCell>
                 </TableRow>
               ) : recurring.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center text-muted-foreground py-6">
+                  <TableCell colSpan={8} className="text-center text-muted-foreground py-6">
                     No recurring transactions yet. Add one above.
                   </TableCell>
                 </TableRow>
@@ -324,6 +338,14 @@ export default function RecurringManager() {
                           </Select>
                         </TableCell>
                         <TableCell>
+                          <Input
+                            type="month"
+                            value={editForm.end_date ?? ''}
+                            onChange={(e) => setEditForm((p) => ({ ...p, end_date: e.target.value || null }))}
+                            className="h-8 text-xs"
+                          />
+                        </TableCell>
+                        <TableCell>
                           <Checkbox
                             checked={!!editForm.done}
                             onCheckedChange={(v) => setEditForm((p) => ({ ...p, done: !!v }))}
@@ -351,6 +373,9 @@ export default function RecurringManager() {
                       <TableCell className="text-right">{formatIdr(item.amount)}</TableCell>
                       <TableCell className="text-xs">
                         {item.type === 'cash' ? 'Cash' : item.type === 'credit_expense' ? 'Credit' : 'Credit Pay'}
+                      </TableCell>
+                      <TableCell className="text-xs text-slate-400">
+                        {item.end_date || '—'}
                       </TableCell>
                       <TableCell>
                         {item.done ? (

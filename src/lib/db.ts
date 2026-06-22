@@ -71,6 +71,7 @@ export function initSchema() {
       payment_method TEXT NOT NULL DEFAULT 'Cash',
       done INTEGER NOT NULL DEFAULT 0,
       active INTEGER NOT NULL DEFAULT 1,
+      end_date TEXT,
       created_at TEXT DEFAULT CURRENT_TIMESTAMP
     );
 
@@ -113,7 +114,8 @@ export function initSchema() {
   `);
 
   // Migrations for columns added after initial schema
-  try { db.exec('ALTER TABLE transactions ADD COLUMN notes TEXT DEFAULT \'\''); } catch (_) { /* already exists */ }
+  try { db.exec(`ALTER TABLE transactions ADD COLUMN notes TEXT DEFAULT ''`); } catch (_) { /* already exists */ }
+  try { db.exec('ALTER TABLE recurring_transactions ADD COLUMN end_date TEXT'); } catch (_) { /* already exists */ }
 }
 
 // ─── Period helpers ─────────────────────────────────────────────────────────
@@ -470,8 +472,8 @@ export function getRecurringTransactionById(id: number) {
 
 export function insertRecurringTransaction(tx: Omit<any, 'id'>) {
   const stmt = db.prepare(`
-    INSERT INTO recurring_transactions (title, category, amount, type, payment_method, done, active, created_at)
-    VALUES (@title, @category, @amount, @type, @payment_method, @done, @active, @created_at)
+    INSERT INTO recurring_transactions (title, category, amount, type, payment_method, done, active, end_date, created_at)
+    VALUES (@title, @category, @amount, @type, @payment_method, @done, @active, @end_date, @created_at)
   `);
   const result = stmt.run({
     title: tx.title,
@@ -481,6 +483,7 @@ export function insertRecurringTransaction(tx: Omit<any, 'id'>) {
     payment_method: tx.payment_method || 'Cash',
     done: tx.done ? 1 : 0,
     active: tx.active !== false ? 1 : 0,
+    end_date: tx.end_date || null,
     created_at: tx.created_at || new Date().toISOString(),
   });
   return result.lastInsertRowid as number;
