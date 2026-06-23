@@ -239,7 +239,7 @@ export function insertTransaction(tx: Omit<any, 'id'>) {
 
 export function updateTransaction(id: number, tx: Partial<any>) {
   const normalized = normalizeTx(tx);
-  const fields = Object.keys(normalized).filter((k) => k !== 'id' && k !== 'created_time');
+  const fields = Object.keys(normalized).filter((k) => k !== 'id');
   if (fields.length === 0) return;
   const setClause = fields.map((f) => `${f} = @${f}`).join(', ');
   const stmt = db.prepare(`UPDATE transactions SET ${setClause} WHERE id = @id`);
@@ -259,7 +259,7 @@ export function deleteTransactionsBulk(ids: number[]) {
 export function updateTransactionsBulk(ids: number[], updates: Partial<any>) {
   if (ids.length === 0) return { changes: 0 };
   const normalized = normalizeTx(updates);
-  const fields = Object.keys(normalized).filter((k) => k !== 'id' && k !== 'created_time');
+  const fields = Object.keys(normalized).filter((k) => k !== 'id');
   if (fields.length === 0) return { changes: 0 };
   const setParts = fields.map((f) => `${f} = ?`);
   const setClause = setParts.join(', ');

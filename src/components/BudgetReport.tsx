@@ -92,15 +92,20 @@ export default function BudgetReport({ summaries, categories }: Props) {
       }
     });
 
-    return Object.entries(stats).map(([name, data]) => ({
-      name,
-      spent: data.spent,
-      limit: data.limit,
-      remaining: data.limit - data.spent,
-      pct: data.limit > 0 ? (data.spent / data.limit) * 100 : data.spent > 0 ? 101 : 0,
-      color: categoryMap[name]?.color,
-      months: data.months,
-    }));
+    const totalPeriods = activeSummaries.length;
+    return Object.entries(stats).map(([name, data]) => {
+      const periodCount = isAllTime ? (data.months > 0 ? data.months : totalPeriods) : 1;
+      const effectiveLimit = data.limit * periodCount;
+      return {
+        name,
+        spent: data.spent,
+        limit: effectiveLimit,
+        remaining: effectiveLimit - data.spent,
+        pct: effectiveLimit > 0 ? (data.spent / effectiveLimit) * 100 : data.spent > 0 ? 101 : 0,
+        color: categoryMap[name]?.color,
+        months: data.months,
+      };
+    });
   }, [summaries, filterMonth, isAllTime, categories, categoryMap]);
 
   const sortedStats = useMemo(() => {

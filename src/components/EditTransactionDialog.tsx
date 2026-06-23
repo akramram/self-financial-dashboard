@@ -149,6 +149,16 @@ export default function EditTransactionDialog({
               onChange={(e) => onChange('notes', e.target.value)}
             />
           </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="edit-created" className="text-xs text-muted-foreground">Date Created</Label>
+            <Input
+              id="edit-created"
+              type="text"
+              value={transaction.created_time ?? ''}
+              onChange={(e) => onChange('created_time', e.target.value)}
+            />
+          </div>
         </div>
 
         <div className="flex justify-end gap-2">
