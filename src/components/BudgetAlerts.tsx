@@ -44,7 +44,7 @@ function dismissAlert(periodId: number, category: string) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(dismissed));
 }
 
-export default function BudgetAlerts({ summaries, categories, activeMonth }: Props) {
+export default function BudgetAlerts({ summaries, categories, activeMonth, transactions, recurringTitles }: Props) {
   const [collapsed, setCollapsed] = useState(false);
   const [dismissed, setDismissed] = useState<Record<string, boolean>>({});
 
