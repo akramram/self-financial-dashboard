@@ -9,9 +9,12 @@ import { AlertTriangle, TrendingUp, X, ChevronDown, ChevronUp } from 'lucide-rea
 interface BudgetAlert {
   category: string;
   spent: number;
+  discretionarySpent: number;
   limit: number;
   pct: number;
+  discretionaryPct: number;
   isOver: boolean;
+  isAllRecurring: boolean;
   color: string;
 }
 
@@ -19,6 +22,8 @@ interface Props {
   summaries: MonthlySummary[];
   categories: Category[];
   activeMonth?: string;
+  transactions?: { id: number; period_id: number; title: string; category: string; amount: number; type: string; done: number }[];
+  recurringTitles?: string[];
 }
 
 const STORAGE_KEY = 'budget-alerts-dismissed';
@@ -61,6 +66,20 @@ export default function BudgetAlerts({ summaries, categories, activeMonth }: Pro
       categoryMap[c.name] = c;
     });
 
+    // Build recurring title set (lowercased) for matching
+    const recurringSet = new Set((recurringTitles || []).map((t) => t.toLowerCase()));
+
+    // Compute discretionary spend per category (excluding recurring transactions)
+    const discretionarySpend: Record<string, number> = {};
+    const periodTxs = (transactions || []).filter(
+      (t) => t.period_id === activeSummary.period_id && t.done === 1 && (t.type === 'cash' || t.type === 'credit_expense')
+    );
+    for (const tx of periodTxs) {
+      if (!recurringSet.has(tx.title.toLowerCase())) {
+        discretionarySpend[tx.category] = (discretionarySpend[tx.category] || 0) + tx.amount;
+      }
+    }
+
     const results: BudgetAlert[] = [];
 
     for (const [cat, amount] of Object.entries(activeSummary.category_totals)) {
@@ -69,8 +88,15 @@ export default function BudgetAlerts({ summaries, categories, activeMonth }: Pro
       if (limit <= 0 || amount <= 0) continue;
 
       const pct = (amount / limit) * 100;
+      const discAmt = discretionarySpend[cat] || 0;
+      const discPct = (discAmt / limit) * 100;
+      const isOver = amount > limit;
+      const isAllRecurring = discAmt === 0 && amount > 0;
+
       // Only alert at 80%+ (approaching) or 100%+ (over)
+      // Hide "approaching" if all spend is from recurring transactions
       if (pct < 80) continue;
+      if (!isOver && isAllRecurring) continue;
 
       // Check if dismissed for this period+category
       const dismissKey = `${activeSummary.period_id}:${cat}`;
@@ -79,9 +105,12 @@ export default function BudgetAlerts({ summaries, categories, activeMonth }: Pro
       results.push({
         category: cat,
         spent: amount,
+        discretionarySpent: discAmt,
         limit,
         pct: Math.round(pct * 10) / 10,
-        isOver: amount > limit,
+        discretionaryPct: Math.round(discPct * 10) / 10,
+        isOver,
+        isAllRecurring,
         color: catDef?.color || '#94a3b8',
       });
     }
@@ -93,7 +122,7 @@ export default function BudgetAlerts({ summaries, categories, activeMonth }: Pro
     });
 
     return results;
-  }, [summaries, categories, activeMonth, dismissed]);
+  }, [summaries, categories, activeMonth, dismissed, transactions, recurringTitles]);
 
   const handleDismiss = (periodId: number, category: string) => {
     dismissAlert(periodId, category);

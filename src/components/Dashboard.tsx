@@ -164,8 +164,12 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
   const txPerPage = 10;
 
   const [categories, setCategories] = useState<Category[]>([]);
+  const [recurringTitles, setRecurringTitles] = useState<string[]>([]);
   useEffect(() => {
     fetchCategories().then(setCategories).catch(() => {});
+    fetchRecurringTransactions().then((r) => {
+      setRecurringTitles(r.filter((rx) => rx.active).map((rx) => rx.title));
+    }).catch(() => {});
   }, []);
 
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -382,6 +386,8 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
           summaries={summaries}
           categories={categories}
           activeMonth={activeSummary?.month}
+          transactions={transactions}
+          recurringTitles={recurringTitles}
         />
         </CollapsibleSection>
       </div>
