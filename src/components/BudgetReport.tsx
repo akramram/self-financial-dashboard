@@ -229,6 +229,21 @@ export default function BudgetReport({ summaries, categories }: Props) {
 
   const dialogTotal = categoryTransactions.reduce((s, t) => s + t.amount, 0);
 
+  // Determine which period_ids were over budget for the selected category
+  const overBudgetPeriods = useMemo(() => {
+    if (!selectedCategory) return new Set<number>();
+    const cat = categoryMap[selectedCategory];
+    if (!cat || cat.monthly_limit <= 0) return new Set<number>();
+    const periods = new Set<number>();
+    summaries.forEach((s) => {
+      const spent = s.category_totals?.[selectedCategory] ?? 0;
+      if (spent > cat.monthly_limit) {
+        periods.add(s.period_id);
+      }
+    });
+    return periods;
+  }, [summaries, selectedCategory, categoryMap]);
+
   return (
     <div className="space-y-6">
       {/* Month Filter */}
@@ -449,11 +464,12 @@ export default function BudgetReport({ summaries, categories }: Props) {
                     <TableHead>Date</TableHead>
                     <TableHead className="text-right">Amount</TableHead>
                     <TableHead>Type</TableHead>
-                    <TableHead>Paid</TableHead>
+                    <TableHead>Status</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {categoryTransactions.map((tx) => {
+                    const isOverBudget = overBudgetPeriods.has(tx.period_id);
                     const typeClass =
                       tx.type === 'cash'
                         ? 'text-blue-600 dark:text-blue-400'
@@ -467,22 +483,30 @@ export default function BudgetReport({ summaries, categories }: Props) {
                       ? tx.date
                       : dateObj.toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' });
                     return (
-                      <TableRow key={tx.id}>
+                      <TableRow
+                        key={tx.id}
+                        className={isOverBudget ? 'border-l-2 border-l-red-500 bg-red-50/60 dark:bg-red-950/30' : ''}
+                      >
                         <TableCell className="font-medium">{tx.title}</TableCell>
                         <TableCell className="text-muted-foreground text-xs">{dateStr}</TableCell>
                         <TableCell className="text-right font-medium">{formatIdr(tx.amount)}</TableCell>
                         <TableCell className={`${typeClass} text-xs font-semibold uppercase`}>{typeLabel}</TableCell>
                         <TableCell>
-                          <Badge
-                            variant="secondary"
-                            className={`text-[10px] ${
-                              tx.done
-                                ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
-                                : 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300'
-                            }`}
-                          >
-                            {tx.done ? 'Paid' : 'Unpaid'}
-                          </Badge>
+                          <div className="flex items-center gap-2">
+                            {isOverBudget && (
+                              <Badge variant="destructive" className="text-[10px] whitespace-nowrap">Over Budget</Badge>
+                            )}
+                            <Badge
+                              variant="secondary"
+                              className={`text-[10px] ${
+                                tx.done
+                                  ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
+                                  : 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300'
+                              }`}
+                            >
+                              {tx.done ? 'Paid' : 'Unpaid'}
+                            </Badge>
+                          </div>
                         </TableCell>
                       </TableRow>
                     );
