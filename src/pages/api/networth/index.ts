@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { getNetworth, upsertNetworth, recalcNetworthMoM } from '../../../lib/db';
+import { getNetworth, upsertNetworth, recalcNetworthMoM, ensurePeriod } from '../../../lib/db';
 
 export const GET: APIRoute = async () => {
   const rows = getNetworth();
@@ -10,6 +10,15 @@ export const GET: APIRoute = async () => {
 
 export const POST: APIRoute = async ({ request }) => {
   const body = await request.json();
+  if (!body.period_id && body.month) {
+    body.period_id = ensurePeriod(body.month);
+  }
+  if (!body.period_id) {
+    return new Response(JSON.stringify({ error: 'period_id or month is required' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
   upsertNetworth(body);
   recalcNetworthMoM();
   return new Response(JSON.stringify({ success: true }), {
