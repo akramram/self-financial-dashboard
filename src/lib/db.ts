@@ -306,19 +306,27 @@ export function getNetworthByPeriod(periodId: number) {
 }
 
 export function upsertNetworth(record: any) {
+  const safeRecord = {
+    period_id: record.period_id,
+    date: record.date,
+    total: record.total,
+    currency: record.currency || 'IDR',
+    month_over_month_change: record.month_over_month_change ?? null,
+    month_over_month_pct: record.month_over_month_pct ?? null,
+  };
   const existing = db.prepare('SELECT period_id FROM networth WHERE period_id = ?').get(record.period_id);
   if (existing) {
     db.prepare(`
       UPDATE networth SET date = @date, total = @total, currency = @currency,
       month_over_month_change = @month_over_month_change, month_over_month_pct = @month_over_month_pct
       WHERE period_id = @period_id
-    `).run(record);
+    `).run(safeRecord);
     db.prepare('DELETE FROM networth_breakdown WHERE period_id = ?').run(record.period_id);
   } else {
     db.prepare(`
       INSERT INTO networth (period_id, date, total, currency, month_over_month_change, month_over_month_pct)
       VALUES (@period_id, @date, @total, @currency, @month_over_month_change, @month_over_month_pct)
-    `).run(record);
+    `).run(safeRecord);
   }
   const insertBreakdown = db.prepare(`
     INSERT INTO networth_breakdown (period_id, investment, value) VALUES (@period_id, @investment, @value)
