@@ -21,6 +21,7 @@ const ALL_ITEMS: CommandItem[] = [
   { id: 'analytics', label: 'Spending Analytics', description: 'Daily trends and category drill-down', icon: '📈', group: 'pages', href: '/analytics' },
   { id: 'cashflow', label: 'Cash Flow', description: 'Income vs outcome waterfall', icon: '💸', group: 'pages', href: '/cashflow' },
   { id: 'calendar', label: 'Spending Calendar', description: 'Calendar heatmap of daily spending', icon: '📅', group: 'pages', href: '/calendar' },
+  { id: 'payments', label: 'Payment Methods', description: 'Cash vs credit card insights and trends', icon: '💳', group: 'pages', href: '/payments' },
   { id: 'goals', label: 'Goals Tracker', description: 'Track financial goals progress', icon: '🎯', group: 'pages', href: '/goals' },
   { id: 'recurring', label: 'Recurring', description: 'Manage recurring transactions', icon: '🔄', group: 'pages', href: '/recurring' },
   { id: 'yearly', label: 'Yearly Report', description: 'Annual spending summary', icon: '📆', group: 'pages', href: '/yearly' },

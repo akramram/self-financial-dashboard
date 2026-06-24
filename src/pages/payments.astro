@@ -1,0 +1,42 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PaymentMethodInsights from '../components/PaymentMethodInsights';
+import {
+  getTransactions,
+  getMonthlySummary,
+  getCategories,
+  db,
+} from '../lib/db';
+
+const transactions = getTransactions();
+const summaries = getMonthlySummary();
+const categories = getCategories();
+
+// Enrich summaries with income from DB
+const incomeRows = db.prepare(
+  'SELECT mi.period_id, mi.income, p.month FROM monthly_income mi JOIN periods p ON mi.period_id = p.id'
+).all() as any[];
+const incomeMap = new Map(incomeRows.map((r) => [r.month, r.income]));
+for (const s of summaries) {
+  const income = incomeMap.get(s.month) || 0;
+  s.income = income;
+  s.savings = income - s.outcome.total;
+  s.savings_rate_pct = income > 0 ? Number(((s.savings / income) * 100).toFixed(2)) : 0;
+}
+---
+
+<Layout title="Payment Methods - Financial Dashboard">
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold">Payment Method Insights</h1>
+    <p class="text-slate-500 dark:text-slate-400 text-sm">
+      Understand your cash vs credit card usage patterns — spending trends, utilization ratios, average transaction sizes, and per-category payment preferences.
+    </p>
+  </div>
+
+  <PaymentMethodInsights
+    transactions={transactions}
+    summaries={summaries}
+    categories={categories}
+    client:load
+  />
+</Layout>
