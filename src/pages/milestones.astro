@@ -1,0 +1,31 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SavingsMilestones from '../components/SavingsMilestones';
+import { getSavingsMilestonesData } from '../lib/db';
+
+const data = getSavingsMilestonesData();
+---
+
+<Layout title="Savings Milestones - Financial Dashboard">
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold">🏅 Savings Milestones</h1>
+    <p class="text-slate-500 dark:text-slate-400 text-sm">
+      Track your savings achievements, streaks, and cumulative progress over time.
+    </p>
+  </div>
+
+  <SavingsMilestones
+    periods={data.periods}
+    milestones={data.milestones}
+    currentStreak={data.currentStreak}
+    longestStreak={data.longestStreak}
+    allStreaks={data.allStreaks}
+    bestMonth={data.bestMonth}
+    worstMonth={data.worstMonth}
+    cumulativeSavings={data.cumulativeSavings}
+    avgSavingsRate={data.avgSavingsRate}
+    positiveMonths={data.positiveMonths}
+    totalMonths={data.totalMonths}
+    client:load
+  />
+</Layout>

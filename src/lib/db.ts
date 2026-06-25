@@ -1145,6 +1145,293 @@ export function getCategoryStats(): CategoryStat[] {
   return stats;
 }
 
+// ─── Savings Milestones ──────────────────────────────────────────────────────
+
+export interface SavingsPeriod {
+  period_id: number;
+  month: string;
+  start_date: string;
+  income: number;
+  outcome: number;
+  savings: number;
+  savings_rate_pct: number;
+}
+
+export interface SavingsMilestone {
+  id: string;
+  name: string;
+  emoji: string;
+  description: string;
+  achieved: boolean;
+  achievedDate: string | null;
+  value: number; // the metric value (e.g. savings amount, rate, streak count)
+  target: number;
+}
+
+export interface SavingsStreak {
+  count: number;
+  startMonth: string;
+  endMonth: string;
+  totalSaved: number;
+}
+
+export interface SavingsMilestonesData {
+  periods: SavingsPeriod[];
+  milestones: SavingsMilestone[];
+  currentStreak: SavingsStreak | null;
+  longestStreak: SavingsStreak | null;
+  allStreaks: SavingsStreak[];
+  bestMonth: SavingsPeriod | null;
+  worstMonth: SavingsPeriod | null;
+  cumulativeSavings: number;
+  avgSavingsRate: number;
+  positiveMonths: number;
+  totalMonths: number;
+}
+
+export function getSavingsMilestonesData(): SavingsMilestonesData {
+  // Get all periods with transactions
+  const periodRows = db.prepare(`
+    SELECT DISTINCT p.id, p.month, p.start_date
+    FROM periods p
+    INNER JOIN transactions t ON t.period_id = p.id
+    ORDER BY p.start_date ASC
+  `).all() as { id: number; month: string; start_date: string }[];
+
+  // Get income data
+  const incomeRows = db.prepare('SELECT period_id, income FROM monthly_income').all() as { period_id: number; income: number }[];
+  const incomeMap = new Map(incomeRows.map((r) => [r.period_id, r.income]));
+
+  // Build savings periods
+  const periods: SavingsPeriod[] = [];
+  for (const p of periodRows) {
+    const outcome = (db.prepare('SELECT SUM(CASE WHEN done=1 THEN amount ELSE 0 END) as total FROM transactions WHERE period_id = ?').get(p.id) as any)?.total ?? 0;
+    const income = incomeMap.get(p.id) ?? 0;
+    const savings = income - outcome;
+    const savingsRate = income > 0 ? (savings / income) * 100 : 0;
+    periods.push({
+      period_id: p.id,
+      month: p.month,
+      start_date: p.start_date,
+      income,
+      outcome,
+      savings,
+      savings_rate_pct: Math.round(savingsRate * 100) / 100,
+    });
+  }
+
+  if (periods.length === 0) {
+    return {
+      periods: [],
+      milestones: [],
+      currentStreak: null,
+      longestStreak: null,
+      allStreaks: [],
+      bestMonth: null,
+      worstMonth: null,
+      cumulativeSavings: 0,
+      avgSavingsRate: 0,
+      positiveMonths: 0,
+      totalMonths: 0,
+    };
+  }
+
+  // Cumulative savings
+  let cumulativeSavings = 0;
+  for (const p of periods) cumulativeSavings += p.savings;
+
+  // Average savings rate
+  const totalRate = periods.reduce((s, p) => s + p.savings_rate_pct, 0);
+  const avgSavingsRate = Math.round((totalRate / periods.length) * 100) / 100;
+
+  // Positive months count
+  const positiveMonths = periods.filter((p) => p.savings > 0).length;
+
+  // Best/worst months
+  const bestMonth = [...periods].sort((a, b) => b.savings - a.savings)[0];
+  const worstMonth = [...periods].sort((a, b) => a.savings - b.savings)[0];
+
+  // Streaks: consecutive months with positive savings
+  const streaks: SavingsStreak[] = [];
+  let currentStreak: SavingsStreak | null = null;
+  let tempStreak: SavingsStreak | null = null;
+
+  for (const p of periods) {
+    if (p.savings > 0) {
+      if (!tempStreak) {
+        tempStreak = { count: 1, startMonth: p.month, endMonth: p.month, totalSaved: p.savings };
+      } else {
+        tempStreak.count++;
+        tempStreak.endMonth = p.month;
+        tempStreak.totalSaved += p.savings;
+      }
+    } else {
+      if (tempStreak) {
+        streaks.push(tempStreak);
+        tempStreak = null;
+      }
+    }
+  }
+  if (tempStreak) {
+    streaks.push(tempStreak);
+    currentStreak = tempStreak;
+  }
+
+  const longestStreak = streaks.length > 0
+    ? [...streaks].sort((a, b) => b.count - a.count)[0]
+    : null;
+
+  // Milestones
+  const milestones: SavingsMilestone[] = [];
+
+  // 1. First positive savings month
+  const firstPositive = periods.find((p) => p.savings > 0);
+  milestones.push({
+    id: 'first-savings',
+    name: 'First Savings',
+    emoji: '🌱',
+    description: 'First month with positive savings',
+    achieved: !!firstPositive,
+    achievedDate: firstPositive?.month ?? null,
+    value: firstPositive?.savings ?? 0,
+    target: 1,
+  });
+
+  // 2. Savings rate >= 20%
+  const rate20 = periods.find((p) => p.savings_rate_pct >= 20);
+  milestones.push({
+    id: 'rate-20',
+    name: '20% Saver',
+    emoji: '🎯',
+    description: 'Save at least 20% of income in one month',
+    achieved: !!rate20,
+    achievedDate: rate20?.month ?? null,
+    value: rate20?.savings_rate_pct ?? 0,
+    target: 20,
+  });
+
+  // 3. Savings rate >= 30%
+  const rate30 = periods.find((p) => p.savings_rate_pct >= 30);
+  milestones.push({
+    id: 'rate-30',
+    name: '30% Saver',
+    emoji: '🏆',
+    description: 'Save at least 30% of income in one month',
+    achieved: !!rate30,
+    achievedDate: rate30?.month ?? null,
+    value: rate30?.savings_rate_pct ?? 0,
+    target: 30,
+  });
+
+  // 4. Savings rate >= 50%
+  const rate50 = periods.find((p) => p.savings_rate_pct >= 50);
+  milestones.push({
+    id: 'rate-50',
+    name: '50% Saver',
+    emoji: '💎',
+    description: 'Save at least 50% of income in one month',
+    achieved: !!rate50,
+    achievedDate: rate50?.month ?? null,
+    value: rate50?.savings_rate_pct ?? 0,
+    target: 50,
+  });
+
+  // 5. First 3-month streak
+  const streak3 = streaks.find((s) => s.count >= 3);
+  milestones.push({
+    id: 'streak-3',
+    name: '3-Month Streak',
+    emoji: '🔥',
+    description: 'Positive savings for 3 consecutive months',
+    achieved: !!streak3,
+    achievedDate: streak3?.startMonth ?? null,
+    value: streak3?.count ?? 0,
+    target: 3,
+  });
+
+  // 6. First 6-month streak
+  const streak6 = streaks.find((s) => s.count >= 6);
+  milestones.push({
+    id: 'streak-6',
+    name: '6-Month Streak',
+    emoji: '⚡',
+    description: 'Positive savings for 6 consecutive months',
+    achieved: !!streak6,
+    achievedDate: streak6?.startMonth ?? null,
+    value: streak6?.count ?? 0,
+    target: 6,
+  });
+
+  // 7. Cumulative savings milestones
+  const cumulTargets = [10_000_000, 50_000_000, 100_000_000, 250_000_000, 500_000_000];
+  const cumulEmojis = ['🪙', '💰', '🏦', '🏢', '🏗️'];
+  const cumulNames = ['10M Saved', '50M Saved', '100M Club', '250M Club', '500M Club'];
+  for (let i = 0; i < cumulTargets.length; i++) {
+    const achieved = cumulativeSavings >= cumulTargets[i];
+    // Find when cumulative first hit this target
+    let achievedDate: string | null = null;
+    let runCumul = 0;
+    if (achieved) {
+      for (const p of periods) {
+        runCumul += p.savings;
+        if (runCumul >= cumulTargets[i]) {
+          achievedDate = p.month;
+          break;
+        }
+      }
+    }
+    milestones.push({
+      id: `cumul-${cumulTargets[i]}`,
+      name: cumulNames[i],
+      emoji: cumulEmojis[i],
+      description: `Reach cumulative savings of ${formatIdrShort(cumulTargets[i])}`,
+      achieved,
+      achievedDate,
+      value: Math.min(cumulativeSavings, cumulTargets[i]),
+      target: cumulTargets[i],
+    });
+  }
+
+  // 8. 10+ periods tracked
+  milestones.push({
+    id: 'periods-10',
+    name: '10 Periods',
+    emoji: '📊',
+    description: 'Track spending for 10 salary periods',
+    achieved: periods.length >= 10,
+    achievedDate: periods.length >= 10 ? periods[9].month : null,
+    value: Math.min(periods.length, 10),
+    target: 10,
+  });
+
+  // 9. Best single-month savings: 15M+
+  const bigSave = periods.find((p) => p.savings >= 15_000_000);
+  milestones.push({
+    id: 'big-save',
+    name: 'Big Saver',
+    emoji: '🚀',
+    description: 'Save 15M+ in a single month',
+    achieved: !!bigSave,
+    achievedDate: bigSave?.month ?? null,
+    value: bigSave?.savings ?? 0,
+    target: 15_000_000,
+  });
+
+  return {
+    periods,
+    milestones,
+    currentStreak,
+    longestStreak,
+    allStreaks: streaks,
+    bestMonth,
+    worstMonth,
+    cumulativeSavings,
+    avgSavingsRate,
+    positiveMonths,
+    totalMonths: periods.length,
+  };
+}
+
 // ─── Recurring vs Discretionary Breakdown ────────────────────────────────────
 
 export interface RecurringBreakdownPeriod {
