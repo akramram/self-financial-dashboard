@@ -19,6 +19,7 @@ const ALL_ITEMS: CommandItem[] = [
   { id: 'spending-mix', label: 'Spending Mix', description: 'Recurring vs discretionary breakdown', icon: '🔀', group: 'pages', href: '/spending-mix' },
   { id: 'compare', label: 'Month Comparison', description: 'Compare spending across months', icon: '⚖️', group: 'pages', href: '/compare' },
   { id: 'analytics', label: 'Spending Analytics', description: 'Daily trends and category drill-down', icon: '📈', group: 'pages', href: '/analytics' },
+  { id: 'matrix', label: 'Spending Matrix', description: 'Category × period heatmap of all spending', icon: '🔳', group: 'pages', href: '/matrix' },
   { id: 'cashflow', label: 'Cash Flow', description: 'Income vs outcome waterfall', icon: '💸', group: 'pages', href: '/cashflow' },
   { id: 'calendar', label: 'Spending Calendar', description: 'Calendar heatmap of daily spending', icon: '📅', group: 'pages', href: '/calendar' },
   { id: 'goals', label: 'Goals Tracker', description: 'Track financial goals progress', icon: '🎯', group: 'pages', href: '/goals' },

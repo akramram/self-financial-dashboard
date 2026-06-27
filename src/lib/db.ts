@@ -740,6 +740,138 @@ export function getAllMonthsWithSpending() {
   `).all() as any[];
 }
 
+// ─── Category × Period Spending Matrix ──────────────────────────────────────
+
+export interface CategoryPeriodCell {
+  amount: number;
+  tx_count: number;
+}
+
+export interface CategoryPeriodMatrixRow {
+  category: string;
+  /** keyed by period_id */
+  cells: Record<number, CategoryPeriodCell>;
+  total: number;
+  avg: number;
+  periodCount: number;   // how many periods had any spend
+  max: number;           // peak spend across periods
+  maxPeriodId: number | null;
+  trendPct: number | null;  // % change comparing last half vs first half
+}
+
+export interface CategoryPeriodMatrix {
+  periods: { id: number; month: string; start_date: string; end_date: string }[];
+  categories: CategoryPeriodMatrixRow[];
+  /** period_id → total spend across categories (for column comparison) */
+  periodTotals: Record<number, number>;
+}
+
+/**
+ * Returns a category × period spending matrix.
+ * Each cell contains the total paid spend for a (category, period) pair.
+ * Categories are sorted by total spend descending.
+ * Periods are ordered chronologically.
+ */
+export function getCategoryPeriodMatrix(): CategoryPeriodMatrix {
+  // Get all periods that have paid spending transactions
+  const periods = db.prepare(`
+    SELECT DISTINCT p.id, p.month, p.start_date, p.end_date
+    FROM periods p
+    INNER JOIN transactions t ON t.period_id = p.id
+    WHERE t.done = 1 AND t.type IN ('cash', 'credit_expense')
+    ORDER BY p.start_date ASC
+  `).all() as { id: number; month: string; start_date: string; end_date: string }[];
+
+  if (periods.length === 0) {
+    return { periods: [], categories: [], periodTotals: {} };
+  }
+
+  const periodIds = periods.map((p) => p.id);
+
+  // Aggregate spend per (category, period)
+  const rows = db.prepare(`
+    SELECT category, period_id, SUM(amount) AS amount, COUNT(*) AS tx_count
+    FROM transactions
+    WHERE done = 1 AND type IN ('cash', 'credit_expense')
+      AND period_id IN (${periodIds.map(() => '?').join(',')})
+    GROUP BY category, period_id
+  `).all(...periodIds) as { category: string; period_id: number; amount: number; tx_count: number }[];
+
+  // Build a nested map: category → period_id → { amount, tx_count }
+  const byCategory = new Map<string, Map<number, CategoryPeriodCell>>();
+  const periodTotals: Record<number, number> = {};
+  for (const pid of periodIds) periodTotals[pid] = 0;
+
+  for (const row of rows) {
+    if (!byCategory.has(row.category)) byCategory.set(row.category, new Map());
+    byCategory.get(row.category)!.set(row.period_id, {
+      amount: Math.round(row.amount * 100) / 100,
+      tx_count: row.tx_count,
+    });
+    periodTotals[row.period_id] += row.amount;
+  }
+  for (const pid of periodIds) {
+    periodTotals[pid] = Math.round(periodTotals[pid] * 100) / 100;
+  }
+
+  // Build matrix rows with stats
+  const matrixRows: CategoryPeriodMatrixRow[] = [];
+  for (const [category, cellMap] of byCategory.entries()) {
+    const values: number[] = [];
+    let total = 0;
+    let max = 0;
+    let maxPeriodId: number | null = null;
+
+    for (const pid of periodIds) {
+      const cell = cellMap.get(pid);
+      const amt = cell?.amount ?? 0;
+      values.push(amt);
+      total += amt;
+      if (amt > max) {
+        max = amt;
+        maxPeriodId = pid;
+      }
+    }
+
+    const periodCount = values.filter((v) => v > 0).length;
+    const avg = periodCount > 0 ? total / periodCount : 0;
+
+    // Trend: compare first half vs second half average
+    let trendPct: number | null = null;
+    if (values.length >= 3) {
+      const half = Math.floor(values.length / 2);
+      const firstSlice = values.slice(0, half);
+      const secondSlice = values.slice(values.length - half);
+      const firstAvg = firstSlice.reduce((s, v) => s + v, 0) / Math.max(1, firstSlice.length);
+      const secondAvg = secondSlice.reduce((s, v) => s + v, 0) / Math.max(1, secondSlice.length);
+      if (firstAvg > 0) {
+        trendPct = Math.round(((secondAvg - firstAvg) / firstAvg) * 1000) / 10;
+      }
+    }
+
+    const cells: Record<number, CategoryPeriodCell> = {};
+    for (const [pid, cell] of cellMap.entries()) {
+      cells[pid] = cell;
+    }
+
+    matrixRows.push({
+      category,
+      cells,
+      total: Math.round(total * 100) / 100,
+      avg: Math.round(avg * 100) / 100,
+      periodCount,
+      max: Math.round(max * 100) / 100,
+      maxPeriodId,
+      trendPct,
+    });
+  }
+
+  // Sort categories by total spend descending
+  matrixRows.sort((a, b) => b.total - a.total);
+
+  return { periods, categories: matrixRows, periodTotals };
+}
+
 export function getSpendingVelocity(periodId: number) {
   // Get spending for current and previous periods to compute velocity
   const periodRows = db.prepare(`
