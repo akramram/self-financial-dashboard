@@ -219,6 +219,15 @@ export function getTransactionById(id: number) {
   return db.prepare('SELECT * FROM transactions WHERE id = ?').get(id) as any;
 }
 
+/** All transactions whose created_time (or date fallback) falls on the given YYYY-MM-DD day. */
+export function getTransactionsByDate(day: string) {
+  return db.prepare(`
+    SELECT * FROM transactions
+    WHERE SUBSTR(COALESCE(created_time, date), 1, 10) = ?
+    ORDER BY created_time DESC
+  `).all(day) as any[];
+}
+
 function normalizeTx(tx: any) {
   const copy = { ...tx };
   if (typeof copy.done === 'boolean') copy.done = copy.done ? 1 : 0;
@@ -617,6 +626,254 @@ export function getDayOfWeekSpending() {
     GROUP BY dow
     ORDER BY dow ASC
   `).all() as any[];
+}
+
+// ============================================================
+// Spending Streaks — gamify no-spend days
+// "No-spend day" = a calendar day with zero discretionary spending
+//   (discretionary = cash or credit_expense, excludes credit_payment
+//    which is just moving money between accounts, not real spending)
+// ============================================================
+
+export interface StreakDay {
+  date: string;          // YYYY-MM-DD
+  dow: number;           // 0=Sun .. 6=Sat
+  isNoSpend: boolean;
+  txCount: number;
+  total: number;
+}
+
+export interface DayOfWeekPattern {
+  dow: number;           // 0=Sun .. 6=Sat
+  label: string;
+  spendDays: number;     // distinct days with spending on this weekday
+  noSpendDays: number;   // distinct no-spend days on this weekday
+  totalSpend: number;
+  avgPerSpendDay: number;
+}
+
+export interface StreakBadge {
+  id: string;
+  label: string;
+  description: string;
+  icon: string;          // emoji
+  unlocked: boolean;
+  progress?: { current: number; target: number };
+}
+
+export interface StreakResult {
+  currentStreak: number;
+  longestStreak: number;
+  todayIsNoSpend: boolean;
+  yesterdayWasNoSpend: boolean;
+  noSpendLast30: number;
+  noSpendLast90: number;
+  totalDaysTracked: number;
+  firstTrackedDate: string | null;
+  recentDays: StreakDay[];           // last 35 days, oldest→newest, for the strip
+  dowPattern: DayOfWeekPattern[];    // 7 entries
+  badges: StreakBadge[];
+  // recent no-spend days with a transaction drilldown (newest first)
+  recentNoSpendDays: string[];
+}
+
+const DOW_LABELS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+export function getSpendingStreaks(): StreakResult {
+  // 1. Pull every distinct discretionary spend day (all-time), with totals.
+  //    created_time is the real per-day timestamp; date is just a period marker.
+  const spendDayRows = db.prepare(`
+    SELECT DATE(created_time) AS day,
+           COUNT(*) AS tx_count,
+           SUM(amount) AS total
+    FROM transactions
+    WHERE type IN ('cash', 'credit_expense')
+      AND done = 1
+      AND created_time IS NOT NULL
+      AND DATE(created_time) <= DATE('now')
+    GROUP BY day
+  `).all() as { day: string; tx_count: number; total: number }[];
+
+  const spendDaySet = new Set(spendDayRows.map((r) => r.day));
+  const spendDayMap = new Map(spendDayRows.map((r) => [r.day, r]));
+
+  // 2. Determine the tracking window: from the earliest discretionary
+  //    transaction date through today.
+  const today = new Date();
+  const todayStr = ymd(today);
+
+  let firstTrackedDate: string | null = null;
+  if (spendDayRows.length > 0) {
+    const sorted = spendDayRows.map((r) => r.day).sort();
+    // Start tracking the day BEFORE the first spend, so the first no-spend
+    // streak can include that boundary if it was genuinely no-spend.
+    firstTrackedDate = sorted[0];
+  }
+
+  // 3. Build a per-day map for the last 120 days (enough for 90-day stats + strip).
+  //    We walk day-by-day from today backwards so no-spend gaps are explicit.
+  const lookbackDays = 120;
+  const stripDays: StreakDay[] = [];
+  let noSpendLast30 = 0;
+  let noSpendLast90 = 0;
+  const windowStart90 = new Date(today);
+  windowStart90.setDate(windowStart90.getDate() - 89); // inclusive 90 days
+  const windowStart30 = new Date(today);
+  windowStart30.setDate(windowStart30.getDate() - 29); // inclusive 30 days
+
+  for (let i = lookbackDays - 1; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const ds = ymd(d);
+    const spend = spendDayMap.get(ds);
+    const isNoSpend = !spend; // no discretionary spend that day
+    const dow = (d.getDay() + 7) % 7; // 0=Sun..6=Sat (JS already uses this)
+    const day: StreakDay = {
+      date: ds,
+      dow,
+      isNoSpend,
+      txCount: spend?.tx_count ?? 0,
+      total: spend?.total ?? 0,
+    };
+    stripDays.push(day);
+    if (isNoSpend) {
+      if (d >= windowStart30 && d <= today) noSpendLast30++;
+      if (d >= windowStart90 && d <= today) noSpendLast90++;
+    }
+  }
+
+  // 4. Current streak — consecutive no-spend days ending today OR yesterday.
+  //    (If today already has spending, the streak is held by yesterday's run,
+  //     giving the user the rest of today to extend it.)
+  const todayIsNoSpend = !spendDaySet.has(todayStr);
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = ymd(yesterday);
+  const yesterdayWasNoSpend = !spendDaySet.has(yesterdayStr);
+
+  const streakAnchor = todayIsNoSpend
+    ? new Date(today)
+    : yesterdayWasNoSpend
+      ? new Date(yesterday)
+      : null;
+
+  let currentStreak = 0;
+  if (streakAnchor) {
+    const cursor = new Date(streakAnchor);
+    while (!spendDaySet.has(ymd(cursor))) {
+      currentStreak++;
+      cursor.setDate(cursor.getDate() - 1);
+    }
+  }
+
+  // 5. Longest streak — walk all tracked days from firstTrackedDate→today,
+  //    counting maximal runs of no-spend days.
+  let longestStreak = 0;
+  let run = 0;
+  if (firstTrackedDate) {
+    const start = new Date(firstTrackedDate + 'T00:00:00');
+    const end = new Date(todayStr + 'T00:00:00');
+    // Cap at 3 years of day-walking to stay cheap.
+    const guard = new Date(start);
+    guard.setFullYear(guard.getFullYear() + 3);
+    const hardEnd = end < guard ? end : guard;
+    const cursor = new Date(start);
+    while (cursor <= hardEnd) {
+      if (!spendDaySet.has(ymd(cursor))) {
+        run++;
+        if (run > longestStreak) longestStreak = run;
+      } else {
+        run = 0;
+      }
+      cursor.setDate(cursor.getDate() + 1);
+    }
+  }
+
+  // 6. Day-of-week pattern — from the last 90 days strip.
+  const dowAgg: Record<number, { spendDays: number; noSpendDays: number; totalSpend: number }> = {};
+  for (let i = 0; i < 7; i++) dowAgg[i] = { spendDays: 0, noSpendDays: 0, totalSpend: 0 };
+  for (const d of stripDays) {
+    const dt = new Date(d.date + 'T00:00:00');
+    if (dt >= windowStart90 && dt <= today) {
+      if (d.isNoSpend) dowAgg[d.dow].noSpendDays++;
+      else {
+        dowAgg[d.dow].spendDays++;
+        dowAgg[d.dow].totalSpend += d.total;
+      }
+    }
+  }
+  const dowPattern: DayOfWeekPattern[] = [];
+  for (let i = 0; i < 7; i++) {
+    const a = dowAgg[i];
+    dowPattern.push({
+      dow: i,
+      label: DOW_LABELS[i],
+      spendDays: a.spendDays,
+      noSpendDays: a.noSpendDays,
+      totalSpend: a.totalSpend,
+      avgPerSpendDay: a.spendDays > 0 ? Math.round(a.totalSpend / a.spendDays) : 0,
+    });
+  }
+
+  // 7. Badges
+  const badges: StreakBadge[] = [
+    { id: 'first-step', label: 'First Step', description: '1 no-spend day', icon: '🌱',
+      unlocked: longestStreak >= 1 || currentStreak >= 1 },
+    { id: 'three-peat', label: 'Three-peat', description: '3-day streak', icon: '🔥',
+      unlocked: longestStreak >= 3,
+      progress: { current: Math.min(longestStreak, 3), target: 3 } },
+    { id: 'week-warrior', label: 'Week Warrior', description: '7-day streak', icon: '⚡',
+      unlocked: longestStreak >= 7,
+      progress: { current: Math.min(longestStreak, 7), target: 7 } },
+    { id: 'fortnight', label: 'Fortnight', description: '14-day streak', icon: '🏆',
+      unlocked: longestStreak >= 14,
+      progress: { current: Math.min(longestStreak, 14), target: 14 } },
+    { id: 'month-master', label: 'Month Master', description: '30-day streak', icon: '👑',
+      unlocked: longestStreak >= 30,
+      progress: { current: Math.min(longestStreak, 30), target: 30 } },
+    { id: 'consistent-30', label: 'Consistent', description: '10+ no-spend days in last 30', icon: '📅',
+      unlocked: noSpendLast30 >= 10,
+      progress: { current: Math.min(noSpendLast30, 10), target: 10 } },
+    { id: 'on-fire', label: 'On Fire', description: 'Current streak ≥ 3 days', icon: '🚀',
+      unlocked: currentStreak >= 3,
+      progress: { current: Math.min(currentStreak, 3), target: 3 } },
+  ];
+
+  // 8. Recent no-spend days (last 30, newest first) for drilldown list
+  const recentNoSpendDays = stripDays
+    .filter((d) => d.isNoSpend && new Date(d.date + 'T00:00:00') >= windowStart30)
+    .map((d) => d.date)
+    .reverse();
+
+  // Total tracked days = days between firstTrackedDate and today (inclusive)
+  let totalDaysTracked = 0;
+  if (firstTrackedDate) {
+    const ms = today.getTime() - new Date(firstTrackedDate + 'T00:00:00').getTime();
+    totalDaysTracked = Math.floor(ms / (1000 * 60 * 60 * 24)) + 1;
+  }
+
+  return {
+    currentStreak,
+    longestStreak,
+    todayIsNoSpend,
+    yesterdayWasNoSpend,
+    noSpendLast30,
+    noSpendLast90,
+    totalDaysTracked,
+    firstTrackedDate,
+    recentDays: stripDays.slice(-35),
+    dowPattern,
+    badges,
+    recentNoSpendDays,
+  };
+}
+
+/** Format a Date as YYYY-MM-DD in local time (avoids UTC off-by-one). */
+function ymd(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
 }
 
 export function getTransactionStats(periodId: number) {
