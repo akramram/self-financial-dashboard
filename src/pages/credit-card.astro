@@ -1,0 +1,15 @@
+---
+import Layout from '../layouts/Layout.astro';
+import CreditCardTracker from '../components/CreditCardTracker';
+---
+
+<Layout title="Credit Card Tracker - Financial Dashboard">
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold">Credit Card Tracker</h1>
+    <p class="text-slate-500 dark:text-slate-400 text-sm">
+      Track your credit card spending, payments, and outstanding balance over time. Monitor which charges are unpaid and see trends in your credit utilization.
+    </p>
+  </div>
+
+  <CreditCardTracker client:load />
+</Layout>
