@@ -1,0 +1,15 @@
+---
+import Layout from '../layouts/Layout.astro';
+import WhatIfPlanner from '../components/WhatIfPlanner';
+---
+
+<Layout title="What-If Scenario Planner - Financial Dashboard">
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold">What-If Scenario Planner</h1>
+    <p class="text-slate-500 dark:text-slate-400 text-sm">
+      Simulate spending changes, income adjustments, and one-time events to see their long-term impact on your net worth. Adjust sliders in real-time and compare against your baseline trajectory.
+    </p>
+  </div>
+
+  <WhatIfPlanner client:load />
+</Layout>
