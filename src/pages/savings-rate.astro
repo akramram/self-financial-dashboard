@@ -1,0 +1,15 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SavingsRateTracker from '../components/SavingsRateTracker';
+---
+
+<Layout title="Savings Rate Tracker - Financial Dashboard">
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold">💰 Savings Rate Tracker</h1>
+    <p class="text-slate-500 dark:text-slate-400 text-sm">
+      Monitor your savings rate over time, benchmark against financial guidelines, and track milestones toward financial independence.
+    </p>
+  </div>
+
+  <SavingsRateTracker client:load />
+</Layout>
