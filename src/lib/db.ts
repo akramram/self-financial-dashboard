@@ -1669,3 +1669,168 @@ export function getRecurringVsDiscretionary(periodId?: number): RecurringBreakdo
 
   return { periods, current, topRecurring };
 }
+
+// ─── Savings Rate Tracker ────────────────────────────────────────────────────
+
+export interface SavingsRatePeriod {
+  period_id: number;
+  month: string;
+  start_date: string;
+  end_date: string;
+  income: number;
+  outcome: number;          // total paid spending (cash + credit_payment)
+  savings: number;          // income - outcome
+  savings_rate: number;     // pct, can be negative
+  is_positive: boolean;
+}
+
+export interface SavingsRateResult {
+  periods: SavingsRatePeriod[];
+  current: SavingsRatePeriod | null;
+  avg_rate: number;
+  median_rate: number;
+  best_rate: number;
+  worst_rate: number;
+  best_month: string | null;
+  worst_month: string | null;
+  positive_count: number;
+  negative_count: number;
+  total_periods: number;
+  consecutive_positive: number;   // current run ending at latest period
+  longest_positive_streak: number;
+  total_saved: number;
+  // Trailing-3 and trailing-6 average rates for trend detection
+  trailing3_avg: number;
+  trailing6_avg: number;
+  trend: 'improving' | 'declining' | 'stable';
+}
+
+/**
+ * Compute per-period savings rate (income − outcome) / income.
+ * Uses the same outcome definition as getMonthlySummary (cash + credit_payment, done=1).
+ */
+export function getSavingsRate(): SavingsRateResult {
+  const periodRows = db.prepare(`
+    SELECT DISTINCT p.id, p.month, p.start_date, p.end_date
+    FROM periods p
+    INNER JOIN transactions t ON t.period_id = p.id
+    ORDER BY p.start_date ASC
+  `).all() as { id: number; month: string; start_date: string; end_date: string }[];
+
+  // Income per period
+  const incomeRows = db.prepare(`
+    SELECT mi.period_id, mi.income, mi.other_income
+    FROM monthly_income mi JOIN periods p ON mi.period_id = p.id
+    ORDER BY p.start_date ASC
+  `).all() as { period_id: number; income: number; other_income: number }[];
+  const incomeMap = new Map<number, number>();
+  for (const r of incomeRows) {
+    incomeMap.set(r.period_id, (r.income || 0) + (r.other_income || 0));
+  }
+
+  // Outcome per period (cash + credit_payment, done=1) — same definition as summary
+  const outcomeRows = db.prepare(`
+    SELECT period_id, SUM(amount) AS outcome
+    FROM transactions
+    WHERE done = 1 AND type IN ('cash', 'credit_payment')
+    GROUP BY period_id
+  `).all() as { period_id: number; outcome: number }[];
+  const outcomeMap = new Map<number, number>();
+  for (const r of outcomeRows) {
+    outcomeMap.set(r.period_id, r.outcome || 0);
+  }
+
+  const periods: SavingsRatePeriod[] = [];
+  for (const p of periodRows) {
+    const income = incomeMap.get(p.id) || 0;
+    const outcome = outcomeMap.get(p.id) || 0;
+    if (income <= 0) continue; // skip periods with no income — can't compute a rate
+    const savings = income - outcome;
+    const rate = (savings / income) * 100;
+    periods.push({
+      period_id: p.id,
+      month: p.month,
+      start_date: p.start_date,
+      end_date: p.end_date,
+      income,
+      outcome,
+      savings,
+      savings_rate: Math.round(rate * 100) / 100,
+      is_positive: savings >= 0,
+    });
+  }
+
+  if (periods.length === 0) {
+    return {
+      periods: [], current: null, avg_rate: 0, median_rate: 0,
+      best_rate: 0, worst_rate: 0, best_month: null, worst_month: null,
+      positive_count: 0, negative_count: 0, total_periods: 0,
+      consecutive_positive: 0, longest_positive_streak: 0, total_saved: 0,
+      trailing3_avg: 0, trailing6_avg: 0, trend: 'stable',
+    };
+  }
+
+  const rates = periods.map((p) => p.savings_rate);
+  const sortedRates = [...rates].sort((a, b) => a - b);
+  const n = rates.length;
+  const avg = rates.reduce((s, r) => s + r, 0) / n;
+  const mid = Math.floor(n / 2);
+  const median = n % 2 === 0 ? (sortedRates[mid - 1] + sortedRates[mid]) / 2 : sortedRates[mid];
+
+  let bestIdx = 0, worstIdx = 0;
+  for (let i = 1; i < n; i++) {
+    if (rates[i] > rates[bestIdx]) bestIdx = i;
+    if (rates[i] < rates[worstIdx]) worstIdx = i;
+  }
+
+  const positive_count = periods.filter((p) => p.is_positive).length;
+  const negative_count = n - positive_count;
+
+  // Consecutive positive streaks (ending at latest period)
+  let consecutive_positive = 0;
+  for (let i = n - 1; i >= 0; i--) {
+    if (periods[i].is_positive) consecutive_positive++;
+    else break;
+  }
+  let longest_positive_streak = 0;
+  let run = 0;
+  for (const p of periods) {
+    if (p.is_positive) { run++; if (run > longest_positive_streak) longest_positive_streak = run; }
+    else run = 0;
+  }
+
+  const total_saved = periods.reduce((s, p) => s + p.savings, 0);
+
+  // Trailing averages
+  const trailing3 = periods.slice(-3).map((p) => p.savings_rate);
+  const trailing6 = periods.slice(-6).map((p) => p.savings_rate);
+  const trailing3_avg = trailing3.reduce((s, r) => s + r, 0) / Math.max(1, trailing3.length);
+  const trailing6_avg = trailing6.reduce((s, r) => s + r, 0) / Math.max(1, trailing6.length);
+
+  let trend: 'improving' | 'declining' | 'stable' = 'stable';
+  if (n >= 3) {
+    const diff = trailing3_avg - trailing6_avg;
+    if (diff > 3) trend = 'improving';
+    else if (diff < -3) trend = 'declining';
+  }
+
+  return {
+    periods,
+    current: periods[periods.length - 1],
+    avg_rate: Math.round(avg * 100) / 100,
+    median_rate: Math.round(median * 100) / 100,
+    best_rate: rates[bestIdx],
+    worst_rate: rates[worstIdx],
+    best_month: periods[bestIdx].month,
+    worst_month: periods[worstIdx].month,
+    positive_count,
+    negative_count,
+    total_periods: n,
+    consecutive_positive,
+    longest_positive_streak,
+    total_saved: Math.round(total_saved),
+    trailing3_avg: Math.round(trailing3_avg * 100) / 100,
+    trailing6_avg: Math.round(trailing6_avg * 100) / 100,
+    trend,
+  };
+}

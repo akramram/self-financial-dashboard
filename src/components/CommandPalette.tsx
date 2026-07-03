@@ -18,6 +18,7 @@ const ALL_ITEMS: CommandItem[] = [
   { id: 'budget', label: 'Budget Report', description: 'Category budget tracking', icon: '📑', group: 'pages', href: '/budget' },
   { id: 'spending-mix', label: 'Spending Mix', description: 'Recurring vs discretionary breakdown', icon: '🔀', group: 'pages', href: '/spending-mix' },
   { id: 'compare', label: 'Month Comparison', description: 'Compare spending across months', icon: '⚖️', group: 'pages', href: '/compare' },
+  { id: 'savings-rate', label: 'Savings Rate Tracker', description: 'Track savings rate, benchmarks & milestones', icon: '💰', group: 'pages', href: '/savings-rate' },
   { id: 'analytics', label: 'Spending Analytics', description: 'Daily trends and category drill-down', icon: '📈', group: 'pages', href: '/analytics' },
   { id: 'matrix', label: 'Spending Matrix', description: 'Category × period heatmap of all spending', icon: '🔳', group: 'pages', href: '/matrix' },
   { id: 'cashflow', label: 'Cash Flow', description: 'Income vs outcome waterfall', icon: '💸', group: 'pages', href: '/cashflow' },
