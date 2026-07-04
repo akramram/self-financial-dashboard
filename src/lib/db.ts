@@ -1834,3 +1834,310 @@ export function getSavingsRate(): SavingsRateResult {
     trend,
   };
 }
+
+// ============================================================
+// Spending Rhythm — behavioral day-of-week / time-of-day analysis
+// Uses created_time to reveal WHEN you spend (not just how much).
+// Aggregation is done in JS (not SQL strftime) because created_time
+// has mixed formats (ISO 8601 AND human-readable) that new Date()
+// handles but SQLite strftime() cannot.
+// ============================================================
+
+export interface RhythmDowStat {
+  dow: number;            // 0=Sun .. 6=Sat
+  label: string;          // "Sunday" ... "Saturday"
+  shortLabel: string;     // "Sun" ... "Sat"
+  isWeekend: boolean;
+  txCount: number;
+  totalSpend: number;
+  avgPerTx: number;       // average amount per transaction
+  distinctDays: number;   // how many distinct calendar days had spending on this weekday
+  avgPerDay: number;      // totalSpend / distinctDays
+  pctOfTotal: number;     // share of total spending
+}
+
+export interface RhythmTimeBucket {
+  label: string;          // "Late Night", "Morning", etc.
+  rangeLabel: string;     // "12–5am"
+  txCount: number;
+  totalSpend: number;
+  pctOfTx: number;        // share of transaction count
+  pctOfSpend: number;     // share of total spend
+}
+
+export interface RhythmCategoryCell {
+  category: string;
+  dow: number;            // 0=Sun .. 6=Sat
+  total: number;
+  count: number;
+}
+
+export interface RhythmInsight {
+  icon: string;
+  title: string;
+  detail: string;
+  tone: 'good' | 'neutral' | 'warn';
+}
+
+export interface SpendingRhythmResult {
+  // overall
+  totalTx: number;
+  totalSpend: number;
+  dateRangeStart: string | null;   // ISO of earliest tx
+  dateRangeEnd: string | null;
+  // day of week
+  dowStats: RhythmDowStat[];       // 7 entries, ordered Mon-first (dow 1..6, 0)
+  weekdayVsWeekend: {
+    weekdayTx: number; weekdaySpend: number; weekdayAvgPerDay: number;
+    weekendTx: number; weekendSpend: number; weekendAvgPerDay: number;
+    weekdayPctSpend: number; weekendPctSpend: number;
+  };
+  peakDay: RhythmDowStat | null;    // highest avgPerDay
+  quietDay: RhythmDowStat | null;   // lowest avgPerDay (among days with data)
+  // time of day
+  timeBuckets: RhythmTimeBucket[];  // 4 entries
+  peakHour: number | null;          // 0-23
+  // category x dow heatmap (top categories only)
+  categoryHeatmap: { category: string; cells: number[] }[]; // cells[0..6] = total per dow
+  // insights
+  insights: RhythmInsight[];
+}
+
+const RHYTHM_DOW_FULL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const RHYTHM_DOW_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+function parseCreatedTimeSafe(raw: string | null | undefined): Date | null {
+  if (!raw || raw.length < 5) return null;
+  const d = new Date(raw);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+export function getSpendingRhythm(): SpendingRhythmResult {
+  // Pull all spending transactions with created_time.
+  // Exclude only credit_payment (internal money movement) — same convention as
+  // spending streaks. Keep cash + credit_expense.
+  const rows = db.prepare(`
+    SELECT id, title, category, amount, type, created_time
+    FROM transactions
+    WHERE done = 1
+      AND type IN ('cash', 'credit_expense')
+      AND created_time IS NOT NULL
+      AND amount > 0
+  `).all() as any[];
+
+  // Accumulators
+  const dowTxCount = new Array(7).fill(0);
+  const dowTotal = new Array(7).fill(0);
+  const dowDays = Array.from({ length: 7 }, () => new Set<string>());
+
+  const hourTxCount = new Array(24).fill(0);
+  const hourTotal = new Array(24).fill(0);
+
+  // category x dow → { total, count }
+  const catDowMap = new Map<string, { total: number; count: number; dowTotals: number[]; dowCounts: number[] }>();
+
+  let minDate: Date | null = null;
+  let maxDate: Date | null = null;
+  let totalSpend = 0;
+
+  for (const r of rows) {
+    const d = parseCreatedTimeSafe(r.created_time);
+    if (!d) continue;
+    const dow = d.getDay();       // 0-6
+    const hour = d.getHours();    // 0-23
+    const dayKey = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+
+    dowTxCount[dow]++;
+    dowTotal[dow] += r.amount;
+    dowDays[dow].add(dayKey);
+
+    hourTxCount[hour]++;
+    hourTotal[hour] += r.amount;
+
+    const cat = r.category || 'Unknown';
+    if (!catDowMap.has(cat)) {
+      catDowMap.set(cat, { total: 0, count: 0, dowTotals: new Array(7).fill(0), dowCounts: new Array(7).fill(0) });
+    }
+    const ce = catDowMap.get(cat)!;
+    ce.total += r.amount;
+    ce.count++;
+    ce.dowTotals[dow] += r.amount;
+    ce.dowCounts[dow]++;
+
+    if (!minDate || d < minDate) minDate = d;
+    if (!maxDate || d > maxDate) maxDate = d;
+    totalSpend += r.amount;
+  }
+
+  // Build dowStats (order: Mon, Tue, Wed, Thu, Fri, Sat, Sun → display order)
+  const order = [1, 2, 3, 4, 5, 6, 0];
+  const dowStats: RhythmDowStat[] = order.map((dow) => {
+    const distinctDays = dowDays[dow].size;
+    const total = dowTotal[dow];
+    return {
+      dow,
+      label: RHYTHM_DOW_FULL[dow],
+      shortLabel: RHYTHM_DOW_SHORT[dow],
+      isWeekend: dow === 0 || dow === 6,
+      txCount: dowTxCount[dow],
+      totalSpend: Math.round(total),
+      avgPerTx: dowTxCount[dow] > 0 ? Math.round(total / dowTxCount[dow]) : 0,
+      distinctDays,
+      avgPerDay: distinctDays > 0 ? Math.round(total / distinctDays) : 0,
+      pctOfTotal: totalSpend > 0 ? Number(((total / totalSpend) * 100).toFixed(1)) : 0,
+    };
+  });
+
+  // Weekday vs weekend
+  const weekdayDows = [1, 2, 3, 4, 5];
+  const weekendDows = [0, 6];
+  const sumReducer = (arr: number[], sel: number[]) => sel.reduce((s, d) => s + arr[d], 0);
+  const weekdayTx = sumReducer(dowTxCount, weekdayDows);
+  const weekendTx = sumReducer(dowTxCount, weekendDows);
+  const weekdaySpend = sumReducer(dowTotal, weekdayDows);
+  const weekendSpend = sumReducer(dowTotal, weekendDows);
+  const weekdayDistinct = weekdayDows.reduce((s, d) => s + dowDays[d].size, 0);
+  const weekendDistinct = weekendDows.reduce((s, d) => s + dowDays[d].size, 0);
+
+  // Peak / quiet day
+  const daysWithData = dowStats.filter((s) => s.distinctDays > 0);
+  let peakDay: RhythmDowStat | null = null;
+  let quietDay: RhythmDowStat | null = null;
+  if (daysWithData.length > 0) {
+    peakDay = daysWithData.reduce((best, s) => (s.avgPerDay > best.avgPerDay ? s : best));
+    quietDay = daysWithData.reduce((worst, s) => (s.avgPerDay < worst.avgPerDay ? s : worst));
+  }
+
+  // Time buckets: Late Night (0-5), Morning (6-11), Afternoon (12-17), Evening (18-23)
+  const bucketDefs = [
+    { label: 'Late Night', rangeLabel: '12–6 AM', hours: [0, 1, 2, 3, 4, 5], icon: '🌙' },
+    { label: 'Morning', rangeLabel: '6 AM–12 PM', hours: [6, 7, 8, 9, 10, 11], icon: '🌅' },
+    { label: 'Afternoon', rangeLabel: '12–6 PM', hours: [12, 13, 14, 15, 16, 17], icon: '☀️' },
+    { label: 'Evening', rangeLabel: '6 PM–12 AM', hours: [18, 19, 20, 21, 22, 23], icon: '🌆' },
+  ];
+  const totalTxWithHour = hourTxCount.reduce((s, c) => s + c, 0);
+  const totalSpendHour = hourTotal.reduce((s, c) => s + c, 0);
+  const timeBuckets: RhythmTimeBucket[] = bucketDefs.map((b) => {
+    const txCount = b.hours.reduce((s, h) => s + hourTxCount[h], 0);
+    const spend = b.hours.reduce((s, h) => s + hourTotal[h], 0);
+    return {
+      label: b.label,
+      rangeLabel: b.rangeLabel,
+      txCount,
+      totalSpend: Math.round(spend),
+      pctOfTx: totalTxWithHour > 0 ? Number(((txCount / totalTxWithHour) * 100).toFixed(1)) : 0,
+      pctOfSpend: totalSpendHour > 0 ? Number(((spend / totalSpendHour) * 100).toFixed(1)) : 0,
+    };
+  });
+
+  // Peak hour
+  let peakHour: number | null = null;
+  let peakHourCount = 0;
+  for (let h = 0; h < 24; h++) {
+    if (hourTxCount[h] > peakHourCount) { peakHourCount = hourTxCount[h]; peakHour = h; }
+  }
+
+  // Category x dow heatmap — top 8 categories by total
+  const topCats = [...catDowMap.entries()].sort((a, b) => b[1].total - a[1].total).slice(0, 8);
+  const categoryHeatmap = topCats.map(([category, ce]) => ({
+    category,
+    cells: order.map((dow) => Math.round(ce.dowTotals[dow])),
+  }));
+
+  // ── Generate insights ──
+  const insights: RhythmInsight[] = [];
+
+  if (peakDay && quietDay && peakDay.dow !== quietDay.dow && quietDay.avgPerDay > 0) {
+    const ratio = peakDay.avgPerDay / quietDay.avgPerDay;
+    insights.push({
+      icon: ratio >= 2 ? '⚡' : '📊',
+      title: `${peakDay.label}s are your biggest spending day`,
+      detail: `You spend ${ratio.toFixed(1)}× more on ${peakDay.label.toLowerCase()}s (${formatIdrInline(peakDay.avgPerDay)}/day) than ${quietDay.label.toLowerCase()}s (${formatIdrInline(quietDay.avgPerDay)}/day).`,
+      tone: ratio >= 3 ? 'warn' : 'neutral',
+    });
+  }
+
+  if (weekendDistinct > 0 && weekdayDistinct > 0) {
+    const wkdAvgPerDay = weekdaySpend / weekdayDistinct;
+    const wkeAvgPerDay = weekendSpend / weekendDistinct;
+    if (wkeAvgPerDay > wkdAvgPerDay * 1.25) {
+      insights.push({
+        icon: '🎉',
+        title: 'Weekends drain your wallet',
+        detail: `Per-day weekend spending (${formatIdrInline(wkeAvgPerDay)}) is ${(wkeAvgPerDay / Math.max(1, wkdAvgPerDay)).toFixed(1)}× your weekday average (${formatIdrInline(wkdAvgPerDay)}).`,
+        tone: 'warn',
+      });
+    } else if (wkdAvgPerDay > wkeAvgPerDay * 1.25) {
+      insights.push({
+        icon: '💼',
+        title: 'You spend more on weekdays',
+        detail: `Weekday spending (${formatIdrInline(wkdAvgPerDay)}/day) exceeds weekends (${formatIdrInline(wkeAvgPerDay)}/day) — likely commuting and work-day expenses.`,
+        tone: 'neutral',
+      });
+    }
+  }
+
+  if (peakHour !== null) {
+    const peakBucket = bucketDefs.find((b) => b.hours.includes(peakHour!));
+    insights.push({
+      icon: peakBucket?.icon ?? '🕒',
+      title: `Peak spending hour: ${formatHour(peakHour)}`,
+      detail: `Most transactions happen around ${formatHour(peakHour)} (${peakHourCount} transactions). ${peakBucket ? peakBucket.label + ' is your most active time window.' : ''}`,
+      tone: 'neutral',
+    });
+  }
+
+  // Find the dominant time bucket
+  const dominantBucket = [...timeBuckets].sort((a, b) => b.txCount - a.txCount)[0];
+  if (dominantBucket && dominantBucket.pctOfTx > 50) {
+    insights.push({
+      icon: dominantBucket.label === 'Late Night' ? '🌙' : dominantBucket.label === 'Morning' ? '🌅' : dominantBucket.label === 'Afternoon' ? '☀️' : '🌆',
+      title: `${dominantBucket.label} spender`,
+      detail: `${dominantBucket.pctOfTx}% of your transactions happen in the ${dominantBucket.label.toLowerCase()} (${dominantBucket.rangeLabel}).`,
+      tone: dominantBucket.label === 'Late Night' ? 'warn' : 'neutral',
+    });
+  }
+
+  // No-spend day: if any weekday has 0 distinct days (never spent on that weekday)
+  const neverSpentDays = dowStats.filter((s) => s.distinctDays === 0);
+  if (neverSpentDays.length > 0) {
+    insights.push({
+      icon: '🛡️',
+      title: `You've never spent on a ${neverSpentDays.map((d) => d.label).join(' or ')}`,
+      detail: `Across ${rows.length} tracked transactions, no spending has ever landed on a ${neverSpentDays[0].label}.`,
+      tone: 'good',
+    });
+  }
+
+  return {
+    totalTx: rows.length,
+    totalSpend: Math.round(totalSpend),
+    dateRangeStart: minDate ? minDate.toISOString() : null,
+    dateRangeEnd: maxDate ? maxDate.toISOString() : null,
+    dowStats,
+    weekdayVsWeekend: {
+      weekdayTx, weekdaySpend: Math.round(weekdaySpend),
+      weekendTx, weekendSpend: Math.round(weekendSpend),
+      weekdayAvgPerDay: weekdayDistinct > 0 ? Math.round(weekdaySpend / weekdayDistinct) : 0,
+      weekendAvgPerDay: weekendDistinct > 0 ? Math.round(weekendSpend / weekendDistinct) : 0,
+      weekdayPctSpend: totalSpend > 0 ? Number(((weekdaySpend / totalSpend) * 100).toFixed(1)) : 0,
+      weekendPctSpend: totalSpend > 0 ? Number(((weekendSpend / totalSpend) * 100).toFixed(1)) : 0,
+    },
+    peakDay,
+    quietDay,
+    timeBuckets,
+    peakHour,
+    categoryHeatmap,
+    insights,
+  };
+}
+
+function formatIdrInline(n: number): string {
+  return 'IDR ' + Math.round(n).toLocaleString('id-ID');
+}
+
+function formatHour(h: number): string {
+  const period = h < 12 ? 'AM' : 'PM';
+  const hr = h === 0 ? 12 : h > 12 ? h - 12 : h;
+  return `${hr} ${period}`;
+}
