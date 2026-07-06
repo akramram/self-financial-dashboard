@@ -2570,3 +2570,133 @@ export function getAchievements(): AchievementsResult {
     },
   };
 }
+
+// ─── Weekly Spending Tracker ──────────────────────────────────────────────────
+
+export interface WeeklyBucket {
+  weekNum: number;
+  label: string;       // "Week 1 (May 21–27)"
+  startDate: string;   // "2026-05-21"
+  endDate: string;     // "2026-05-27"
+  total: number;
+  txCount: number;
+  categoryTotals: Record<string, number>;
+  avgDaily: number;
+}
+
+export interface WeeklySpendingResult {
+  periodId: number;
+  month: string;
+  periodStart: string;
+  periodEnd: string;
+  weeks: WeeklyBucket[];
+  totalSpend: number;
+  totalTxCount: number;
+  weeklyBudget: number;
+  daysPerWeek: number[];
+  income: number;
+}
+
+export function getWeeklySpending(periodId: number): WeeklySpendingResult {
+  // Get period info
+  const period = db.prepare('SELECT id, month, start_date, end_date FROM periods WHERE id = ?').get(periodId) as any;
+  if (!period) {
+    return { periodId, month: '', periodStart: '', periodEnd: '', weeks: [], totalSpend: 0, totalTxCount: 0, weeklyBudget: 0, daysPerWeek: [], income: 0 };
+  }
+
+  const startParts = period.start_date.split('-').map(Number);
+  const endParts = period.end_date.split('-').map(Number);
+  // Use local date construction to avoid UTC offset issues
+  const start = new Date(startParts[0], startParts[1] - 1, startParts[2]);
+  const end = new Date(endParts[0], endParts[1] - 1, endParts[2], 23, 59, 59);
+
+  // Get income for the period
+  const incomeRow = db.prepare('SELECT income FROM monthly_income WHERE period_id = ?').get(periodId) as any;
+  const income = incomeRow?.income ?? 0;
+
+  // Get all expense transactions for the period with created_time
+  const txs = db.prepare(
+    'SELECT id, title, category, amount, type, done, created_time, date FROM transactions WHERE period_id = ? AND done = 1 AND type IN (\'cash\', \'credit_expense\')'
+  ).all(periodId) as any[];
+
+  // Build weeks: 7-day buckets from period start
+  const weeks: WeeklyBucket[] = [];
+  let weekStart = new Date(start);
+  let weekNum = 1;
+
+  while (weekStart <= end) {
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekEnd.getDate() + 6);
+    if (weekEnd > end) weekEnd.setTime(end.getTime());
+
+    const startDateStr = `${weekStart.getFullYear()}-${String(weekStart.getMonth() + 1).padStart(2, '0')}-${String(weekStart.getDate()).padStart(2, '0')}`;
+    const endDateStr = `${weekEnd.getFullYear()}-${String(weekEnd.getMonth() + 1).padStart(2, '0')}-${String(weekEnd.getDate()).padStart(2, '0')}`;
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    const label = `Week ${weekNum} (${monthNames[weekStart.getMonth()]} ${weekStart.getDate()}${weekEnd.getMonth() !== weekStart.getMonth() ? ' – ' + monthNames[weekEnd.getMonth()] + ' ' : '–'}${weekEnd.getDate()})`;
+
+    // Filter transactions that fall in this week using created_time
+    const weekTxs = txs.filter((t) => {
+      let txDate: Date;
+      if (t.created_time) {
+        txDate = new Date(t.created_time);
+      } else {
+        txDate = new Date(t.date);
+      }
+      return txDate >= weekStart && txDate <= new Date(weekEnd.getTime() + 86399999); // include end day
+    });
+
+    const total = weekTxs.reduce((s, t) => s + t.amount, 0);
+    const categoryTotals: Record<string, number> = {};
+    weekTxs.forEach((t) => {
+      categoryTotals[t.category] = (categoryTotals[t.category] || 0) + t.amount;
+    });
+
+    const daysInWeek = Math.min(7, Math.floor((weekEnd.getTime() - weekStart.getTime()) / 86400000) + 1);
+    const avgDaily = daysInWeek > 0 ? total / daysInWeek : 0;
+
+    weeks.push({
+      weekNum,
+      label,
+      startDate: startDateStr,
+      endDate: endDateStr,
+      total,
+      txCount: weekTxs.length,
+      categoryTotals,
+      avgDaily,
+    });
+
+    weekStart = new Date(weekStart);
+    weekStart.setDate(weekStart.getDate() + 7);
+    weekNum++;
+  }
+
+  const totalSpend = weeks.reduce((s, w) => s + w.total, 0);
+  const totalTxCount = weeks.reduce((s, w) => s + w.txCount, 0);
+
+  // Weekly budget = income / number of weeks
+  const totalDays = Math.floor((end.getTime() - start.getTime()) / 86400000) + 1;
+  const numWeeks = Math.ceil(totalDays / 7);
+  const weeklyBudget = income > 0 ? income / numWeeks : 0;
+
+  const daysPerWeek = weeks.map((w) => {
+    const sp = w.startDate.split('-').map(Number);
+    const ep = w.endDate.split('-').map(Number);
+    const s = new Date(sp[0], sp[1] - 1, sp[2]);
+    const e = new Date(ep[0], ep[1] - 1, ep[2]);
+    return Math.floor((e.getTime() - s.getTime()) / 86400000) + 1;
+  });
+
+  return {
+    periodId,
+    month: period.month,
+    periodStart: period.start_date,
+    periodEnd: period.end_date,
+    weeks,
+    totalSpend,
+    totalTxCount,
+    weeklyBudget,
+    daysPerWeek,
+    income,
+  };
+}
