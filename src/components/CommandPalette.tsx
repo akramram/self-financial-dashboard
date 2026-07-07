@@ -29,6 +29,7 @@ const ALL_ITEMS: CommandItem[] = [
   { id: 'yearly', label: 'Yearly Report', description: 'Annual spending summary', icon: '📆', group: 'pages', href: '/yearly' },
   { id: 'health', label: 'Health Score', description: 'Financial health assessment', icon: '❤️', group: 'pages', href: '/health' },
   { id: 'forecast', label: 'Forecast', description: 'Spending predictions and projections', icon: '🔮', group: 'pages', href: '/forecast' },
+  { id: 'dna', label: 'Spending DNA', description: 'Financial personality profile & behavioral analysis', icon: '🧬', group: 'pages', href: '/dna' },
   { id: 'fire', label: 'FIRE Calculator', description: 'Financial Independence Retire Early calculator', icon: '🔥', group: 'pages', href: '/fire' },
   { id: 'what-if', label: 'What-If Planner', description: 'Simulate spending & income changes, see net worth impact', icon: '🔮', group: 'pages', href: '/what-if' },
   { id: 'report', label: 'Monthly Report', description: 'Printable monthly financial report', icon: '📄', group: 'pages', href: '/report' },
