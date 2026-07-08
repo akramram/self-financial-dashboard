@@ -1,4 +1,4 @@
-import { K as getInvestmentById, L as deleteInvestment, M as updateInvestment } from '../../../chunks/db_535bmtRB.mjs';
+import { L as getInvestmentById, M as deleteInvestment, N as updateInvestment } from '../../../chunks/db_BgiJApmW.mjs';
 export { renderers } from '../../../renderers.mjs';
 
 const GET = async ({ params }) => {

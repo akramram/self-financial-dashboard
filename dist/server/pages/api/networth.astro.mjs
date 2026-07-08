@@ -1,4 +1,4 @@
-import { q as getNetworth, E as upsertNetworth, R as recalcNetworthMoM } from '../../chunks/db_535bmtRB.mjs';
+import { r as getNetworth, D as ensurePeriod, F as upsertNetworth, T as recalcNetworthMoM } from '../../chunks/db_BgiJApmW.mjs';
 export { renderers } from '../../renderers.mjs';
 
 const GET = async () => {
@@ -9,6 +9,15 @@ const GET = async () => {
 };
 const POST = async ({ request }) => {
   const body = await request.json();
+  if (!body.period_id && body.month) {
+    body.period_id = ensurePeriod(body.month);
+  }
+  if (!body.period_id) {
+    return new Response(JSON.stringify({ error: "period_id or month is required" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" }
+    });
+  }
   upsertNetworth(body);
   recalcNetworthMoM();
   return new Response(JSON.stringify({ success: true }), {

@@ -1,26 +1,26 @@
-/* empty css                               */
+/* empty css                                        */
 import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BN-0jZ66.mjs';
 import 'kleur/colors';
-import { f as formatIdr, g as getActivePeriod, $ as $$Layout } from '../chunks/utils_JbfoWkNO.mjs';
+import { f as formatIdr, g as getActivePeriod, $ as $$Layout } from '../chunks/utils_Dm1NQFdF.mjs';
 import { jsx, jsxs, Fragment } from 'react/jsx-runtime';
 import { useMemo, useState, useEffect, useCallback } from 'react';
-import { A as kickoffMonth, f as fetchCategories, i as fetchRecurringTransactions, v as toggleTransactionDoneApi, w as deleteTransactionApi, x as updateTransactionApi } from '../chunks/api_CEy8D9Rv.mjs';
+import { B as kickoffMonth, f as fetchCategories, j as fetchRecurringTransactions, w as toggleTransactionDoneApi, x as deleteTransactionApi, y as updateTransactionApi } from '../chunks/api_B85Pj26R.mjs';
 import { Chart, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement, Filler } from 'chart.js';
 import { Bar, Doughnut, Line } from 'react-chartjs-2';
-import { N as NetworthChart } from '../chunks/NetworthChart_Co1o7VWu.mjs';
-import { C as Card, a as CardHeader, b as CardTitle, c as CardContent } from '../chunks/card_CCET0Yjm.mjs';
-import { B as Badge } from '../chunks/badge_DvkSPMv8.mjs';
+import { N as NetworthChart } from '../chunks/NetworthChart_Btk03mlZ.mjs';
+import { C as Card, b as CardHeader, c as CardTitle, a as CardContent } from '../chunks/card_Davj9yGI.mjs';
+import { B as Badge } from '../chunks/badge_B_lPct8T.mjs';
 import { AlertTriangle, TrendingUp, TrendingDown, Receipt, CheckCircle, PiggyBank, Wallet, BarChart3, DollarSign, Gauge, Clock, Activity, X, ChevronUp, ChevronDown, ShoppingBag, ChevronRight, StickyNote } from 'lucide-react';
-import { B as Button } from '../chunks/button_C0m7HTLc.mjs';
-import { I as Input } from '../chunks/input_CaJO5aUC.mjs';
-import { L as Label } from '../chunks/label_BCCOrEL_.mjs';
-import { D as Dialog, a as DialogContent, b as DialogHeader, c as DialogTitle, d as DialogDescription } from '../chunks/dialog_B3LETe1A.mjs';
-import { u as useSortState, S as SortableHeader } from '../chunks/SortableHeader_DQsL8xig.mjs';
-import { E as EditTransactionDialog } from '../chunks/EditTransactionDialog_BBJ8xChJ.mjs';
-import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_DaH70Rt2.mjs';
-import '../chunks/checkbox_qsv5Fa_0.mjs';
-import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_DnqrgBja.mjs';
-import { p as getTransactions, q as getNetworth, g as getMonthlySummary, d as db } from '../chunks/db_535bmtRB.mjs';
+import { B as Button } from '../chunks/button_Br1WsJzs.mjs';
+import { I as Input } from '../chunks/input_iPhZt7ob.mjs';
+import { L as Label } from '../chunks/label_BzcOJTTH.mjs';
+import { D as Dialog, a as DialogContent, b as DialogHeader, c as DialogTitle, d as DialogDescription } from '../chunks/dialog_BsSkt0Aj.mjs';
+import { u as useSortState, S as SortableHeader } from '../chunks/SortableHeader_CmGXngLk.mjs';
+import { E as EditTransactionDialog } from '../chunks/EditTransactionDialog_DCtQIDKg.mjs';
+import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_B4ZDQe-_.mjs';
+import '../chunks/checkbox_DpbmdwJA.mjs';
+import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_CUJ65ghu.mjs';
+import { q as getTransactions, r as getNetworth, a as getMonthlySummary, d as db } from '../chunks/db_BgiJApmW.mjs';
 export { renderers } from '../renderers.mjs';
 
 Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -1441,7 +1441,7 @@ function dismissAlert(periodId, category) {
   dismissed[key] = true;
   localStorage.setItem(STORAGE_KEY$1, JSON.stringify(dismissed));
 }
-function BudgetAlerts({ summaries, categories, activeMonth }) {
+function BudgetAlerts({ summaries, categories, activeMonth, transactions, recurringTitles }) {
   const [collapsed, setCollapsed] = useState(false);
   const [dismissed, setDismissed] = useState({});
   useEffect(() => {
@@ -1454,21 +1454,39 @@ function BudgetAlerts({ summaries, categories, activeMonth }) {
     categories.forEach((c) => {
       categoryMap[c.name] = c;
     });
+    const recurringSet = new Set((recurringTitles || []).map((t) => t.toLowerCase()));
+    const discretionarySpend = {};
+    const periodTxs = (transactions || []).filter(
+      (t) => t.period_id === activeSummary.period_id && t.done === 1 && (t.type === "cash" || t.type === "credit_expense")
+    );
+    for (const tx of periodTxs) {
+      if (!recurringSet.has(tx.title.toLowerCase())) {
+        discretionarySpend[tx.category] = (discretionarySpend[tx.category] || 0) + tx.amount;
+      }
+    }
     const results = [];
     for (const [cat, amount] of Object.entries(activeSummary.category_totals)) {
       const catDef = categoryMap[cat];
       const limit = catDef?.monthly_limit ?? 0;
       if (limit <= 0 || amount <= 0) continue;
       const pct = amount / limit * 100;
+      const discAmt = discretionarySpend[cat] || 0;
+      const discPct = discAmt / limit * 100;
+      const isOver = amount > limit;
+      const isAllRecurring = discAmt === 0 && amount > 0;
       if (pct < 80) continue;
+      if (!isOver && isAllRecurring) continue;
       const dismissKey = `${activeSummary.period_id}:${cat}`;
       if (dismissed[dismissKey]) continue;
       results.push({
         category: cat,
         spent: amount,
+        discretionarySpent: discAmt,
         limit,
         pct: Math.round(pct * 10) / 10,
-        isOver: amount > limit,
+        discretionaryPct: Math.round(discPct * 10) / 10,
+        isOver,
+        isAllRecurring,
         color: catDef?.color || "#94a3b8"
       });
     }
@@ -1477,7 +1495,7 @@ function BudgetAlerts({ summaries, categories, activeMonth }) {
       return b.pct - a.pct;
     });
     return results;
-  }, [summaries, categories, activeMonth, dismissed]);
+  }, [summaries, categories, activeMonth, dismissed, transactions, recurringTitles]);
   const handleDismiss = (periodId, category) => {
     dismissAlert(periodId, category);
     setDismissed(getDismissedAlerts());
@@ -1760,8 +1778,13 @@ function Dashboard({ transactions, networth, summaries }) {
   const [txPage, setTxPage] = useState(1);
   const txPerPage = 10;
   const [categories, setCategories] = useState([]);
+  const [recurringTitles, setRecurringTitles] = useState([]);
   useEffect(() => {
     fetchCategories().then(setCategories).catch(() => {
+    });
+    fetchRecurringTransactions().then((r) => {
+      setRecurringTitles(r.filter((rx) => rx.active).map((rx) => rx.title));
+    }).catch(() => {
     });
   }, []);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -1977,7 +2000,9 @@ function Dashboard({ transactions, networth, summaries }) {
             {
               summaries,
               categories,
-              activeMonth: activeSummary?.month
+              activeMonth: activeSummary?.month,
+              transactions,
+              recurringTitles
             }
           )
         }

@@ -12,6 +12,7 @@ const { title = 'Financial Dashboard' } = Astro.props;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <script is:inline>
       (function() {
         const theme = localStorage.getItem('theme');
@@ -50,74 +51,145 @@ const { title = 'Financial Dashboard' } = Astro.props;
         </div>
       </div>
 
-      <!-- Desktop nav bar — centered, wrapping, with active page highlight -->
-      <nav id="desktopNav" class="hidden sm:flex flex-wrap items-center justify-center gap-1.5 mb-6 p-3 rounded-xl bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700">
+      <!-- Desktop nav bar — categorized with dropdown groups -->
+      <nav id="desktopNav" class="hidden sm:flex flex-wrap items-center justify-center gap-1 mb-6 p-3 rounded-xl bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700">
+        <!-- Primary links -->
         <a href="/" class="nav-link px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600">Dashboard</a>
         <a href="/transactions" class="nav-link px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600">Transactions</a>
         <a href="/networth" class="nav-link px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600">Networth</a>
         <a href="/portfolio" class="nav-link px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600 text-violet-600 dark:text-violet-400">Portfolio</a>
         <a href="/budget" class="nav-link px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600">Budget</a>
-        <a href="/spending-mix" class="nav-link px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600 text-indigo-600 dark:text-indigo-400">Spending Mix</a>
-        <a href="/credit-card" class="nav-link px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600 text-amber-600 dark:text-amber-400">Credit Card</a>
-        <a href="/recommendations" class="nav-link px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600 text-indigo-600 dark:text-indigo-400">Recommend</a>
-        <a href="/compare" class="nav-link px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600">Compare</a>
-        <a href="/savings-rate" class="nav-link px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600 text-emerald-600 dark:text-emerald-400">Savings Rate</a>
-        <a href="/analytics" class="nav-link px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600">Analytics</a>
-        <a href="/matrix" class="nav-link px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600 text-fuchsia-600 dark:text-fuchsia-400">Matrix</a>
-        <a href="/cashflow" class="nav-link px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600">Cash Flow</a>
-        <a href="/calendar" class="nav-link px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600">Calendar</a>
-        <a href="/weekly" class="nav-link px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600 text-indigo-600 dark:text-indigo-400">Weekly 📅</a>
-        <a href="/spending-rhythm" class="nav-link px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600 text-indigo-600 dark:text-indigo-400">Rhythm</a>
-        <a href="/streaks" class="nav-link px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600 text-orange-600 dark:text-orange-400">Streaks 🔥</a>
-        <a href="/achievements" class="nav-link px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600 text-yellow-600 dark:text-yellow-400">Trophies 🏆</a>
-        <a href="/merchants" class="nav-link px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600 text-sky-600 dark:text-sky-400">Merchants</a>
-        <a href="/goals" class="nav-link px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600">Goals</a>
         <a href="/recurring" class="nav-link px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600">Recurring</a>
-        <a href="/yearly" class="nav-link px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600">Yearly</a>
-        <a href="/dna" class="nav-link px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600 text-violet-600 dark:text-violet-400">DNA 🧬</a>
-        <a href="/health" class="nav-link px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600 text-indigo-600 dark:text-indigo-400">Health</a>
-        <a href="/forecast" class="nav-link px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600 text-rose-600 dark:text-rose-400">Forecast</a>
-        <a href="/fire" class="nav-link px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600 text-orange-600 dark:text-orange-400">FIRE 🔥</a>
-        <a href="/what-if" class="nav-link px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600 text-cyan-600 dark:text-cyan-400">What-If</a>
-        <a href="/report" class="nav-link px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600 text-teal-600 dark:text-teal-400">Report</a>
-        <a href="/settings" class="nav-link px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600">Settings</a>
-        <a href="/import" class="nav-link px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600 text-indigo-600 dark:text-indigo-400">Import</a>
+
+        <!-- Divider -->
+        <div class="w-px h-5 bg-slate-200 dark:bg-slate-600 mx-1"></div>
+
+        <!-- Insights dropdown -->
+        <div class="relative" data-dropdown>
+          <button class="nav-dropdown-trigger flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600" data-dropdown-trigger>
+            📊 Insights
+            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="nav-dropdown-menu hidden absolute left-0 top-full mt-1 w-56 rounded-xl bg-white dark:bg-slate-800 shadow-lg border border-slate-200 dark:border-slate-700 py-2 z-50">
+            <a href="/analytics" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition">Analytics</a>
+            <a href="/compare" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition">Compare</a>
+            <a href="/savings-rate" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition text-emerald-600 dark:text-emerald-400">Savings Rate</a>
+            <a href="/spending-mix" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition text-indigo-600 dark:text-indigo-400">Spending Mix</a>
+            <a href="/matrix" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition text-fuchsia-600 dark:text-fuchsia-400">Matrix</a>
+            <a href="/cashflow" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition">Cash Flow</a>
+            <a href="/calendar" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition">Calendar</a>
+            <a href="/weekly" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition text-indigo-600 dark:text-indigo-400">Weekly 📅</a>
+            <a href="/spending-rhythm" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition text-indigo-600 dark:text-indigo-400">Spending Rhythm</a>
+            <a href="/merchants" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition text-sky-600 dark:text-sky-400">Merchants</a>
+          </div>
+        </div>
+
+        <!-- Planning dropdown -->
+        <div class="relative" data-dropdown>
+          <button class="nav-dropdown-trigger flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600" data-dropdown-trigger>
+            🎯 Planning
+            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="nav-dropdown-menu hidden absolute left-0 top-full mt-1 w-56 rounded-xl bg-white dark:bg-slate-800 shadow-lg border border-slate-200 dark:border-slate-700 py-2 z-50">
+            <a href="/forecast" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition text-rose-600 dark:text-rose-400">Forecast</a>
+            <a href="/fire" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition text-orange-600 dark:text-orange-400">FIRE 🔥</a>
+            <a href="/what-if" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition text-cyan-600 dark:text-cyan-400">What-If</a>
+            <a href="/goals" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition">Goals</a>
+            <a href="/health" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition text-indigo-600 dark:text-indigo-400">Health</a>
+            <a href="/dna" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition text-violet-600 dark:text-violet-400">Spending DNA 🧬</a>
+          </div>
+        </div>
+
+        <!-- More dropdown -->
+        <div class="relative" data-dropdown>
+          <button class="nav-dropdown-trigger flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600" data-dropdown-trigger>
+            ✨ More
+            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="nav-dropdown-menu hidden absolute left-0 top-full mt-1 w-56 rounded-xl bg-white dark:bg-slate-800 shadow-lg border border-slate-200 dark:border-slate-700 py-2 z-50">
+            <a href="/credit-card" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition text-amber-600 dark:text-amber-400">Credit Card</a>
+            <a href="/recommendations" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition text-indigo-600 dark:text-indigo-400">Recommendations</a>
+            <a href="/streaks" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition text-orange-600 dark:text-orange-400">Streaks 🔥</a>
+            <a href="/achievements" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition text-yellow-600 dark:text-yellow-400">Achievements 🏆</a>
+            <a href="/yearly" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition">Yearly</a>
+            <a href="/report" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition text-teal-600 dark:text-teal-400">Monthly Report</a>
+          </div>
+        </div>
+
+        <!-- Divider -->
+        <div class="w-px h-5 bg-slate-200 dark:bg-slate-600 mx-1"></div>
+
+        <a href="/settings" class="nav-link px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600">⚙️ Settings</a>
         <a href="/add" class="nav-link-cta px-3 py-1.5 rounded-lg text-sm font-bold transition bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm">+ Add</a>
       </nav>
 
-      <!-- Mobile nav dropdown -->
+      <!-- Mobile nav dropdown — grouped with collapsible sections -->
       <nav id="mobileNav" class="sm:hidden hidden mb-6 p-3 rounded-xl bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700">
-        <div class="grid grid-cols-2 gap-1.5">
+        <!-- Primary links -->
+        <div class="grid grid-cols-2 gap-1.5 mb-3">
           <a href="/" class="nav-link px-3 py-2.5 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700">Dashboard</a>
           <a href="/transactions" class="nav-link px-3 py-2.5 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700">Transactions</a>
           <a href="/networth" class="nav-link px-3 py-2.5 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700">Networth</a>
           <a href="/portfolio" class="nav-link px-3 py-2.5 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-violet-600 dark:text-violet-400">Portfolio</a>
           <a href="/budget" class="nav-link px-3 py-2.5 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700">Budget</a>
-          <a href="/spending-mix" class="nav-link px-3 py-2.5 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-indigo-600 dark:text-indigo-400">Spending Mix</a>
-          <a href="/credit-card" class="nav-link px-3 py-2.5 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-amber-600 dark:text-amber-400">Credit Card</a>
-          <a href="/recommendations" class="nav-link px-3 py-2.5 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-indigo-600 dark:text-indigo-400">Recommend</a>
-          <a href="/compare" class="nav-link px-3 py-2.5 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700">Compare</a>
-          <a href="/savings-rate" class="nav-link px-3 py-2.5 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-emerald-600 dark:text-emerald-400">Savings Rate</a>
-          <a href="/analytics" class="nav-link px-3 py-2.5 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700">Analytics</a>
-          <a href="/matrix" class="nav-link px-3 py-2.5 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-fuchsia-600 dark:text-fuchsia-400">Matrix</a>
-          <a href="/cashflow" class="nav-link px-3 py-2.5 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700">Cash Flow</a>
-          <a href="/calendar" class="nav-link px-3 py-2.5 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700">Calendar</a>
-          <a href="/weekly" class="nav-link px-3 py-2.5 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-indigo-600 dark:text-indigo-400">Weekly 📅</a>
-          <a href="/spending-rhythm" class="nav-link px-3 py-2.5 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-indigo-600 dark:text-indigo-400">Rhythm</a>
-          <a href="/streaks" class="nav-link px-3 py-2.5 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-orange-600 dark:text-orange-400">Streaks 🔥</a>
-          <a href="/achievements" class="nav-link px-3 py-2.5 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-yellow-600 dark:text-yellow-400">Trophies 🏆</a>
-          <a href="/merchants" class="nav-link px-3 py-2.5 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-sky-600 dark:text-sky-400">Merchants</a>
-          <a href="/goals" class="nav-link px-3 py-2.5 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700">Goals</a>
           <a href="/recurring" class="nav-link px-3 py-2.5 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700">Recurring</a>
-          <a href="/yearly" class="nav-link px-3 py-2.5 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700">Yearly</a>
-          <a href="/dna" class="nav-link px-3 py-2.5 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-violet-600 dark:text-violet-400">DNA 🧬</a>
-          <a href="/health" class="nav-link px-3 py-2.5 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-indigo-600 dark:text-indigo-400">Health</a>
-          <a href="/forecast" class="nav-link px-3 py-2.5 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-rose-600 dark:text-rose-400">Forecast</a>
-          <a href="/fire" class="nav-link px-3 py-2.5 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-orange-600 dark:text-orange-400">FIRE 🔥</a>
-          <a href="/what-if" class="nav-link px-3 py-2.5 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-cyan-600 dark:text-cyan-400">What-If</a>
-          <a href="/report" class="nav-link px-3 py-2.5 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-teal-600 dark:text-teal-400">Report</a>
-          <a href="/settings" class="nav-link px-3 py-2.5 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700">Settings</a>
-          <a href="/import" class="nav-link px-3 py-2.5 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-indigo-600 dark:text-indigo-400">Import</a>
+        </div>
+
+        <!-- Collapsible: Insights -->
+        <div class="mobile-nav-group mb-2">
+          <button class="mobile-group-toggle w-full flex items-center justify-between px-3 py-2 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition">
+            📊 Insights
+            <svg class="mobile-group-chevron w-3.5 h-3.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="mobile-group-content hidden grid grid-cols-2 gap-1.5 px-1 pb-1">
+            <a href="/analytics" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700">Analytics</a>
+            <a href="/compare" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700">Compare</a>
+            <a href="/savings-rate" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-emerald-600 dark:text-emerald-400">Savings</a>
+            <a href="/spending-mix" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-indigo-600 dark:text-indigo-400">Mix</a>
+            <a href="/matrix" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-fuchsia-600 dark:text-fuchsia-400">Matrix</a>
+            <a href="/cashflow" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700">Cash Flow</a>
+            <a href="/calendar" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700">Calendar</a>
+            <a href="/weekly" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-indigo-600 dark:text-indigo-400">Weekly</a>
+            <a href="/spending-rhythm" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-indigo-600 dark:text-indigo-400">Rhythm</a>
+            <a href="/merchants" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-sky-600 dark:text-sky-400">Merchants</a>
+          </div>
+        </div>
+
+        <!-- Collapsible: Planning -->
+        <div class="mobile-nav-group mb-2">
+          <button class="mobile-group-toggle w-full flex items-center justify-between px-3 py-2 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition">
+            🎯 Planning
+            <svg class="mobile-group-chevron w-3.5 h-3.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="mobile-group-content hidden grid grid-cols-2 gap-1.5 px-1 pb-1">
+            <a href="/forecast" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-rose-600 dark:text-rose-400">Forecast</a>
+            <a href="/fire" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-orange-600 dark:text-orange-400">FIRE</a>
+            <a href="/what-if" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-cyan-600 dark:text-cyan-400">What-If</a>
+            <a href="/goals" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700">Goals</a>
+            <a href="/health" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-indigo-600 dark:text-indigo-400">Health</a>
+            <a href="/dna" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-violet-600 dark:text-violet-400">DNA</a>
+          </div>
+        </div>
+
+        <!-- Collapsible: More -->
+        <div class="mobile-nav-group mb-3">
+          <button class="mobile-group-toggle w-full flex items-center justify-between px-3 py-2 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition">
+            ✨ More
+            <svg class="mobile-group-chevron w-3.5 h-3.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="mobile-group-content hidden grid grid-cols-2 gap-1.5 px-1 pb-1">
+            <a href="/credit-card" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-amber-600 dark:text-amber-400">Credit Card</a>
+            <a href="/recommendations" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-indigo-600 dark:text-indigo-400">Recommend</a>
+            <a href="/streaks" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-orange-600 dark:text-orange-400">Streaks</a>
+            <a href="/achievements" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-yellow-600 dark:text-yellow-400">Trophies</a>
+            <a href="/yearly" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700">Yearly</a>
+            <a href="/report" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-teal-600 dark:text-teal-400">Report</a>
+          </div>
+        </div>
+
+        <!-- Bottom: Settings + Add -->
+        <div class="grid grid-cols-2 gap-1.5">
+          <a href="/settings" class="nav-link px-3 py-2.5 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700">⚙️ Settings</a>
           <a href="/add" class="nav-link-cta px-3 py-2.5 rounded-lg text-sm font-bold text-center transition bg-emerald-600 text-white col-span-2 hover:bg-emerald-700 shadow-sm">+ Add Data</a>
         </div>
       </nav>
@@ -149,17 +221,73 @@ const { title = 'Financial Dashboard' } = Astro.props;
         menuIconClose.classList.toggle('hidden');
       });
 
-      // Active page highlighting
+      // Active page highlighting (works on both desktop and mobile nav)
       function highlightActivePage() {
         const currentPath = window.location.pathname.replace(/\/$/, '') || '/';
         document.querySelectorAll('.nav-link, .nav-link-cta').forEach(link => {
           const href = link.getAttribute('href').replace(/\/$/, '') || '/';
           if (href === currentPath) {
-            link.classList.add('bg-slate-200', 'dark:bg-slate-600');
+            // For dropdown items, highlight the link itself
+            if (link.closest('.nav-dropdown-menu')) {
+              link.classList.add('bg-slate-100', 'dark:bg-slate-600', 'rounded-lg');
+            } else {
+              link.classList.add('bg-slate-200', 'dark:bg-slate-600');
+            }
           }
         });
       }
       highlightActivePage();
+
+      // Desktop dropdown behavior
+      const dropdowns = document.querySelectorAll('[data-dropdown]');
+      let activeDropdown = null;
+
+      dropdowns.forEach(dropdown => {
+        const trigger = dropdown.querySelector('[data-dropdown-trigger]');
+        const menu = dropdown.querySelector('.nav-dropdown-menu');
+
+        trigger.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (activeDropdown && activeDropdown !== dropdown) {
+            activeDropdown.querySelector('.nav-dropdown-menu').classList.add('hidden');
+            activeDropdown = null;
+          }
+          menu.classList.toggle('hidden');
+          activeDropdown = menu.classList.contains('hidden') ? null : dropdown;
+        });
+
+        // Hover support: open on hover, close on leave (desktop)
+        dropdown.addEventListener('mouseenter', () => {
+          if (activeDropdown && activeDropdown !== dropdown) {
+            activeDropdown.querySelector('.nav-dropdown-menu').classList.add('hidden');
+          }
+          menu.classList.remove('hidden');
+          activeDropdown = dropdown;
+        });
+
+        dropdown.addEventListener('mouseleave', () => {
+          menu.classList.add('hidden');
+          if (activeDropdown === dropdown) activeDropdown = null;
+        });
+      });
+
+      // Close dropdowns on outside click
+      document.addEventListener('click', () => {
+        if (activeDropdown) {
+          activeDropdown.querySelector('.nav-dropdown-menu').classList.add('hidden');
+          activeDropdown = null;
+        }
+      });
+
+      // Mobile nav collapsible groups
+      document.querySelectorAll('.mobile-group-toggle').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const content = btn.nextElementSibling;
+          const chevron = btn.querySelector('.mobile-group-chevron');
+          content.classList.toggle('hidden');
+          chevron.style.transform = content.classList.contains('hidden') ? '' : 'rotate(180deg)';
+        });
+      });
     </script>
 
     <!-- Command Palette -->
@@ -179,6 +307,29 @@ const { title = 'Financial Dashboard' } = Astro.props;
     <style is:global>
       /* Hide scrollbar on mobile nav if it ever appears */
       nav::-webkit-scrollbar { display: none; }
+
+      /* Dropdown menu animation */
+      .nav-dropdown-menu {
+        animation: dropdown-fade-in 0.15s ease-out;
+      }
+      @keyframes dropdown-fade-in {
+        from {
+          opacity: 0;
+          transform: translateY(-4px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Active dropdown trigger */
+      [data-dropdown]:hover [data-dropdown-trigger] {
+        background-color: rgb(226 232 240);
+      }
+      .dark [data-dropdown]:hover [data-dropdown-trigger] {
+        background-color: rgb(71 85 105);
+      }
     </style>
   </body>
 </html>
