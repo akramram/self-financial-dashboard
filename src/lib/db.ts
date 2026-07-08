@@ -2141,3 +2141,562 @@ function formatHour(h: number): string {
   const hr = h === 0 ? 12 : h > 12 ? h - 12 : h;
   return `${hr} ${period}`;
 }
+
+// ============================================================
+// Achievements & Milestones
+// Aggregates net-worth milestones, savings streaks, spending
+// discipline badges, and tracking longevity into a gamified
+// "trophy case" view that celebrates financial progress.
+// ============================================================
+
+export interface AchievementBadge {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;            // emoji
+  category: 'networth' | 'savings' | 'discipline' | 'longevity' | 'diversity';
+  tier: 'bronze' | 'silver' | 'gold' | 'platinum';
+  unlocked: boolean;
+  unlockedDate: string | null;   // ISO date when threshold was first met
+  progress?: { current: number; target: number; unit: string };
+  value?: string;                // formatted milestone value when unlocked
+}
+
+export interface MilestoneHighlight {
+  label: string;
+  value: string;
+  icon: string;
+  subtext?: string;
+}
+
+export interface AchievementsResult {
+  highlights: MilestoneHighlight[];
+  badges: AchievementBadge[];
+  unlockedCount: number;
+  totalCount: number;
+  nextMilestone: AchievementBadge | null;   // closest locked badge with progress
+  levelInfo: {
+    level: number;             // 1 point per unlocked badge
+    title: string;             // rank title based on level
+    progressToNext: number;    // 0-100
+    pointsToNext: number;
+  };
+}
+
+function getEarliestTxDate(): Date | null {
+  const row = db.prepare(`
+    SELECT MIN(COALESCE(created_time, date)) AS earliest FROM transactions
+  `).get() as any;
+  if (!row || !row.earliest) return null;
+  const d = new Date(row.earliest);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+export function getAchievements(): AchievementsResult {
+  // ── Pull the raw data we need ────────────────────────────────────────────
+  const networthRows = db.prepare(`
+    SELECT n.total, n.date, p.month, p.start_date
+    FROM networth n JOIN periods p ON n.period_id = p.id
+    ORDER BY p.start_date ASC
+  `).all() as { total: number; date: string; month: string; start_date: string }[];
+
+  const summaryRows = db.prepare(`
+    SELECT p.id AS period_id, p.month, p.start_date,
+           SUM(CASE WHEN t.done=1 AND t.type='cash' THEN t.amount ELSE 0 END) AS cash,
+           SUM(CASE WHEN t.done=1 AND t.type='credit_payment' THEN t.amount ELSE 0 END) AS credit_payment,
+           SUM(CASE WHEN t.done=1 AND t.type='credit_expense' THEN t.amount ELSE 0 END) AS credit_expense
+    FROM periods p
+    INNER JOIN transactions t ON t.period_id = p.id
+    GROUP BY p.id
+    ORDER BY p.start_date ASC
+  `).all() as any[];
+
+  const incomeRows = db.prepare(`
+    SELECT mi.period_id, mi.income, mi.other_income
+    FROM monthly_income mi
+  `).all() as any[];
+  const incomeByPeriod = new Map(incomeRows.map((r) => [r.period_id, r.income + (r.other_income || 0)]));
+
+  // Per-period savings (income - total outflow) and savings rate
+  const perPeriod = summaryRows.map((s) => {
+    const outcome = (s.cash || 0) + (s.credit_payment || 0);
+    const income = incomeByPeriod.get(s.period_id) || 0;
+    const savings = income - outcome;
+    const rate = income > 0 ? (savings / income) * 100 : 0;
+    return { ...s, income, outcome, savings, rate };
+  });
+
+  const allTxRow = db.prepare(`
+    SELECT COUNT(*) AS c,
+           SUM(CASE WHEN done=1 AND type IN ('cash','credit_expense') THEN amount ELSE 0 END) AS total_spend
+    FROM transactions
+  `).get() as any;
+
+  const distinctCategories = db.prepare(`
+    SELECT COUNT(DISTINCT category) AS c FROM transactions WHERE done=1
+  `).get() as any;
+
+  // Consecutive positive-savings periods (ending at the most recent period)
+  let savingsStreak = 0;
+  for (let i = perPeriod.length - 1; i >= 0; i--) {
+    if (perPeriod[i].income > 0 && perPeriod[i].savings > 0) savingsStreak++;
+    else if (perPeriod[i].income > 0) break; // a period with income but no savings breaks the streak
+  }
+
+  // Best (highest) single-period savings rate, and how many periods were ≥10%, ≥20%, ≥30%
+  let bestRate = 0;
+  let periodsAbove10 = 0;
+  let periodsAbove20 = 0;
+  let periodsAbove30 = 0;
+  for (const p of perPeriod) {
+    if (p.income <= 0) continue;
+    if (p.rate > bestRate) bestRate = p.rate;
+    if (p.rate >= 10) periodsAbove10++;
+    if (p.rate >= 20) periodsAbove20++;
+    if (p.rate >= 30) periodsAbove30++;
+  }
+
+  // Peak net worth + growth from first to last
+  let peakNw = 0;
+  let peakNwMonth = '';
+  for (const n of networthRows) {
+    if (n.total > peakNw) { peakNw = n.total; peakNwMonth = n.month; }
+  }
+  const firstNw = networthRows.length > 0 ? networthRows[0].total : 0;
+  const lastNw = networthRows.length > 0 ? networthRows[networthRows.length - 1].total : 0;
+  const nwGrowth = lastNw - firstNw;
+  const nwGrowthPct = firstNw > 0 ? (nwGrowth / firstNw) * 100 : 0;
+
+  // Tracking longevity (days since first transaction)
+  const earliest = getEarliestTxDate();
+  const today = new Date();
+  const daysTracked = earliest ? Math.floor((today.getTime() - earliest.getTime()) / (1000 * 60 * 60 * 24)) : 0;
+
+  // Spending discipline: largest single discretionary tx, and whether it's < 30% of monthly income
+  const largestTxRow = db.prepare(`
+    SELECT amount, title, category, date, period_id FROM transactions
+    WHERE done=1 AND type IN ('cash','credit_expense')
+    ORDER BY amount DESC LIMIT 1
+  `).get() as any;
+  const largestTx = largestTxRow?.amount ?? 0;
+
+  // ── Net-worth milestone thresholds (IDR) ─────────────────────────────────
+  const nwThresholds = [
+    { target: 10_000_000,  label: '10 Million',  tier: 'bronze',   icon: '🥉' },
+    { target: 25_000_000,  label: '25 Million',  tier: 'silver',   icon: '🥈' },
+    { target: 50_000_000,  label: '50 Million',  tier: 'gold',     icon: '🥇' },
+    { target: 100_000_000, label: '100 Million', tier: 'platinum', icon: '💎' },
+    { target: 500_000_000, label: '500 Million', tier: 'platinum', icon: '👑' },
+  ];
+
+  // ── Build badge list ─────────────────────────────────────────────────────
+  const badges: AchievementBadge[] = [];
+
+  // Net-worth milestones (based on peak)
+  for (const t of nwThresholds) {
+    const unlocked = peakNw >= t.target;
+    badges.push({
+      id: `nw-${t.target}`,
+      title: `${t.label} Club`,
+      description: `Reach IDR ${t.target.toLocaleString('id-ID')} net worth`,
+      icon: t.icon,
+      category: 'networth',
+      tier: t.tier as any,
+      unlocked,
+      unlockedDate: unlocked ? (networthRows.find((n) => n.total >= t.target)?.start_date ?? null) : null,
+      progress: !unlocked ? { current: Math.max(0, peakNw), target: t.target, unit: 'IDR' } : undefined,
+      value: unlocked ? `First hit in ${networthRows.find((n) => n.total >= t.target)?.month ?? '—'}` : undefined,
+    });
+  }
+
+  // Net-worth growth badges
+  if (firstNw > 0) {
+    badges.push({
+      id: 'nw-double',
+      title: 'Doubling Down',
+      description: 'Double your initial recorded net worth',
+      icon: '📈',
+      category: 'networth',
+      tier: 'gold',
+      unlocked: lastNw >= firstNw * 2,
+      unlockedDate: null,
+      progress: lastNw < firstNw * 2 ? { current: Math.max(0, nwGrowthPct), target: 100, unit: '%' } : undefined,
+      value: lastNw >= firstNw * 2 ? `+${nwGrowthPct.toFixed(0)}% growth` : undefined,
+    });
+    badges.push({
+      id: 'nw-growth-25',
+      title: 'Climbing Higher',
+      description: 'Grow net worth by 25% from your starting point',
+      icon: '🚀',
+      category: 'networth',
+      tier: 'silver',
+      unlocked: nwGrowthPct >= 25,
+      unlockedDate: null,
+      progress: nwGrowthPct < 25 ? { current: Math.max(0, nwGrowthPct), target: 25, unit: '%' } : undefined,
+      value: nwGrowthPct >= 25 ? `+${nwGrowthPct.toFixed(0)}% from start` : undefined,
+    });
+  }
+
+  // Savings streak badges
+  badges.push({
+    id: 'saver-streak-2',
+    title: 'Consistent Saver',
+    description: 'Save money 2 salary periods in a row',
+    icon: '🐷',
+    category: 'savings',
+    tier: 'bronze',
+    unlocked: savingsStreak >= 2,
+    unlockedDate: null,
+    progress: savingsStreak < 2 ? { current: savingsStreak, target: 2, unit: 'periods' } : undefined,
+    value: savingsStreak >= 2 ? `${savingsStreak}-period streak` : undefined,
+  });
+  badges.push({
+    id: 'saver-streak-3',
+    title: 'Savings Machine',
+    description: 'Save money 3 salary periods in a row',
+    icon: '⚙️',
+    category: 'savings',
+    tier: 'silver',
+    unlocked: savingsStreak >= 3,
+    unlockedDate: null,
+    progress: savingsStreak < 3 ? { current: savingsStreak, target: 3, unit: 'periods' } : undefined,
+    value: savingsStreak >= 3 ? `${savingsStreak}-period streak` : undefined,
+  });
+  badges.push({
+    id: 'saver-streak-6',
+    title: 'Savings Virtuoso',
+    description: 'Save money 6 salary periods in a row',
+    icon: '🏆',
+    category: 'savings',
+    tier: 'gold',
+    unlocked: savingsStreak >= 6,
+    unlockedDate: null,
+    progress: savingsStreak < 6 ? { current: savingsStreak, target: 6, unit: 'periods' } : undefined,
+    value: savingsStreak >= 6 ? `${savingsStreak}-period streak` : undefined,
+  });
+
+  // Savings-rate badges
+  badges.push({
+    id: 'rate-10',
+    title: 'Ten Percent Club',
+    description: 'Save 10%+ of income in any period',
+    icon: '🔟',
+    category: 'savings',
+    tier: 'bronze',
+    unlocked: bestRate >= 10,
+    unlockedDate: null,
+    progress: bestRate < 10 ? { current: Math.max(0, bestRate), target: 10, unit: '%' } : undefined,
+    value: bestRate >= 10 ? `Best: ${bestRate.toFixed(1)}%` : undefined,
+  });
+  badges.push({
+    id: 'rate-20',
+    title: 'Twenty Percent Elite',
+    description: 'Save 20%+ of income in any period',
+    icon: '⭐',
+    category: 'savings',
+    tier: 'silver',
+    unlocked: bestRate >= 20,
+    unlockedDate: null,
+    progress: bestRate < 20 ? { current: Math.max(0, bestRate), target: 20, unit: '%' } : undefined,
+    value: bestRate >= 20 ? `Best: ${bestRate.toFixed(1)}%` : undefined,
+  });
+  badges.push({
+    id: 'rate-30',
+    title: 'Thirty Percent Master',
+    description: 'Save 30%+ of income in any period',
+    icon: '🌟',
+    category: 'savings',
+    tier: 'gold',
+    unlocked: bestRate >= 30,
+    unlockedDate: null,
+    progress: bestRate < 30 ? { current: Math.max(0, bestRate), target: 30, unit: '%' } : undefined,
+    value: bestRate >= 30 ? `Best: ${bestRate.toFixed(1)}%` : undefined,
+  });
+
+  // Longevity badges
+  badges.push({
+    id: 'track-30',
+    title: 'Getting Started',
+    description: 'Track your finances for 30 days',
+    icon: '🌱',
+    category: 'longevity',
+    tier: 'bronze',
+    unlocked: daysTracked >= 30,
+    unlockedDate: null,
+    progress: daysTracked < 30 ? { current: daysTracked, target: 30, unit: 'days' } : undefined,
+    value: daysTracked >= 30 ? `${daysTracked} days tracked` : undefined,
+  });
+  badges.push({
+    id: 'track-90',
+    title: 'Quarter Master',
+    description: 'Track your finances for 90 days',
+    icon: '📅',
+    category: 'longevity',
+    tier: 'silver',
+    unlocked: daysTracked >= 90,
+    unlockedDate: null,
+    progress: daysTracked < 90 ? { current: daysTracked, target: 90, unit: 'days' } : undefined,
+    value: daysTracked >= 90 ? `${daysTracked} days tracked` : undefined,
+  });
+  badges.push({
+    id: 'track-365',
+    title: 'One Year Strong',
+    description: 'Track your finances for a full year',
+    icon: '🎂',
+    category: 'longevity',
+    tier: 'gold',
+    unlocked: daysTracked >= 365,
+    unlockedDate: null,
+    progress: daysTracked < 365 ? { current: daysTracked, target: 365, unit: 'days' } : undefined,
+    value: daysTracked >= 365 ? `${Math.floor(daysTracked / 30)} months tracked` : undefined,
+  });
+
+  // Discipline badges
+  if (largestTxRow) {
+    badges.push({
+      id: 'no-impulse-1m',
+      title: 'Big Spender Under Control',
+      description: 'Keep every single transaction under IDR 1,000,000',
+      icon: '🛡️',
+      category: 'discipline',
+      tier: 'silver',
+      unlocked: largestTx < 1_000_000,
+      unlockedDate: null,
+      progress: largestTx >= 1_000_000 ? { current: 1_000_000, target: largestTx, unit: 'IDR' } : undefined,
+      value: largestTx < 1_000_000 ? 'Largest tx < 1M' : undefined,
+    });
+  }
+
+  // Diversity badges
+  badges.push({
+    id: 'cat-5',
+    title: 'Category Explorer',
+    description: 'Use 5 or more spending categories',
+    icon: '🎨',
+    category: 'diversity',
+    tier: 'bronze',
+    unlocked: distinctCategories.c >= 5,
+    unlockedDate: null,
+    progress: distinctCategories.c < 5 ? { current: distinctCategories.c, target: 5, unit: 'categories' } : undefined,
+    value: distinctCategories.c >= 5 ? `${distinctCategories.c} categories` : undefined,
+  });
+  badges.push({
+    id: 'cat-10',
+    title: 'Category Master',
+    description: 'Use 10 or more spending categories',
+    icon: '🗂️',
+    category: 'diversity',
+    tier: 'silver',
+    unlocked: distinctCategories.c >= 10,
+    unlockedDate: null,
+    progress: distinctCategories.c < 10 ? { current: distinctCategories.c, target: 10, unit: 'categories' } : undefined,
+    value: distinctCategories.c >= 10 ? `${distinctCategories.c} categories` : undefined,
+  });
+
+  // ── Compute highlights (top stat cards) ──────────────────────────────────
+  const highlights: MilestoneHighlight[] = [
+    {
+      label: 'Net Worth Peak',
+      value: formatIdrInline(peakNw),
+      icon: '💎',
+      subtext: peakNwMonth ? `Reached in ${peakNwMonth}` : undefined,
+    },
+    {
+      label: 'Total Tracked Spend',
+      value: formatIdrInline(allTxRow.total_spend || 0),
+      icon: '💸',
+      subtext: `${allTxRow.c || 0} transactions logged`,
+    },
+    {
+      label: 'Best Savings Rate',
+      value: bestRate > 0 ? `${bestRate.toFixed(1)}%` : '—',
+      icon: '💰',
+      subtext: `${periodsAbove10} period(s) above 10%`,
+    },
+    {
+      label: 'Savings Streak',
+      value: `${savingsStreak}`,
+      icon: '🔥',
+      subtext: 'consecutive saving periods',
+    },
+    {
+      label: 'Tracking Span',
+      value: daysTracked > 0 ? `${Math.floor(daysTracked / 30)} mo` : '—',
+      icon: '📅',
+      subtext: `${daysTracked} days since first entry`,
+    },
+    {
+      label: 'Net Worth Growth',
+      value: nwGrowthPct !== 0 ? `${nwGrowthPct >= 0 ? '+' : ''}${nwGrowthPct.toFixed(0)}%` : '—',
+      icon: nwGrowthPct >= 0 ? '📈' : '📉',
+      subtext: `from ${formatIdrInline(firstNw)}`,
+    },
+  ];
+
+  // ── Level / rank computation ─────────────────────────────────────────────
+  const unlockedBadges = badges.filter((b) => b.unlocked);
+  const unlockedCount = unlockedBadges.length;
+  const totalCount = badges.length;
+  const level = unlockedCount;
+
+  const rankTitles = [
+    'Newcomer', 'Tracker', 'Saver', 'Budgeter', 'Wealth Builder',
+    'Investor', 'Disciplined', 'Strategist', 'Master', 'Guru', 'Legend',
+  ];
+  const title = rankTitles[Math.min(level, rankTitles.length - 1)];
+
+  // Find next locked badge with the closest progress ratio
+  const lockedWithProgress = badges
+    .filter((b) => !b.unlocked && b.progress)
+    .map((b) => ({ badge: b, ratio: (b.progress!.current / b.progress!.target) }))
+    .sort((a, b) => b.ratio - a.ratio);
+  const nextMilestone = lockedWithProgress.length > 0 ? lockedWithProgress[0].badge : null;
+  const pointsToNext = totalCount - unlockedCount;
+
+  // Progress to next level: based on overall completion
+  const progressToNext = Math.round((unlockedCount / Math.max(totalCount, 1)) * 100);
+
+  return {
+    highlights,
+    badges,
+    unlockedCount,
+    totalCount,
+    nextMilestone,
+    levelInfo: {
+      level,
+      title,
+      progressToNext,
+      pointsToNext,
+    },
+  };
+}
+
+// ─── Weekly Spending Tracker ──────────────────────────────────────────────────
+
+export interface WeeklyBucket {
+  weekNum: number;
+  label: string;       // "Week 1 (May 21–27)"
+  startDate: string;   // "2026-05-21"
+  endDate: string;     // "2026-05-27"
+  total: number;
+  txCount: number;
+  categoryTotals: Record<string, number>;
+  avgDaily: number;
+}
+
+export interface WeeklySpendingResult {
+  periodId: number;
+  month: string;
+  periodStart: string;
+  periodEnd: string;
+  weeks: WeeklyBucket[];
+  totalSpend: number;
+  totalTxCount: number;
+  weeklyBudget: number;
+  daysPerWeek: number[];
+  income: number;
+}
+
+export function getWeeklySpending(periodId: number): WeeklySpendingResult {
+  // Get period info
+  const period = db.prepare('SELECT id, month, start_date, end_date FROM periods WHERE id = ?').get(periodId) as any;
+  if (!period) {
+    return { periodId, month: '', periodStart: '', periodEnd: '', weeks: [], totalSpend: 0, totalTxCount: 0, weeklyBudget: 0, daysPerWeek: [], income: 0 };
+  }
+
+  const startParts = period.start_date.split('-').map(Number);
+  const endParts = period.end_date.split('-').map(Number);
+  // Use local date construction to avoid UTC offset issues
+  const start = new Date(startParts[0], startParts[1] - 1, startParts[2]);
+  const end = new Date(endParts[0], endParts[1] - 1, endParts[2], 23, 59, 59);
+
+  // Get income for the period
+  const incomeRow = db.prepare('SELECT income FROM monthly_income WHERE period_id = ?').get(periodId) as any;
+  const income = incomeRow?.income ?? 0;
+
+  // Get all expense transactions for the period with created_time
+  const txs = db.prepare(
+    'SELECT id, title, category, amount, type, done, created_time, date FROM transactions WHERE period_id = ? AND done = 1 AND type IN (\'cash\', \'credit_expense\')'
+  ).all(periodId) as any[];
+
+  // Build weeks: 7-day buckets from period start
+  const weeks: WeeklyBucket[] = [];
+  let weekStart = new Date(start);
+  let weekNum = 1;
+
+  while (weekStart <= end) {
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekEnd.getDate() + 6);
+    if (weekEnd > end) weekEnd.setTime(end.getTime());
+
+    const startDateStr = `${weekStart.getFullYear()}-${String(weekStart.getMonth() + 1).padStart(2, '0')}-${String(weekStart.getDate()).padStart(2, '0')}`;
+    const endDateStr = `${weekEnd.getFullYear()}-${String(weekEnd.getMonth() + 1).padStart(2, '0')}-${String(weekEnd.getDate()).padStart(2, '0')}`;
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    const label = `Week ${weekNum} (${monthNames[weekStart.getMonth()]} ${weekStart.getDate()}${weekEnd.getMonth() !== weekStart.getMonth() ? ' – ' + monthNames[weekEnd.getMonth()] + ' ' : '–'}${weekEnd.getDate()})`;
+
+    // Filter transactions that fall in this week using created_time
+    const weekTxs = txs.filter((t) => {
+      let txDate: Date;
+      if (t.created_time) {
+        txDate = new Date(t.created_time);
+      } else {
+        txDate = new Date(t.date);
+      }
+      return txDate >= weekStart && txDate <= new Date(weekEnd.getTime() + 86399999); // include end day
+    });
+
+    const total = weekTxs.reduce((s, t) => s + t.amount, 0);
+    const categoryTotals: Record<string, number> = {};
+    weekTxs.forEach((t) => {
+      categoryTotals[t.category] = (categoryTotals[t.category] || 0) + t.amount;
+    });
+
+    const daysInWeek = Math.min(7, Math.floor((weekEnd.getTime() - weekStart.getTime()) / 86400000) + 1);
+    const avgDaily = daysInWeek > 0 ? total / daysInWeek : 0;
+
+    weeks.push({
+      weekNum,
+      label,
+      startDate: startDateStr,
+      endDate: endDateStr,
+      total,
+      txCount: weekTxs.length,
+      categoryTotals,
+      avgDaily,
+    });
+
+    weekStart = new Date(weekStart);
+    weekStart.setDate(weekStart.getDate() + 7);
+    weekNum++;
+  }
+
+  const totalSpend = weeks.reduce((s, w) => s + w.total, 0);
+  const totalTxCount = weeks.reduce((s, w) => s + w.txCount, 0);
+
+  // Weekly budget = income / number of weeks
+  const totalDays = Math.floor((end.getTime() - start.getTime()) / 86400000) + 1;
+  const numWeeks = Math.ceil(totalDays / 7);
+  const weeklyBudget = income > 0 ? income / numWeeks : 0;
+
+  const daysPerWeek = weeks.map((w) => {
+    const sp = w.startDate.split('-').map(Number);
+    const ep = w.endDate.split('-').map(Number);
+    const s = new Date(sp[0], sp[1] - 1, sp[2]);
+    const e = new Date(ep[0], ep[1] - 1, ep[2]);
+    return Math.floor((e.getTime() - s.getTime()) / 86400000) + 1;
+  });
+
+  return {
+    periodId,
+    month: period.month,
+    periodStart: period.start_date,
+    periodEnd: period.end_date,
+    weeks,
+    totalSpend,
+    totalTxCount,
+    weeklyBudget,
+    daysPerWeek,
+    income,
+  };
+}
