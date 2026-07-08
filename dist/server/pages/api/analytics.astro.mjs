@@ -1,4 +1,4 @@
-import { b as getPeriodByMonth, c as getDailySpending, e as getDayOfWeekSpending, f as getTransactionStats, h as getSpendingVelocity, i as getTitleSpending } from '../../chunks/db_535bmtRB.mjs';
+import { c as getPeriodByMonth, e as getDailySpending, f as getDayOfWeekSpending, h as getTransactionStats, i as getSpendingVelocity, j as getTitleSpending } from '../../chunks/db_BgiJApmW.mjs';
 export { renderers } from '../../renderers.mjs';
 
 const GET = async ({ request }) => {

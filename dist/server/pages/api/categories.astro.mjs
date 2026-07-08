@@ -1,4 +1,4 @@
-import { a as getCategories, m as getCategoryByName, n as insertCategory } from '../../chunks/db_535bmtRB.mjs';
+import { b as getCategories, n as getCategoryByName, o as insertCategory } from '../../chunks/db_BgiJApmW.mjs';
 export { renderers } from '../../renderers.mjs';
 
 const GET = async () => {

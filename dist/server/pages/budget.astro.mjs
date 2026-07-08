@@ -1,20 +1,20 @@
-/* empty css                               */
+/* empty css                                        */
 import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BN-0jZ66.mjs';
 import 'kleur/colors';
-import { f as formatIdr, $ as $$Layout } from '../chunks/utils_JbfoWkNO.mjs';
+import { f as formatIdr, $ as $$Layout } from '../chunks/utils_Dm1NQFdF.mjs';
 import { jsxs, jsx } from 'react/jsx-runtime';
 import { useMemo, useState } from 'react';
-import { b as fetchTransactions } from '../chunks/api_CEy8D9Rv.mjs';
-import { C as Card, c as CardContent, a as CardHeader, b as CardTitle } from '../chunks/card_CCET0Yjm.mjs';
-import { B as Button } from '../chunks/button_C0m7HTLc.mjs';
-import { B as Badge } from '../chunks/badge_DvkSPMv8.mjs';
-import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_DaH70Rt2.mjs';
-import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_DnqrgBja.mjs';
-import { D as Dialog, a as DialogContent, b as DialogHeader, c as DialogTitle, d as DialogDescription } from '../chunks/dialog_B3LETe1A.mjs';
+import { b as fetchTransactions } from '../chunks/api_B85Pj26R.mjs';
+import { C as Card, a as CardContent, b as CardHeader, c as CardTitle } from '../chunks/card_Davj9yGI.mjs';
+import { B as Button } from '../chunks/button_Br1WsJzs.mjs';
+import { B as Badge } from '../chunks/badge_B_lPct8T.mjs';
+import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_B4ZDQe-_.mjs';
+import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_CUJ65ghu.mjs';
+import { D as Dialog, a as DialogContent, b as DialogHeader, c as DialogTitle, d as DialogDescription } from '../chunks/dialog_BsSkt0Aj.mjs';
 import { Chart, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import { Wallet, TrendingDown, PiggyBank, AlertTriangle, Receipt, ArrowUpDown } from 'lucide-react';
-import { g as getMonthlySummary, a as getCategories, d as db } from '../chunks/db_535bmtRB.mjs';
+import { a as getMonthlySummary, b as getCategories, d as db } from '../chunks/db_BgiJApmW.mjs';
 export { renderers } from '../renderers.mjs';
 
 Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -53,15 +53,20 @@ function BudgetReport({ summaries, categories }) {
         stats[cat.name] = { spent: 0, limit: cat.monthly_limit, months: 0 };
       }
     });
-    return Object.entries(stats).map(([name, data]) => ({
-      name,
-      spent: data.spent,
-      limit: data.limit,
-      remaining: data.limit - data.spent,
-      pct: data.limit > 0 ? data.spent / data.limit * 100 : data.spent > 0 ? 101 : 0,
-      color: categoryMap[name]?.color,
-      months: data.months
-    }));
+    const totalPeriods = activeSummaries.length;
+    return Object.entries(stats).map(([name, data]) => {
+      const periodCount = isAllTime ? data.months > 0 ? data.months : totalPeriods : 1;
+      const effectiveLimit = data.limit * periodCount;
+      return {
+        name,
+        spent: data.spent,
+        limit: effectiveLimit,
+        remaining: effectiveLimit - data.spent,
+        pct: effectiveLimit > 0 ? data.spent / effectiveLimit * 100 : data.spent > 0 ? 101 : 0,
+        color: categoryMap[name]?.color,
+        months: data.months
+      };
+    });
   }, [summaries, filterMonth, isAllTime, categories, categoryMap]);
   const sortedStats = useMemo(() => {
     const sorted = [...categoryStats];
@@ -173,6 +178,19 @@ function BudgetReport({ summaries, categories }) {
     }
   };
   const dialogTotal = categoryTransactions.reduce((s, t) => s + t.amount, 0);
+  const overBudgetPeriods = useMemo(() => {
+    if (!selectedCategory) return /* @__PURE__ */ new Set();
+    const cat = categoryMap[selectedCategory];
+    if (!cat || cat.monthly_limit <= 0) return /* @__PURE__ */ new Set();
+    const periods = /* @__PURE__ */ new Set();
+    summaries.forEach((s) => {
+      const spent = s.category_totals?.[selectedCategory] ?? 0;
+      if (spent > cat.monthly_limit) {
+        periods.add(s.period_id);
+      }
+    });
+    return periods;
+  }, [summaries, selectedCategory, categoryMap]);
   return /* @__PURE__ */ jsxs("div", { className: "space-y-6", children: [
     /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3", children: [
       /* @__PURE__ */ jsx("label", { className: "text-sm font-medium text-slate-600 dark:text-slate-300", children: "Period:" }),
@@ -309,27 +327,38 @@ function BudgetReport({ summaries, categories }) {
           /* @__PURE__ */ jsx(TableHead, { children: "Date" }),
           /* @__PURE__ */ jsx(TableHead, { className: "text-right", children: "Amount" }),
           /* @__PURE__ */ jsx(TableHead, { children: "Type" }),
-          /* @__PURE__ */ jsx(TableHead, { children: "Paid" })
+          /* @__PURE__ */ jsx(TableHead, { children: "Status" })
         ] }) }),
         /* @__PURE__ */ jsx(TableBody, { children: categoryTransactions.map((tx) => {
+          const isOverBudget = overBudgetPeriods.has(tx.period_id);
           const typeClass = tx.type === "cash" ? "text-blue-600 dark:text-blue-400" : tx.type === "credit_payment" ? "text-amber-600 dark:text-amber-400" : "text-purple-600 dark:text-purple-400";
           const typeLabel = tx.type === "cash" ? "Cash" : tx.type === "credit_payment" ? "Credit Pay" : "Credit";
           const dateObj = tx.created_time ? new Date(tx.created_time) : new Date(tx.date);
           const dateStr = isNaN(dateObj.getTime()) ? tx.date : dateObj.toLocaleDateString("id-ID", { year: "numeric", month: "short", day: "numeric" });
-          return /* @__PURE__ */ jsxs(TableRow, { children: [
-            /* @__PURE__ */ jsx(TableCell, { className: "font-medium", children: tx.title }),
-            /* @__PURE__ */ jsx(TableCell, { className: "text-muted-foreground text-xs", children: dateStr }),
-            /* @__PURE__ */ jsx(TableCell, { className: "text-right font-medium", children: formatIdr(tx.amount) }),
-            /* @__PURE__ */ jsx(TableCell, { className: `${typeClass} text-xs font-semibold uppercase`, children: typeLabel }),
-            /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(
-              Badge,
-              {
-                variant: "secondary",
-                className: `text-[10px] ${tx.done ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300" : "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300"}`,
-                children: tx.done ? "Paid" : "Unpaid"
-              }
-            ) })
-          ] }, tx.id);
+          return /* @__PURE__ */ jsxs(
+            TableRow,
+            {
+              className: isOverBudget ? "border-l-2 border-l-red-500 bg-red-50/60 dark:bg-red-950/30" : "",
+              children: [
+                /* @__PURE__ */ jsx(TableCell, { className: "font-medium", children: tx.title }),
+                /* @__PURE__ */ jsx(TableCell, { className: "text-muted-foreground text-xs", children: dateStr }),
+                /* @__PURE__ */ jsx(TableCell, { className: "text-right font-medium", children: formatIdr(tx.amount) }),
+                /* @__PURE__ */ jsx(TableCell, { className: `${typeClass} text-xs font-semibold uppercase`, children: typeLabel }),
+                /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
+                  isOverBudget && /* @__PURE__ */ jsx(Badge, { variant: "destructive", className: "text-[10px] whitespace-nowrap", children: "Over Budget" }),
+                  /* @__PURE__ */ jsx(
+                    Badge,
+                    {
+                      variant: "secondary",
+                      className: `text-[10px] ${tx.done ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300" : "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300"}`,
+                      children: tx.done ? "Paid" : "Unpaid"
+                    }
+                  )
+                ] }) })
+              ]
+            },
+            tx.id
+          );
         }) })
       ] }) }),
       /* @__PURE__ */ jsx("div", { className: "flex justify-end pt-2", children: /* @__PURE__ */ jsx(Button, { size: "sm", variant: "secondary", onClick: () => setDialogOpen(false), children: "Close" }) })

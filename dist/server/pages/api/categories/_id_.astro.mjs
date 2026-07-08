@@ -1,4 +1,4 @@
-import { k as deleteCategory, l as getCategoryById, m as getCategoryByName, u as updateCategory } from '../../../chunks/db_535bmtRB.mjs';
+import { l as deleteCategory, m as getCategoryById, n as getCategoryByName, u as updateCategory } from '../../../chunks/db_BgiJApmW.mjs';
 export { renderers } from '../../../renderers.mjs';
 
 const GET = async ({ params }) => {
