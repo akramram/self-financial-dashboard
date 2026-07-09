@@ -28,8 +28,14 @@ import {
 } from '@/components/ui/table';
 import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react';
 
+interface PeriodOption {
+  period_id: number;
+  month: string;
+}
+
 interface Props {
   transactions: Transaction[];
+  periods?: PeriodOption[];
 }
 
 function parseMonthYear(monthStr: string): { year: number; monthIndex: number } {
@@ -80,16 +86,29 @@ function parseTxDate(tx: Transaction): string | null {
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-export default function SpendingCalendar({ transactions }: Props) {
+export default function SpendingCalendar({ transactions, periods }: Props) {
+  // Build month options from periods prop (post-migration: transactions have no month column)
   const monthOptions = useMemo(() => {
+    if (periods && periods.length > 0) {
+      return [...periods].reverse().map((p) => p.month);
+    }
+    // Fallback: derive from created_time dates when periods not provided
     const set = new Set<string>();
-    transactions.forEach((t) => { if (t.month) set.add(t.month); });
+    const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    transactions.forEach((t) => {
+      const raw = t.created_time || t.date;
+      if (!raw) return;
+      const d = new Date(raw);
+      if (!isNaN(d.getTime())) {
+        set.add(`${monthNames[d.getMonth()]} ${d.getFullYear()}`);
+      }
+    });
     return Array.from(set).sort((a, b) => {
       const da = parseMonthYear(a);
       const db = parseMonthYear(b);
       return da.year * 100 + da.monthIndex - (db.year * 100 + db.monthIndex);
     });
-  }, [transactions]);
+  }, [transactions, periods]);
 
   const [selectedMonth, setSelectedMonth] = useState<string>(() => {
     if (monthOptions.length > 0) return monthOptions[monthOptions.length - 1];
@@ -108,15 +127,32 @@ export default function SpendingCalendar({ transactions }: Props) {
   const daysInMonth = useMemo(() => getDaysInMonth(year, monthIndex), [year, monthIndex]);
   const firstDay = useMemo(() => getFirstDayOfMonth(year, monthIndex), [year, monthIndex]);
 
-  const dailyTotals = useMemo(() => {
-    const map: Record<string, { total: number; count: number; transactions: Transaction[] }> = {};
-    transactions.forEach((tx) => {
-      const dateKey = parseTxDate(tx);
-      if (!dateKey) return;
+  // Find the period_id for the selected month
+  const selectedPeriodId = useMemo(() => {
+    if (!periods) return null;
+    const match = periods.find((p) => p.month === selectedMonth);
+    return match ? match.period_id : null;
+  }, [periods, selectedMonth]);
+
+  // Filter transactions to the selected period (by period_id when available, fallback to date matching)
+  const periodTransactions = useMemo(() => {
+    if (selectedPeriodId !== null) {
+      return transactions.filter((t) => t.period_id === selectedPeriodId);
+    }
+    // Fallback: match by created_time month/year
+    return transactions.filter((tx) => {
       const raw = tx.created_time || tx.date || '';
       const d = new Date(raw);
-      if (isNaN(d.getTime())) return;
-      if (d.getFullYear() !== year || d.getMonth() !== monthIndex) return;
+      if (isNaN(d.getTime())) return false;
+      return d.getFullYear() === year && d.getMonth() === monthIndex;
+    });
+  }, [transactions, selectedPeriodId, year, monthIndex]);
+
+  const dailyTotals = useMemo(() => {
+    const map: Record<string, { total: number; count: number; transactions: Transaction[] }> = {};
+    periodTransactions.forEach((tx) => {
+      const dateKey = parseTxDate(tx);
+      if (!dateKey) return;
 
       if (!map[dateKey]) {
         map[dateKey] = { total: 0, count: 0, transactions: [] };
@@ -126,7 +162,7 @@ export default function SpendingCalendar({ transactions }: Props) {
       map[dateKey].transactions.push(tx);
     });
     return map;
-  }, [transactions, year, monthIndex]);
+  }, [periodTransactions]);
 
   const maxDaily = useMemo(() => {
     const totals = Object.values(dailyTotals).map((d) => d.total);
@@ -226,6 +262,11 @@ export default function SpendingCalendar({ transactions }: Props) {
           <CardTitle className="text-base font-semibold flex items-center gap-2">
             <CalendarDays className="w-4 h-4 text-slate-500" />
             Spending Heatmap — {selectedMonth}
+            {selectedPeriodId && (
+              <span className="text-xs font-normal text-muted-foreground">
+                (Period transactions)
+              </span>
+            )}
           </CardTitle>
         </CardHeader>
         <CardContent>

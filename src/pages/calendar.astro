@@ -1,9 +1,10 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import SpendingCalendar from '../components/SpendingCalendar';
-import { getTransactions } from '../lib/db';
+import { getTransactions, getAllPeriods } from '../lib/db';
 
 const transactions = getTransactions();
+const periods = getAllPeriods().map((p: any) => ({ period_id: p.id, month: p.month }));
 ---
 
 <Layout title="Spending Calendar - Financial Dashboard">
@@ -16,6 +17,7 @@ const transactions = getTransactions();
 
   <SpendingCalendar
     transactions={transactions}
+    periods={periods}
     client:load
   />
 </Layout>
