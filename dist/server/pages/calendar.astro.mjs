@@ -11,7 +11,7 @@ import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, 
 import { D as Dialog, a as DialogContent, b as DialogHeader, c as DialogTitle, d as DialogDescription } from '../chunks/dialog_BsSkt0Aj.mjs';
 import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_B4ZDQe-_.mjs';
 import { ChevronLeft, ChevronRight, CalendarDays } from 'lucide-react';
-import { q as getTransactions } from '../chunks/db_BgiJApmW.mjs';
+import { q as getTransactions, p as getAllPeriods } from '../chunks/db_BgiJApmW.mjs';
 export { renderers } from '../renderers.mjs';
 
 function parseMonthYear(monthStr) {
@@ -64,18 +64,27 @@ function parseTxDate(tx) {
   return `${y}-${m}-${day}`;
 }
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-function SpendingCalendar({ transactions }) {
+function SpendingCalendar({ transactions, periods }) {
   const monthOptions = useMemo(() => {
+    if (periods && periods.length > 0) {
+      return [...periods].reverse().map((p) => p.month);
+    }
     const set = /* @__PURE__ */ new Set();
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     transactions.forEach((t) => {
-      if (t.month) set.add(t.month);
+      const raw = t.created_time || t.date;
+      if (!raw) return;
+      const d = new Date(raw);
+      if (!isNaN(d.getTime())) {
+        set.add(`${monthNames[d.getMonth()]} ${d.getFullYear()}`);
+      }
     });
     return Array.from(set).sort((a, b) => {
       const da = parseMonthYear(a);
       const db = parseMonthYear(b);
       return da.year * 100 + da.monthIndex - (db.year * 100 + db.monthIndex);
     });
-  }, [transactions]);
+  }, [transactions, periods]);
   const [selectedMonth, setSelectedMonth] = useState(() => {
     if (monthOptions.length > 0) return monthOptions[monthOptions.length - 1];
     const now = /* @__PURE__ */ new Date();
@@ -89,15 +98,27 @@ function SpendingCalendar({ transactions }) {
   const { year, monthIndex } = useMemo(() => parseMonthYear(selectedMonth), [selectedMonth]);
   const daysInMonth = useMemo(() => getDaysInMonth(year, monthIndex), [year, monthIndex]);
   const firstDay = useMemo(() => getFirstDayOfMonth(year, monthIndex), [year, monthIndex]);
-  const dailyTotals = useMemo(() => {
-    const map = {};
-    transactions.forEach((tx) => {
-      const dateKey = parseTxDate(tx);
-      if (!dateKey) return;
+  const selectedPeriodId = useMemo(() => {
+    if (!periods) return null;
+    const match = periods.find((p) => p.month === selectedMonth);
+    return match ? match.period_id : null;
+  }, [periods, selectedMonth]);
+  const periodTransactions = useMemo(() => {
+    if (selectedPeriodId !== null) {
+      return transactions.filter((t) => t.period_id === selectedPeriodId);
+    }
+    return transactions.filter((tx) => {
       const raw = tx.created_time || tx.date || "";
       const d = new Date(raw);
-      if (isNaN(d.getTime())) return;
-      if (d.getFullYear() !== year || d.getMonth() !== monthIndex) return;
+      if (isNaN(d.getTime())) return false;
+      return d.getFullYear() === year && d.getMonth() === monthIndex;
+    });
+  }, [transactions, selectedPeriodId, year, monthIndex]);
+  const dailyTotals = useMemo(() => {
+    const map = {};
+    periodTransactions.forEach((tx) => {
+      const dateKey = parseTxDate(tx);
+      if (!dateKey) return;
       if (!map[dateKey]) {
         map[dateKey] = { total: 0, count: 0, transactions: [] };
       }
@@ -106,7 +127,7 @@ function SpendingCalendar({ transactions }) {
       map[dateKey].transactions.push(tx);
     });
     return map;
-  }, [transactions, year, monthIndex]);
+  }, [periodTransactions]);
   const maxDaily = useMemo(() => {
     const totals = Object.values(dailyTotals).map((d) => d.total);
     return totals.length > 0 ? Math.max(...totals) : 0;
@@ -189,7 +210,8 @@ function SpendingCalendar({ transactions }) {
       /* @__PURE__ */ jsx(CardHeader, { className: "pb-3", children: /* @__PURE__ */ jsxs(CardTitle, { className: "text-base font-semibold flex items-center gap-2", children: [
         /* @__PURE__ */ jsx(CalendarDays, { className: "w-4 h-4 text-slate-500" }),
         "Spending Heatmap — ",
-        selectedMonth
+        selectedMonth,
+        selectedPeriodId && /* @__PURE__ */ jsx("span", { className: "text-xs font-normal text-muted-foreground", children: "(Period transactions)" })
       ] }) }),
       /* @__PURE__ */ jsx(CardContent, { children: /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-7 gap-1", children: [
         WEEKDAYS.map((wd) => /* @__PURE__ */ jsx("div", { className: "text-center text-xs font-medium text-muted-foreground py-2", children: wd }, wd)),
@@ -292,9 +314,10 @@ function SpendingCalendar({ transactions }) {
 
 const $$Calendar = createComponent(($$result, $$props, $$slots) => {
   const transactions = getTransactions();
+  const periods = getAllPeriods().map((p) => ({ period_id: p.id, month: p.month }));
   return renderTemplate`${renderComponent($$result, "Layout", $$Layout, { "title": "Spending Calendar - Financial Dashboard" }, { "default": ($$result2) => renderTemplate` ${maybeRenderHead()}<div class="mb-6"> <h1 class="text-2xl font-bold">Spending Calendar</h1> <p class="text-slate-500 dark:text-slate-400 text-sm">
 Visualize daily spending intensity and drill down into individual days
-</p> </div> ${renderComponent($$result2, "SpendingCalendar", SpendingCalendar, { "transactions": transactions, "client:load": true, "client:component-hydration": "load", "client:component-path": "/Users/user/hermes-workspace/self-financial-dashboard/src/components/SpendingCalendar", "client:component-export": "default" })} ` })}`;
+</p> </div> ${renderComponent($$result2, "SpendingCalendar", SpendingCalendar, { "transactions": transactions, "periods": periods, "client:load": true, "client:component-hydration": "load", "client:component-path": "/Users/user/hermes-workspace/self-financial-dashboard/src/components/SpendingCalendar", "client:component-export": "default" })} ` })}`;
 }, "/Users/user/hermes-workspace/self-financial-dashboard/src/pages/calendar.astro", void 0);
 
 const $$file = "/Users/user/hermes-workspace/self-financial-dashboard/src/pages/calendar.astro";
