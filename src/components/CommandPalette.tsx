@@ -37,6 +37,7 @@ const ALL_ITEMS: CommandItem[] = [
   { id: 'settings', label: 'Settings', description: 'Categories, income, and preferences', icon: '⚙️', group: 'pages', href: '/settings' },
   // Actions
   { id: 'add-data', label: 'Add Data', description: 'Add transaction or net worth entry', shortcut: '⌘N', icon: '➕', group: 'actions', href: '/add' },
+  { id: 'quick-add', label: 'Quick Add Transaction', description: 'Fast add a transaction from any page', shortcut: '⇧N', icon: '⚡', group: 'actions', href: '__quick_add__' },
   { id: 'toggle-theme', label: 'Toggle Dark Mode', description: 'Switch between light and dark theme', icon: '🌓', group: 'actions', href: '__toggle_theme__' },
 ];
 
@@ -212,6 +213,12 @@ export default function CommandPalette() {
       const isDark = document.documentElement.classList.toggle('dark');
       localStorage.setItem('theme', isDark ? 'dark' : 'light');
       setOpen(false);
+      return;
+    }
+
+    if (item.href === '__quick_add__') {
+      setOpen(false);
+      window.dispatchEvent(new CustomEvent('quick-add-open'));
       return;
     }
 

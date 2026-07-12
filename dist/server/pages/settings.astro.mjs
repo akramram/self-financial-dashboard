@@ -1,18 +1,20 @@
 /* empty css                                        */
 import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BN-0jZ66.mjs';
 import 'kleur/colors';
-import { f as formatIdr, $ as $$Layout } from '../chunks/utils_Dm1NQFdF.mjs';
+import { f as formatIdr, $ as $$Layout } from '../chunks/utils_VKhm9dM-.mjs';
 import { jsxs, jsx } from 'react/jsx-runtime';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { f as fetchCategories, n as updateCategoryApi, o as deleteCategoryApi, p as createCategory, q as fetchMonthlyIncome, r as updateMonthlyIncomeApi, s as deleteMonthlyIncomeApi, t as upsertMonthlyIncomeApi, v as importDataApi } from '../chunks/api_B85Pj26R.mjs';
-import { C as Card, b as CardHeader, c as CardTitle, a as CardContent } from '../chunks/card_Davj9yGI.mjs';
-import { I as Input } from '../chunks/input_iPhZt7ob.mjs';
-import { B as Button } from '../chunks/button_Br1WsJzs.mjs';
-import { L as Label } from '../chunks/label_BzcOJTTH.mjs';
-import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_B4ZDQe-_.mjs';
+import { u as useConfirm } from '../chunks/ConfirmDialog_c6CJiuyT.mjs';
+import { C as Card, b as CardHeader, c as CardTitle, a as CardContent } from '../chunks/card_1k6xc7ic.mjs';
+import { I as Input } from '../chunks/input_BFOGkp_C.mjs';
+import { B as Button } from '../chunks/button_DlHy-r8l.mjs';
+import { L as Label } from '../chunks/label_QvOvi-af.mjs';
+import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_C9ZL4K-j.mjs';
 import { Download, FileJson, FileSpreadsheet } from 'lucide-react';
-import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_CUJ65ghu.mjs';
-import { B as Badge } from '../chunks/badge_B_lPct8T.mjs';
+import { toast } from 'sonner';
+import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_B74TBv8p.mjs';
+import { B as Badge } from '../chunks/badge_DKxt6Sop.mjs';
 export { renderers } from '../renderers.mjs';
 
 const PRESET_COLORS = [
@@ -36,6 +38,7 @@ const PRESET_COLORS = [
   "#475569"
 ];
 function CategorySettings() {
+  const { confirm: confirmAction } = useConfirm();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -85,7 +88,13 @@ function CategorySettings() {
     }
   };
   const handleDelete = async (id) => {
-    if (!confirm("Delete this category?")) return;
+    const confirmed = await confirmAction({
+      title: "Delete Category",
+      description: "Delete this category?",
+      confirmLabel: "Delete",
+      variant: "destructive"
+    });
+    if (!confirmed) return;
     try {
       await deleteCategoryApi(id);
       await loadCategories();
@@ -252,6 +261,7 @@ const MONTH_OPTIONS = [
   "December"
 ];
 function IncomeSettings() {
+  const { confirm: confirmAction } = useConfirm();
   const [incomes, setIncomes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingMonth, setEditingMonth] = useState(null);
@@ -292,7 +302,13 @@ function IncomeSettings() {
     setEditForm({});
   };
   const handleDelete = async (month) => {
-    if (!confirm(`Delete income entry for ${month}?`)) return;
+    const confirmed = await confirmAction({
+      title: "Delete Income Entry",
+      description: `Delete income entry for ${month}?`,
+      confirmLabel: "Delete",
+      variant: "destructive"
+    });
+    if (!confirmed) return;
     await deleteMonthlyIncomeApi(month);
     setIncomes((prev) => prev.filter((i) => i.month !== month));
   };
@@ -441,7 +457,7 @@ function ExportData() {
       document.body.removeChild(link);
       URL.revokeObjectURL(link.href);
     } catch (e) {
-      alert("Export failed. Please try again.");
+      toast.error("Export failed. Please try again.");
     } finally {
       setLoading(null);
     }

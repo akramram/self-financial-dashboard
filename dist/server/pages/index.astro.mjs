@@ -1,25 +1,26 @@
 /* empty css                                        */
 import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BN-0jZ66.mjs';
 import 'kleur/colors';
-import { f as formatIdr, g as getActivePeriod, $ as $$Layout } from '../chunks/utils_Dm1NQFdF.mjs';
+import { f as formatIdr, g as getActivePeriod, $ as $$Layout } from '../chunks/utils_VKhm9dM-.mjs';
 import { jsx, jsxs, Fragment } from 'react/jsx-runtime';
 import { useMemo, useState, useEffect, useCallback } from 'react';
 import { B as kickoffMonth, f as fetchCategories, j as fetchRecurringTransactions, w as toggleTransactionDoneApi, x as deleteTransactionApi, y as updateTransactionApi } from '../chunks/api_B85Pj26R.mjs';
 import { Chart, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement, Filler } from 'chart.js';
 import { Bar, Doughnut, Line } from 'react-chartjs-2';
-import { N as NetworthChart } from '../chunks/NetworthChart_Btk03mlZ.mjs';
-import { C as Card, b as CardHeader, c as CardTitle, a as CardContent } from '../chunks/card_Davj9yGI.mjs';
-import { B as Badge } from '../chunks/badge_B_lPct8T.mjs';
+import { N as NetworthChart } from '../chunks/NetworthChart_D3HNosQg.mjs';
+import { C as Card, b as CardHeader, c as CardTitle, a as CardContent } from '../chunks/card_1k6xc7ic.mjs';
+import { B as Badge } from '../chunks/badge_DKxt6Sop.mjs';
 import { AlertTriangle, TrendingUp, TrendingDown, Receipt, CheckCircle, PiggyBank, Wallet, BarChart3, DollarSign, Gauge, Clock, Activity, X, ChevronUp, ChevronDown, ShoppingBag, ChevronRight, StickyNote } from 'lucide-react';
-import { B as Button } from '../chunks/button_Br1WsJzs.mjs';
-import { I as Input } from '../chunks/input_iPhZt7ob.mjs';
-import { L as Label } from '../chunks/label_BzcOJTTH.mjs';
-import { D as Dialog, a as DialogContent, b as DialogHeader, c as DialogTitle, d as DialogDescription } from '../chunks/dialog_BsSkt0Aj.mjs';
-import { u as useSortState, S as SortableHeader } from '../chunks/SortableHeader_CmGXngLk.mjs';
-import { E as EditTransactionDialog } from '../chunks/EditTransactionDialog_DCtQIDKg.mjs';
-import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_B4ZDQe-_.mjs';
-import '../chunks/checkbox_DpbmdwJA.mjs';
-import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_CUJ65ghu.mjs';
+import { B as Button } from '../chunks/button_DlHy-r8l.mjs';
+import { I as Input } from '../chunks/input_BFOGkp_C.mjs';
+import { L as Label } from '../chunks/label_QvOvi-af.mjs';
+import { D as Dialog, a as DialogContent, b as DialogHeader, c as DialogTitle, d as DialogDescription } from '../chunks/dialog_DcsOsy68.mjs';
+import { u as useSortState, S as SortableHeader } from '../chunks/SortableHeader_DMqSaZZ3.mjs';
+import { E as EditTransactionDialog } from '../chunks/EditTransactionDialog_C3MVHrR3.mjs';
+import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_C9ZL4K-j.mjs';
+import '../chunks/checkbox_CPYurpjr.mjs';
+import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_B74TBv8p.mjs';
+import { u as useConfirm } from '../chunks/ConfirmDialog_c6CJiuyT.mjs';
 import { q as getTransactions, r as getNetworth, a as getMonthlySummary, d as db } from '../chunks/db_BgiJApmW.mjs';
 export { renderers } from '../renderers.mjs';
 
@@ -1711,6 +1712,7 @@ function parseCreatedTime(tx) {
   return new Date(tx.date);
 }
 function Dashboard({ transactions, networth, summaries }) {
+  const { confirm: confirmAction } = useConfirm();
   const activePeriod = useMemo(() => {
     const { month, year } = getActivePeriod();
     return `${month} ${year}`;
@@ -2182,10 +2184,15 @@ function Dashboard({ transactions, networth, summaries }) {
                 /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsxs("div", { className: "flex gap-2", children: [
                   /* @__PURE__ */ jsx(Button, { variant: "ghost", size: "sm", className: "h-7 text-xs text-blue-500 hover:text-blue-700", onClick: () => startEdit(row), children: "Edit" }),
                   /* @__PURE__ */ jsx(Button, { variant: "ghost", size: "sm", className: "h-7 text-xs text-red-500 hover:text-red-700", onClick: async () => {
-                    if (confirm("Delete this transaction?")) {
-                      await deleteTransactionApi(row.id);
-                      window.location.reload();
-                    }
+                    const confirmed = await confirmAction({
+                      title: "Delete Transaction",
+                      description: `Delete "${row.title}" (${formatIdr(row.amount)})?`,
+                      confirmLabel: "Delete",
+                      variant: "destructive"
+                    });
+                    if (!confirmed) return;
+                    await deleteTransactionApi(row.id);
+                    window.location.reload();
                   }, children: "Delete" })
                 ] }) })
               ] }, row.id);

@@ -49,6 +49,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
+import { useConfirm } from './ConfirmDialog';
 
 function parseCreatedTime(tx: Transaction): Date {
   if (tx.created_time) {
@@ -71,6 +72,7 @@ interface Props {
 }
 
 export default function Dashboard({ transactions, networth, summaries }: Props) {
+  const { confirm: confirmAction } = useConfirm();
   const activePeriod = useMemo(() => {
     const { month, year } = getActivePeriod();
     return `${month} ${year}`;
@@ -628,10 +630,15 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
                       <div className="flex gap-2">
                         <Button variant="ghost" size="sm" className="h-7 text-xs text-blue-500 hover:text-blue-700" onClick={() => startEdit(row)}>Edit</Button>
                         <Button variant="ghost" size="sm" className="h-7 text-xs text-red-500 hover:text-red-700" onClick={async () => {
-                          if (confirm('Delete this transaction?')) {
-                            await deleteTransactionApi(row.id);
-                            window.location.reload();
-                          }
+                          const confirmed = await confirmAction({
+                            title: 'Delete Transaction',
+                            description: `Delete "${row.title}" (${formatIdr(row.amount)})?`,
+                            confirmLabel: 'Delete',
+                            variant: 'destructive',
+                          });
+                          if (!confirmed) return;
+                          await deleteTransactionApi(row.id);
+                          window.location.reload();
                         }}>Delete</Button>
                       </div>
                     </TableCell>

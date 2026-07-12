@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import type { MonthlyIncome } from '../lib/api';
 import { fetchMonthlyIncome, upsertMonthlyIncomeApi, updateMonthlyIncomeApi, deleteMonthlyIncomeApi } from '../lib/api';
 import { formatIdr } from '../lib/utils';
+import { useConfirm } from './ConfirmDialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -21,6 +22,7 @@ const MONTH_OPTIONS = [
 ];
 
 export default function IncomeSettings() {
+  const { confirm: confirmAction } = useConfirm();
   const [incomes, setIncomes] = useState<MonthlyIncome[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingMonth, setEditingMonth] = useState<string | null>(null);
@@ -72,7 +74,13 @@ export default function IncomeSettings() {
   };
 
   const handleDelete = async (month: string) => {
-    if (!confirm(`Delete income entry for ${month}?`)) return;
+    const confirmed = await confirmAction({
+      title: 'Delete Income Entry',
+      description: `Delete income entry for ${month}?`,
+      confirmLabel: 'Delete',
+      variant: 'destructive',
+    });
+    if (!confirmed) return;
     await deleteMonthlyIncomeApi(month);
     setIncomes((prev) => prev.filter((i) => i.month !== month));
   };

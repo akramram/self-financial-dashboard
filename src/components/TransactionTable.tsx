@@ -6,6 +6,8 @@ import { useSortState } from '../hooks/useSortState';
 import SortableHeader from './SortableHeader';
 import EditTransactionDialog from './EditTransactionDialog';
 import { StickyNote } from 'lucide-react';
+import { useConfirm } from './ConfirmDialog';
+import { toast } from 'sonner';
 import {
   Table,
   TableBody,
@@ -41,6 +43,7 @@ function parseCreatedTime(tx: Transaction): Date {
 }
 
 export default function TransactionTable({ transactions, showMonth = true, periods = [] }: Props) {
+  const { confirm: confirmAction } = useConfirm();
   // Build lookup maps from periods
   const periodIdToMonth = useMemo(() => {
     const map = new Map<number, string>();
@@ -186,7 +189,13 @@ export default function TransactionTable({ transactions, showMonth = true, perio
 
   const handleBulkDelete = async () => {
     if (selected.size === 0) return;
-    if (!confirm(`Delete ${selected.size} transactions?`)) return;
+    const confirmed = await confirmAction({
+      title: 'Delete Transactions',
+      description: `Are you sure you want to delete ${selected.size} selected transactions? This cannot be undone.`,
+      confirmLabel: 'Delete All',
+      variant: 'destructive',
+    });
+    if (!confirmed) return;
     await deleteTransactionsBulkApi(Array.from(selected));
     setSelected(new Set());
     window.location.reload();
@@ -246,7 +255,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
               period: periodIdToMonth.get(t.period_id) || '',
             }));
             if (exportData.length === 0) {
-              alert('No transactions found for this period');
+              toast.info('No transactions found for this period');
               return;
             }
             const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
@@ -395,7 +404,13 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                         size="sm"
                         variant="ghost"
                         onClick={async () => {
-                          if (!confirm('Delete?')) return;
+                          const confirmed = await confirmAction({
+                            title: 'Delete Transaction',
+                            description: `Delete "${row.title}" (${formatIdr(row.amount)})?`,
+                            confirmLabel: 'Delete',
+                            variant: 'destructive',
+                          });
+                          if (!confirmed) return;
                           await deleteTransactionApi(row.id);
                           window.location.reload();
                         }}

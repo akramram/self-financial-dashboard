@@ -1,8 +1,8 @@
 /* empty css                                        */
 import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BN-0jZ66.mjs';
 import 'kleur/colors';
-import { $ as $$Layout } from '../chunks/utils_Dm1NQFdF.mjs';
-import { N as NetworthComposition } from '../chunks/NetworthComposition_Br1yFRG2.mjs';
+import { $ as $$Layout } from '../chunks/utils_VKhm9dM-.mjs';
+import { N as NetworthComposition } from '../chunks/NetworthComposition_o01yRxdW.mjs';
 import { r as getNetworth } from '../chunks/db_BgiJApmW.mjs';
 export { renderers } from '../renderers.mjs';
 
