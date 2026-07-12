@@ -1,19 +1,21 @@
 /* empty css                                        */
 import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BN-0jZ66.mjs';
 import 'kleur/colors';
-import { f as formatIdr, $ as $$Layout } from '../chunks/utils_Dm1NQFdF.mjs';
+import { f as formatIdr, $ as $$Layout } from '../chunks/utils_VKhm9dM-.mjs';
 import { jsxs, jsx } from 'react/jsx-runtime';
 import { useMemo, useState, useCallback, useEffect } from 'react';
 import { f as fetchCategories, w as toggleTransactionDoneApi, x as deleteTransactionApi, y as updateTransactionApi, z as deleteTransactionsBulkApi, A as updateTransactionsBulkApi } from '../chunks/api_B85Pj26R.mjs';
-import { u as useSortState, S as SortableHeader } from '../chunks/SortableHeader_CmGXngLk.mjs';
-import { E as EditTransactionDialog } from '../chunks/EditTransactionDialog_DCtQIDKg.mjs';
+import { u as useSortState, S as SortableHeader } from '../chunks/SortableHeader_DMqSaZZ3.mjs';
+import { E as EditTransactionDialog } from '../chunks/EditTransactionDialog_C3MVHrR3.mjs';
 import { StickyNote } from 'lucide-react';
-import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_B4ZDQe-_.mjs';
-import { I as Input } from '../chunks/input_iPhZt7ob.mjs';
-import { B as Button } from '../chunks/button_Br1WsJzs.mjs';
-import { B as Badge } from '../chunks/badge_B_lPct8T.mjs';
-import { C as Checkbox } from '../chunks/checkbox_DpbmdwJA.mjs';
-import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_CUJ65ghu.mjs';
+import { u as useConfirm } from '../chunks/ConfirmDialog_c6CJiuyT.mjs';
+import { toast } from 'sonner';
+import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_C9ZL4K-j.mjs';
+import { I as Input } from '../chunks/input_BFOGkp_C.mjs';
+import { B as Button } from '../chunks/button_DlHy-r8l.mjs';
+import { B as Badge } from '../chunks/badge_DKxt6Sop.mjs';
+import { C as Checkbox } from '../chunks/checkbox_CPYurpjr.mjs';
+import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_B74TBv8p.mjs';
 import { q as getTransactions, p as getAllPeriods } from '../chunks/db_BgiJApmW.mjs';
 export { renderers } from '../renderers.mjs';
 
@@ -25,6 +27,7 @@ function parseCreatedTime(tx) {
   return new Date(tx.date);
 }
 function TransactionTable({ transactions, showMonth = true, periods = [] }) {
+  const { confirm: confirmAction } = useConfirm();
   const periodIdToMonth = useMemo(() => {
     const map = /* @__PURE__ */ new Map();
     periods.forEach((p) => map.set(p.period_id, p.month));
@@ -176,7 +179,13 @@ function TransactionTable({ transactions, showMonth = true, periods = [] }) {
   };
   const handleBulkDelete = async () => {
     if (selected.size === 0) return;
-    if (!confirm(`Delete ${selected.size} transactions?`)) return;
+    const confirmed = await confirmAction({
+      title: "Delete Transactions",
+      description: `Are you sure you want to delete ${selected.size} selected transactions? This cannot be undone.`,
+      confirmLabel: "Delete All",
+      variant: "destructive"
+    });
+    if (!confirmed) return;
     await deleteTransactionsBulkApi(Array.from(selected));
     setSelected(/* @__PURE__ */ new Set());
     window.location.reload();
@@ -241,7 +250,7 @@ function TransactionTable({ transactions, showMonth = true, periods = [] }) {
               period: periodIdToMonth.get(t.period_id) || ""
             }));
             if (exportData.length === 0) {
-              alert("No transactions found for this period");
+              toast.info("No transactions found for this period");
               return;
             }
             const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
@@ -380,7 +389,13 @@ function TransactionTable({ transactions, showMonth = true, periods = [] }) {
                 size: "sm",
                 variant: "ghost",
                 onClick: async () => {
-                  if (!confirm("Delete?")) return;
+                  const confirmed = await confirmAction({
+                    title: "Delete Transaction",
+                    description: `Delete "${row.title}" (${formatIdr(row.amount)})?`,
+                    confirmLabel: "Delete",
+                    variant: "destructive"
+                  });
+                  if (!confirmed) return;
                   await deleteTransactionApi(row.id);
                   window.location.reload();
                 },

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Download, FileJson, FileSpreadsheet } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function ExportData() {
   const [loading, setLoading] = useState<string | null>(null);
@@ -20,7 +21,7 @@ export default function ExportData() {
       document.body.removeChild(link);
       URL.revokeObjectURL(link.href);
     } catch (e) {
-      alert('Export failed. Please try again.');
+      toast.error('Export failed. Please try again.');
     } finally {
       setLoading(null);
     }

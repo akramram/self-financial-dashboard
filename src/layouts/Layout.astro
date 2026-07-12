@@ -290,18 +290,27 @@ const { title = 'Financial Dashboard' } = Astro.props;
       });
     </script>
 
-    <!-- Command Palette -->
+    <!-- Command Palette + Quick Add FAB + Toaster -->
     <script>
       import CommandPalette from '../components/CommandPalette';
-      // Mount command palette on all pages
+      import QuickAddFAB from '../components/QuickAddFAB';
+      import { Toaster } from '../components/ui/sonner';
+      import { ConfirmProvider } from '../components/ConfirmDialog';
+      // Mount command palette + FAB on all pages
       const container = document.createElement('div');
       container.id = 'cmd-palette-root';
       document.body.appendChild(container);
-      
+
       import React from 'react';
       import ReactDOM from 'react-dom/client';
       const root = ReactDOM.createRoot(container);
-      root.render(React.createElement(CommandPalette));
+      root.render(React.createElement(
+        ConfirmProvider,
+        null,
+        React.createElement(CommandPalette),
+        React.createElement(QuickAddFAB),
+        React.createElement(Toaster),
+      ));
     </script>
 
     <style is:global>

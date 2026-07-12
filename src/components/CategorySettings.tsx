@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import type { Category } from '../lib/data';
 import { fetchCategories, createCategory, updateCategoryApi, deleteCategoryApi } from '../lib/api';
 import { formatIdr } from '../lib/utils';
+import { useConfirm } from './ConfirmDialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -23,6 +24,7 @@ const PRESET_COLORS = [
 ];
 
 export default function CategorySettings() {
+  const { confirm: confirmAction } = useConfirm();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -80,7 +82,13 @@ export default function CategorySettings() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Delete this category?')) return;
+    const confirmed = await confirmAction({
+      title: 'Delete Category',
+      description: 'Delete this category?',
+      confirmLabel: 'Delete',
+      variant: 'destructive',
+    });
+    if (!confirmed) return;
     try {
       await deleteCategoryApi(id);
       await loadCategories();

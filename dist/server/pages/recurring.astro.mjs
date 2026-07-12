@@ -1,17 +1,18 @@
 /* empty css                                        */
 import { f as createComponent, j as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BN-0jZ66.mjs';
 import 'kleur/colors';
-import { f as formatIdr, $ as $$Layout } from '../chunks/utils_Dm1NQFdF.mjs';
+import { f as formatIdr, $ as $$Layout } from '../chunks/utils_VKhm9dM-.mjs';
 import { jsxs, jsx } from 'react/jsx-runtime';
 import { useState, useEffect } from 'react';
 import { j as fetchRecurringTransactions, f as fetchCategories, k as updateRecurringTransactionApi, l as deleteRecurringTransactionApi, m as createRecurringTransaction } from '../chunks/api_B85Pj26R.mjs';
-import { C as Card, b as CardHeader, c as CardTitle, a as CardContent } from '../chunks/card_Davj9yGI.mjs';
-import { I as Input } from '../chunks/input_iPhZt7ob.mjs';
-import { B as Button } from '../chunks/button_Br1WsJzs.mjs';
-import { L as Label } from '../chunks/label_BzcOJTTH.mjs';
-import { C as Checkbox } from '../chunks/checkbox_DpbmdwJA.mjs';
-import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_CUJ65ghu.mjs';
-import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_B4ZDQe-_.mjs';
+import { u as useConfirm } from '../chunks/ConfirmDialog_c6CJiuyT.mjs';
+import { C as Card, b as CardHeader, c as CardTitle, a as CardContent } from '../chunks/card_1k6xc7ic.mjs';
+import { I as Input } from '../chunks/input_BFOGkp_C.mjs';
+import { B as Button } from '../chunks/button_DlHy-r8l.mjs';
+import { L as Label } from '../chunks/label_QvOvi-af.mjs';
+import { C as Checkbox } from '../chunks/checkbox_CPYurpjr.mjs';
+import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem } from '../chunks/select_B74TBv8p.mjs';
+import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from '../chunks/table_C9ZL4K-j.mjs';
 export { renderers } from '../renderers.mjs';
 
 const TYPE_OPTIONS = [
@@ -20,6 +21,7 @@ const TYPE_OPTIONS = [
   { value: "credit_payment", label: "Credit Payment" }
 ];
 function RecurringManager() {
+  const { confirm: confirmAction } = useConfirm();
   const [recurring, setRecurring] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -80,7 +82,13 @@ function RecurringManager() {
     }
   };
   const handleDelete = async (id) => {
-    if (!confirm("Delete this recurring transaction?")) return;
+    const confirmed = await confirmAction({
+      title: "Delete Recurring Transaction",
+      description: "Delete this recurring transaction?",
+      confirmLabel: "Delete",
+      variant: "destructive"
+    });
+    if (!confirmed) return;
     try {
       await deleteRecurringTransactionApi(id);
       await loadData();

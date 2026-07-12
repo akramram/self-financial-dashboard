@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import type { RecurringTransaction } from '../lib/data';
 import { fetchRecurringTransactions, createRecurringTransaction, updateRecurringTransactionApi, deleteRecurringTransactionApi } from '../lib/api';
 import { formatIdr } from '../lib/utils';
+import { useConfirm } from './ConfirmDialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -32,6 +33,7 @@ const TYPE_OPTIONS = [
 ];
 
 export default function RecurringManager() {
+  const { confirm: confirmAction } = useConfirm();
   const [recurring, setRecurring] = useState<RecurringTransaction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -108,7 +110,13 @@ export default function RecurringManager() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Delete this recurring transaction?')) return;
+    const confirmed = await confirmAction({
+      title: 'Delete Recurring Transaction',
+      description: 'Delete this recurring transaction?',
+      confirmLabel: 'Delete',
+      variant: 'destructive',
+    });
+    if (!confirmed) return;
     try {
       await deleteRecurringTransactionApi(id);
       await loadData();
