@@ -680,3 +680,35 @@ Users can now drill down to transactions within a specific date window or amount
 
 ### Build status
 ✅ Passes — `npm run build` clean
+
+## Iteration 30 — Test Coverage: RecurringCostAnalyzer
+
+**Date:** 2026-07-13
+**Type:** Test coverage (autonomous cron)
+**Branch:** `main`
+
+### What changed
+- Added 8 new DB layer tests for `getRecurringCostAnalysis()` logic in `src/__tests__/db.test.ts`:
+  - Empty result when no recurring transactions exist
+  - Monthly/annual totals computed from active items only (paused excluded)
+  - Category grouping (multiple items in same category aggregate correctly)
+  - Payment type grouping (cash / credit_expense / credit_payment)
+  - Largest item identification
+  - Average per item computation
+  - Temporary item counting (items with `end_date`)
+  - Paused vs active item separation
+- Added 3 new API tests for `GET /api/recurring-cost` in `src/__tests__/api.test.ts`:
+  - Returns full analysis result as JSON with correct status
+  - Returns correct shape for empty recurring list
+  - Returns `application/json` Content-Type header
+- Added `getRecurringCostAnalysis` to the `vi.mock('../lib/db')` factory
+
+### Files changed
+- `src/__tests__/db.test.ts` — +8 tests in new `DB — Recurring Cost Analysis` describe block
+- `src/__tests__/api.test.ts` — +3 tests in new `API — GET /api/recurring-cost` describe block
+
+### Test results
+✅ 66 tests passed (37 DB + 29 API), up from 55. Duration: 412ms.
+
+### Build status
+✅ Passes — `npm run build` clean

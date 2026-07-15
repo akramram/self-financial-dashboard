@@ -13,8 +13,8 @@ import OutcomeBarChart from './OutcomeBarChart';
 import MonthKickoffModal from './MonthKickoffModal';
 import DashboardSummaryCards from './DashboardSummaryCards';
 import SpendingPulse from './SpendingPulse';
-import AnomalyAlerts from './AnomalyAlerts';
-import BudgetAlerts from './BudgetAlerts';
+import AlertsPanel from './AlertsPanel';
+import CategoryBudgets from './CategoryBudgets';
 import { fetchRecurringTransactions } from '../lib/api';
 import { useSortState } from '../hooks/useSortState';
 import { useCollapsibleWidgets } from '../hooks/useCollapsibleWidgets';
@@ -148,19 +148,6 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
   };
 
   const latest = activeSummary;
-  const latestNetworth = filteredNetworth[filteredNetworth.length - 1] ?? networth[networth.length - 1];
-
-  const savingsRate = latest?.income > 0
-    ? Math.min(100, ((latest.income - latest.outcome.total) / latest.income) * 100)
-    : 0;
-
-  const cashPct = latest?.outcome.total > 0
-    ? Math.round((latest.outcome.cash / latest.outcome.total) * 100)
-    : 0;
-  const creditPct = latest?.outcome.total > 0
-    ? Math.round((latest.outcome.credit_payment / latest.outcome.total) * 100)
-    : 0;
-
   // Pagination state for transactions
   const [txPage, setTxPage] = useState(1);
   const txPerPage = 10;
@@ -365,31 +352,34 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
       />
       </CollapsibleSection>
 
-      {/* Anomaly & Budget Alerts — side by side */}
+      {/* Alerts Panel + Category Budgets — side by side */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <CollapsibleSection
-          id="anomaly-alerts"
-          title="Anomaly Alerts"
-          isCollapsed={isCollapsed('anomaly-alerts')}
-          onToggle={() => toggle('anomaly-alerts')}
+          id="alerts-panel"
+          title="Alerts"
+          isCollapsed={isCollapsed('alerts-panel')}
+          onToggle={() => toggle('alerts-panel')}
         >
-        <AnomalyAlerts
+        <AlertsPanel
           month={activeSummary?.month}
+          summaries={summaries}
+          categories={categories}
+          transactions={transactions}
+          recurringTitles={recurringTitles}
         />
         </CollapsibleSection>
 
         <CollapsibleSection
-          id="budget-alerts"
-          title="Budget Alerts"
-          isCollapsed={isCollapsed('budget-alerts')}
-          onToggle={() => toggle('budget-alerts')}
+          id="category-budgets"
+          title="Category Budgets"
+          isCollapsed={isCollapsed('category-budgets')}
+          onToggle={() => toggle('category-budgets')}
         >
-        <BudgetAlerts
+        <CategoryBudgets
           summaries={summaries}
           categories={categories}
           activeMonth={activeSummary?.month}
-          transactions={transactions}
-          recurringTitles={recurringTitles}
+          onCategoryClick={openCategoryDialog}
         />
         </CollapsibleSection>
       </div>
@@ -408,144 +398,6 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
         categories={categories}
         activeMonth={activeSummary?.month}
       />
-      </CollapsibleSection>
-
-      {/* Outcome Breakdown — TOP */}
-      <CollapsibleSection
-        id="outcome-breakdown"
-        title={`Outcome Breakdown (${latest?.month})`}
-        isCollapsed={isCollapsed('outcome-breakdown')}
-        onToggle={() => toggle('outcome-breakdown')}
-      >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-          {/* Total Income */}
-          <div>
-            <div className="flex justify-between text-sm mb-1">
-              <span className="text-slate-600 dark:text-slate-300">Total Income</span>
-              <span className="font-semibold text-emerald-600 dark:text-emerald-400">{formatIdr(latest?.income ?? 0)}</span>
-            </div>
-            <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-              <div className="bg-emerald-500 h-2 rounded-full" style={{ width: '100%' }} />
-            </div>
-          </div>
-
-          {/* Budget Used */}
-          {(() => {
-            const rawBudgetPct = latest?.income > 0
-              ? ((latest?.outcome.total ?? 0) / latest.income) * 100
-              : 0;
-            const budgetPct = Math.max(0, rawBudgetPct);
-            const visualBudgetPct = Math.min(100, budgetPct);
-            const isOverBudget = budgetPct > 100;
-            const budgetColor = isOverBudget
-              ? 'bg-red-600'
-              : budgetPct > 80
-                ? 'bg-red-500'
-                : budgetPct > 50
-                  ? 'bg-amber-500'
-                  : 'bg-emerald-500';
-            const budgetTextColor = isOverBudget
-              ? 'text-red-700 dark:text-red-300'
-              : budgetPct > 80
-                ? 'text-red-600 dark:text-red-400'
-                : budgetPct > 50
-                  ? 'text-amber-600 dark:text-amber-400'
-                  : 'text-emerald-600 dark:text-emerald-400';
-            return (
-              <div>
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-slate-600 dark:text-slate-300">Budget Used</span>
-                  <span className={`font-semibold ${budgetTextColor}`}>
-                    {budgetPct.toFixed(1)}%
-                    {isOverBudget && <span className="ml-1 text-xs">(Over)</span>}
-                  </span>
-                </div>
-                <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-                  <div className={`${budgetColor} h-2 rounded-full transition-all`} style={{ width: `${visualBudgetPct}%` }} />
-                </div>
-                <p className="text-xs text-slate-400 mt-1">
-                  {formatIdr(latest?.outcome.total ?? 0)} spent of {formatIdr(latest?.income ?? 0)}
-                </p>
-              </div>
-            );
-          })()}
-
-          <div className="border-t border-slate-200 dark:border-slate-700 md:col-span-2" />
-
-          <div>
-            <div className="flex justify-between text-sm mb-1">
-              <span className="text-slate-600 dark:text-slate-300">Cash Expenses</span>
-              <span className="font-semibold">{formatIdr(latest?.outcome.cash ?? 0)}</span>
-            </div>
-            <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-              <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${cashPct}%` }} />
-            </div>
-          </div>
-          <div>
-            <div className="flex justify-between text-sm mb-1">
-              <span className="text-slate-600 dark:text-slate-300">Credit Payment (Prior Month)</span>
-              <span className="font-semibold">{formatIdr(latest?.outcome.credit_payment ?? 0)}</span>
-            </div>
-            <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-              <div className="bg-amber-500 h-2 rounded-full" style={{ width: `${creditPct}%` }} />
-            </div>
-          </div>
-          <div className="md:col-span-2 pt-2 border-t border-slate-200 dark:border-slate-700">
-            <div className="flex justify-between text-sm">
-              <span className="text-slate-500 dark:text-slate-400">Current Month Credit Expenses</span>
-              <span className="font-semibold">{formatIdr(latest?.outcome.credit_expenses ?? 0)}</span>
-            </div>
-            <p className="text-xs text-slate-400 mt-1">These will be paid next month</p>
-          </div>
-
-          {/* Category Budgets */}
-          {latest?.category_totals && Object.keys(latest.category_totals).length > 0 && (
-            <div className="md:col-span-2 pt-4 border-t border-slate-200 dark:border-slate-700">
-              <h3 className="text-sm font-semibold mb-3 text-slate-700 dark:text-slate-200">Category Budgets</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
-                {Object.entries(latest.category_totals)
-                  .sort(([, a], [, b]) => b - a)
-                  .map(([cat, amount]) => {
-                    const limit = categoryMap[cat]?.monthly_limit ?? 0;
-                    const catColor = categoryMap[cat]?.color;
-                    const trackStyle = catColor
-                      ? { backgroundColor: `${catColor}26` } // 15% opacity hex
-                      : undefined;
-                    if (limit <= 0) {
-                      return (
-                        <div key={cat} className="cursor-pointer" onClick={() => openCategoryDialog(cat)}>
-                          <div className="flex justify-between text-sm mb-1">
-                            <span className="text-slate-600 dark:text-slate-300">{cat}</span>
-                            <span className="font-semibold">{formatIdr(amount)}</span>
-                          </div>
-                          <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-1.5" style={trackStyle}>
-                            <div className="h-1.5 rounded-full" style={{ width: '100%', backgroundColor: catColor || '#94a3b8' }} />
-                          </div>
-                        </div>
-                      );
-                    }
-                    const pct = Math.min(100, (amount / limit) * 100);
-                    const isOver = amount > limit;
-                    const barColor = isOver ? 'bg-red-500' : pct > 80 ? 'bg-amber-500' : 'bg-emerald-500';
-                    const textColor = isOver ? 'text-red-600 dark:text-red-400' : pct > 80 ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400';
-                    return (
-                      <div key={cat} className="cursor-pointer" onClick={() => openCategoryDialog(cat)}>
-                        <div className="flex justify-between text-sm mb-1">
-                          <span className="text-slate-600 dark:text-slate-300">{cat}</span>
-                          <span className={`font-semibold ${textColor}`}>
-                            {formatIdr(amount)} / {formatIdr(limit)}
-                          </span>
-                        </div>
-                        <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-1.5" style={trackStyle}>
-                          <div className={`${barColor} h-1.5 rounded-full transition-all`} style={{ width: `${pct}%` }} />
-                        </div>
-                      </div>
-                    );
-                  })}
-              </div>
-            </div>
-          )}
-        </div>
       </CollapsibleSection>
 
       {/* Recent Transactions — TOP (paginated) */}
@@ -736,37 +588,6 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
         activePeriodId={filterPeriodId}
       />
 
-      {/* Summary Cards — BOTTOM */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
-          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
-            Total Income {isAllTime ? '(Latest)' : `(${latest?.month ?? ''})`}
-          </p>
-          <p className="text-2xl font-bold mt-2">{formatIdr(latest?.income ?? 0)}</p>
-        </div>
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
-          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
-            Total Outcome {isAllTime ? '(Latest)' : `(${latest?.month ?? ''})`}
-          </p>
-          <p className="text-2xl font-bold mt-2">{formatIdr(latest?.outcome.total ?? 0)}</p>
-          <p className="text-xs text-slate-400 mt-1">Cash + Credit Payment</p>
-        </div>
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
-          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
-            Net Worth {isAllTime ? '(Latest)' : `(${latestNetworth?.month ?? ''})`}
-          </p>
-          <p className="text-2xl font-bold mt-2">{formatIdr(latestNetworth?.total ?? 0)}</p>
-        </div>
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
-          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
-            Savings Rate {isAllTime ? '(Latest)' : `(${latest?.month ?? ''})`}
-          </p>
-          <p className="text-2xl font-bold mt-2" style={{ color: savingsRate < 0 ? '#ef4444' : undefined }}>{savingsRate.toFixed(1)}%</p>
-          <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 mt-3">
-            <div className={`h-2 rounded-full transition-all ${savingsRate < 0 ? 'bg-red-500 ml-auto' : 'bg-emerald-500'}`} style={{ width: `${Math.min(100, Math.abs(savingsRate))}%` }} />
-          </div>
-        </div>
-      </div>
       {/* Category Transactions Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">

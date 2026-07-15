@@ -25,6 +25,7 @@ const mockUpsertNetworth = vi.fn();
 const mockRecalcNetworthMoM = vi.fn();
 const mockGetGoals = vi.fn();
 const mockInsertGoal = vi.fn();
+const mockGetRecurringCostAnalysis = vi.fn();
 
 vi.mock('../lib/db', () => ({
   db: {},
@@ -46,6 +47,7 @@ vi.mock('../lib/db', () => ({
   recalcNetworthMoM: mockRecalcNetworthMoM,
   getGoals: mockGetGoals,
   insertGoal: mockInsertGoal,
+  getRecurringCostAnalysis: mockGetRecurringCostAnalysis,
 }));
 
 async function parseJson(res: Response) {
@@ -504,5 +506,77 @@ describe('API — POST /api/goals', () => {
     expect(res.status).toBe(500);
     const body = await parseJson(res);
     expect(body.error).toContain('UNIQUE constraint failed');
+  });
+});
+
+// ─── Recurring Cost API ────────────────────────────────────────────────────
+
+describe('API — GET /api/recurring-cost', () => {
+  let GET: any;
+
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    const mod = await import('../pages/api/recurring-cost');
+    GET = mod.GET;
+  });
+
+  it('returns recurring cost analysis as JSON', async () => {
+    const mockResult = {
+      items: [],
+      activeItems: [
+        { id: 1, title: 'Netflix', category: 'Entertainment', amount: 186000, type: 'credit_expense', active: true, end_date: null, isTemporary: false },
+      ],
+      pausedItems: [],
+      monthlyTotal: 186000,
+      annualTotal: 186000 * 12,
+      monthlyByCategory: { Entertainment: 186000 },
+      monthlyByType: { cash: 0, credit_expense: 186000, credit_payment: 0 },
+      categoryCount: 1,
+      activeCount: 1,
+      temporaryCount: 0,
+      largestItem: { id: 1, title: 'Netflix', category: 'Entertainment', amount: 186000, type: 'credit_expense', active: true, end_date: null, isTemporary: false },
+      avgPerItem: 186000,
+    };
+    mockGetRecurringCostAnalysis.mockReturnValue(mockResult);
+
+    const res = await GET({ request: makeRequest('/api/recurring-cost') });
+    expect(res.status).toBe(200);
+    const body = await parseJson(res);
+    expect(body.activeCount).toBe(1);
+    expect(body.monthlyTotal).toBe(186000);
+    expect(body.annualTotal).toBe(2232000);
+    expect(body.activeItems[0].title).toBe('Netflix');
+    expect(mockGetRecurringCostAnalysis).toHaveBeenCalledTimes(1);
+  });
+
+  it('returns correct shape for empty recurring list', async () => {
+    const emptyResult = {
+      items: [], activeItems: [], pausedItems: [],
+      monthlyTotal: 0, annualTotal: 0,
+      monthlyByCategory: {}, monthlyByType: { cash: 0, credit_expense: 0, credit_payment: 0 },
+      categoryCount: 0, activeCount: 0, temporaryCount: 0,
+      largestItem: null, avgPerItem: 0,
+    };
+    mockGetRecurringCostAnalysis.mockReturnValue(emptyResult);
+
+    const res = await GET({ request: makeRequest('/api/recurring-cost') });
+    expect(res.status).toBe(200);
+    const body = await parseJson(res);
+    expect(body.activeCount).toBe(0);
+    expect(body.monthlyTotal).toBe(0);
+    expect(body.largestItem).toBeNull();
+  });
+
+  it('returns correct Content-Type header', async () => {
+    mockGetRecurringCostAnalysis.mockReturnValue({
+      items: [], activeItems: [], pausedItems: [],
+      monthlyTotal: 0, annualTotal: 0,
+      monthlyByCategory: {}, monthlyByType: { cash: 0, credit_expense: 0, credit_payment: 0 },
+      categoryCount: 0, activeCount: 0, temporaryCount: 0,
+      largestItem: null, avgPerItem: 0,
+    });
+
+    const res = await GET({ request: makeRequest('/api/recurring-cost') });
+    expect(res.headers.get('Content-Type')).toBe('application/json');
   });
 });

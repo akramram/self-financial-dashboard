@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import type { MonthlySummary, NetworthRecord } from '../lib/data';
 import { formatIdr } from '../lib/utils';
 import Sparkline from './Sparkline';
-import { TrendingUp, TrendingDown, DollarSign, Wallet, PiggyBank, BarChart3 } from 'lucide-react';
+import { TrendingUp, TrendingDown, DollarSign, Wallet, Scale, BarChart3 } from 'lucide-react';
 
 interface Props {
   summaries: MonthlySummary[];
@@ -85,31 +85,32 @@ export default function DashboardSummaryCards({ summaries, networth, activeMonth
       });
     }
 
-    // ── 3. Savings Rate ──
+    // ── 3. Balance ──
     if (currentSummary) {
       const income = currentSummary.income ?? 0;
       const outcome = currentSummary.outcome?.total ?? 0;
-      const savingsRate = income > 0 ? ((income - outcome) / income) * 100 : 0;
+      const balance = income - outcome;
 
       const prevIncome = prevSummary?.income ?? 0;
       const prevOutcome = prevSummary?.outcome?.total ?? 0;
-      const prevSavingsRate = prevIncome > 0 ? ((prevIncome - prevOutcome) / prevIncome) * 100 : 0;
+      const prevBalance = prevIncome - prevOutcome;
 
-      const srDelta = savingsRate - prevSavingsRate;
+      const balanceDelta = balance - prevBalance;
+      const balanceDeltaPct = prevBalance !== 0 ? (balanceDelta / Math.abs(prevBalance)) * 100 : balance > 0 ? 100 : 0;
 
       result.push({
-        label: 'Savings Rate',
-        value: `${savingsRate.toFixed(1)}%`,
-        delta: srDelta >= 0 ? `+${srDelta.toFixed(1)}pp` : `${srDelta.toFixed(1)}pp`,
-        deltaPct: '',
-        isPositive: srDelta >= 0,
+        label: 'Balance',
+        value: formatIdr(balance),
+        delta: balanceDelta >= 0 ? `+${formatIdr(balanceDelta)}` : formatIdr(balanceDelta),
+        deltaPct: balanceDeltaPct >= 0 ? `+${balanceDeltaPct.toFixed(1)}%` : `${balanceDeltaPct.toFixed(1)}%`,
+        isPositive: balance >= 0,
         sparklineData: last6.map((s) => {
           const inc = s.income ?? 0;
           const out = s.outcome?.total ?? 0;
-          return inc > 0 ? ((inc - out) / inc) * 100 : 0;
+          return inc - out;
         }),
-        color: '#6366f1',
-        icon: <PiggyBank className="w-5 h-5" />,
+        color: '#06b6d4',
+        icon: <Scale className="w-5 h-5" />,
       });
     }
 

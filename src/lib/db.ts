@@ -2700,3 +2700,257 @@ export function getWeeklySpending(periodId: number): WeeklySpendingResult {
     income,
   };
 }
+
+// ─── Recurring Cost Analysis ────────────────────────────────────────────────
+
+export interface RecurringCostItem {
+  id: number;
+  title: string;
+  category: string;
+  amount: number;
+  type: 'cash' | 'credit_expense' | 'credit_payment';
+  active: boolean;
+  end_date: string | null;
+  isTemporary: boolean;
+}
+
+export interface RecurringCostResult {
+  items: RecurringCostItem[];
+  activeItems: RecurringCostItem[];
+  pausedItems: RecurringCostItem[];
+  monthlyTotal: number;
+  annualTotal: number;
+  monthlyByCategory: Record<string, number>;
+  monthlyByType: { cash: number; credit_expense: number; credit_payment: number };
+  categoryCount: number;
+  activeCount: number;
+  temporaryCount: number;
+  largestItem: RecurringCostItem | null;
+  avgPerItem: number;
+}
+
+export function getRecurringCostAnalysis(): RecurringCostResult {
+  const rows = db.prepare(`
+    SELECT id, title, category, amount, type, active, end_date
+    FROM recurring_transactions
+    ORDER BY active DESC, amount DESC
+  `).all() as any[];
+
+  const items: RecurringCostItem[] = rows.map((r) => ({
+    id: r.id,
+    title: r.title,
+    category: r.category,
+    amount: r.amount,
+    type: r.type,
+    active: !!r.active,
+    end_date: r.end_date,
+    isTemporary: !!r.end_date,
+  }));
+
+  const activeItems = items.filter((i) => i.active);
+  const pausedItems = items.filter((i) => !i.active);
+
+  const monthlyTotal = activeItems.reduce((s, i) => s + i.amount, 0);
+  const annualTotal = monthlyTotal * 12;
+
+  const monthlyByCategory: Record<string, number> = {};
+  for (const item of activeItems) {
+    monthlyByCategory[item.category] = (monthlyByCategory[item.category] || 0) + item.amount;
+  }
+
+  const monthlyByType = { cash: 0, credit_expense: 0, credit_payment: 0 };
+  for (const item of activeItems) {
+    if (item.type in monthlyByType) {
+      monthlyByType[item.type as keyof typeof monthlyByType] += item.amount;
+    }
+  }
+
+  const temporaryCount = activeItems.filter((i) => i.isTemporary).length;
+  const largestItem = activeItems.length > 0
+    ? activeItems.reduce((max, i) => (i.amount > max.amount ? i : max))
+    : null;
+  const avgPerItem = activeItems.length > 0 ? monthlyTotal / activeItems.length : 0;
+
+  return {
+    items,
+    activeItems,
+    pausedItems,
+    monthlyTotal,
+    annualTotal,
+    monthlyByCategory,
+    monthlyByType,
+    categoryCount: Object.keys(monthlyByCategory).length,
+    activeCount: activeItems.length,
+    temporaryCount,
+    largestItem,
+    avgPerItem,
+  };
+}
+
+// ─── Budget Pace ───────────────────────────────────────────────────────────
+
+export interface BudgetPaceCategory {
+  category: string;
+  color: string;
+  limit: number;
+  spent: number;
+  spent_pct: number;       // spent / limit * 100
+  expected_pct: number;    // time_elapsed_pct, same for all categories
+  pace_diff: number;       // spent_pct - expected_pct (positive = over pace)
+  pace_status: 'on_track' | 'warning' | 'over_pace' | 'under_budget' | 'no_limit';
+  projected_total: number; // linear projection at end of period
+  days_elapsed: number;
+  days_total: number;
+}
+
+export interface BudgetPaceResult {
+  period_id: number;
+  period_label: string;
+  start_date: string;
+  end_date: string;
+  days_elapsed: number;
+  days_total: number;
+  time_elapsed_pct: number;    // days_elapsed / days_total * 100
+  total_budget: number;        // sum of all category limits
+  total_spent: number;         // sum of actual spending in budgeted categories
+  total_expected: number;      // linear: total_budget * time_elapsed_pct / 100
+  total_pace_diff: number;     // total_spent - total_expected
+  total_pace_pct: number;      // (spent - expected) / expected * 100
+  total_projected: number;     // projected total at period end
+  overall_status: 'on_track' | 'warning' | 'over_pace' | 'critical';
+  categories: BudgetPaceCategory[];
+}
+
+export function getBudgetPace(periodId?: number): BudgetPaceResult {
+  // Resolve period
+  const period = periodId
+    ? db.prepare('SELECT * FROM periods WHERE id = ?').get(periodId) as any
+    : getActivePeriod();
+
+  if (!period) {
+    // No active period — return empty result
+    return {
+      period_id: 0,
+      period_label: 'N/A',
+      start_date: '',
+      end_date: '',
+      days_elapsed: 0,
+      days_total: 0,
+      time_elapsed_pct: 0,
+      total_budget: 0,
+      total_spent: 0,
+      total_expected: 0,
+      total_pace_diff: 0,
+      total_pace_pct: 0,
+      total_projected: 0,
+      overall_status: 'on_track',
+      categories: [],
+    };
+  }
+
+  const startDate = new Date(period.start_date + 'T00:00:00');
+  const endDate = new Date(period.end_date + 'T23:59:59');
+  const now = new Date();
+
+  const msPerDay = 1000 * 60 * 60 * 24;
+  const days_total = Math.max(1, Math.round((endDate.getTime() - startDate.getTime()) / msPerDay) + 1);
+  const days_elapsed = Math.min(
+    days_total,
+    Math.max(0, Math.round((now.getTime() - startDate.getTime()) / msPerDay) + 1)
+  );
+  const time_elapsed_pct = (days_elapsed / days_total) * 100;
+
+  // Get all categories with limits
+  const categories = db.prepare('SELECT name, color, monthly_limit FROM categories WHERE monthly_limit > 0').all() as any[];
+
+  // Get spending per category for this period (done=1, spending types only)
+  const spending = db.prepare(`
+    SELECT category, SUM(amount) as spent
+    FROM transactions
+    WHERE period_id = ? AND done = 1 AND type IN ('cash', 'credit_expense')
+    GROUP BY category
+  `).all(period.id) as any[];
+
+  const spendingMap = new Map<string, number>();
+  spending.forEach((s) => spendingMap.set(s.category, s.spent));
+
+  let total_budget = 0;
+  let total_spent = 0;
+
+  const paceCategories: BudgetPaceCategory[] = categories.map((cat) => {
+    const limit = cat.monthly_limit || 0;
+    const spent = spendingMap.get(cat.name) || 0;
+    const spent_pct = limit > 0 ? (spent / limit) * 100 : 0;
+    const expected_pct = time_elapsed_pct;
+    const pace_diff = spent_pct - expected_pct;
+    const projected_total = days_elapsed > 0 ? (spent / days_elapsed) * days_total : 0;
+
+    let pace_status: BudgetPaceCategory['pace_status'];
+    if (limit === 0) {
+      pace_status = 'no_limit';
+    } else if (spent >= limit) {
+      pace_status = 'over_pace';
+    } else if (pace_diff > 15) {
+      pace_status = 'over_pace';
+    } else if (pace_diff > 5) {
+      pace_status = 'warning';
+    } else if (spent_pct < expected_pct - 20) {
+      pace_status = 'under_budget';
+    } else {
+      pace_status = 'on_track';
+    }
+
+    total_budget += limit;
+    total_spent += spent;
+
+    return {
+      category: cat.name,
+      color: cat.color,
+      limit,
+      spent,
+      spent_pct,
+      expected_pct,
+      pace_diff,
+      pace_status,
+      projected_total,
+      days_elapsed,
+      days_total,
+    };
+  });
+
+  const total_expected = total_budget * (time_elapsed_pct / 100);
+  const total_pace_diff = total_spent - total_expected;
+  const total_pace_pct = total_expected > 0 ? (total_pace_diff / total_expected) * 100 : 0;
+  const total_projected = days_elapsed > 0 ? (total_spent / days_elapsed) * days_total : 0;
+
+  let overall_status: BudgetPaceResult['overall_status'];
+  if (total_budget === 0) {
+    overall_status = 'on_track';
+  } else if (total_spent >= total_budget) {
+    overall_status = 'critical';
+  } else if (total_pace_pct > 15) {
+    overall_status = 'over_pace';
+  } else if (total_pace_pct > 5) {
+    overall_status = 'warning';
+  } else {
+    overall_status = 'on_track';
+  }
+
+  return {
+    period_id: period.id,
+    period_label: period.month,
+    start_date: period.start_date,
+    end_date: period.end_date,
+    days_elapsed,
+    days_total,
+    time_elapsed_pct,
+    total_budget,
+    total_spent,
+    total_expected,
+    total_pace_diff,
+    total_pace_pct,
+    total_projected,
+    overall_status,
+    categories: paceCategories,
+  };
+}
