@@ -34,6 +34,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { StickyNote } from 'lucide-react';
 import {
   Select,
@@ -360,37 +361,39 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
           isCollapsed={isCollapsed('credit-expenses')}
           onToggle={() => toggle('credit-expenses')}
         >
-          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-5 space-y-3">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-slate-600 dark:text-slate-300">Credit Payment (Prior Month)</span>
-                  <span className="font-semibold text-amber-600 dark:text-amber-400">{formatIdr(latest.outcome.credit_payment ?? 0)}</span>
+          <Card className="border-slate-200 dark:border-slate-700 shadow-none">
+            <CardContent className="p-5 space-y-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span className="text-slate-600 dark:text-slate-300">Credit Payment (Prior Month)</span>
+                    <span className="font-semibold text-amber-600 dark:text-amber-400">{formatIdr(latest.outcome.credit_payment ?? 0)}</span>
+                  </div>
+                  <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+                    <div
+                      className="bg-amber-500 h-2 rounded-full transition-all"
+                      style={{ width: `${latest.outcome.total > 0 ? Math.round((latest.outcome.credit_payment / latest.outcome.total) * 100) : 0}%` }}
+                    />
+                  </div>
                 </div>
-                <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-                  <div
-                    className="bg-amber-500 h-2 rounded-full transition-all"
-                    style={{ width: `${latest.outcome.total > 0 ? Math.round((latest.outcome.credit_payment / latest.outcome.total) * 100) : 0}%` }}
-                  />
+                <div>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span className="text-slate-600 dark:text-slate-300">Current Month Credit Expenses</span>
+                    <span className="font-semibold text-purple-600 dark:text-purple-400">{formatIdr(latest.outcome.credit_expenses ?? 0)}</span>
+                  </div>
+                  <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+                    <div
+                      className="bg-purple-500 h-2 rounded-full transition-all"
+                      style={{ width: `${latest.outcome.total > 0 ? Math.round((latest.outcome.credit_expenses / latest.outcome.total) * 100) : 0}%` }}
+                    />
+                  </div>
                 </div>
               </div>
-              <div>
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-slate-600 dark:text-slate-300">Current Month Credit Expenses</span>
-                  <span className="font-semibold text-purple-600 dark:text-purple-400">{formatIdr(latest.outcome.credit_expenses ?? 0)}</span>
-                </div>
-                <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-                  <div
-                    className="bg-purple-500 h-2 rounded-full transition-all"
-                    style={{ width: `${latest.outcome.total > 0 ? Math.round((latest.outcome.credit_expenses / latest.outcome.total) * 100) : 0}%` }}
-                  />
-                </div>
-              </div>
-            </div>
-            <p className="text-xs text-slate-400 dark:text-slate-500">
-              Credit expenses this month will be paid next month as credit payments.
-            </p>
-          </div>
+              <p className="text-xs text-slate-400 dark:text-slate-500">
+                Credit expenses this month will be paid next month as credit payments.
+              </p>
+            </CardContent>
+          </Card>
         </CollapsibleSection>
       )}
 
@@ -584,43 +587,63 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
         )}
       </CollapsibleSection>
 
-      {/* Outcome Chart */}
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
-        <h2 className="text-lg font-semibold mb-4">Cash Outcome vs Credit Payment by Month</h2>
-        <OutcomeChart data={filteredSummaries} />
-      </div>
+      {/* Outcome Chart — Similarity: same Card wrapper as widgets above */}
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base font-semibold">Cash Outcome vs Credit Payment by Month</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <OutcomeChart data={filteredSummaries} />
+        </CardContent>
+      </Card>
 
       {/* Savings Rate Trend */}
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
-        <h2 className="text-lg font-semibold mb-4">Savings Rate Trend</h2>
-        <SavingsRateChart data={filteredSummaries} />
-      </div>
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base font-semibold">Savings Rate Trend</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <SavingsRateChart data={filteredSummaries} />
+        </CardContent>
+      </Card>
 
       {/* Category Spending Trend */}
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold">Category Spending Trend</h2>
-          <span className="text-xs text-slate-500 dark:text-slate-400">Top categories by total spend</span>
-        </div>
-        <CategoryTrendChart data={filteredSummaries} categories={categories} />
-      </div>
+      <Card>
+        <CardHeader className="pb-2">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-base font-semibold">Category Spending Trend</CardTitle>
+            <span className="text-xs text-slate-500 dark:text-slate-400">Top categories by total spend</span>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <CategoryTrendChart data={filteredSummaries} categories={categories} />
+        </CardContent>
+      </Card>
 
-      {/* Charts Row 2 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
-          <h2 className="text-lg font-semibold mb-4">Networth Trend</h2>
-          <NetworthChart data={filteredNetworth} />
-        </div>
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
-          <h2 className="text-lg font-semibold mb-4">
-            {isAllTime ? 'Latest Month Categories' : `${latest?.month ?? ''} Categories`}
-          </h2>
-          {latest?.category_totals && Object.keys(latest.category_totals).length > 0 ? (
-            <CategoryChart data={latest.category_totals} categories={categories} onCategoryClick={openCategoryDialog} />
-          ) : (
-            <p className="text-slate-500 text-sm">No category data available.</p>
-          )}
-        </div>
+      {/* Charts Row 2 — Proximity: paired charts in consistent grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base font-semibold">Networth Trend</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <NetworthChart data={filteredNetworth} />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base font-semibold">
+              {isAllTime ? 'Latest Month Categories' : `${latest?.month ?? ''} Categories`}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {latest?.category_totals && Object.keys(latest.category_totals).length > 0 ? (
+              <CategoryChart data={latest.category_totals} categories={categories} onCategoryClick={openCategoryDialog} />
+            ) : (
+              <p className="text-slate-500 text-sm">No category data available.</p>
+            )}
+          </CardContent>
+        </Card>
       </div>
 
       {/* Period vs Average Comparison */}

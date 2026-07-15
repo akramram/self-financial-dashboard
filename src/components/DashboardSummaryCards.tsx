@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import type { MonthlySummary, NetworthRecord } from '../lib/data';
 import { formatIdr } from '../lib/utils';
 import Sparkline from './Sparkline';
+import { Card } from '@/components/ui/card';
 import { TrendingUp, TrendingDown, DollarSign, Wallet, Scale, BarChart3 } from 'lucide-react';
 
 interface Props {
@@ -139,67 +140,67 @@ export default function DashboardSummaryCards({ summaries, networth, activeMonth
   if (cards.length === 0) return null;
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {cards.map((card) => (
-        <div
+        <Card
           key={card.label}
-          className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-5 relative overflow-hidden hover:shadow-md transition-shadow"
+          className="bg-card relative overflow-hidden hover:shadow-md transition-shadow p-5 pt-6"
         >
-          {/* Subtle color bar at top */}
+          {/* Subtle color bar at top — figure/ground accent */}
           <div
             className="absolute top-0 left-0 right-0 h-1"
             style={{ backgroundColor: card.color }}
           />
 
-          <div className="flex items-start justify-between">
-            <div className="flex-1 min-w-0">
-              {/* Label row */}
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-slate-400 dark:text-slate-500">{card.icon}</span>
-                <p className="text-sm font-medium text-slate-500 dark:text-slate-400 truncate">
-                  {card.label}
-                </p>
-              </div>
+            <div className="flex items-start justify-between">
+              <div className="flex-1 min-w-0">
+                {/* Label row — similarity: same icon+label pattern across all 4 cards */}
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-slate-400 dark:text-slate-500">{card.icon}</span>
+                  <p className="text-sm font-medium text-slate-500 dark:text-slate-400 truncate">
+                    {card.label}
+                  </p>
+                </div>
 
-              {/* Value */}
-              <p className="text-2xl font-bold mt-1 truncate">{card.value}</p>
+                {/* Value — focal point (figure) */}
+                <p className="text-2xl font-bold mt-1 truncate">{card.value}</p>
 
-              {/* Delta */}
-              <div className="flex items-center gap-1.5 mt-1">
-                <span
-                  className={`inline-flex items-center gap-0.5 text-xs font-semibold ${
-                    card.isPositive
-                      ? 'text-emerald-600 dark:text-emerald-400'
-                      : 'text-red-600 dark:text-red-400'
-                  }`}
-                >
-                  {card.isPositive ? (
-                    <TrendingUp className="w-3.5 h-3.5" />
-                  ) : (
-                    <TrendingDown className="w-3.5 h-3.5" />
-                  )}
-                  {card.delta}
-                </span>
-                {card.deltaPct && (
+                {/* Delta — grouped by proximity under value */}
+                <div className="flex items-center gap-1.5 mt-1">
                   <span
-                    className={`text-xs font-medium ${
+                    className={`inline-flex items-center gap-0.5 text-xs font-semibold ${
                       card.isPositive
-                        ? 'text-emerald-500/70 dark:text-emerald-400/70'
-                        : 'text-red-500/70 dark:text-red-400/70'
+                        ? 'text-emerald-600 dark:text-emerald-400'
+                        : 'text-red-600 dark:text-red-400'
                     }`}
                   >
-                    {card.deltaPct}
+                    {card.isPositive ? (
+                      <TrendingUp className="w-3.5 h-3.5" />
+                    ) : (
+                      <TrendingDown className="w-3.5 h-3.5" />
+                    )}
+                    {card.delta}
                   </span>
-                )}
+                  {card.deltaPct && (
+                    <span
+                      className={`text-xs font-medium ${
+                        card.isPositive
+                          ? 'text-emerald-500/70 dark:text-emerald-400/70'
+                          : 'text-red-500/70 dark:text-red-400/70'
+                      }`}
+                    >
+                      {card.deltaPct}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Sparkline — right-aligned, visually paired with value via proximity */}
+              <div className="ml-2 shrink-0 self-end">
+                <Sparkline data={card.sparklineData} color={card.color} height={40} width={72} />
               </div>
             </div>
-
-            {/* Sparkline on the right */}
-            <div className="ml-2 shrink-0 self-end">
-              <Sparkline data={card.sparklineData} color={card.color} height={40} width={72} />
-            </div>
-          </div>
-        </div>
+        </Card>
       ))}
     </div>
   );
