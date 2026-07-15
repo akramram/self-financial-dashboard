@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import type { MonthlySummary } from '../lib/data';
 import { formatIdr } from '../lib/utils';
-import { Activity, Clock, TrendingDown, TrendingUp, Gauge } from 'lucide-react';
+import { Activity, Clock, TrendingDown, TrendingUp, Gauge, CreditCard } from 'lucide-react';
 
 interface Props {
   summaries: MonthlySummary[];
@@ -20,6 +20,8 @@ interface PulseData {
   projectedTotal: number;
   status: 'under' | 'on-track' | 'over';
   income: number;
+  cash: number;
+  credit: number;
 }
 
 function getPeriodDates(activeMonth: string): { start: Date; end: Date } {
@@ -75,6 +77,8 @@ export default function SpendingPulse({ summaries, activeMonth }: Props) {
     const dailyBudget = income / daysTotal;
     const expectedSpend = dailyBudget * daysElapsed;
     const actualSpend = summary.outcome?.total ?? 0;
+    const cash = summary.outcome?.cash ?? 0;
+    const credit = summary.outcome?.credit_payment ?? 0;
     const pacePct = expectedSpend > 0 ? (actualSpend / expectedSpend) * 100 : 0;
     const projectedTotal = daysElapsed > 0 ? (actualSpend / daysElapsed) * daysTotal : 0;
 
@@ -94,6 +98,8 @@ export default function SpendingPulse({ summaries, activeMonth }: Props) {
       projectedTotal,
       status,
       income,
+      cash,
+      credit,
     };
   }, [summaries, activeMonth]);
 
@@ -172,7 +178,7 @@ export default function SpendingPulse({ summaries, activeMonth }: Props) {
           </p>
 
           {/* Key metrics */}
-          <div className="grid grid-cols-2 gap-3 pt-1">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 pt-1">
             <div className="bg-white/60 dark:bg-slate-800/60 rounded-lg p-2.5">
               <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 mb-1">
                 <Clock className="w-3.5 h-3.5" />
@@ -195,6 +201,37 @@ export default function SpendingPulse({ summaries, activeMonth }: Props) {
                 Expected: {formatIdr(pulse.expectedSpend)}
               </p>
             </div>
+            {(pulse.cash > 0 || pulse.credit > 0) && (
+              <div className="bg-white/60 dark:bg-slate-800/60 rounded-lg p-2.5">
+                <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 mb-1">
+                  <CreditCard className="w-3.5 h-3.5" />
+                  Cash vs Credit
+                </div>
+                <div className="flex items-baseline gap-2 mb-1">
+                  <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">
+                    {formatIdr(pulse.cash)}
+                  </span>
+                  <span className="text-slate-400 dark:text-slate-500">/</span>
+                  <span className="text-sm font-semibold text-amber-600 dark:text-amber-400">
+                    {formatIdr(pulse.credit)}
+                  </span>
+                </div>
+                <div className="flex gap-0.5 text-[10px] text-slate-500 mb-1">
+                  <span className="text-blue-500">● Cash</span>
+                  <span className="text-amber-500 ml-1">● Credit</span>
+                </div>
+                <div className="flex-1 bg-slate-200 dark:bg-slate-700 rounded-full h-1.5 overflow-hidden flex">
+                  <div
+                    className="bg-blue-500 h-1.5 rounded-l-full transition-all"
+                    style={{ width: `${(pulse.cash / Math.max(1, pulse.cash + pulse.credit)) * 100}%` }}
+                  />
+                  <div
+                    className="bg-amber-500 h-1.5 rounded-r-full transition-all"
+                    style={{ width: `${(pulse.credit / Math.max(1, pulse.cash + pulse.credit)) * 100}%` }}
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Projected total */}
@@ -275,6 +312,30 @@ export default function SpendingPulse({ summaries, activeMonth }: Props) {
             />
           </div>
           <span className="w-10 text-right font-medium text-slate-600 dark:text-slate-300">
+            {((pulse.actualSpend / pulse.income) * 100).toFixed(0)}%
+          </span>
+        </div>
+        <div className="flex items-center gap-2 text-xs">
+          <span className="w-16 text-slate-500 dark:text-slate-400 shrink-0">Budget</span>
+          <div className="flex-1 bg-slate-200 dark:bg-slate-700 rounded-full h-1.5">
+            <div
+              className={`h-1.5 rounded-full transition-all ${
+                (pulse.actualSpend / pulse.income) * 100 < 50
+                  ? 'bg-emerald-500'
+                  : (pulse.actualSpend / pulse.income) * 100 <= 80
+                    ? 'bg-amber-500'
+                    : 'bg-red-500'
+              }`}
+              style={{ width: `${Math.min(100, (pulse.actualSpend / pulse.income) * 100)}%` }}
+            />
+          </div>
+          <span className={`w-10 text-right font-medium ${
+            (pulse.actualSpend / pulse.income) * 100 < 50
+              ? 'text-emerald-600 dark:text-emerald-400'
+              : (pulse.actualSpend / pulse.income) * 100 <= 80
+                ? 'text-amber-600 dark:text-amber-400'
+                : 'text-red-600 dark:text-red-400'
+          }`}>
             {((pulse.actualSpend / pulse.income) * 100).toFixed(0)}%
           </span>
         </div>

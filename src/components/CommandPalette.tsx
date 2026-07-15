@@ -27,6 +27,7 @@ const ALL_ITEMS: CommandItem[] = [
   { id: 'achievements', label: 'Achievements & Milestones', description: 'Trophy case — net worth, savings & discipline badges', icon: '🏆', group: 'pages', href: '/achievements' },
   { id: 'goals', label: 'Goals Tracker', description: 'Track financial goals progress', icon: '🎯', group: 'pages', href: '/goals' },
   { id: 'recurring', label: 'Recurring', description: 'Manage recurring transactions', icon: '🔄', group: 'pages', href: '/recurring' },
+  { id: 'recurring-audit', label: 'Recurring Cost Analyzer', description: 'Audit subscription costs — monthly & annual totals, savings insights', icon: '📊', group: 'pages', href: '/recurring-audit' },
   { id: 'yearly', label: 'Yearly Report', description: 'Annual spending summary', icon: '📆', group: 'pages', href: '/yearly' },
   { id: 'health', label: 'Health Score', description: 'Financial health assessment', icon: '❤️', group: 'pages', href: '/health' },
   { id: 'forecast', label: 'Forecast', description: 'Spending predictions and projections', icon: '🔮', group: 'pages', href: '/forecast' },

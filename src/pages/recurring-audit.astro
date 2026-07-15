@@ -1,0 +1,15 @@
+---
+import Layout from '../layouts/Layout.astro';
+import RecurringCostAnalyzer from '../components/RecurringCostAnalyzer';
+---
+
+<Layout title="Recurring Cost Analyzer - Financial Dashboard">
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold">🔄 Recurring Cost Analyzer</h1>
+    <p class="text-slate-500 dark:text-slate-400 text-sm">
+      Audit your monthly subscriptions and recurring expenses — understand the true annual cost of your commitments and find savings opportunities.
+    </p>
+  </div>
+
+  <RecurringCostAnalyzer client:load />
+</Layout>
