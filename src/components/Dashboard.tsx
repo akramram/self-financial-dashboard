@@ -13,6 +13,7 @@ import OutcomeBarChart from './OutcomeBarChart';
 import MonthKickoffModal from './MonthKickoffModal';
 import DashboardSummaryCards from './DashboardSummaryCards';
 import SpendingPulse from './SpendingPulse';
+import SafeToSpend from './SafeToSpend';
 import AlertsPanel from './AlertsPanel';
 import CategoryBudgets from './CategoryBudgets';
 import { fetchRecurringTransactions } from '../lib/api';
@@ -351,6 +352,16 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
         summaries={summaries}
         activeMonth={activeSummary?.month}
       />
+      </CollapsibleSection>
+
+      {/* Safe to Spend — daily spending allowance */}
+      <CollapsibleSection
+        id="safe-to-spend"
+        title="Safe to Spend"
+        isCollapsed={isCollapsed('safe-to-spend')}
+        onToggle={() => toggle('safe-to-spend')}
+      >
+      <SafeToSpend periodId={filterPeriodId ?? undefined} />
       </CollapsibleSection>
 
       {/* Current Month Credit Expenses — compact info card */}
