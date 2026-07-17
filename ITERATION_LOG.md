@@ -712,3 +712,57 @@ Users can now drill down to transactions within a specific date window or amount
 
 ### Build status
 ✅ Passes — `npm run build` clean
+
+## Iteration 31 — FIN-092: Emergency Fund Runway Analysis
+
+**Date:** 2026-07-17
+**Type:** Feature (autonomous cron — Wayfinder innovation pipeline)
+**Issue:** [#92](https://github.com/akramram/self-financial-dashboard/issues/92)
+**Branch:** `feature/issue-92-runway` (merged to main, deleted)
+
+### What changed
+Menambahkan widget Emergency Fund Runway — analisis ketahanan finansial yang menghitung berapa lama pengguna bisa bertahan tanpa pendapatan.
+
+**Komponen & file baru:**
+- `src/pages/api/runway.ts` — API endpoint `GET /api/runway` yang menghitung:
+  - Aset likuid (dengan faktor likuiditas per instrumen)
+  - Pengeluaran bulanan rata-rata (3 periode terakhir, done=1, type cash/credit_expense)
+  - Runway dalam bulan = aset likuid / pengeluaran
+  - Cakupan biaya tetap = aset likuid / recurring obligations aktif
+  - History 6 bulan terakhir untuk sparkline
+  - Rekomendasi otomatis berdasarkan status
+- `src/components/RunwayAnalysis.tsx` — widget dengan:
+  - SVG gauge melingkar (skala 0-12 bulan)
+  - Liquidity bar (visual proporsi aset berdasarkan tingkat likuiditas)
+  - Key metrics (liquid assets, total assets, monthly expense, fixed coverage)
+  - Trend sparkline (6 bulan)
+  - Rekomendasi kontekstual
+  - Status: critical (<1 bln), caution (1-3 bln), healthy (3-6 bln), strong (6+ bln)
+- `src/pages/runway.astro` — halaman detail dengan metodologi perhitungan
+
+**Integrasi:**
+- `src/components/Dashboard.tsx` — widget compact (collapsible) setelah SafeToSpend
+- `src/layouts/Layout.astro` — link navigasi di dropdown Planning (desktop + mobile)
+
+**Likuiditas klasifikasi:**
+| Instrumen | Faktor Likuiditas | Alasan |
+|-----------|-------------------|--------|
+| Cash / Jenius / Tabungan | 100% | Instant access |
+| Reksa Dana / Mutual Fund | 90% | 1-3 hari settlement |
+| Saham Lokal | 50% | Volatile, butuh timing jual |
+| Saham Luar Negeri | 30% | Friction mata uang & pajak |
+| Crypto | 80% | Likuid tapi volatile |
+
+### Test results
+✅ 106 tests passed (52 DB + 29 API + 25 component), up from 100. Duration: 1.7s.
+- 6 new DB tests: liquidity factor computation, expense averaging, recurring obligations sum, unpaid exclusion, runway formula, status classification
+
+### Build status
+✅ Passes — `npm run build` clean
+
+### Real data output
+- Aset Likuid: IDR 17,290,459
+- Total Aset: IDR 30,882,652
+- Pengeluaran/Bulan: IDR 16,087,366
+- Runway: 1.07 bulan (status: Hati-hati)
+- Cakupan Biaya Tetap: 1.99 bulan
