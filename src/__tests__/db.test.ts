@@ -712,3 +712,138 @@ describe('DB — Budget Pace', () => {
     expect(transportCat.pace_diff).toBeLessThanOrEqual(0); // under pace
   });
 });
+
+// ─── Runway Analysis (liquidity classification + monthly expense) ──────────
+
+describe('DB — Runway Analysis queries', () => {
+  let db: any, cleanup: () => void;
+
+  beforeEach(() => {
+    const t = createTestDb();
+    db = t.db;
+    cleanup = t.cleanup;
+
+    // Seed 3 periods for history
+    seedPeriod(db, 'May 2026');
+    seedPeriod(db, 'June 2026');
+    db.prepare("INSERT INTO periods (month, start_date, end_date) VALUES (?, ?, ?)")
+      .run('July 2026', '2026-06-21', '2026-07-20');
+    const periods = db.prepare('SELECT id, month FROM periods ORDER BY id').all();
+    const [p1, p2, p3] = periods;
+
+    // Networth breakdown — mixed liquidity
+    // p3 (July): CashCow Jenius 2M (100%), Reksa Dana 1M (90%), Saham 5M (50%), Saham Luar 1M (30%)
+    const insertBd = db.prepare('INSERT INTO networth_breakdown (period_id, investment, value) VALUES (?, ?, ?)');
+    insertBd.run(p3.id, 'CashCow Jenius', 2000000);
+    insertBd.run(p3.id, 'Reksa Dana', 1000000);
+    insertBd.run(p3.id, 'Saham', 5000000);
+    insertBd.run(p3.id, 'Saham Luar', 1000000);
+
+    db.prepare('INSERT INTO networth (period_id, date, total) VALUES (?, ?, ?)')
+      .run(p3.id, '2026-07-21', 9000000);
+
+    // Transactions for 3 months of spending
+    for (const p of [p1, p2, p3]) {
+      db.prepare(`INSERT INTO transactions (period_id, date, title, category, amount, type, payment_method, done)
+        VALUES (?, '2026-07-08', 'Expense', 'Food', 5000000, 'cash', 'Cash', 1)`).run(p.id);
+      db.prepare(`INSERT INTO transactions (period_id, date, title, category, amount, type, payment_method, done)
+        VALUES (?, '2026-07-09', 'CC', 'Shopping', 3000000, 'credit_expense', 'Credit', 1)`).run(p.id);
+      // Unpaid — should be excluded
+      db.prepare(`INSERT INTO transactions (period_id, date, title, category, amount, type, payment_method, done)
+        VALUES (?, '2026-07-10', 'Future', 'Food', 1000000, 'cash', 'Cash', 0)`).run(p.id);
+    }
+
+    // Recurring obligations
+    db.prepare(`INSERT INTO recurring_transactions (title, category, amount, type, payment_method, done, active)
+      VALUES ('Rent', 'Housing', 2000000, 'cash', 'Cash', 1, 1)`).run();
+    db.prepare(`INSERT INTO recurring_transactions (title, category, amount, type, payment_method, done, active)
+      VALUES ('Internet', 'Utilities', 500000, 'cash', 'Cash', 1, 1)`).run();
+  });
+
+  afterEach(() => cleanup());
+
+  it('computes liquid assets with per-investment liquidity factor', () => {
+    const latest = db.prepare('SELECT period_id FROM networth ORDER BY period_id DESC LIMIT 1').get();
+    const bd = db.prepare('SELECT investment, value FROM networth_breakdown WHERE period_id = ?').all(latest.period_id);
+
+    const liquidFactor = (name: string): number => {
+      const lower = name.toLowerCase();
+      if (lower.includes('cash') || lower.includes('jenius')) return 1.0;
+      if (lower.includes('reksa')) return 0.9;
+      if (lower.includes('luar')) return 0.3;
+      if (lower.includes('saham')) return 0.5;
+      return 0.7;
+    };
+
+    const liquid = bd.reduce((s: number, b: any) => s + b.value * liquidFactor(b.investment), 0);
+    // CashCow 2M * 1.0 + Reksa 1M * 0.9 + Saham 5M * 0.5 + Saham Luar 1M * 0.3
+    // = 2,000,000 + 900,000 + 2,500,000 + 300,000 = 5,700,000
+    expect(liquid).toBe(5700000);
+
+    const total = bd.reduce((s: number, b: any) => s + b.value, 0);
+    expect(total).toBe(9000000);
+  });
+
+  it('averages last 3 periods of done spending', () => {
+    const rows = db.prepare(`
+      SELECT t.period_id, SUM(t.amount) as total_expense
+      FROM transactions t
+      WHERE t.done = 1 AND t.type IN ('cash', 'credit_expense')
+      GROUP BY t.period_id
+      ORDER BY t.period_id DESC
+      LIMIT 3
+    `).all();
+
+    expect(rows.length).toBe(3);
+    // Each period: 5M cash + 3M credit_expense = 8M (unpaid 1M excluded)
+    for (const r of rows) {
+      expect(r.total_expense).toBe(8000000);
+    }
+    const avg = rows.reduce((s: number, r: any) => s + r.total_expense, 0) / rows.length;
+    expect(avg).toBe(8000000);
+  });
+
+  it('sums active recurring obligations for fixed cost coverage', () => {
+    const rows = db.prepare(`
+      SELECT amount FROM recurring_transactions
+      WHERE active = 1 AND type IN ('cash', 'credit_expense', 'credit_payment')
+    `).all();
+    const total = rows.reduce((s: number, r: any) => s + r.amount, 0);
+    // Rent 2M + Internet 500K = 2.5M
+    expect(total).toBe(2500000);
+  });
+
+  it('excludes unpaid (done=0) transactions from expense baseline', () => {
+    const paidOnly = db.prepare(`
+      SELECT SUM(amount) as total FROM transactions WHERE done = 1 AND type IN ('cash', 'credit_expense')
+    `).get();
+    const allTx = db.prepare(`
+      SELECT SUM(amount) as total FROM transactions WHERE type IN ('cash', 'credit_expense')
+    `).get();
+    // 3 periods * 8M paid vs 3 periods * 9M (includes unpaid)
+    expect(paidOnly.total).toBe(24000000);
+    expect(allTx.total).toBe(27000000);
+  });
+
+  it('runway = liquid assets / monthly expense', () => {
+    const liquid = 5700000;
+    const monthly = 8000000;
+    const runway = liquid / monthly;
+    expect(runway).toBeCloseTo(0.7125, 3);
+    // Less than 1 month → critical status
+    expect(runway < 1).toBe(true);
+  });
+
+  it('classifies runway status correctly', () => {
+    const status = (months: number) => {
+      if (months >= 6) return 'strong';
+      if (months >= 3) return 'healthy';
+      if (months >= 1) return 'caution';
+      return 'critical';
+    };
+    expect(status(0.5)).toBe('critical');
+    expect(status(2)).toBe('caution');
+    expect(status(4)).toBe('healthy');
+    expect(status(8)).toBe('strong');
+  });
+});

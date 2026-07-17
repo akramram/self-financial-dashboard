@@ -14,6 +14,7 @@ import MonthKickoffModal from './MonthKickoffModal';
 import DashboardSummaryCards from './DashboardSummaryCards';
 import SpendingPulse from './SpendingPulse';
 import SafeToSpend from './SafeToSpend';
+import RunwayAnalysis from './RunwayAnalysis';
 import AlertsPanel from './AlertsPanel';
 import CategoryBudgets from './CategoryBudgets';
 import { fetchRecurringTransactions } from '../lib/api';
@@ -362,6 +363,16 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
         onToggle={() => toggle('safe-to-spend')}
       >
       <SafeToSpend periodId={filterPeriodId ?? undefined} />
+      </CollapsibleSection>
+
+      {/* Emergency Fund Runway — financial resilience analysis */}
+      <CollapsibleSection
+        id="runway-analysis"
+        title="Emergency Fund Runway"
+        isCollapsed={isCollapsed('runway-analysis')}
+        onToggle={() => toggle('runway-analysis')}
+      >
+      <RunwayAnalysis periodId={filterPeriodId ?? undefined} compact />
       </CollapsibleSection>
 
       {/* Current Month Credit Expenses — compact info card */}

@@ -1,0 +1,38 @@
+---
+import Layout from '../layouts/Layout.astro';
+import RunwayAnalysis from '../components/RunwayAnalysis';
+---
+
+<Layout title="Runway Analysis - Financial Dashboard">
+  <div class="space-y-6">
+    <div>
+      <h1 class="text-2xl font-bold">Emergency Fund Runway</h1>
+      <p class="text-slate-500 dark:text-slate-400 text-sm">
+        Analisis ketahanan finansial: berapa lama Anda bisa bertahan tanpa pendapatan.
+      </p>
+    </div>
+
+    <RunwayAnalysis client:load />
+
+    <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-5 bg-white dark:bg-slate-800">
+      <h2 class="text-base font-semibold mb-3 text-slate-800 dark:text-slate-100">Cara Menghitung Runway</h2>
+      <div class="space-y-2 text-sm text-slate-600 dark:text-slate-300">
+        <p>
+          <strong class="text-slate-800 dark:text-slate-100">Runway</strong> = Aset Likuid ÷ Pengeluaran Bulanan Rata-rata
+        </p>
+        <p>
+          <strong class="text-slate-800 dark:text-slate-100">Aset Likuid</strong> dihitung dengan faktor likuiditas per instrumen:
+        </p>
+        <ul class="list-disc list-inside ml-2 space-y-1 text-xs">
+          <li>Cash / Jenius / Tabungan — <strong>100%</strong> likuid (instant)</li>
+          <li>Reksa Dana — <strong>90%</strong> likuid (1-3 hari)</li>
+          <li>Saham Lokal — <strong>50%</strong> likuid (butuh timing jual)</li>
+          <li>Saham Luar Negeri — <strong>30%</strong> likuid (friction mata uang & pajak)</li>
+        </ul>
+        <p class="pt-2">
+          <strong class="text-slate-800 dark:text-slate-100">Target ideal:</strong> minimal 3-6 bulan runway untuk keamanan finansial.
+        </p>
+      </div>
+    </div>
+  </div>
+</Layout>
