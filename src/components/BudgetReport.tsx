@@ -209,14 +209,24 @@ export default function BudgetReport({ summaries, categories }: Props) {
     </button>
   );
 
+  // Resolve a month display label (e.g. "June 2026") to its period_id via summaries.
+  // Avoids passing the removed `month` filter to fetchTransactions() — that field is
+  // not in its type signature and would be silently ignored at runtime, leaking
+  // transactions from other periods into the drill-down dialog.
+  const monthToPeriodId = (monthLabel: string): number | undefined => {
+    const match = summaries.find((s) => s.month === monthLabel);
+    return match?.period_id;
+  };
+
   const openCategoryDialog = async (catName: string) => {
     setSelectedCategory(catName);
     setDialogOpen(true);
     setDialogLoading(true);
     setCategoryTransactions([]);
     try {
+      const periodId = isAllTime ? undefined : monthToPeriodId(filterMonth);
       const rows = await fetchTransactions({
-        month: isAllTime ? undefined : filterMonth,
+        periodId,
         category: catName,
       });
       setCategoryTransactions(rows);
