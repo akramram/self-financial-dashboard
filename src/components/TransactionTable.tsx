@@ -141,11 +141,11 @@ export default function TransactionTable({ transactions, showMonth = true, perio
   }
   if (dateFrom) {
     const fromTime = new Date(dateFrom).getTime();
-    filtered = filtered.filter((t) => new Date(t.date).getTime() >= fromTime);
+    filtered = filtered.filter((t) => parseCreatedTime(t).getTime() >= fromTime);
   }
   if (dateTo) {
     const toTime = new Date(dateTo).getTime();
-    filtered = filtered.filter((t) => new Date(t.date).getTime() <= toTime);
+    filtered = filtered.filter((t) => parseCreatedTime(t).getTime() <= toTime);
   }
   if (amountMin) {
     const min = parseFloat(amountMin);

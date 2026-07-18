@@ -253,6 +253,7 @@ export const GET: APIRoute = async ({ url }) => {
     history,
     period_id: targetPeriodId ?? null,
     month: periodInfo?.month ?? null,
+    tips,
   };
 
   return new Response(JSON.stringify(response), {
