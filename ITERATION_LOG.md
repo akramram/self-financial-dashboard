@@ -766,3 +766,30 @@ Menambahkan widget Emergency Fund Runway — analisis ketahanan finansial yang m
 - Pengeluaran/Bulan: IDR 16,087,366
 - Runway: 1.07 bulan (status: Hati-hati)
 - Cakupan Biaya Tetap: 1.99 bulan
+
+---
+
+## Sesi Cron — 18 Juli 2026: Triple bug fix (issues #93, #94, #95)
+
+### Ringkasan
+Sesi ini merampungkan 3 bug yang ditemukan dari pemeriksaan `npx tsc --noEmit` dan review perubahan uncommitted. Semua fix berakar pada pola pitfall yang sudah terdokumentasi di skill development.
+
+### Issue yang diselesaikan
+
+| # | Judul | Akar masalah |
+|---|-------|--------------|
+| #93 | BudgetReport: dialog transaksi kategori mengabaikan filter period | Sisa migrasi `month` -> `period_id`. `fetchTransactions({ month })` diabaikan runtime karena type signature hanya terima `periodId`. Fix: resolve `filterMonth` ke `periodId` via lookup `summaries`. |
+| #94 | Runway API: field `tips` hilang dari response object | Pitfall "API Response Object Missing Computed Fields". `tips` di-deklarasi di interface dan dipakai `RunwayAnalysis.tsx` tapi lupa dimasukkan ke response object. |
+| #95 | TransactionTable: filter rentang tanggal menggunakan `date` (period marker) bukan `created_time` | `date` selalu tanggal 21 (period start), bukan timestamp transaksi aktual. Fix: pakai `parseCreatedTime(t)` untuk konsistensi dengan sorting dan heatmap. |
+
+### Verifikasi
+- `npx tsc --noEmit` -- 0 error untuk ketiga file yang di-fix
+- `npx vitest run` -- 106/106 tests passed
+- `npm run build` -- sukses (0 errors)
+- PM2 restart -- online, tanpa error di log
+- `curl /api/runway` -- field `tips` hadir sebagai array
+- CSS hash match (HTTP 200, bukan 404 stale)
+
+### Catatan
+- Perubahan UX yang belum ter-commit pada `DashboardSummaryCards.tsx` (grid 4 menjadi 2 kolom) ditinggalkan uncommitted karena memerlukan konteks/spesifikasi lebih lanjut.
+- Tidak ada perubahan skema DB atau API contract. Semua perubahan backward compatible.
