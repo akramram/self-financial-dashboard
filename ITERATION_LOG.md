@@ -793,3 +793,65 @@ Sesi ini merampungkan 3 bug yang ditemukan dari pemeriksaan `npx tsc --noEmit` d
 ### Catatan
 - Perubahan UX yang belum ter-commit pada `DashboardSummaryCards.tsx` (grid 4 menjadi 2 kolom) ditinggalkan uncommitted karena memerlukan konteks/spesifikasi lebih lanjut.
 - Tidak ada perubahan skema DB atau API contract. Semua perubahan backward compatible.
+
+---
+
+## Sesi Cron — 19 Juli 2026: FIN-#96 Goal Trajectory Projection (autonomous Wayfinder pipeline)
+
+### Ringkasan
+Backlog issue open habis. Pipeline Wayfinder mengidentifikasi gap inovasi: `GoalsTracker.tsx` hanya punya perhitungan status on-track **linear statis** (`progress >= timeProgress`) dan `monthlyRate = sisa/(daysTotal/30)` tanpa mempertimbangkan kapasitas tabungan historis. Dibuat issue #96 lalu dieksekusi end-to-end.
+
+### Issue
+[#96 — Goal Trajectory Projection — proyeksi pencapaian goal berbasis trend tabungan aktual](https://github.com/akramram/self-financial-dashboard/issues/96)
+
+### Branch
+`feature/issue-96-goal-trajectory` (merged to main, deleted)
+
+### Apa yang berubah
+Widget **Goal Trajectory** baru di halaman `/goals` yang memproyeksikan kapan setiap goal aktif akan tercapai berdasarkan kecepatan tabungan historis (net worth growth rate, default window 6 periode).
+
+**File baru:**
+- `src/lib/goalTrajectory.ts` — pure function `analyzeGoalTrajectory()` yang menghitung projected_date, status (`ahead`/`on_track`/`at_risk`/`behind`/`completed`), `projected_gap_idr` (kekurangan di tanggal target), `required_monthly` (tabungan per bulan untuk tepat waktu). Tidak ada akses DB — input murni dari parameter, deterministic dan unit-testable.
+- `src/pages/api/goal-trajectory.ts` — GET endpoint dengan optional `?window=N` override (1-24).
+- `src/components/GoalTrajectory.tsx` — widget React `client:only="react"` yang fetch via API (menghindari Astro devalue prop serialization bug). Menampilkan: summary badges, sparkline trend net worth, per-goal card dengan progress, projected vs target date, gap analysis, dan rekomendasi otomatis.
+
+**File yang dimodifikasi:**
+- `src/pages/goals.astro` — integrasi widget di atas `GoalsTracker`.
+- `src/__tests__/goalTrajectory.test.ts` — 20 unit test untuk pure function.
+- `src/__tests__/api.test.ts` — +5 API test untuk endpoint goal-trajectory.
+
+**Algoritma proyeksi:**
+- `average_monthly_savings = (networth_last - networth_first) / (days_between / 30)` dengan window default 6 periode terakhir.
+- `projected_months = remaining / avg_monthly_savings`
+- `projected_date = today + projected_months * 30 days`
+- Status berdasarkan `days_delta = projected_date - target_date`:
+  - `ahead`: ≤ -14 hari (≥ 2 minggu lebih cepat)
+  - `on_track`: ±14 hari
+  - `at_risk`: telat 14-60 hari
+  - `behind`: telat > 60 hari atau avg_savings ≤ 0
+
+**Edge cases ditangani:**
+- Networth < 2 entri → `has_sufficient_data: false`, setiap goal diberi status `behind` dengan `projected_date: null` dan pesan "data belum cukup".
+- Goal completed → skip dari output.
+- Tabungan negatif (networth menurun) → status `behind` dengan pesan sesuai.
+- Tidak ada goal aktif → empty state dengan CTA.
+
+**Hasil data nyata (live `/api/goal-trajectory`):**
+- Fast Charger: status `behind`, proyeksi 2027-07-07 (target 2026-07-10 sudah lewat), gap IDR 1.60M.
+- EV Battery: status `behind`, proyeksi 2030-12-05 (target 2029-01-03), gap IDR 3.18M.
+- Rata-rata tabungan 6 periode terakhir: IDR 135,927/bulan.
+
+### Test results
+✅ 131/131 tests passed (sebelumnya 106 + 25 baru: 20 unit + 5 API). Duration: 3.77s.
+
+### Build status
+✅ `npm run build` sukses, 0 errors.
+✅ PM2 restart online, HTTP 200 untuk `/`, `/goals`, `/api/goal-trajectory`.
+✅ CSS hash HTTP 200 (bukan 404 stale).
+✅ Chunk `GoalTrajectory.B6e4rnH-.js` ter-build dan ter-serve dengan benar.
+
+### Catatan
+- Komponen sengaja menggunakan `client:only="react"` (bukan `client:load`) untuk menghindari potential Astro devalue serialization issue dengan tipe data nested (GoalTrajectoryResult).
+- Tidak ada perubahan skema DB, tidak mengubah komponen GoalsTracker eksisting, tidak menambah tabel baru.
+- Backward compatible: semua API eksisting tidak tersentuh.
+- Memakai shadcn/ui (Card, Badge, Progress) — konsisten dengan standar proyek. Tidak ada LegionUI.
