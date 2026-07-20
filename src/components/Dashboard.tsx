@@ -328,6 +328,50 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
         </div>
       </div>
 
+      {/* Current Month Credit Expenses — compact info card */}
+      {latest && (
+        <CollapsibleSection
+          id="credit-expenses"
+          title="Credit Snapshot"
+          isCollapsed={isCollapsed('credit-expenses')}
+          onToggle={() => toggle('credit-expenses')}
+        >
+          <Card className="border-slate-200 dark:border-slate-700 shadow-none">
+            <CardContent className="p-5 space-y-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span className="text-slate-600 dark:text-slate-300">Credit Payment (Prior Month)</span>
+                    <span className="font-semibold text-amber-600 dark:text-amber-400">{formatIdr(latest.outcome.credit_payment ?? 0)}</span>
+                  </div>
+                  <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+                    <div
+                      className="bg-amber-500 h-2 rounded-full transition-all"
+                      style={{ width: `${latest.outcome.total > 0 ? Math.round((latest.outcome.credit_payment / latest.outcome.total) * 100) : 0}%` }}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span className="text-slate-600 dark:text-slate-300">Current Month Credit Expenses</span>
+                    <span className="font-semibold text-purple-600 dark:text-purple-400">{formatIdr(latest.outcome.credit_expenses ?? 0)}</span>
+                  </div>
+                  <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+                    <div
+                      className="bg-purple-500 h-2 rounded-full transition-all"
+                      style={{ width: `${latest.outcome.total > 0 ? Math.round((latest.outcome.credit_expenses / latest.outcome.total) * 100) : 0}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+              <p className="text-xs text-slate-400 dark:text-slate-500">
+                Credit expenses this month will be paid next month as credit payments.
+              </p>
+            </CardContent>
+          </Card>
+        </CollapsibleSection>
+      )}
+
       {/* Dashboard Summary Cards with Sparklines */}
       <CollapsibleSection
         id="summary-cards"
@@ -374,50 +418,6 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
       >
       <RunwayAnalysis periodId={filterPeriodId ?? undefined} compact />
       </CollapsibleSection>
-
-      {/* Current Month Credit Expenses — compact info card */}
-      {latest && (
-        <CollapsibleSection
-          id="credit-expenses"
-          title="Credit Snapshot"
-          isCollapsed={isCollapsed('credit-expenses')}
-          onToggle={() => toggle('credit-expenses')}
-        >
-          <Card className="border-slate-200 dark:border-slate-700 shadow-none">
-            <CardContent className="p-5 space-y-3">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="text-slate-600 dark:text-slate-300">Credit Payment (Prior Month)</span>
-                    <span className="font-semibold text-amber-600 dark:text-amber-400">{formatIdr(latest.outcome.credit_payment ?? 0)}</span>
-                  </div>
-                  <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-                    <div
-                      className="bg-amber-500 h-2 rounded-full transition-all"
-                      style={{ width: `${latest.outcome.total > 0 ? Math.round((latest.outcome.credit_payment / latest.outcome.total) * 100) : 0}%` }}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="text-slate-600 dark:text-slate-300">Current Month Credit Expenses</span>
-                    <span className="font-semibold text-purple-600 dark:text-purple-400">{formatIdr(latest.outcome.credit_expenses ?? 0)}</span>
-                  </div>
-                  <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-                    <div
-                      className="bg-purple-500 h-2 rounded-full transition-all"
-                      style={{ width: `${latest.outcome.total > 0 ? Math.round((latest.outcome.credit_expenses / latest.outcome.total) * 100) : 0}%` }}
-                    />
-                  </div>
-                </div>
-              </div>
-              <p className="text-xs text-slate-400 dark:text-slate-500">
-                Credit expenses this month will be paid next month as credit payments.
-              </p>
-            </CardContent>
-          </Card>
-        </CollapsibleSection>
-      )}
 
       {/* Alerts Panel + Category Budgets — side by side */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
