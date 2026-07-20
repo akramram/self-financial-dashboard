@@ -855,3 +855,61 @@ Widget **Goal Trajectory** baru di halaman `/goals` yang memproyeksikan kapan se
 - Tidak ada perubahan skema DB, tidak mengubah komponen GoalsTracker eksisting, tidak menambah tabel baru.
 - Backward compatible: semua API eksisting tidak tersentuh.
 - Memakai shadcn/ui (Card, Badge, Progress) — konsisten dengan standar proyek. Tidak ada LegionUI.
+
+## Sesi Cron — 20 Juli 2026: FIN-#97 Smart Category Suggestion (autonomous Wayfinder pipeline)
+
+### Ringkasan
+Backlog issue open habis. Pipeline Wayfinder mengidentifikasi gap inovasi: form input transaksi (QuickAddDialog & AddTransactionForm) memakai fallback kategori naif `title.split(' ')[0]` yang error-prone (mis. "Grab Bike" → "Grab", "Bebek Carok" → "Bebek"). Analisis data historis menunjukkan **188/192 title (98%) memiliki konsistensi kategori ≥90%** — sangat reliable untuk auto-suggest. Dibuat issue #97 lalu dieksekusi end-to-end.
+
+### Issue
+[#97 — Smart Category Suggestion — auto-suggest kategori dari title berbasis mapping historis](https://github.com/akramram/self-financial-dashboard/issues/97)
+
+### Branch
+`feature/issue-97-smart-category-suggestion` (merged to main, deleted)
+
+### Apa yang berubah
+Sistem **Smart Category Suggestion** yang otomatis mengisi kategori transaksi berdasarkan riwayat transaksi historis dengan title yang sama.
+
+**File baru:**
+- `src/hooks/useCategorySuggestion.ts` — custom hook React dengan debounce 250ms, AbortController untuk cancel in-flight request, graceful error handling. Returns `{ suggestedCategory, confidence, isLoading, isAutoFilled, clearAutoFill }`.
+- `src/pages/api/suggest-category.ts` — GET endpoint dengan query param `q`. Response: `{ category, confidence, match_type, sample_count }`.
+
+**File yang dimodifikasi:**
+- `src/lib/db.ts` — tambah fungsi `suggestCategory(title: string): CategorySuggestion` dengan algoritma 2-tier:
+  1. **Exact match** (case-insensitive, trimmed): plurality vote dengan confidence >0.5, minimum 2 samples.
+  2. **Prefix match fallback**: berbasis first-word (mis. "Kopi Pagi" match "Kopi Senja"), minimum 3 samples.
+  - Hanya mempertimbangkan transaksi `done=1`.
+- `src/components/QuickAddDialog.tsx` — integrasi hook dengan UI badge "✨ Auto: {cat} ({confidence}%)" yang klikable untuk clear. Field kategori di-highlight violet ketika auto-filled.
+- `src/components/AddTransactionForm.tsx` — integrasi yang sama.
+- `src/__tests__/db.test.ts` — +11 unit test untuk algoritma suggestCategory.
+- `src/__tests__/api.test.ts` — +5 API test untuk endpoint.
+
+**UX design:**
+- Auto-fill terjadi hanya ketika user belum mengetik manual (`categoryUserTouched` state).
+- Badge indikator "✨ Auto: {cat} ({confidence}%)" muncul di kanan label Category — user bisa klik X untuk clear.
+- Loading spinner "Matching…" tampil saat debounced request in-flight.
+- Field kategori di-highlight border violet + bg violet-50/40 saat auto-filled.
+- User bisa override kapan saja — sistem stop auto-filling setelah user mulai mengetik manual.
+
+**Hasil data nyata (live `/api/suggest-category`):**
+- `Netflix` → Tagihan (100% confidence, 25 samples)
+- `Listrik` → Tagihan (97.4% confidence, 38 samples) — meskipun ada beberapa transaksi dengan kategori "Family", plurality vote tetap mengembalikan Tagihan dengan benar
+- `Spotify` → Tagihan (100% confidence, 24 samples)
+- `Unknown Merchant` → null (no false suggestion)
+
+### Test results
+✅ 146/147 tests passed (1 pre-existing failure di Budget Pace yang sudah gagal di `main` sebelum branch ini dibuat — tidak terkait dengan perubahan ini). Duration: ~1.4s.
+- 11 test baru untuk DB function (exact match, plurality vote, prefix fallback, case-insensitive, min samples, edge cases).
+- 5 test baru untuk API endpoint.
+
+### Build status
+✅ `npm run build` sukses, 0 errors.
+✅ PM2 restart online (clean delete + start via `ecosystem.config.cjs`), HTTP 200 untuk `/`, `/api/suggest-category`.
+✅ CSS hash HTTP 200 (bukan 404 stale).
+✅ Tidak ada runtime errors di PM2 logs.
+
+### Catatan
+- Solusi ini backward compatible: tidak ada perubahan skema DB (read-only queries), transaksi eksisting tidak berubah, dan jika API gagal form tetap bekerja seperti sebelumnya (fallback `title.split(' ')[0]`).
+- Integrasi hanya di 2 form: QuickAddDialog & AddTransactionForm (jarang dipakai untuk title baru di EditTransactionDialog).
+- Algoritma sengaja sederhana (exact + prefix match) — tidak butuh ML/fuzzy matching karena 98% data historis sudah konsisten.
+- Memakai shadcn/ui + lucide-react (Sparkles, X, Loader2) — konsisten dengan standar proyek. Tidak ada LegionUI.
