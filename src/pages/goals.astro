@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import GoalsTracker from '../components/GoalsTracker';
+import GoalTrajectory from '../components/GoalTrajectory';
 import { getNetworth } from '../lib/db';
 
 const networth = getNetworth();
@@ -12,6 +13,11 @@ const networth = getNetworth();
       <span>🎯</span> Financial Goals
     </h1>
     <p class="text-slate-500 dark:text-slate-400 text-sm">Set targets, track progress, and achieve your financial dreams</p>
+  </div>
+
+  <!-- Goal trajectory projection (client-only: fetches /api/goal-trajectory) -->
+  <div class="mb-6">
+    <GoalTrajectory client:only="react" />
   </div>
 
   <GoalsTracker

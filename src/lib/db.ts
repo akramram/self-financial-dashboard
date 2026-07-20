@@ -1195,6 +1195,100 @@ export function getTitleSpending(periodId: number) {
   `).all(periodId) as any[];
 }
 
+// ─── Smart Category Suggestion ─────────────────────────────────────────────
+
+export interface CategorySuggestion {
+  category: string | null;
+  confidence: number;
+  match_type: 'exact' | 'prefix' | null;
+  sample_count: number;
+}
+
+/**
+ * Suggest a category for a transaction title based on historical data.
+ *
+ * Algorithm:
+ * 1. Exact match (case-insensitive, trimmed): plurality vote across done=1
+ *    transactions with the same title. Requires >=2 samples and >0.5 confidence.
+ * 2. Prefix match fallback: uses the first word of the query to match variants
+ *    (e.g. "Kopi Pagi" matches "Kopi Senja", "Kopi Kenangan"). Requires >=3
+ *    samples and >0.5 confidence.
+ * 3. Returns { category: null } if no reliable suggestion can be made.
+ *
+ * Only considers done=1 transactions (paid) — pending items may be miscategorized.
+ */
+export function suggestCategory(title: string): CategorySuggestion {
+  const normalized = (title || '').trim().toLowerCase();
+  if (!normalized) {
+    return { category: null, confidence: 0, match_type: null, sample_count: 0 };
+  }
+
+  // Exact match: plurality vote across done=1 transactions
+  const exactRows = db.prepare(`
+    SELECT category, COUNT(*) as cnt
+    FROM transactions
+    WHERE done = 1 AND LOWER(TRIM(title)) = ?
+    GROUP BY category
+    ORDER BY cnt DESC
+  `).all(normalized) as Array<{ category: string; cnt: number }>;
+
+  const exactTotal = exactRows.reduce((s, r) => s + r.cnt, 0);
+  if (exactTotal > 0) {
+    const top = exactRows[0];
+    const confidence = exactTotal > 0 ? top.cnt / exactTotal : 0;
+    if (exactTotal >= 2 && confidence > 0.5) {
+      return {
+        category: top.category,
+        confidence,
+        match_type: 'exact',
+        sample_count: exactTotal,
+      };
+    }
+    // Match found but below threshold — report match_type but null category
+    return {
+      category: null,
+      confidence,
+      match_type: 'exact',
+      sample_count: exactTotal,
+    };
+  }
+
+  // Prefix match fallback — match on first word to capture variants
+  // e.g. query "Kopi Pagi" matches titles "Kopi Senja", "Kopi Kenangan"
+  const firstWord = normalized.split(/\s+/)[0];
+  if (firstWord.length >= 3) {
+    const prefixRows = db.prepare(`
+      SELECT category, COUNT(*) as cnt
+      FROM transactions
+      WHERE done = 1 AND LOWER(TRIM(title)) LIKE ?
+      GROUP BY category
+      ORDER BY cnt DESC
+    `).all(`${firstWord}%`) as Array<{ category: string; cnt: number }>;
+
+    const prefixTotal = prefixRows.reduce((s, r) => s + r.cnt, 0);
+    if (prefixTotal > 0) {
+      const top = prefixRows[0];
+      const confidence = prefixTotal > 0 ? top.cnt / prefixTotal : 0;
+      if (prefixTotal >= 3 && confidence > 0.5) {
+        return {
+          category: top.category,
+          confidence,
+          match_type: 'prefix',
+          sample_count: prefixTotal,
+        };
+      }
+      return {
+        category: null,
+        confidence,
+        match_type: 'prefix',
+        sample_count: prefixTotal,
+      };
+    }
+  }
+
+  return { category: null, confidence: 0, match_type: null, sample_count: 0 };
+}
+
 // ─── Investments CRUD ──────────────────────────────────────────────────────
 
 export function getInvestments() {

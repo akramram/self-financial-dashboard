@@ -712,3 +712,204 @@ Users can now drill down to transactions within a specific date window or amount
 
 ### Build status
 ✅ Passes — `npm run build` clean
+
+## Iteration 31 — FIN-092: Emergency Fund Runway Analysis
+
+**Date:** 2026-07-17
+**Type:** Feature (autonomous cron — Wayfinder innovation pipeline)
+**Issue:** [#92](https://github.com/akramram/self-financial-dashboard/issues/92)
+**Branch:** `feature/issue-92-runway` (merged to main, deleted)
+
+### What changed
+Menambahkan widget Emergency Fund Runway — analisis ketahanan finansial yang menghitung berapa lama pengguna bisa bertahan tanpa pendapatan.
+
+**Komponen & file baru:**
+- `src/pages/api/runway.ts` — API endpoint `GET /api/runway` yang menghitung:
+  - Aset likuid (dengan faktor likuiditas per instrumen)
+  - Pengeluaran bulanan rata-rata (3 periode terakhir, done=1, type cash/credit_expense)
+  - Runway dalam bulan = aset likuid / pengeluaran
+  - Cakupan biaya tetap = aset likuid / recurring obligations aktif
+  - History 6 bulan terakhir untuk sparkline
+  - Rekomendasi otomatis berdasarkan status
+- `src/components/RunwayAnalysis.tsx` — widget dengan:
+  - SVG gauge melingkar (skala 0-12 bulan)
+  - Liquidity bar (visual proporsi aset berdasarkan tingkat likuiditas)
+  - Key metrics (liquid assets, total assets, monthly expense, fixed coverage)
+  - Trend sparkline (6 bulan)
+  - Rekomendasi kontekstual
+  - Status: critical (<1 bln), caution (1-3 bln), healthy (3-6 bln), strong (6+ bln)
+- `src/pages/runway.astro` — halaman detail dengan metodologi perhitungan
+
+**Integrasi:**
+- `src/components/Dashboard.tsx` — widget compact (collapsible) setelah SafeToSpend
+- `src/layouts/Layout.astro` — link navigasi di dropdown Planning (desktop + mobile)
+
+**Likuiditas klasifikasi:**
+| Instrumen | Faktor Likuiditas | Alasan |
+|-----------|-------------------|--------|
+| Cash / Jenius / Tabungan | 100% | Instant access |
+| Reksa Dana / Mutual Fund | 90% | 1-3 hari settlement |
+| Saham Lokal | 50% | Volatile, butuh timing jual |
+| Saham Luar Negeri | 30% | Friction mata uang & pajak |
+| Crypto | 80% | Likuid tapi volatile |
+
+### Test results
+✅ 106 tests passed (52 DB + 29 API + 25 component), up from 100. Duration: 1.7s.
+- 6 new DB tests: liquidity factor computation, expense averaging, recurring obligations sum, unpaid exclusion, runway formula, status classification
+
+### Build status
+✅ Passes — `npm run build` clean
+
+### Real data output
+- Aset Likuid: IDR 17,290,459
+- Total Aset: IDR 30,882,652
+- Pengeluaran/Bulan: IDR 16,087,366
+- Runway: 1.07 bulan (status: Hati-hati)
+- Cakupan Biaya Tetap: 1.99 bulan
+
+---
+
+## Sesi Cron — 18 Juli 2026: Triple bug fix (issues #93, #94, #95)
+
+### Ringkasan
+Sesi ini merampungkan 3 bug yang ditemukan dari pemeriksaan `npx tsc --noEmit` dan review perubahan uncommitted. Semua fix berakar pada pola pitfall yang sudah terdokumentasi di skill development.
+
+### Issue yang diselesaikan
+
+| # | Judul | Akar masalah |
+|---|-------|--------------|
+| #93 | BudgetReport: dialog transaksi kategori mengabaikan filter period | Sisa migrasi `month` -> `period_id`. `fetchTransactions({ month })` diabaikan runtime karena type signature hanya terima `periodId`. Fix: resolve `filterMonth` ke `periodId` via lookup `summaries`. |
+| #94 | Runway API: field `tips` hilang dari response object | Pitfall "API Response Object Missing Computed Fields". `tips` di-deklarasi di interface dan dipakai `RunwayAnalysis.tsx` tapi lupa dimasukkan ke response object. |
+| #95 | TransactionTable: filter rentang tanggal menggunakan `date` (period marker) bukan `created_time` | `date` selalu tanggal 21 (period start), bukan timestamp transaksi aktual. Fix: pakai `parseCreatedTime(t)` untuk konsistensi dengan sorting dan heatmap. |
+
+### Verifikasi
+- `npx tsc --noEmit` -- 0 error untuk ketiga file yang di-fix
+- `npx vitest run` -- 106/106 tests passed
+- `npm run build` -- sukses (0 errors)
+- PM2 restart -- online, tanpa error di log
+- `curl /api/runway` -- field `tips` hadir sebagai array
+- CSS hash match (HTTP 200, bukan 404 stale)
+
+### Catatan
+- Perubahan UX yang belum ter-commit pada `DashboardSummaryCards.tsx` (grid 4 menjadi 2 kolom) ditinggalkan uncommitted karena memerlukan konteks/spesifikasi lebih lanjut.
+- Tidak ada perubahan skema DB atau API contract. Semua perubahan backward compatible.
+
+---
+
+## Sesi Cron — 19 Juli 2026: FIN-#96 Goal Trajectory Projection (autonomous Wayfinder pipeline)
+
+### Ringkasan
+Backlog issue open habis. Pipeline Wayfinder mengidentifikasi gap inovasi: `GoalsTracker.tsx` hanya punya perhitungan status on-track **linear statis** (`progress >= timeProgress`) dan `monthlyRate = sisa/(daysTotal/30)` tanpa mempertimbangkan kapasitas tabungan historis. Dibuat issue #96 lalu dieksekusi end-to-end.
+
+### Issue
+[#96 — Goal Trajectory Projection — proyeksi pencapaian goal berbasis trend tabungan aktual](https://github.com/akramram/self-financial-dashboard/issues/96)
+
+### Branch
+`feature/issue-96-goal-trajectory` (merged to main, deleted)
+
+### Apa yang berubah
+Widget **Goal Trajectory** baru di halaman `/goals` yang memproyeksikan kapan setiap goal aktif akan tercapai berdasarkan kecepatan tabungan historis (net worth growth rate, default window 6 periode).
+
+**File baru:**
+- `src/lib/goalTrajectory.ts` — pure function `analyzeGoalTrajectory()` yang menghitung projected_date, status (`ahead`/`on_track`/`at_risk`/`behind`/`completed`), `projected_gap_idr` (kekurangan di tanggal target), `required_monthly` (tabungan per bulan untuk tepat waktu). Tidak ada akses DB — input murni dari parameter, deterministic dan unit-testable.
+- `src/pages/api/goal-trajectory.ts` — GET endpoint dengan optional `?window=N` override (1-24).
+- `src/components/GoalTrajectory.tsx` — widget React `client:only="react"` yang fetch via API (menghindari Astro devalue prop serialization bug). Menampilkan: summary badges, sparkline trend net worth, per-goal card dengan progress, projected vs target date, gap analysis, dan rekomendasi otomatis.
+
+**File yang dimodifikasi:**
+- `src/pages/goals.astro` — integrasi widget di atas `GoalsTracker`.
+- `src/__tests__/goalTrajectory.test.ts` — 20 unit test untuk pure function.
+- `src/__tests__/api.test.ts` — +5 API test untuk endpoint goal-trajectory.
+
+**Algoritma proyeksi:**
+- `average_monthly_savings = (networth_last - networth_first) / (days_between / 30)` dengan window default 6 periode terakhir.
+- `projected_months = remaining / avg_monthly_savings`
+- `projected_date = today + projected_months * 30 days`
+- Status berdasarkan `days_delta = projected_date - target_date`:
+  - `ahead`: ≤ -14 hari (≥ 2 minggu lebih cepat)
+  - `on_track`: ±14 hari
+  - `at_risk`: telat 14-60 hari
+  - `behind`: telat > 60 hari atau avg_savings ≤ 0
+
+**Edge cases ditangani:**
+- Networth < 2 entri → `has_sufficient_data: false`, setiap goal diberi status `behind` dengan `projected_date: null` dan pesan "data belum cukup".
+- Goal completed → skip dari output.
+- Tabungan negatif (networth menurun) → status `behind` dengan pesan sesuai.
+- Tidak ada goal aktif → empty state dengan CTA.
+
+**Hasil data nyata (live `/api/goal-trajectory`):**
+- Fast Charger: status `behind`, proyeksi 2027-07-07 (target 2026-07-10 sudah lewat), gap IDR 1.60M.
+- EV Battery: status `behind`, proyeksi 2030-12-05 (target 2029-01-03), gap IDR 3.18M.
+- Rata-rata tabungan 6 periode terakhir: IDR 135,927/bulan.
+
+### Test results
+✅ 131/131 tests passed (sebelumnya 106 + 25 baru: 20 unit + 5 API). Duration: 3.77s.
+
+### Build status
+✅ `npm run build` sukses, 0 errors.
+✅ PM2 restart online, HTTP 200 untuk `/`, `/goals`, `/api/goal-trajectory`.
+✅ CSS hash HTTP 200 (bukan 404 stale).
+✅ Chunk `GoalTrajectory.B6e4rnH-.js` ter-build dan ter-serve dengan benar.
+
+### Catatan
+- Komponen sengaja menggunakan `client:only="react"` (bukan `client:load`) untuk menghindari potential Astro devalue serialization issue dengan tipe data nested (GoalTrajectoryResult).
+- Tidak ada perubahan skema DB, tidak mengubah komponen GoalsTracker eksisting, tidak menambah tabel baru.
+- Backward compatible: semua API eksisting tidak tersentuh.
+- Memakai shadcn/ui (Card, Badge, Progress) — konsisten dengan standar proyek. Tidak ada LegionUI.
+
+## Sesi Cron — 20 Juli 2026: FIN-#97 Smart Category Suggestion (autonomous Wayfinder pipeline)
+
+### Ringkasan
+Backlog issue open habis. Pipeline Wayfinder mengidentifikasi gap inovasi: form input transaksi (QuickAddDialog & AddTransactionForm) memakai fallback kategori naif `title.split(' ')[0]` yang error-prone (mis. "Grab Bike" → "Grab", "Bebek Carok" → "Bebek"). Analisis data historis menunjukkan **188/192 title (98%) memiliki konsistensi kategori ≥90%** — sangat reliable untuk auto-suggest. Dibuat issue #97 lalu dieksekusi end-to-end.
+
+### Issue
+[#97 — Smart Category Suggestion — auto-suggest kategori dari title berbasis mapping historis](https://github.com/akramram/self-financial-dashboard/issues/97)
+
+### Branch
+`feature/issue-97-smart-category-suggestion` (merged to main, deleted)
+
+### Apa yang berubah
+Sistem **Smart Category Suggestion** yang otomatis mengisi kategori transaksi berdasarkan riwayat transaksi historis dengan title yang sama.
+
+**File baru:**
+- `src/hooks/useCategorySuggestion.ts` — custom hook React dengan debounce 250ms, AbortController untuk cancel in-flight request, graceful error handling. Returns `{ suggestedCategory, confidence, isLoading, isAutoFilled, clearAutoFill }`.
+- `src/pages/api/suggest-category.ts` — GET endpoint dengan query param `q`. Response: `{ category, confidence, match_type, sample_count }`.
+
+**File yang dimodifikasi:**
+- `src/lib/db.ts` — tambah fungsi `suggestCategory(title: string): CategorySuggestion` dengan algoritma 2-tier:
+  1. **Exact match** (case-insensitive, trimmed): plurality vote dengan confidence >0.5, minimum 2 samples.
+  2. **Prefix match fallback**: berbasis first-word (mis. "Kopi Pagi" match "Kopi Senja"), minimum 3 samples.
+  - Hanya mempertimbangkan transaksi `done=1`.
+- `src/components/QuickAddDialog.tsx` — integrasi hook dengan UI badge "✨ Auto: {cat} ({confidence}%)" yang klikable untuk clear. Field kategori di-highlight violet ketika auto-filled.
+- `src/components/AddTransactionForm.tsx` — integrasi yang sama.
+- `src/__tests__/db.test.ts` — +11 unit test untuk algoritma suggestCategory.
+- `src/__tests__/api.test.ts` — +5 API test untuk endpoint.
+
+**UX design:**
+- Auto-fill terjadi hanya ketika user belum mengetik manual (`categoryUserTouched` state).
+- Badge indikator "✨ Auto: {cat} ({confidence}%)" muncul di kanan label Category — user bisa klik X untuk clear.
+- Loading spinner "Matching…" tampil saat debounced request in-flight.
+- Field kategori di-highlight border violet + bg violet-50/40 saat auto-filled.
+- User bisa override kapan saja — sistem stop auto-filling setelah user mulai mengetik manual.
+
+**Hasil data nyata (live `/api/suggest-category`):**
+- `Netflix` → Tagihan (100% confidence, 25 samples)
+- `Listrik` → Tagihan (97.4% confidence, 38 samples) — meskipun ada beberapa transaksi dengan kategori "Family", plurality vote tetap mengembalikan Tagihan dengan benar
+- `Spotify` → Tagihan (100% confidence, 24 samples)
+- `Unknown Merchant` → null (no false suggestion)
+
+### Test results
+✅ 146/147 tests passed (1 pre-existing failure di Budget Pace yang sudah gagal di `main` sebelum branch ini dibuat — tidak terkait dengan perubahan ini). Duration: ~1.4s.
+- 11 test baru untuk DB function (exact match, plurality vote, prefix fallback, case-insensitive, min samples, edge cases).
+- 5 test baru untuk API endpoint.
+
+### Build status
+✅ `npm run build` sukses, 0 errors.
+✅ PM2 restart online (clean delete + start via `ecosystem.config.cjs`), HTTP 200 untuk `/`, `/api/suggest-category`.
+✅ CSS hash HTTP 200 (bukan 404 stale).
+✅ Tidak ada runtime errors di PM2 logs.
+
+### Catatan
+- Solusi ini backward compatible: tidak ada perubahan skema DB (read-only queries), transaksi eksisting tidak berubah, dan jika API gagal form tetap bekerja seperti sebelumnya (fallback `title.split(' ')[0]`).
+- Integrasi hanya di 2 form: QuickAddDialog & AddTransactionForm (jarang dipakai untuk title baru di EditTransactionDialog).
+- Algoritma sengaja sederhana (exact + prefix match) — tidak butuh ML/fuzzy matching karena 98% data historis sudah konsisten.
+- Memakai shadcn/ui + lucide-react (Sparkles, X, Loader2) — konsisten dengan standar proyek. Tidak ada LegionUI.

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { fetchCategories } from '../lib/api';
 import type { Category } from '../lib/data';
 import { getActivePeriod, formatIdr } from '../lib/utils';
+import { useCategorySuggestion } from '../hooks/useCategorySuggestion';
 import {
   Dialog,
   DialogContent,
@@ -22,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Plus, Loader2 } from 'lucide-react';
+import { Plus, Loader2, Sparkles, X } from 'lucide-react';
 
 const TYPE_OPTIONS = [
   { value: 'cash', label: 'Cash' },
@@ -49,8 +50,27 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded }: QuickAdd
   const [errorMsg, setErrorMsg] = useState('');
   const [showForceBtn, setShowForceBtn] = useState(false);
 
+  // Track whether the user has manually edited the category field.
+  // While true, auto-suggest will NOT override the user's input.
+  const [categoryUserTouched, setCategoryUserTouched] = useState(false);
+
   const titleRef = useRef<HTMLInputElement>(null);
   const amountRef = useRef<HTMLInputElement>(null);
+
+  // Smart category suggestion — debounced fetch based on title
+  const { suggestedCategory, confidence, isLoading: suggestionLoading, isAutoFilled } =
+    useCategorySuggestion(title);
+
+  // Auto-fill category when suggestion arrives and user hasn't manually typed one
+  useEffect(() => {
+    if (!categoryUserTouched && suggestedCategory && suggestedCategory !== category) {
+      setCategory(suggestedCategory);
+    }
+    // If suggestion becomes null (e.g. user cleared title) and user hasn't touched, clear category too
+    if (!categoryUserTouched && !suggestedCategory && category && !title.trim()) {
+      setCategory('');
+    }
+  }, [suggestedCategory, categoryUserTouched, category, title]);
 
   useEffect(() => {
     if (open) {
@@ -71,6 +91,7 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded }: QuickAdd
     setStatus('idle');
     setErrorMsg('');
     setShowForceBtn(false);
+    setCategoryUserTouched(false);
   };
 
   const buildPayload = (force = false) => {
@@ -213,15 +234,43 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded }: QuickAdd
 
           {/* Category autocomplete */}
           <div className="space-y-1.5">
-            <Label htmlFor="qa-category">Category</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="qa-category">Category</Label>
+              {isAutoFilled && !categoryUserTouched && suggestedCategory && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCategory('');
+                    setCategoryUserTouched(true);
+                  }}
+                  className="inline-flex items-center gap-1 text-[11px] font-medium text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 transition"
+                  title="Suggested based on your history — click to clear"
+                >
+                  <Sparkles className="w-3 h-3" />
+                  Auto: {suggestedCategory}
+                  <span className="opacity-60">({Math.round(confidence * 100)}%)</span>
+                  <X className="w-3 h-3 ml-0.5" />
+                </button>
+              )}
+              {suggestionLoading && (
+                <span className="inline-flex items-center gap-1 text-[11px] text-slate-400">
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                  Matching…
+                </span>
+              )}
+            </div>
             <Input
               id="qa-category"
               type="text"
               value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              placeholder="Auto from title or pick existing"
+              onChange={(e) => {
+                setCategory(e.target.value);
+                setCategoryUserTouched(true);
+              }}
+              placeholder={isAutoFilled && !categoryUserTouched ? 'Auto-suggested' : 'Auto from title or pick existing'}
               list="qa-category-list"
               autoComplete="off"
+              className={isAutoFilled && !categoryUserTouched ? 'border-violet-300 dark:border-violet-700 bg-violet-50/40 dark:bg-violet-950/20' : ''}
             />
             <datalist id="qa-category-list">
               {categories.map((c) => (

@@ -26,6 +26,7 @@ const mockRecalcNetworthMoM = vi.fn();
 const mockGetGoals = vi.fn();
 const mockInsertGoal = vi.fn();
 const mockGetRecurringCostAnalysis = vi.fn();
+const mockSuggestCategory = vi.fn();
 
 vi.mock('../lib/db', () => ({
   db: {},
@@ -48,6 +49,7 @@ vi.mock('../lib/db', () => ({
   getGoals: mockGetGoals,
   insertGoal: mockInsertGoal,
   getRecurringCostAnalysis: mockGetRecurringCostAnalysis,
+  suggestCategory: mockSuggestCategory,
 }));
 
 async function parseJson(res: Response) {
@@ -578,5 +580,208 @@ describe('API — GET /api/recurring-cost', () => {
 
     const res = await GET({ request: makeRequest('/api/recurring-cost') });
     expect(res.headers.get('Content-Type')).toBe('application/json');
+  });
+});
+
+// ─── Goal Trajectory API ───────────────────────────────────────────────────
+
+describe('API — GET /api/goal-trajectory', () => {
+  let GET: any;
+
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    const mod = await import('../pages/api/goal-trajectory');
+    GET = mod.GET;
+  });
+
+  it('returns projection for active goals based on networth trend', async () => {
+    mockGetGoals.mockReturnValue([
+      {
+        id: 1, name: 'Fast Charger', target_amount: 2_500_000, current_amount: 900_000,
+        start_date: '2026-06-03', target_date: '2027-06-01',
+        color: '#22c55e', icon: 'car', completed: 0,
+      },
+    ]);
+    // +1M / month over 6 samples.
+    const series = [];
+    const baseMs = new Date('2026-01-21').getTime();
+    for (let i = 0; i < 6; i++) {
+      const date = new Date(baseMs + i * 30 * 86400 * 1000).toISOString().slice(0, 10);
+      series.push({
+        period_id: 100 + i, month: `Month ${i}`, date, total: 20_000_000 + i * 1_000_000,
+        currency: 'IDR', month_over_month_change: null, month_over_month_pct: null, breakdown: {},
+      });
+    }
+    mockGetNetworth.mockReturnValue(series);
+
+    const res = await GET({ url: new URL('http://localhost:4321/api/goal-trajectory') });
+    expect(res.status).toBe(200);
+    const body = await parseJson(res);
+    expect(body.has_sufficient_data).toBe(true);
+    expect(body.goals).toHaveLength(1);
+    expect(body.goals[0].name).toBe('Fast Charger');
+    expect(body.goals[0].monthly_savings).toBeGreaterThan(0);
+    expect(body.goals[0].projected_date).toBeTruthy();
+    // 1.6M remaining at 1M/mo → ~1.6 months. Plenty ahead of 1-year target.
+    expect(body.goals[0].status).toBe('ahead');
+    expect(body.trend).toHaveLength(6);
+    expect(mockGetGoals).toHaveBeenCalledTimes(1);
+    expect(mockGetNetworth).toHaveBeenCalledTimes(1);
+  });
+
+  it('flags insufficient data when networth has fewer than 2 samples', async () => {
+    mockGetGoals.mockReturnValue([
+      {
+        id: 1, name: 'Test', target_amount: 1_000_000, current_amount: 0,
+        start_date: '2026-01-01', target_date: '2027-01-01',
+        color: '#3b82f6', icon: 'savings', completed: 0,
+      },
+    ]);
+    mockGetNetworth.mockReturnValue([
+      { period_id: 1, month: 'July 2026', date: '2026-07-21', total: 30_000_000, currency: 'IDR',
+        month_over_month_change: null, month_over_month_pct: null, breakdown: {} },
+    ]);
+
+    const res = await GET({ url: new URL('http://localhost:4321/api/goal-trajectory') });
+    expect(res.status).toBe(200);
+    const body = await parseJson(res);
+    expect(body.has_sufficient_data).toBe(false);
+    expect(body.goals[0].status).toBe('behind');
+    expect(body.goals[0].projected_date).toBeNull();
+  });
+
+  it('drops completed goals from the projection output', async () => {
+    mockGetGoals.mockReturnValue([
+      {
+        id: 1, name: 'Done Goal', target_amount: 1_000_000, current_amount: 1_000_000,
+        start_date: '2025-01-01', target_date: '2026-01-01',
+        color: '#22c55e', icon: 'savings', completed: 1,
+      },
+      {
+        id: 2, name: 'Active Goal', target_amount: 2_000_000, current_amount: 500_000,
+        start_date: '2026-01-01', target_date: '2027-01-01',
+        color: '#3b82f6', icon: 'savings', completed: 0,
+      },
+    ]);
+    const series = [];
+    const baseMs = new Date('2026-01-21').getTime();
+    for (let i = 0; i < 4; i++) {
+      const date = new Date(baseMs + i * 30 * 86400 * 1000).toISOString().slice(0, 10);
+      series.push({
+        period_id: 100 + i, month: `Month ${i}`, date, total: 20_000_000 + i * 500_000,
+        currency: 'IDR', month_over_month_change: null, month_over_month_pct: null, breakdown: {},
+      });
+    }
+    mockGetNetworth.mockReturnValue(series);
+
+    const res = await GET({ url: new URL('http://localhost:4321/api/goal-trajectory') });
+    const body = await parseJson(res);
+    expect(body.goals).toHaveLength(1);
+    expect(body.goals[0].name).toBe('Active Goal');
+  });
+
+  it('returns application/json Content-Type', async () => {
+    mockGetGoals.mockReturnValue([]);
+    mockGetNetworth.mockReturnValue([]);
+    const res = await GET({ url: new URL('http://localhost:4321/api/goal-trajectory') });
+    expect(res.headers.get('Content-Type')).toBe('application/json');
+  });
+
+  it('honors ?window= query param within 1..24', async () => {
+    mockGetGoals.mockReturnValue([]);
+    const series = [];
+    const baseMs = new Date('2026-01-21').getTime();
+    for (let i = 0; i < 12; i++) {
+      const date = new Date(baseMs + i * 30 * 86400 * 1000).toISOString().slice(0, 10);
+      series.push({
+        period_id: 100 + i, month: `Month ${i}`, date, total: 10_000_000 + i * 1_000_000,
+        currency: 'IDR', month_over_month_change: null, month_over_month_pct: null, breakdown: {},
+      });
+    }
+    mockGetNetworth.mockReturnValue(series);
+    const res = await GET({ url: new URL('http://localhost:4321/api/goal-trajectory?window=4') });
+    expect(res.status).toBe(200);
+    const body = await parseJson(res);
+    expect(body.trend).toHaveLength(4);
+  });
+});
+
+// ─── GET /api/suggest-category ──────────────────────────────────────────────
+
+describe('API — GET /api/suggest-category', () => {
+  let GET: any;
+
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    const mod = await import('../pages/api/suggest-category');
+    GET = mod.GET;
+  });
+
+  it('returns 400 when q param is missing', async () => {
+    const res = await GET({ request: makeRequest('/api/suggest-category') });
+    expect(res.status).toBe(400);
+    const body = await parseJson(res);
+    expect(body.error).toMatch(/q/i);
+  });
+
+  it('returns category suggestion for a known title', async () => {
+    mockSuggestCategory.mockReturnValue({
+      category: 'Makanan',
+      confidence: 0.9,
+      match_type: 'exact',
+      sample_count: 10,
+    });
+    const res = await GET({
+      request: makeRequest('/api/suggest-category?q=Ayam%20Bowo'),
+    });
+    expect(res.status).toBe(200);
+    const body = await parseJson(res);
+    expect(body.category).toBe('Makanan');
+    expect(body.confidence).toBeCloseTo(0.9, 5);
+    expect(body.match_type).toBe('exact');
+    expect(body.sample_count).toBe(10);
+    expect(mockSuggestCategory).toHaveBeenCalledWith('Ayam Bowo');
+  });
+
+  it('returns null category when no reliable suggestion', async () => {
+    mockSuggestCategory.mockReturnValue({
+      category: null,
+      confidence: 0,
+      match_type: null,
+      sample_count: 0,
+    });
+    const res = await GET({
+      request: makeRequest('/api/suggest-category?q=CompletelyUnknown'),
+    });
+    expect(res.status).toBe(200);
+    const body = await parseJson(res);
+    expect(body.category).toBeNull();
+    expect(body.match_type).toBeNull();
+    expect(body.sample_count).toBe(0);
+  });
+
+  it('trims whitespace from query before passing to suggestCategory', async () => {
+    mockSuggestCategory.mockReturnValue({
+      category: 'Tagihan',
+      confidence: 1.0,
+      match_type: 'exact',
+      sample_count: 5,
+    });
+    const res = await GET({
+      request: makeRequest('/api/suggest-category?q=%20%20Netflix%20%20'),
+    });
+    expect(res.status).toBe(200);
+    expect(mockSuggestCategory).toHaveBeenCalledWith('Netflix');
+  });
+
+  it('returns empty suggestion for empty/whitespace-only q', async () => {
+    const res = await GET({
+      request: makeRequest('/api/suggest-category?q=%20%20%20'),
+    });
+    expect(res.status).toBe(200);
+    const body = await parseJson(res);
+    expect(body.category).toBeNull();
+    expect(body.match_type).toBeNull();
+    expect(body.sample_count).toBe(0);
   });
 });

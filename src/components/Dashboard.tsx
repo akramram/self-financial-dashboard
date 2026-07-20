@@ -13,6 +13,8 @@ import OutcomeBarChart from './OutcomeBarChart';
 import MonthKickoffModal from './MonthKickoffModal';
 import DashboardSummaryCards from './DashboardSummaryCards';
 import SpendingPulse from './SpendingPulse';
+import SafeToSpend from './SafeToSpend';
+import RunwayAnalysis from './RunwayAnalysis';
 import AlertsPanel from './AlertsPanel';
 import CategoryBudgets from './CategoryBudgets';
 import { fetchRecurringTransactions } from '../lib/api';
@@ -326,33 +328,6 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
         </div>
       </div>
 
-      {/* Dashboard Summary Cards with Sparklines */}
-      <CollapsibleSection
-        id="summary-cards"
-        title="Summary Cards"
-        isCollapsed={isCollapsed('summary-cards')}
-        onToggle={() => toggle('summary-cards')}
-      >
-      <DashboardSummaryCards
-        summaries={summaries}
-        networth={networth}
-        activeMonth={activeSummary?.month}
-      />
-      </CollapsibleSection>
-
-      {/* Spending Pulse — real-time burn rate gauge */}
-      <CollapsibleSection
-        id="spending-pulse"
-        title="Spending Pulse"
-        isCollapsed={isCollapsed('spending-pulse')}
-        onToggle={() => toggle('spending-pulse')}
-      >
-      <SpendingPulse
-        summaries={summaries}
-        activeMonth={activeSummary?.month}
-      />
-      </CollapsibleSection>
-
       {/* Current Month Credit Expenses — compact info card */}
       {latest && (
         <CollapsibleSection
@@ -396,6 +371,53 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
           </Card>
         </CollapsibleSection>
       )}
+
+      {/* Dashboard Summary Cards with Sparklines */}
+      <CollapsibleSection
+        id="summary-cards"
+        title="Summary Cards"
+        isCollapsed={isCollapsed('summary-cards')}
+        onToggle={() => toggle('summary-cards')}
+      >
+      <DashboardSummaryCards
+        summaries={summaries}
+        networth={networth}
+        activeMonth={activeSummary?.month}
+      />
+      </CollapsibleSection>
+
+      {/* Spending Pulse — real-time burn rate gauge */}
+      <CollapsibleSection
+        id="spending-pulse"
+        title="Spending Pulse"
+        isCollapsed={isCollapsed('spending-pulse')}
+        onToggle={() => toggle('spending-pulse')}
+      >
+      <SpendingPulse
+        summaries={summaries}
+        activeMonth={activeSummary?.month}
+      />
+      </CollapsibleSection>
+
+      {/* Safe to Spend — daily spending allowance */}
+      <CollapsibleSection
+        id="safe-to-spend"
+        title="Safe to Spend"
+        isCollapsed={isCollapsed('safe-to-spend')}
+        onToggle={() => toggle('safe-to-spend')}
+      >
+      <SafeToSpend periodId={filterPeriodId ?? undefined} />
+      </CollapsibleSection>
+
+      {/* Emergency Fund Runway — financial resilience analysis */}
+      <CollapsibleSection
+        id="runway-analysis"
+        title="Emergency Fund Runway"
+        isCollapsed={isCollapsed('runway-analysis')}
+        onToggle={() => toggle('runway-analysis')}
+      >
+      <RunwayAnalysis periodId={filterPeriodId ?? undefined} compact />
+      </CollapsibleSection>
 
       {/* Alerts Panel + Category Budgets — side by side */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
