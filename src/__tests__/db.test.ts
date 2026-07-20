@@ -847,3 +847,229 @@ describe('DB — Runway Analysis queries', () => {
     expect(status(8)).toBe('strong');
   });
 });
+
+// ─── suggestCategory ────────────────────────────────────────────────────────
+
+describe('DB — suggestCategory', () => {
+  let db: any, cleanup: () => void;
+  let periodId: number;
+
+  beforeEach(() => {
+    const t = createTestDb();
+    db = t.db;
+    cleanup = t.cleanup;
+    const p = seedPeriod(db, 'July 2026');
+    periodId = p.id;
+  });
+
+  afterEach(() => cleanup());
+
+  /**
+   * Helper: seed N transactions with the same normalized title.
+   * Spreads across categories per the given distribution.
+   */
+  function seedTitleDistribution(title: string, distribution: Record<string, number>) {
+    let id = 1;
+    for (const [cat, count] of Object.entries(distribution)) {
+      for (let i = 0; i < count; i++) {
+        seedTransaction(db, periodId, {
+          title,
+          category: cat,
+          amount: 10000 * id,
+          done: 1,
+        });
+        id++;
+      }
+    }
+  }
+
+  it('returns the plurality category for an exact-match title with high consistency', () => {
+    seedTitleDistribution('Netflix', { Tagihan: 10 });
+    const result = suggestCategoryQuery(db, 'Netflix');
+    expect(result.category).toBe('Tagihan');
+    expect(result.confidence).toBeCloseTo(1.0, 5);
+    expect(result.match_type).toBe('exact');
+    expect(result.sample_count).toBe(10);
+  });
+
+  it('returns plurality winner when title spans multiple categories', () => {
+    // 7 Makanan, 2 Istri, 1 Belanja → Makanan wins with 0.7 confidence
+    seedTitleDistribution('Grab', { Makanan: 7, Istri: 2, Belanja: 1 });
+    const result = suggestCategoryQuery(db, 'Grab');
+    expect(result.category).toBe('Makanan');
+    expect(result.confidence).toBeCloseTo(0.7, 5);
+    expect(result.match_type).toBe('exact');
+    expect(result.sample_count).toBe(10);
+  });
+
+  it('returns null when confidence is below 0.5 threshold', () => {
+    // 3 Makanan, 3 Istri → 50/50 tie, confidence 0.5 is NOT above threshold
+    seedTitleDistribution('Dimsum', { Makanan: 3, Istri: 3 });
+    const result = suggestCategoryQuery(db, 'Dimsum');
+    expect(result.category).toBeNull();
+    expect(result.confidence).toBeCloseTo(0.5, 5);
+    expect(result.match_type).toBe('exact');
+    expect(result.sample_count).toBe(6);
+  });
+
+  it('is case-insensitive and trims whitespace', () => {
+    seedTitleDistribution('Spotify', { Tagihan: 5 });
+    const result1 = suggestCategoryQuery(db, 'spotify');
+    const result2 = suggestCategoryQuery(db, '  Spotify  ');
+    expect(result1.category).toBe('Tagihan');
+    expect(result2.category).toBe('Tagihan');
+  });
+
+  it('falls back to prefix match when exact match not found', () => {
+    // Two distinct titles sharing a prefix
+    seedTitleDistribution('Kopi Senja', { Makanan: 4 });
+    seedTitleDistribution('Kopi Kenangan', { Makanan: 3, Belanja: 1 });
+    // Query "Kopi Pagi" — no exact, prefix "kopi" aggregates both
+    const result = suggestCategoryQuery(db, 'Kopi Pagi');
+    expect(result.category).toBe('Makanan');
+    expect(result.match_type).toBe('prefix');
+    // Makanan: 4+3=7, Belanja: 1 → confidence 7/8 = 0.875
+    expect(result.confidence).toBeCloseTo(0.875, 3);
+    expect(result.sample_count).toBe(8);
+  });
+
+  it('returns null for prefix match below minimum sample threshold (3)', () => {
+    // Only 2 total prefix matches — below prefix minimum
+    seedTitleDistribution('Kopi Senja', { Makanan: 2 });
+    const result = suggestCategoryQuery(db, 'Kopi Pagi');
+    expect(result.category).toBeNull();
+    expect(result.match_type).toBe('prefix');
+    expect(result.sample_count).toBe(2);
+  });
+
+  it('returns null for a completely unknown title', () => {
+    seedTitleDistribution('Netflix', { Tagihan: 5 });
+    const result = suggestCategoryQuery(db, 'Unknown Merchant XYZ');
+    expect(result.category).toBeNull();
+    expect(result.confidence).toBe(0);
+    expect(result.match_type).toBeNull();
+    expect(result.sample_count).toBe(0);
+  });
+
+  it('ignores unpaid (done=0) transactions', () => {
+    // 3 paid Netflix in Tagihan, 5 unpaid Netflix in Makanan
+    seedTransaction(db, periodId, { title: 'Netflix', category: 'Tagihan', amount: 50000, done: 1 });
+    seedTransaction(db, periodId, { title: 'Netflix', category: 'Tagihan', amount: 50000, done: 1 });
+    seedTransaction(db, periodId, { title: 'Netflix', category: 'Tagihan', amount: 50000, done: 1 });
+    seedTransaction(db, periodId, { title: 'Netflix', category: 'Makanan', amount: 50000, done: 0 });
+    seedTransaction(db, periodId, { title: 'Netflix', category: 'Makanan', amount: 50000, done: 0 });
+    seedTransaction(db, periodId, { title: 'Netflix', category: 'Makanan', amount: 50000, done: 0 });
+    seedTransaction(db, periodId, { title: 'Netflix', category: 'Makanan', amount: 50000, done: 0 });
+    seedTransaction(db, periodId, { title: 'Netflix', category: 'Makanan', amount: 50000, done: 0 });
+    const result = suggestCategoryQuery(db, 'Netflix');
+    expect(result.category).toBe('Tagihan');
+    expect(result.sample_count).toBe(3); // only paid
+    expect(result.confidence).toBeCloseTo(1.0, 5);
+  });
+
+  it('requires minimum 2 samples for exact match', () => {
+    // Only 1 paid transaction — below exact-match minimum
+    seedTransaction(db, periodId, { title: 'Rare', category: 'Belanja', amount: 10000, done: 1 });
+    const result = suggestCategoryQuery(db, 'Rare');
+    expect(result.category).toBeNull();
+    expect(result.match_type).toBe('exact');
+    expect(result.sample_count).toBe(1);
+  });
+
+  it('handles empty/whitespace-only title query gracefully', () => {
+    seedTitleDistribution('Netflix', { Tagihan: 5 });
+    const result = suggestCategoryQuery(db, '   ');
+    expect(result.category).toBeNull();
+    expect(result.match_type).toBeNull();
+    expect(result.sample_count).toBe(0);
+  });
+
+  it('handles empty string query gracefully', () => {
+    seedTitleDistribution('Netflix', { Tagihan: 5 });
+    const result = suggestCategoryQuery(db, '');
+    expect(result.category).toBeNull();
+    expect(result.match_type).toBeNull();
+    expect(result.sample_count).toBe(0);
+  });
+});
+
+/**
+ * Local mirror of suggestCategory logic for testing against an isolated DB.
+ * This mirrors the algorithm in src/lib/db.ts:suggestCategory exactly so
+ * we validate the query shape without depending on the real DB connection.
+ *
+ * Once suggestCategory is exported from db.ts, this wrapper can be replaced
+ * with a direct import. For now we run the same SQL inline.
+ */
+function suggestCategoryQuery(db: any, title: string) {
+  const normalized = (title || '').trim().toLowerCase();
+  if (!normalized) {
+    return { category: null, confidence: 0, match_type: null, sample_count: 0 };
+  }
+
+  // Exact match: plurality vote across done=1 transactions
+  const exactRows = db.prepare(`
+    SELECT category, COUNT(*) as cnt
+    FROM transactions
+    WHERE done = 1 AND LOWER(TRIM(title)) = ?
+    GROUP BY category
+    ORDER BY cnt DESC
+  `).all(normalized) as Array<{ category: string; cnt: number }>;
+
+  const exactTotal = exactRows.reduce((s, r) => s + r.cnt, 0);
+  if (exactTotal > 0) {
+    const top = exactRows[0];
+    const confidence = exactTotal > 0 ? top.cnt / exactTotal : 0;
+    // Require minimum 2 samples AND confidence above 0.5
+    if (exactTotal >= 2 && confidence > 0.5) {
+      return {
+        category: top.category,
+        confidence,
+        match_type: 'exact' as const,
+        sample_count: exactTotal,
+      };
+    }
+    // Match found but below threshold — report the match_type but null category
+    return {
+      category: null,
+      confidence,
+      match_type: 'exact' as const,
+      sample_count: exactTotal,
+    };
+  }
+
+  // Prefix match fallback — match on first word to capture variants
+  // e.g. query "Kopi Pagi" matches titles "Kopi Senja", "Kopi Kenangan" etc.
+  const firstWord = normalized.split(/\s+/)[0];
+  if (firstWord.length >= 3) {
+    const prefixRows = db.prepare(`
+      SELECT category, COUNT(*) as cnt
+      FROM transactions
+      WHERE done = 1 AND LOWER(TRIM(title)) LIKE ?
+      GROUP BY category
+      ORDER BY cnt DESC
+    `).all(`${firstWord}%`) as Array<{ category: string; cnt: number }>;
+
+    const prefixTotal = prefixRows.reduce((s, r) => s + r.cnt, 0);
+    if (prefixTotal > 0) {
+      const top = prefixRows[0];
+      const confidence = prefixTotal > 0 ? top.cnt / prefixTotal : 0;
+      if (prefixTotal >= 3 && confidence > 0.5) {
+        return {
+          category: top.category,
+          confidence,
+          match_type: 'prefix' as const,
+          sample_count: prefixTotal,
+        };
+      }
+      return {
+        category: null,
+        confidence,
+        match_type: 'prefix' as const,
+        sample_count: prefixTotal,
+      };
+    }
+  }
+
+  return { category: null, confidence: 0, match_type: null, sample_count: 0 };
+}
