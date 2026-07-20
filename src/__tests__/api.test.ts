@@ -26,6 +26,7 @@ const mockRecalcNetworthMoM = vi.fn();
 const mockGetGoals = vi.fn();
 const mockInsertGoal = vi.fn();
 const mockGetRecurringCostAnalysis = vi.fn();
+const mockSuggestCategory = vi.fn();
 
 vi.mock('../lib/db', () => ({
   db: {},
@@ -48,6 +49,7 @@ vi.mock('../lib/db', () => ({
   getGoals: mockGetGoals,
   insertGoal: mockInsertGoal,
   getRecurringCostAnalysis: mockGetRecurringCostAnalysis,
+  suggestCategory: mockSuggestCategory,
 }));
 
 async function parseJson(res: Response) {
@@ -701,5 +703,85 @@ describe('API — GET /api/goal-trajectory', () => {
     expect(res.status).toBe(200);
     const body = await parseJson(res);
     expect(body.trend).toHaveLength(4);
+  });
+});
+
+// ─── GET /api/suggest-category ──────────────────────────────────────────────
+
+describe('API — GET /api/suggest-category', () => {
+  let GET: any;
+
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    const mod = await import('../pages/api/suggest-category');
+    GET = mod.GET;
+  });
+
+  it('returns 400 when q param is missing', async () => {
+    const res = await GET({ request: makeRequest('/api/suggest-category') });
+    expect(res.status).toBe(400);
+    const body = await parseJson(res);
+    expect(body.error).toMatch(/q/i);
+  });
+
+  it('returns category suggestion for a known title', async () => {
+    mockSuggestCategory.mockReturnValue({
+      category: 'Makanan',
+      confidence: 0.9,
+      match_type: 'exact',
+      sample_count: 10,
+    });
+    const res = await GET({
+      request: makeRequest('/api/suggest-category?q=Ayam%20Bowo'),
+    });
+    expect(res.status).toBe(200);
+    const body = await parseJson(res);
+    expect(body.category).toBe('Makanan');
+    expect(body.confidence).toBeCloseTo(0.9, 5);
+    expect(body.match_type).toBe('exact');
+    expect(body.sample_count).toBe(10);
+    expect(mockSuggestCategory).toHaveBeenCalledWith('Ayam Bowo');
+  });
+
+  it('returns null category when no reliable suggestion', async () => {
+    mockSuggestCategory.mockReturnValue({
+      category: null,
+      confidence: 0,
+      match_type: null,
+      sample_count: 0,
+    });
+    const res = await GET({
+      request: makeRequest('/api/suggest-category?q=CompletelyUnknown'),
+    });
+    expect(res.status).toBe(200);
+    const body = await parseJson(res);
+    expect(body.category).toBeNull();
+    expect(body.match_type).toBeNull();
+    expect(body.sample_count).toBe(0);
+  });
+
+  it('trims whitespace from query before passing to suggestCategory', async () => {
+    mockSuggestCategory.mockReturnValue({
+      category: 'Tagihan',
+      confidence: 1.0,
+      match_type: 'exact',
+      sample_count: 5,
+    });
+    const res = await GET({
+      request: makeRequest('/api/suggest-category?q=%20%20Netflix%20%20'),
+    });
+    expect(res.status).toBe(200);
+    expect(mockSuggestCategory).toHaveBeenCalledWith('Netflix');
+  });
+
+  it('returns empty suggestion for empty/whitespace-only q', async () => {
+    const res = await GET({
+      request: makeRequest('/api/suggest-category?q=%20%20%20'),
+    });
+    expect(res.status).toBe(200);
+    const body = await parseJson(res);
+    expect(body.category).toBeNull();
+    expect(body.match_type).toBeNull();
+    expect(body.sample_count).toBe(0);
   });
 });

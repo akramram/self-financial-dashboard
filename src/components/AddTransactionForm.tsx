@@ -2,12 +2,14 @@ import React, { useState, useRef, useEffect } from 'react';
 import { createTransaction, fetchCategories } from '../lib/api';
 import type { Category } from '../lib/data';
 import { getActivePeriod } from '../lib/utils';
+import { useCategorySuggestion } from '../hooks/useCategorySuggestion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Sparkles, X, Loader2 } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -48,7 +50,22 @@ export default function AddTransactionForm() {
   const [message, setMessage] = useState('');
   const [showDuplicateDialog, setShowDuplicateDialog] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [categoryUserTouched, setCategoryUserTouched] = useState(false);
   const titleRef = useRef<HTMLInputElement>(null);
+
+  // Smart category suggestion — debounced fetch based on title
+  const { suggestedCategory, confidence, isLoading: suggestionLoading, isAutoFilled } =
+    useCategorySuggestion(title);
+
+  // Auto-fill category when suggestion arrives and user hasn't manually typed one
+  useEffect(() => {
+    if (!categoryUserTouched && suggestedCategory && suggestedCategory !== category) {
+      setCategory(suggestedCategory);
+    }
+    if (!categoryUserTouched && !suggestedCategory && category && !title.trim()) {
+      setCategory('');
+    }
+  }, [suggestedCategory, categoryUserTouched, category, title]);
 
   useEffect(() => {
     fetchCategories().then(setCategories).catch(() => {});
@@ -172,20 +189,52 @@ export default function AddTransactionForm() {
           </div>
 
           <div className="space-y-1.5">
-            <Label>Category</Label>
+            <div className="flex items-center justify-between">
+              <Label>Category</Label>
+              {isAutoFilled && !categoryUserTouched && suggestedCategory && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCategory('');
+                    setCategoryUserTouched(true);
+                  }}
+                  className="inline-flex items-center gap-1 text-[11px] font-medium text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 transition"
+                  title="Suggested based on your history — click to clear"
+                >
+                  <Sparkles className="w-3 h-3" />
+                  Auto: {suggestedCategory}
+                  <span className="opacity-60">({Math.round(confidence * 100)}%)</span>
+                  <X className="w-3 h-3 ml-0.5" />
+                </button>
+              )}
+              {suggestionLoading && (
+                <span className="inline-flex items-center gap-1 text-[11px] text-slate-400">
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                  Matching…
+                </span>
+              )}
+            </div>
             <Input
               type="text"
               value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              placeholder="e.g. 🏠 Kontrakan"
+              onChange={(e) => {
+                setCategory(e.target.value);
+                setCategoryUserTouched(true);
+              }}
+              placeholder={isAutoFilled && !categoryUserTouched ? 'Auto-suggested' : 'e.g. 🏠 Kontrakan'}
               list="category-list"
+              className={isAutoFilled && !categoryUserTouched ? 'border-violet-300 dark:border-violet-700 bg-violet-50/40 dark:bg-violet-950/20' : ''}
             />
             <datalist id="category-list">
               {categories.map((c) => (
                 <option key={c.id} value={c.name} />
               ))}
             </datalist>
-            <p className="text-xs text-muted-foreground">Pick an existing category or type a new one</p>
+            <p className="text-xs text-muted-foreground">
+              {isAutoFilled && !categoryUserTouched
+                ? 'Category auto-suggested from your history — override anytime'
+                : 'Pick an existing category or type a new one'}
+            </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
