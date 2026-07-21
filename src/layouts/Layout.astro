@@ -12,7 +12,14 @@ const { title = 'Financial Dashboard' } = Astro.props;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
+    <meta name="description" content="Personal finance tracker — income, expenses, networth, and budget." />
+    <meta name="theme-color" content="#059669" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="FinDash" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
     <script is:inline>
       (function() {
         const theme = localStorage.getItem('theme');
@@ -43,6 +50,9 @@ const { title = 'Financial Dashboard' } = Astro.props;
             <span class="dark:hidden">🌙</span>
             <span class="hidden dark:inline">☀️</span>
           </button>
+          <!-- Auth: role badge + logout -->
+          <span id="roleBadge" class="hidden text-xs font-medium px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"></span>
+          <button id="logoutBtn" class="hidden p-2 rounded-lg bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-sm font-medium hover:bg-red-200 dark:hover:bg-red-900/50 transition" aria-label="Logout">⏻</button>
           <!-- Hamburger (mobile only) -->
           <button id="menuToggle" class="sm:hidden p-2 rounded-lg bg-slate-200 dark:bg-slate-700 text-sm font-medium hover:bg-slate-300 dark:hover:bg-slate-600 transition" aria-label="Toggle menu">
             <svg id="menuIconOpen" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
@@ -121,8 +131,8 @@ const { title = 'Financial Dashboard' } = Astro.props;
         <!-- Divider -->
         <div class="w-px h-5 bg-slate-200 dark:bg-slate-600 mx-1"></div>
 
-        <a href="/settings" class="nav-link px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600">⚙️ Settings</a>
-        <a href="/add" class="nav-link-cta px-3 py-1.5 rounded-lg text-sm font-bold transition bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm">+ Add</a>
+        <a href="/settings" class="nav-link viewer-hide px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600">⚙️ Settings</a>
+        <a href="/add" class="nav-link-cta viewer-hide px-3 py-1.5 rounded-lg text-sm font-bold transition bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm">+ Add</a>
       </nav>
 
       <!-- Mobile nav dropdown — grouped with collapsible sections -->
@@ -193,8 +203,8 @@ const { title = 'Financial Dashboard' } = Astro.props;
 
         <!-- Bottom: Settings + Add -->
         <div class="grid grid-cols-2 gap-1.5">
-          <a href="/settings" class="nav-link px-3 py-2.5 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700">⚙️ Settings</a>
-          <a href="/add" class="nav-link-cta px-3 py-2.5 rounded-lg text-sm font-bold text-center transition bg-emerald-600 text-white col-span-2 hover:bg-emerald-700 shadow-sm">+ Add Data</a>
+          <a href="/settings" class="nav-link viewer-hide px-3 py-2.5 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700">⚙️ Settings</a>
+          <a href="/add" class="nav-link-cta viewer-hide px-3 py-2.5 rounded-lg text-sm font-bold text-center transition bg-emerald-600 text-white col-span-2 hover:bg-emerald-700 shadow-sm">+ Add Data</a>
         </div>
       </nav>
 
@@ -345,4 +355,51 @@ const { title = 'Financial Dashboard' } = Astro.props;
       }
     </style>
   </body>
+  <script is:inline>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+      });
+    }
+  </script>
+  <script>
+    // Auth state: fetch user, show role badge, handle logout, hide write controls for viewer
+    async function initAuth() {
+      try {
+        const res = await fetch('/api/auth/me');
+        if (!res.ok) return;
+        const user = await res.json();
+        sessionStorage.setItem('fin_user', JSON.stringify(user));
+        window.__finUser = user;
+
+        // Show role badge + logout button
+        const badge = document.getElementById('roleBadge');
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (badge) {
+          badge.textContent = user.role === 'admin' ? '⚡ Admin' : '👁 Viewer';
+          badge.classList.remove('hidden');
+          if (user.role === 'viewer') {
+            badge.className = badge.className.replace(/bg-emerald-100|text-emerald-700|dark:bg-emerald-900\/30|dark:text-emerald-400/g, '');
+            badge.classList.add('bg-blue-100', 'text-blue-700', 'dark:bg-blue-900/30', 'dark:text-blue-400');
+          }
+        }
+        if (logoutBtn) logoutBtn.classList.remove('hidden');
+
+        // Logout handler
+        if (logoutBtn) {
+          logoutBtn.addEventListener('click', async () => {
+            await fetch('/api/auth/logout', { method: 'POST' });
+            sessionStorage.removeItem('fin_user');
+            window.location.href = '/login';
+          });
+        }
+
+        // Hide write controls for viewer role
+        if (user.role === 'viewer') {
+          document.querySelectorAll('.viewer-hide').forEach(el => el.classList.add('hidden'));
+        }
+      } catch {}
+    }
+    initAuth();
+  </script>
 </html>
