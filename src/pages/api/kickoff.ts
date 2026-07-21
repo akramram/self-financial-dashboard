@@ -78,8 +78,24 @@ export const POST: APIRoute = async ({ request }) => {
     const newPeriodDate = new Date(month + ' 1');
     return endDate >= newPeriodDate;
   });
-  const now = new Date().toISOString();
   for (const r of recurring) {
+    // Use recurring created_at day number (1-28) for the transaction's created_time
+    let createdTime: string;
+    if (r.created_at) {
+      const day = parseInt(r.created_at, 10);
+      if (day >= 1 && day <= 28) {
+        const targetDate = new Date(month + ' 1');
+        targetDate.setDate(day);
+        createdTime = targetDate.toISOString();
+      } else {
+        createdTime = new Date().toISOString();
+      }
+    } else {
+      // Default to 21st (salary cycle start)
+      const targetDate = new Date(month + ' 1');
+      targetDate.setDate(21);
+      createdTime = targetDate.toISOString();
+    }
     insertTransaction({
       period_id,
       date: dateStr,
@@ -90,7 +106,7 @@ export const POST: APIRoute = async ({ request }) => {
       type: r.type,
       payment_method: r.payment_method || 'Cash',
       done: r.done ? 1 : 0,
-      created_time: now,
+      created_time: createdTime,
     });
   }
 

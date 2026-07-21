@@ -32,6 +32,8 @@ const TYPE_OPTIONS = [
   { value: 'credit_payment', label: 'Credit Payment' },
 ];
 
+const defaultDay = () => "21";
+
 export default function RecurringManager() {
   const { confirm: confirmAction } = useConfirm();
   const [recurring, setRecurring] = useState<RecurringTransaction[]>([]);
@@ -51,6 +53,7 @@ export default function RecurringManager() {
     payment_method: string;
     done: boolean;
     end_date: string;
+    created_at: string;
   }>({
     title: '',
     category: '',
@@ -59,6 +62,7 @@ export default function RecurringManager() {
     payment_method: 'Cash',
     done: false,
     end_date: '',
+    created_at: defaultDay(),
   });
 
   useEffect(() => {
@@ -100,6 +104,7 @@ export default function RecurringManager() {
         done: editForm.done,
         active: editForm.active,
         end_date: editForm.end_date || null,
+        created_at: editForm.created_at || defaultDay(),
       });
       setEditingId(null);
       setEditForm({});
@@ -148,8 +153,9 @@ export default function RecurringManager() {
         done: addForm.done,
         active: true,
         end_date: addForm.end_date || null,
+        created_at: addForm.created_at || defaultDay(),
       });
-      setAddForm({ title: '', category: '', amount: '', type: 'cash', payment_method: 'Cash', done: false, end_date: '' });
+      setAddForm({ title: '', category: '', amount: '', type: 'cash', payment_method: 'Cash', done: false, end_date: '', created_at: defaultDay() });
       setIsAdding(false);
       setError('');
       await loadData();
@@ -255,6 +261,17 @@ export default function RecurringManager() {
                 />
                 <p className="text-xs text-slate-400">Stop auto-adding after this month (e.g., last installment)</p>
               </div>
+              <div className="space-y-1.5">
+                <Label>Tgl Transaksi</Label>
+                <Input
+                  type="number"
+                  min={1}
+                  max={28}
+                  value={addForm.created_at}
+                  onChange={(e) => setAddForm((p) => ({ ...p, created_at: e.target.value }))}
+                />
+                <p className="text-xs text-slate-400">Tanggal transaksi muncul tiap bulan (1-28, default: hari ini)</p>
+              </div>
             </div>
             <div className="flex justify-end">
               <Button size="sm" onClick={handleAdd}>Save Recurring</Button>
@@ -272,6 +289,7 @@ export default function RecurringManager() {
                 <TableHead className="text-right">Amount</TableHead>
                 <TableHead>Type</TableHead>
                 <TableHead>End Date</TableHead>
+                <TableHead>Tgl</TableHead>
                 <TableHead>Paid</TableHead>
                 <TableHead className="w-32"></TableHead>
               </TableRow>
@@ -279,11 +297,11 @@ export default function RecurringManager() {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center text-muted-foreground py-6">Loading...</TableCell>
+                  <TableCell colSpan={9} className="text-center text-muted-foreground py-6">Loading...</TableCell>
                 </TableRow>
               ) : recurring.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center text-muted-foreground py-6">
+                  <TableCell colSpan={9} className="text-center text-muted-foreground py-6">
                     No recurring transactions yet. Add one above.
                   </TableCell>
                 </TableRow>
@@ -354,6 +372,16 @@ export default function RecurringManager() {
                           />
                         </TableCell>
                         <TableCell>
+                          <Input
+                            type="number"
+                            min={1}
+                            max={28}
+                            value={editForm.created_at ?? defaultDay()}
+                            onChange={(e) => setEditForm((p) => ({ ...p, created_at: e.target.value }))}
+                            className="h-8 text-xs w-16"
+                          />
+                        </TableCell>
+                        <TableCell>
                           <Checkbox
                             checked={!!editForm.done}
                             onCheckedChange={(v) => setEditForm((p) => ({ ...p, done: !!v }))}
@@ -384,6 +412,9 @@ export default function RecurringManager() {
                       </TableCell>
                       <TableCell className="text-xs text-slate-400">
                         {item.end_date || '—'}
+                      </TableCell>
+                      <TableCell className="text-xs text-slate-400">
+                        {item.created_at || '—'}
                       </TableCell>
                       <TableCell>
                         {item.done ? (

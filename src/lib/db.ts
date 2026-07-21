@@ -116,6 +116,7 @@ export function initSchema() {
   // Migrations for columns added after initial schema
   try { db.exec(`ALTER TABLE transactions ADD COLUMN notes TEXT DEFAULT ''`); } catch (_) { /* already exists */ }
   try { db.exec('ALTER TABLE recurring_transactions ADD COLUMN end_date TEXT'); } catch (_) { /* already exists */ }
+  try { db.exec('ALTER TABLE recurring_transactions ADD COLUMN created_at TEXT DEFAULT CURRENT_TIMESTAMP'); } catch (_) { /* already exists */ }
 }
 
 // ─── Period helpers ─────────────────────────────────────────────────────────
@@ -501,7 +502,7 @@ export function insertRecurringTransaction(tx: Omit<any, 'id'>) {
     done: tx.done ? 1 : 0,
     active: tx.active !== false ? 1 : 0,
     end_date: tx.end_date || null,
-    created_at: tx.created_at || new Date().toISOString(),
+    created_at: tx.created_at || '21',
   });
   return result.lastInsertRowid as number;
 }
