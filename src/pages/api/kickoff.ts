@@ -80,19 +80,24 @@ export const POST: APIRoute = async ({ request }) => {
   });
   for (const r of recurring) {
     // Use recurring created_at day number (1-28) for the transaction's created_time
+    // Periods run 21st→20th. Days >=21 belong to the previous calendar month.
     let createdTime: string;
     if (r.created_at) {
       const day = parseInt(r.created_at, 10);
       if (day >= 1 && day <= 28) {
-        const targetDate = new Date(month + ' 1');
+        const targetDate = new Date(month + ' 1'); // e.g. "August 2026" → Aug 1
+        if (day >= 21) {
+          targetDate.setMonth(targetDate.getMonth() - 1); // shift to July
+        }
         targetDate.setDate(day);
         createdTime = targetDate.toISOString();
       } else {
         createdTime = new Date().toISOString();
       }
     } else {
-      // Default to 21st (salary cycle start)
+      // Default to 21st = previous calendar month
       const targetDate = new Date(month + ' 1');
+      targetDate.setMonth(targetDate.getMonth() - 1);
       targetDate.setDate(21);
       createdTime = targetDate.toISOString();
     }
@@ -110,12 +115,42 @@ export const POST: APIRoute = async ({ request }) => {
     });
   }
 
+  let ccPaymentAmount = 0;
+  // Auto-generate credit card payment from previous period's credit expenses
+  const allPeriods = db.prepare('SELECT * FROM periods ORDER BY start_date ASC').all() as any[];
+  const currentIdx = allPeriods.findIndex((p: any) => p.month === month);
+  if (currentIdx > 0) {
+    const prevPeriod = allPeriods[currentIdx - 1];
+    const creditStatus = db.prepare(`
+      SELECT SUM(CASE WHEN type = 'credit_expense' THEN amount ELSE 0 END) AS credit_expenses_total
+      FROM transactions WHERE period_id = ?
+    `).get(prevPeriod.id) as any;
+    const creditTotal = creditStatus?.credit_expenses_total || 0;
+    if (creditTotal > 0) {
+      insertTransaction({
+        period_id,
+        date: dateStr,
+        title: `CC Payment — ${prevPeriod.month}`,
+        category: 'Credit Card',
+        amount: creditTotal,
+        currency: 'IDR',
+        type: 'credit_payment',
+        payment_method: 'Credit Card',
+        done: 0,
+        created_time: new Date().toISOString(),
+      });
+      ccPaymentAmount = creditTotal;
+    }
+  }
+
   return new Response(JSON.stringify({
     success: true,
     month,
     period_id,
     salary,
     preloaded: recurring.length,
+    ccPaymentAmount,
+    ccPaymentNote: ccPaymentAmount > 0 ? `Added CC Payment from previous period` : null,
   }), {
     status: 201,
     headers: { 'Content-Type': 'application/json' },
