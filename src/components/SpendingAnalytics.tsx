@@ -140,7 +140,7 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
 
   const [selectedMonth, setSelectedMonth] = useState<string>(months[0] || '');
   const [data, setData] = useState<AnalyticsData | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // Category drill-down dialog
   const [dialogOpen, setDialogOpen] = useState(false);
