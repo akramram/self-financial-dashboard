@@ -1,13 +1,16 @@
 import React, { useMemo } from 'react';
-import { LayoutDashboard, ArrowRightLeft, PieChart, Target, Settings, Plus } from 'lucide-react';
+import { LayoutDashboard, ArrowRightLeft, PieChart, Target, Plus } from 'lucide-react';
 
 const TABS = [
   { path: '/', label: 'Home', icon: LayoutDashboard },
   { path: '/transactions', label: 'Txns', icon: ArrowRightLeft },
   { path: '/analytics', label: 'Analytics', icon: PieChart },
   { path: '/goals', label: 'Planning', icon: Target },
-  { path: '/settings', label: 'Settings', icon: Settings },
 ];
+
+function openQuickAdd() {
+  window.dispatchEvent(new CustomEvent('quick-add-open'));
+}
 
 export default function FintechBottomTabs() {
   const currentPath = useMemo(() => {
@@ -31,15 +34,15 @@ export default function FintechBottomTabs() {
         if (idx === 2) {
           return (
             <React.Fragment key="center-btn">
-              {/* Center + button */}
-              <a
-                href="/add"
-                className="flex items-center justify-center w-12 h-12 rounded-full -mt-6 shrink-0 mx-0.5 transition-transform hover:scale-110"
+              {/* Center + button — opens QuickAddDialog */}
+              <button
+                onClick={openQuickAdd}
+                className="flex items-center justify-center w-12 h-12 rounded-full -mt-6 shrink-0 mx-0.5 transition-transform active:scale-90 border-0 cursor-pointer"
                 style={{ background: 'linear-gradient(135deg, #34d399, #0ea5e9)' }}
-                aria-label="Add transaction"
+                aria-label="Quick add transaction"
               >
                 <Plus className="w-6 h-6 text-white" strokeWidth={2.5} />
-              </a>
+              </button>
               {/* 3rd tab */}
               <TabButton tab={tab} active={currentPath === tab.path} />
             </React.Fragment>
