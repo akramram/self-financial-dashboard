@@ -5,9 +5,10 @@ import { formatIdr } from '../lib/utils';
 import { useSortState } from '../hooks/useSortState';
 import SortableHeader from './SortableHeader';
 import EditTransactionDialog from './EditTransactionDialog';
-import { StickyNote } from 'lucide-react';
+import { StickyNote, Search, SlidersHorizontal, Download, X, Filter, ChevronDown } from 'lucide-react';
 import { useConfirm } from './ConfirmDialog';
 import { toast } from 'sonner';
+import { motion, AnimatePresence } from 'motion/react';
 import {
   Table,
   TableBody,
@@ -44,7 +45,7 @@ function parseCreatedTime(tx: Transaction): Date {
 
 export default function TransactionTable({ transactions, showMonth = true, periods = [] }: Props) {
   const { confirm: confirmAction } = useConfirm();
-  // Build lookup maps from periods
+
   const periodIdToMonth = useMemo(() => {
     const map = new Map<number, string>();
     periods.forEach((p) => map.set(p.period_id, p.month));
@@ -69,6 +70,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
       amountMax: params.get('amountMax') || '',
     };
   };
+
   const initial = getInitialState();
   const [page, setPage] = useState(initial.page);
   const [filterType, setFilterType] = useState<string>(initial.filterType);
@@ -83,6 +85,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [bulkCategory, setBulkCategory] = useState<string>('');
   const [categories, setCategories] = useState<Category[]>([]);
+  const [advancedOpen, setAdvancedOpen] = useState(false);
   const rowsPerPage = 25;
   const { toggleSort, sortData, isSorted } = useSortState();
 
@@ -126,9 +129,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
   }, [transactions, sortData, getCellValue]);
 
   let filtered = sorted;
-  if (filterType !== 'all') {
-    filtered = filtered.filter((t) => t.type === filterType);
-  }
+  if (filterType !== 'all') filtered = filtered.filter((t) => t.type === filterType);
   if (filterPeriodId !== 'all') {
     const pid = parseInt(filterPeriodId, 10);
     filtered = filtered.filter((t) => t.period_id === pid);
@@ -156,9 +157,35 @@ export default function TransactionTable({ transactions, showMonth = true, perio
     if (!isNaN(max)) filtered = filtered.filter((t) => t.amount <= max);
   }
 
+  const activeFilterCount = [
+    filterType !== 'all',
+    filterPeriodId !== 'all',
+    search.trim() !== '',
+    dateFrom !== '',
+    dateTo !== '',
+    amountMin !== '',
+    amountMax !== '',
+  ].filter(Boolean).length;
+
+  const hasAdvancedFilters = dateFrom || dateTo || amountMin || amountMax;
+
+  const clearFilters = () => {
+    setFilterType('all');
+    setFilterPeriodId('all');
+    setSearch('');
+    setDateFrom('');
+    setDateTo('');
+    setAmountMin('');
+    setAmountMax('');
+    setPage(1);
+    setAdvancedOpen(false);
+  };
+
   const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
   const safePage = Math.min(page, totalPages);
   const pageRows = filtered.slice((safePage - 1) * rowsPerPage, safePage * rowsPerPage);
+
+  // ── Bulk actions ───────────────────────────────────────────────
 
   const toggleSelect = (id: number) => {
     setSelected((prev) => {
@@ -169,17 +196,13 @@ export default function TransactionTable({ transactions, showMonth = true, perio
   };
 
   const toggleSelectAll = () => {
-    if (selected.size === pageRows.length) {
-      setSelected(new Set());
-    } else {
-      setSelected(new Set(pageRows.map((r) => r.id)));
-    }
+    if (selected.size === pageRows.length) setSelected(new Set());
+    else setSelected(new Set(pageRows.map((r) => r.id)));
   };
 
   const handleSave = async () => {
     if (!editingId) return;
     const { id, ...updates } = editForm as any;
-    // Convert period_id to number if present
     if (updates.period_id) updates.period_id = Number(updates.period_id);
     await updateTransactionApi(editingId, updates);
     setEditingId(null);
@@ -209,251 +232,507 @@ export default function TransactionTable({ transactions, showMonth = true, perio
     window.location.reload();
   };
 
+  // ── Render ─────────────────────────────────────────────────────
+
   return (
     <div>
-      <div className="flex flex-col sm:flex-row gap-3 mb-4">
-        <Input
-          placeholder="Search title or category..."
-          value={search}
-          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-          className="max-w-xs"
-        />
-        <Select value={filterType} onValueChange={(v) => { setFilterType(v); setPage(1); }}>
-          <SelectTrigger className="w-[140px]">
-            <SelectValue placeholder="All Types" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Types</SelectItem>
-            <SelectItem value="cash">Cash</SelectItem>
-            <SelectItem value="credit_expense">Credit Expense</SelectItem>
-            <SelectItem value="credit_payment">Credit Payment</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select value={filterPeriodId} onValueChange={(v) => { setFilterPeriodId(v); setPage(1); }}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="All Periods" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Periods</SelectItem>
-            {monthOptions.map((p) => (
-              <SelectItem key={p.period_id} value={p.period_id.toString()}>{p.month}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={() => {
-            const exportData = filtered.map((t) => ({
-              date: t.date,
-              description: t.title,
-              amount: t.amount,
-              type: t.type,
-              category: t.category,
-              paid: t.done,
-              notes: t.notes || '',
-              period: periodIdToMonth.get(t.period_id) || '',
-            }));
-            if (exportData.length === 0) {
-              toast.info('No transactions found for this period');
-              return;
-            }
-            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            const fileName = filterPeriodId !== 'all' ? `transactions-${filterPeriodId}.json` : 'transactions-all.json';
-            a.href = url;
-            a.download = fileName;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-          }}
-        >
-          Export JSON
-        </Button>
-      </div>
+      {/* ─── Filter Bar ────────────────────────────────────────── */}
+      <div className="flex flex-col gap-3 mb-5">
+        {/* Primary row: search + type + period + export */}
+        <div className="flex flex-col sm:flex-row gap-3">
+          {/* Search */}
+          <div className="relative flex-1 max-w-sm">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 pointer-events-none" />
+            <Input
+              placeholder="Search title, category, notes..."
+              value={search}
+              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+              className="pl-9 bg-white/[0.04] border-white/[0.08] text-white/80 placeholder:text-white/25 focus-visible:ring-emerald-500/30"
+            />
+            {search && (
+              <button
+                onClick={() => { setSearch(''); setPage(1); }}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
 
-      <div className="flex flex-col sm:flex-row gap-3 mb-4">
-        <div className="flex gap-2 items-center">
-          <label className="text-xs text-white/50">From</label>
-          <Input type="date" value={dateFrom} onChange={(e) => { setDateFrom(e.target.value); setPage(1); }} className="w-auto text-xs" />
-          <label className="text-xs text-white/50">To</label>
-          <Input type="date" value={dateTo} onChange={(e) => { setDateTo(e.target.value); setPage(1); }} className="w-auto text-xs" />
-        </div>
-        <div className="flex gap-2 items-center">
-          <label className="text-xs text-white/50">Min</label>
-          <Input type="number" placeholder="Amount" value={amountMin} onChange={(e) => { setAmountMin(e.target.value); setPage(1); }} className="w-28 text-xs" />
-          <label className="text-xs text-white/50">Max</label>
-          <Input type="number" placeholder="Amount" value={amountMax} onChange={(e) => { setAmountMax(e.target.value); setPage(1); }} className="w-28 text-xs" />
-        </div>
-      </div>
+          {/* Type filter */}
+          <Select value={filterType} onValueChange={(v) => { setFilterType(v); setPage(1); }}>
+            <SelectTrigger className="w-[150px] bg-white/[0.04] border-white/[0.08] text-white/70">
+              <SelectValue placeholder="All Types" />
+            </SelectTrigger>
+            <SelectContent className="bg-navy-800 border-white/[0.08]">
+              <SelectItem value="all">All Types</SelectItem>
+              <SelectItem value="cash">💵 Cash</SelectItem>
+              <SelectItem value="credit_expense">💳 Credit Expense</SelectItem>
+              <SelectItem value="credit_payment">🏦 Credit Payment</SelectItem>
+            </SelectContent>
+          </Select>
 
-      {selected.size > 0 && (
-        <div className="flex gap-2 mb-4 items-center">
-          <span className="text-xs text-white/50">{selected.size} selected</span>
-          <select
-            value={bulkCategory}
-            onChange={(e) => setBulkCategory(e.target.value)}
-            className="text-xs border rounded px-2 py-1"
+          {/* Period filter */}
+          <Select value={filterPeriodId} onValueChange={(v) => { setFilterPeriodId(v); setPage(1); }}>
+            <SelectTrigger className="w-[180px] bg-white/[0.04] border-white/[0.08] text-white/70">
+              <SelectValue placeholder="All Periods" />
+            </SelectTrigger>
+            <SelectContent className="bg-navy-800 border-white/[0.08] max-h-[300px]">
+              <SelectItem value="all">All Periods</SelectItem>
+              {monthOptions.map((p) => (
+                <SelectItem key={p.period_id} value={p.period_id.toString()}>{p.month}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {/* Spacer */}
+          <div className="flex-1" />
+
+          {/* Export button */}
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => {
+              const exportData = filtered.map((t) => ({
+                date: t.date,
+                description: t.title,
+                amount: t.amount,
+                type: t.type,
+                category: t.category,
+                paid: t.done,
+                notes: t.notes || '',
+                period: periodIdToMonth.get(t.period_id) || '',
+              }));
+              if (exportData.length === 0) {
+                toast.info('No transactions found');
+                return;
+              }
+              const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = filterPeriodId !== 'all' ? `transactions-${filterPeriodId}.json` : 'transactions-all.json';
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              URL.revokeObjectURL(url);
+            }}
+            className="gap-1.5 text-white/50 hover:text-white/80 hover:bg-white/[0.06] h-9"
           >
-            <option value="">Change category...</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.name}>{c.name}</option>
-            ))}
-          </select>
-          <Button size="sm" variant="outline" onClick={handleBulkCategory} disabled={!bulkCategory}>
-            Apply
+            <Download className="w-3.5 h-3.5" />
+            Export
           </Button>
-          <Button size="sm" variant="destructive" onClick={handleBulkDelete}>
-            Delete
-          </Button>
-        </div>
-      )}
 
-      <div className="overflow-x-auto">
+          {/* Active filter count badge */}
+          {activeFilterCount > 0 && (
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={clearFilters}
+              className="gap-1.5 text-white/50 hover:text-white/80 hover:bg-white/[0.06] h-9"
+            >
+              <X className="w-3.5 h-3.5" />
+              Clear ({activeFilterCount})
+            </Button>
+          )}
+        </div>
+
+        {/* Advanced filters toggle */}
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => setAdvancedOpen(!advancedOpen)}
+            className={`gap-1.5 text-xs h-7 transition-colors ${
+              advancedOpen || hasAdvancedFilters
+                ? 'text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/15'
+                : 'text-white/40 hover:text-white/60 hover:bg-white/[0.04]'
+            }`}
+          >
+            <SlidersHorizontal className="w-3 h-3" />
+            Advanced Filters
+            <ChevronDown className={`w-3 h-3 transition-transform ${advancedOpen ? 'rotate-180' : ''}`} />
+            {hasAdvancedFilters && (
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 ml-1" />
+            )}
+          </Button>
+
+          {hasAdvancedFilters && !advancedOpen && (
+            <div className="flex items-center gap-2 flex-wrap">
+              {dateFrom && (
+                <Badge variant="outline" className="text-[10px] py-0 h-5 gap-1 border-white/[0.08] text-white/50">
+                  From: {dateFrom}
+                  <button onClick={() => setDateFrom('')}><X className="w-2.5 h-2.5" /></button>
+                </Badge>
+              )}
+              {dateTo && (
+                <Badge variant="outline" className="text-[10px] py-0 h-5 gap-1 border-white/[0.08] text-white/50">
+                  To: {dateTo}
+                  <button onClick={() => setDateTo('')}><X className="w-2.5 h-2.5" /></button>
+                </Badge>
+              )}
+              {amountMin && (
+                <Badge variant="outline" className="text-[10px] py-0 h-5 gap-1 border-white/[0.08] text-white/50">
+                  ≥ {formatIdr(parseFloat(amountMin))}
+                  <button onClick={() => setAmountMin('')}><X className="w-2.5 h-2.5" /></button>
+                </Badge>
+              )}
+              {amountMax && (
+                <Badge variant="outline" className="text-[10px] py-0 h-5 gap-1 border-white/[0.08] text-white/50">
+                  ≤ {formatIdr(parseFloat(amountMax))}
+                  <button onClick={() => setAmountMax('')}><X className="w-2.5 h-2.5" /></button>
+                </Badge>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Advanced filters panel */}
+        <AnimatePresence>
+          {advancedOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0, marginTop: 0 }}
+              animate={{ height: 'auto', opacity: 1, marginTop: 4 }}
+              exit={{ height: 0, opacity: 0, marginTop: 0 }}
+              transition={{ duration: 0.2 }}
+              className="overflow-hidden"
+            >
+              <div className="glass-card p-4 rounded-xl">
+                <div className="flex flex-col sm:flex-row gap-4">
+                  {/* Date range */}
+                  <div className="flex-1">
+                    <label className="text-[10px] font-medium text-white/30 uppercase tracking-wider mb-2 block">
+                      Date Range
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="date"
+                        value={dateFrom}
+                        onChange={(e) => { setDateFrom(e.target.value); setPage(1); }}
+                        className="flex-1 bg-white/[0.04] border-white/[0.08] text-white/70 text-xs h-8"
+                      />
+                      <span className="text-white/20 text-xs">→</span>
+                      <Input
+                        type="date"
+                        value={dateTo}
+                        onChange={(e) => { setDateTo(e.target.value); setPage(1); }}
+                        className="flex-1 bg-white/[0.04] border-white/[0.08] text-white/70 text-xs h-8"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Amount range */}
+                  <div className="flex-1">
+                    <label className="text-[10px] font-medium text-white/30 uppercase tracking-wider mb-2 block">
+                      Amount Range
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <div className="relative flex-1">
+                        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-white/20 text-xs">Rp</span>
+                        <Input
+                          type="number"
+                          placeholder="Min"
+                          value={amountMin}
+                          onChange={(e) => { setAmountMin(e.target.value); setPage(1); }}
+                          className="pl-8 bg-white/[0.04] border-white/[0.08] text-white/70 text-xs h-8"
+                        />
+                      </div>
+                      <span className="text-white/20 text-xs">→</span>
+                      <div className="relative flex-1">
+                        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-white/20 text-xs">Rp</span>
+                        <Input
+                          type="number"
+                          placeholder="Max"
+                          value={amountMax}
+                          onChange={(e) => { setAmountMax(e.target.value); setPage(1); }}
+                          className="pl-8 bg-white/[0.04] border-white/[0.08] text-white/70 text-xs h-8"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Quick presets */}
+                <div className="flex items-center gap-2 mt-3 pt-3 border-t border-white/[0.05]">
+                  <span className="text-[10px] font-medium text-white/25 uppercase tracking-wider">Presets:</span>
+                  {[
+                    { label: 'This Month', dateFrom: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().slice(0, 10), dateTo: '' },
+                    { label: 'Last Month', dateFrom: new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).toISOString().slice(0, 10), dateTo: new Date(new Date().getFullYear(), new Date().getMonth(), 0).toISOString().slice(0, 10) },
+                    { label: 'Last 7d', dateFrom: new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 10), dateTo: '' },
+                    { label: 'Last 30d', dateFrom: new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10), dateTo: '' },
+                  ].map((preset) => (
+                    <Button
+                      key={preset.label}
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => { setDateFrom(preset.dateFrom); setDateTo(preset.dateTo); setPage(1); }}
+                      className="h-6 text-[10px] px-2 text-white/40 hover:text-white/70 hover:bg-white/[0.06]"
+                    >
+                      {preset.label}
+                    </Button>
+                  ))}
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => { setDateFrom(''); setDateTo(''); setAmountMin(''); setAmountMax(''); setPage(1); }}
+                    className="h-6 text-[10px] px-2 text-white/25 hover:text-white/50 ml-auto"
+                  >
+                    Clear
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* ─── Summary Bar ────────────────────────────────────────── */}
+      <div className="flex items-center justify-between mb-4">
+        <p className="text-xs text-white/30">
+          <span className="text-white/60 font-semibold">{filtered.length.toLocaleString()}</span> transaction{filtered.length !== 1 ? 's' : ''}
+          {filtered.length !== transactions.length && (
+            <span className="text-white/20"> / {transactions.length.toLocaleString()} total</span>
+          )}
+        </p>
+      </div>
+
+      {/* ─── Bulk Actions ───────────────────────────────────────── */}
+      <AnimatePresence>
+        {selected.size > 0 && (
+          <motion.div
+            initial={{ height: 0, opacity: 0, marginBottom: 0 }}
+            animate={{ height: 'auto', opacity: 1, marginBottom: 16 }}
+            exit={{ height: 0, opacity: 0, marginBottom: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
+          >
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+              <span className="text-xs font-semibold text-emerald-400">{selected.size} selected</span>
+              <Select value={bulkCategory} onValueChange={setBulkCategory}>
+                <SelectTrigger className="w-[180px] h-8 text-xs bg-white/[0.04] border-white/[0.08] text-white/60">
+                  <SelectValue placeholder="Change category..." />
+                </SelectTrigger>
+                <SelectContent className="bg-navy-800 border-white/[0.08]">
+                  {categories.map((c) => (
+                    <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button size="sm" variant="outline" onClick={handleBulkCategory} disabled={!bulkCategory}
+                className="h-8 text-xs border-white/[0.08] text-white/60 hover:bg-white/[0.06] hover:text-white"
+              >
+                Apply
+              </Button>
+              <div className="flex-1" />
+              <Button size="sm" variant="ghost" onClick={() => setSelected(new Set())}
+                className="h-8 text-xs text-white/40 hover:text-white/70"
+              >
+                Deselect
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={handleBulkDelete}
+                className="h-8 text-xs text-red-400 hover:text-red-300 hover:bg-red-500/10"
+              >
+                Delete {selected.size}
+              </Button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ─── Table ───────────────────────────────────────────────── */}
+      <div className="overflow-x-auto rounded-xl border border-white/[0.06]">
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead className="w-10">
+            <TableRow className="bg-white/[0.02] border-white/[0.06] hover:bg-white/[0.02]">
+              <TableHead className="w-10 py-3">
                 <Checkbox
                   checked={selected.size === pageRows.length && pageRows.length > 0}
                   onCheckedChange={toggleSelectAll}
                   aria-label="Select all"
                 />
               </TableHead>
-              <SortableHeader sortKey="paid" currentDirection={isSorted('paid')} onSort={toggleSort}>Paid</SortableHeader>
-              {showMonth && <SortableHeader sortKey="month" currentDirection={isSorted('month')} onSort={toggleSort}>Month</SortableHeader>}
-              <SortableHeader sortKey="title" currentDirection={isSorted('title')} onSort={toggleSort}>Title</SortableHeader>
-              <SortableHeader sortKey="category" currentDirection={isSorted('category')} onSort={toggleSort}>Category</SortableHeader>
-              <SortableHeader sortKey="date" currentDirection={isSorted('date')} onSort={toggleSort}>Date</SortableHeader>
-              <SortableHeader sortKey="amount" currentDirection={isSorted('amount')} onSort={toggleSort} className="text-right">Amount</SortableHeader>
-              <SortableHeader sortKey="type" currentDirection={isSorted('type')} onSort={toggleSort}>Type</SortableHeader>
-              <TableHead></TableHead>
+              <SortableHeader sortKey="paid" currentDirection={isSorted('paid')} onSort={toggleSort} className="text-white/40">Paid</SortableHeader>
+              {showMonth && <SortableHeader sortKey="month" currentDirection={isSorted('month')} onSort={toggleSort} className="text-white/40">Month</SortableHeader>}
+              <SortableHeader sortKey="title" currentDirection={isSorted('title')} onSort={toggleSort} className="text-white/40">Title</SortableHeader>
+              <SortableHeader sortKey="category" currentDirection={isSorted('category')} onSort={toggleSort} className="text-white/40">Category</SortableHeader>
+              <SortableHeader sortKey="date" currentDirection={isSorted('date')} onSort={toggleSort} className="text-white/40">Date</SortableHeader>
+              <SortableHeader sortKey="amount" currentDirection={isSorted('amount')} onSort={toggleSort} className="text-right text-white/40">Amount</SortableHeader>
+              <SortableHeader sortKey="type" currentDirection={isSorted('type')} onSort={toggleSort} className="text-white/40">Type</SortableHeader>
+              <TableHead className="text-white/40"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {pageRows.map((row) => {
-              const createdDate = parseCreatedTime(row);
-              const dateStr = isNaN(createdDate.getTime())
-                ? row.date
-                : createdDate.toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' });
+            {pageRows.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={showMonth ? 9 : 8} className="text-center py-12 text-white/25 text-sm">
+                  <Filter className="w-8 h-8 mx-auto mb-3 opacity-30" />
+                  No transactions found
+                  {activeFilterCount > 0 && (
+                    <div className="mt-1">
+                      <button onClick={clearFilters} className="text-emerald-400 text-xs hover:underline">
+                        Clear all filters
+                      </button>
+                    </div>
+                  )}
+                </TableCell>
+              </TableRow>
+            ) : (
+              pageRows.map((row) => {
+                const createdDate = parseCreatedTime(row);
+                const dateStr = isNaN(createdDate.getTime())
+                  ? row.date
+                  : createdDate.toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' });
 
-              const typeClass =
-                row.type === 'cash'
-                  ? 'text-blue-600 dark:text-blue-400'
-                  : row.type === 'credit_payment'
-                  ? 'text-amber-600 dark:text-amber-400'
-                  : 'text-purple-600 dark:text-purple-400';
-              const typeLabel =
-                row.type === 'cash' ? 'Cash' : row.type === 'credit_payment' ? 'Credit Pay' : 'Credit';
+                const typeColorClass =
+                  row.type === 'cash'
+                    ? 'text-blue-400'
+                    : row.type === 'credit_payment'
+                    ? 'text-amber-400'
+                    : 'text-purple-400';
+                const typeBgClass =
+                  row.type === 'cash'
+                    ? 'bg-blue-500/10'
+                    : row.type === 'credit_payment'
+                    ? 'bg-amber-500/10'
+                    : 'bg-purple-500/10';
+                const typeLabel =
+                  row.type === 'cash' ? 'Cash' : row.type === 'credit_payment' ? 'Credit Pay' : 'Credit';
 
-              return (
-                <TableRow key={row.id}>
-                  <TableCell>
-                    <Checkbox
-                      checked={selected.has(row.id)}
-                      onCheckedChange={() => toggleSelect(row.id)}
-                      aria-label={`Select ${row.title}`}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={async () => {
-                        await toggleTransactionDoneApi(row.id, !row.done);
-                        window.location.reload();
-                      }}
-                      className={`h-7 text-xs font-semibold px-2 py-0 ${
-                        row.done
-                          ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400'
-                          : 'bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400'
-                      }`}
-                    >
-                      {row.done ? 'Paid' : 'Unpaid'}
-                    </Button>
-                  </TableCell>
-                  {showMonth && <TableCell className="font-medium">{periodIdToMonth.get(row.period_id) || ''}</TableCell>}
-                  <TableCell>
-                    <span>{row.title}</span>
-                    {row.notes && (
-                      <StickyNote className="inline ml-1.5 align-middle w-3.5 h-3.5 text-amber-500 dark:text-amber-400" title={row.notes} />
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="secondary">{row.category}</Badge>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground text-xs">{dateStr}</TableCell>
-                  <TableCell className="font-medium text-right">{formatIdr(row.amount)}</TableCell>
-                  <TableCell className={`${typeClass} text-xs font-semibold uppercase`}>{typeLabel}</TableCell>
-                  <TableCell>
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => {
-                          setEditingId(row.id);
-                          setEditForm({ ...row });
-                        }}
-                        className="h-7 text-xs text-blue-500 hover:text-blue-700"
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
+                return (
+                  <TableRow key={row.id} className="border-white/[0.04] hover:bg-white/[0.02] transition-colors">
+                    <TableCell className="py-2.5">
+                      <Checkbox
+                        checked={selected.has(row.id)}
+                        onCheckedChange={() => toggleSelect(row.id)}
+                        aria-label={`Select ${row.title}`}
+                      />
+                    </TableCell>
+                    <TableCell className="py-2.5">
+                      <button
                         onClick={async () => {
-                          const confirmed = await confirmAction({
-                            title: 'Delete Transaction',
-                            description: `Delete "${row.title}" (${formatIdr(row.amount)})?`,
-                            confirmLabel: 'Delete',
-                            variant: 'destructive',
-                          });
-                          if (!confirmed) return;
-                          await deleteTransactionApi(row.id);
+                          await toggleTransactionDoneApi(row.id, !row.done);
                           window.location.reload();
                         }}
-                        className="h-7 text-xs text-red-500 hover:text-red-700"
+                        className={`h-6 text-[10px] font-semibold px-2 rounded-md transition-colors ${
+                          row.done
+                            ? 'bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25'
+                            : 'bg-red-500/10 text-red-400 hover:bg-red-500/20'
+                        }`}
                       >
-                        Delete
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
+                        {row.done ? 'Paid' : 'Unpaid'}
+                      </button>
+                    </TableCell>
+                    {showMonth && <TableCell className="py-2.5 text-white/60 text-sm">{periodIdToMonth.get(row.period_id) || ''}</TableCell>}
+                    <TableCell className="py-2.5">
+                      <span className="text-white/80">{row.title}</span>
+                      {row.notes && (
+                        <StickyNote className="inline ml-1.5 align-middle w-3 h-3 text-amber-400 shrink-0" title={row.notes} />
+                      )}
+                    </TableCell>
+                    <TableCell className="py-2.5">
+                      <Badge variant="secondary" className="text-[10px] bg-white/[0.06] text-white/60 border-white/[0.06] font-normal">
+                        {row.category}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="py-2.5 text-white/40 text-xs whitespace-nowrap">{dateStr}</TableCell>
+                    <TableCell className="py-2.5 font-semibold text-right text-white/80 tabular-nums whitespace-nowrap">{formatIdr(row.amount)}</TableCell>
+                    <TableCell className="py-2.5">
+                      <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase ${typeColorClass} ${typeBgClass}`}>
+                        {typeLabel}
+                      </span>
+                    </TableCell>
+                    <TableCell className="py-2.5">
+                      <div className="flex gap-1">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => { setEditingId(row.id); setEditForm({ ...row }); }}
+                          className="h-7 text-xs text-white/50 hover:text-white hover:bg-white/[0.06]"
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={async () => {
+                            const confirmed = await confirmAction({
+                              title: 'Delete Transaction',
+                              description: `Delete "${row.title}" (${formatIdr(row.amount)})?`,
+                              confirmLabel: 'Delete',
+                              variant: 'destructive',
+                            });
+                            if (!confirmed) return;
+                            await deleteTransactionApi(row.id);
+                            window.location.reload();
+                          }}
+                          className="h-7 text-xs text-white/30 hover:text-red-400 hover:bg-red-500/10"
+                        >
+                          Delete
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })
+            )}
           </TableBody>
         </Table>
       </div>
 
+      {/* ─── Pagination ─────────────────────────────────────────── */}
       <div className="flex items-center justify-between mt-4">
-        <p className="text-xs text-white/50">
-          Showing {(safePage - 1) * rowsPerPage + 1}–{Math.min(safePage * rowsPerPage, filtered.length)} of {filtered.length}
+        <p className="text-xs text-white/30">
+          {filtered.length > 0
+            ? `Showing ${(safePage - 1) * rowsPerPage + 1}–${Math.min(safePage * rowsPerPage, filtered.length)} of ${filtered.length}`
+            : 'No results'}
         </p>
         <div className="flex items-center gap-2">
           <Button
             size="sm"
             variant="outline"
+            onClick={() => setPage(1)}
+            disabled={safePage <= 1}
+            className="h-7 text-xs border-white/[0.08] text-white/40 hover:bg-white/[0.06] disabled:opacity-20"
+          >
+            First
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={safePage <= 1}
+            className="h-7 text-xs border-white/[0.08] text-white/40 hover:bg-white/[0.06] disabled:opacity-20"
           >
-            Previous
+            Prev
           </Button>
-          <span className="text-xs text-white/50 min-w-[3rem] text-center">
-            {safePage} / {totalPages}
+          <span className="text-xs text-white/40 min-w-[5rem] text-center tabular-nums">
+            {safePage} <span className="text-white/15">/</span> {totalPages}
           </span>
           <Button
             size="sm"
             variant="outline"
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={safePage >= totalPages}
+            className="h-7 text-xs border-white/[0.08] text-white/40 hover:bg-white/[0.06] disabled:opacity-20"
           >
             Next
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setPage(totalPages)}
+            disabled={safePage >= totalPages}
+            className="h-7 text-xs border-white/[0.08] text-white/40 hover:bg-white/[0.06] disabled:opacity-20"
+          >
+            Last
           </Button>
         </div>
       </div>
 
+      {/* ─── Edit Dialog ────────────────────────────────────────── */}
       {editingId && (
         <EditTransactionDialog
           open={true}
