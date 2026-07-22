@@ -27,24 +27,37 @@
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
+    --background: 228 57% 10%;    /* navy-800 */
     --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
+    --card: 228 45% 14%;          /* navy-700 */
     --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
+    --popover: 228 50% 12%;       /* navy-800 */
     --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
+    --primary: 163 94% 42%;       /* mint-500 */
     --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
+    --secondary: 228 30% 18%;     /* navy-600 */
     --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
+    --muted: 228 25% 16%;         /* navy-600/700 mid */
     --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
+    --accent: 228 30% 18%;        /* navy-600 */
     --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 84% 60%;     /* coral-500 */
     --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --border: 228 25% 20%;        /* navy-600 */
+    --input: 228 25% 20%;         /* navy-600 */
+    --ring: 163 94% 42%;          /* mint-500 */
+  }
+}
+
+@layer components {
+  /* ─── Glass Utility Classes (Revolut-style frosted panels) ─── */
+  .glass-card {
+    @apply bg-navy-800/60 backdrop-blur-xl border border-white/[0.08] rounded-xl;
+  }
+  .glass-card-elevated {
+    @apply bg-navy-700/70 backdrop-blur-2xl border border-white/[0.12] rounded-xl shadow-elevation-2;
+  }
+  .glass-nav {
+    @apply bg-navy-950/80 backdrop-blur-xl border-b border-white/[0.06];
   }
 }

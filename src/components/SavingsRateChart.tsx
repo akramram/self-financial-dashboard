@@ -12,6 +12,7 @@ import {
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import type { MonthlySummary } from '../lib/data';
+import { FP, getAreaGradient } from '../lib/chartConfig';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Filler, Legend);
 
@@ -29,15 +30,12 @@ export default function SavingsRateChart({ data }: { data: MonthlySummary[] }) {
       {
         label: 'Savings Rate',
         data: rates,
-        borderColor: '#6366f1',
+        borderColor: FP.mint,
         backgroundColor: (context: any) => {
           const chart = context.chart;
           const { ctx, chartArea } = chart;
-          if (!chartArea) return 'rgba(99, 102, 241, 0.1)';
-          const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
-          gradient.addColorStop(0, 'rgba(99, 102, 241, 0.25)');
-          gradient.addColorStop(1, 'rgba(99, 102, 241, 0.02)');
-          return gradient;
+          if (!chartArea) return FP.mint + '20';
+          return getAreaGradient(ctx, chartArea, FP.mint);
         },
         fill: true,
         tension: 0.35,

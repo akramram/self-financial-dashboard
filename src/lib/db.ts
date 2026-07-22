@@ -534,7 +534,7 @@ export function insertRecurringTransaction(tx: Omit<any, 'id'>) {
     done: tx.done ? 1 : 0,
     active: tx.active !== false ? 1 : 0,
     end_date: tx.end_date || null,
-    created_at: tx.created_at || '21',
+    created_at: tx.created_at || new Date().toISOString(),
   });
   return result.lastInsertRowid as number;
 }

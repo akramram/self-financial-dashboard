@@ -208,7 +208,7 @@ export default function AddTransactionForm() {
                 </button>
               )}
               {suggestionLoading && (
-                <span className="inline-flex items-center gap-1 text-[11px] text-slate-400">
+                <span className="inline-flex items-center gap-1 text-[11px] text-white/40">
                   <Loader2 className="w-3 h-3 animate-spin" />
                   Matching…
                 </span>
@@ -230,7 +230,7 @@ export default function AddTransactionForm() {
                 <option key={c.id} value={c.name} />
               ))}
             </datalist>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-white/50">
               {isAutoFilled && !categoryUserTouched
                 ? 'Category auto-suggested from your history — override anytime'
                 : 'Pick an existing category or type a new one'}
@@ -268,7 +268,7 @@ export default function AddTransactionForm() {
               checked={done}
               onCheckedChange={(v) => setDone(!!v)}
             />
-            <Label htmlFor="done" className="text-sm text-slate-600 dark:text-slate-300">Paid / Done</Label>
+            <Label htmlFor="done" className="text-sm text-white/60">Paid / Done</Label>
           </div>
 
           <div className="space-y-1.5">

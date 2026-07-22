@@ -276,22 +276,22 @@ export default function TransactionTable({ transactions, showMonth = true, perio
 
       <div className="flex flex-col sm:flex-row gap-3 mb-4">
         <div className="flex gap-2 items-center">
-          <label className="text-xs text-slate-500">From</label>
+          <label className="text-xs text-white/50">From</label>
           <Input type="date" value={dateFrom} onChange={(e) => { setDateFrom(e.target.value); setPage(1); }} className="w-auto text-xs" />
-          <label className="text-xs text-slate-500">To</label>
+          <label className="text-xs text-white/50">To</label>
           <Input type="date" value={dateTo} onChange={(e) => { setDateTo(e.target.value); setPage(1); }} className="w-auto text-xs" />
         </div>
         <div className="flex gap-2 items-center">
-          <label className="text-xs text-slate-500">Min</label>
+          <label className="text-xs text-white/50">Min</label>
           <Input type="number" placeholder="Amount" value={amountMin} onChange={(e) => { setAmountMin(e.target.value); setPage(1); }} className="w-28 text-xs" />
-          <label className="text-xs text-slate-500">Max</label>
+          <label className="text-xs text-white/50">Max</label>
           <Input type="number" placeholder="Amount" value={amountMax} onChange={(e) => { setAmountMax(e.target.value); setPage(1); }} className="w-28 text-xs" />
         </div>
       </div>
 
       {selected.size > 0 && (
         <div className="flex gap-2 mb-4 items-center">
-          <span className="text-xs text-slate-500">{selected.size} selected</span>
+          <span className="text-xs text-white/50">{selected.size} selected</span>
           <select
             value={bulkCategory}
             onChange={(e) => setBulkCategory(e.target.value)}
@@ -428,7 +428,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
       </div>
 
       <div className="flex items-center justify-between mt-4">
-        <p className="text-xs text-slate-500 dark:text-slate-400">
+        <p className="text-xs text-white/50">
           Showing {(safePage - 1) * rowsPerPage + 1}–{Math.min(safePage * rowsPerPage, filtered.length)} of {filtered.length}
         </p>
         <div className="flex items-center gap-2">
@@ -440,7 +440,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
           >
             Previous
           </Button>
-          <span className="text-xs text-slate-500 dark:text-slate-400 min-w-[3rem] text-center">
+          <span className="text-xs text-white/50 min-w-[3rem] text-center">
             {safePage} / {totalPages}
           </span>
           <Button

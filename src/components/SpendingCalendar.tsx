@@ -191,7 +191,7 @@ export default function SpendingCalendar({ transactions, periods }: Props) {
   };
 
   const getHeatColor = (total: number) => {
-    if (total === 0) return 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500';
+    if (total === 0) return 'bg-white/[0.02] text-white/20';
     if (maxDaily === 0) return 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400';
     const ratio = total / maxDaily;
     if (ratio <= 0.25) return 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400';
@@ -240,7 +240,7 @@ export default function SpendingCalendar({ transactions, periods }: Props) {
             <ChevronRight className="w-4 h-4" />
           </Button>
         </div>
-        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+        <div className="flex items-center gap-4 text-sm text-white/40">
           <div className="flex items-center gap-1.5">
             <span className="inline-block w-3 h-3 rounded-sm bg-emerald-200 dark:bg-emerald-800/40" />
             <span>Low</span>
@@ -260,10 +260,10 @@ export default function SpendingCalendar({ transactions, periods }: Props) {
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-base font-semibold flex items-center gap-2">
-            <CalendarDays className="w-4 h-4 text-slate-500" />
+            <CalendarDays className="w-4 h-4 text-white/40" />
             Spending Heatmap — {selectedMonth}
             {selectedPeriodId && (
-              <span className="text-xs font-normal text-muted-foreground">
+              <span className="text-xs font-normal text-white/40">
                 (Period transactions)
               </span>
             )}
@@ -272,7 +272,7 @@ export default function SpendingCalendar({ transactions, periods }: Props) {
         <CardContent>
           <div className="grid grid-cols-7 gap-1">
             {WEEKDAYS.map((wd) => (
-              <div key={wd} className="text-center text-xs font-medium text-muted-foreground py-2">
+              <div key={wd} className="text-center text-xs font-medium text-white/30 py-2">
                 {wd}
               </div>
             ))}
@@ -295,11 +295,11 @@ export default function SpendingCalendar({ transactions, periods }: Props) {
                     aspect-square rounded-lg border transition-all hover:scale-105 hover:shadow-sm
                     flex flex-col items-center justify-center gap-0.5
                     ${heatClass}
-                    ${isToday ? 'ring-2 ring-blue-500 dark:ring-blue-400 ring-offset-1 dark:ring-offset-slate-900' : 'border-slate-200 dark:border-slate-700'}
+                    ${isToday ? 'ring-2 ring-blue-500 ring-offset-1 ring-offset-navy-950' : 'border-white/[0.06]'}
                     ${count > 0 ? 'cursor-pointer' : 'cursor-default'}
                   `}
                 >
-                  <span className={`text-xs font-medium ${isToday ? 'text-blue-600 dark:text-blue-400' : ''}`}>
+                  <span className={`text-xs font-medium ${isToday ? 'text-blue-400' : ''}`}>
                     {day}
                   </span>
                   {count > 0 && (
@@ -323,7 +323,7 @@ export default function SpendingCalendar({ transactions, periods }: Props) {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card>
           <CardContent className="pt-6">
-            <div className="text-xs text-muted-foreground mb-1">Days with Spending</div>
+            <div className="text-xs text-white/40 mb-1">Days with Spending</div>
             <div className="text-2xl font-semibold">
               {Object.values(dailyTotals).filter((d) => d.total > 0).length}
             </div>
@@ -331,7 +331,7 @@ export default function SpendingCalendar({ transactions, periods }: Props) {
         </Card>
         <Card>
           <CardContent className="pt-6">
-            <div className="text-xs text-muted-foreground mb-1">Total Transactions</div>
+            <div className="text-xs text-white/40 mb-1">Total Transactions</div>
             <div className="text-2xl font-semibold">
               {Object.values(dailyTotals).reduce((s, d) => s + d.count, 0)}
             </div>
@@ -339,7 +339,7 @@ export default function SpendingCalendar({ transactions, periods }: Props) {
         </Card>
         <Card>
           <CardContent className="pt-6">
-            <div className="text-xs text-muted-foreground mb-1">Monthly Spend</div>
+            <div className="text-xs text-white/40 mb-1">Monthly Spend</div>
             <div className="text-2xl font-semibold">
               {formatIdr(Object.values(dailyTotals).reduce((s, d) => s + d.total, 0))}
             </div>
@@ -352,7 +352,7 @@ export default function SpendingCalendar({ transactions, periods }: Props) {
         <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <CalendarDays className="w-5 h-5 text-slate-500" />
+              <CalendarDays className="w-5 h-5 text-white/40" />
               {selectedMonth} {selectedDay}
             </DialogTitle>
             <DialogDescription>
@@ -417,7 +417,7 @@ export default function SpendingCalendar({ transactions, periods }: Props) {
               </Table>
             </div>
           ) : (
-            <div className="py-8 text-center text-sm text-muted-foreground">
+            <div className="py-8 text-center text-sm text-white/30">
               No transactions recorded for this day.
             </div>
           )}

@@ -18,17 +18,7 @@ for (const s of summaries) {
 }
 ---
 
-<Layout title="Financial Dashboard">
-  <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-    <div>
-      <h1 class="text-2xl font-bold">Dashboard</h1>
-      <p class="text-slate-500 dark:text-slate-400 text-sm">Overview of income, outcome, and networth</p>
-    </div>
-    <a href="/add" class="px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-700 transition">
-      + Add Data
-    </a>
-  </div>
-
+<Layout title="Dashboard">
   <Dashboard
     transactions={transactions}
     networth={networth}

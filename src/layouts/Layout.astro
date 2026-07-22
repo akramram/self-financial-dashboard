@@ -1,9 +1,14 @@
 ---
 import '../styles/globals.css';
+import FintechSidebar from '../components/FintechSidebar';
+import FintechBottomTabs from '../components/FintechBottomTabs';
+
 export interface Props {
   title?: string;
+  balance?: string;
+  alerts?: number;
 }
-const { title = 'Financial Dashboard' } = Astro.props;
+const { title = 'Financial Dashboard', balance, alerts = 0 } = Astro.props;
 ---
 
 <!DOCTYPE html>
@@ -13,7 +18,7 @@ const { title = 'Financial Dashboard' } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
     <meta name="description" content="Personal finance tracker — income, expenses, networth, and budget." />
-    <meta name="theme-color" content="#059669" />
+    <meta name="theme-color" content="#0a0e27" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="FinDash" />
@@ -31,277 +36,75 @@ const { title = 'Financial Dashboard' } = Astro.props;
       })();
     </script>
   </head>
-  <body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+  <body class="bg-navy-950 text-slate-100 min-h-screen">
 
-      <!-- Top bar: Logo + Search + Dark toggle -->
-      <div class="flex items-center justify-between mb-4">
-        <a href="/" class="text-xl sm:text-2xl font-bold tracking-tight hover:text-slate-600 dark:hover:text-slate-300 transition">
-          💰 Financial Dashboard
-        </a>
-        <div class="flex items-center gap-2">
-          <!-- Command Palette Trigger -->
-          <button id="cmdPaletteBtn" class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-200/70 dark:bg-slate-700/70 text-xs font-medium text-slate-500 dark:text-slate-400 hover:bg-slate-300 dark:hover:bg-slate-600 transition border border-slate-200 dark:border-slate-600" aria-label="Open command palette">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-            <span>Search...</span>
-            <kbd class="ml-4 px-1 py-0.5 rounded border border-slate-300 dark:border-slate-500 bg-white dark:bg-slate-800 text-[10px] font-mono">⌘K</kbd>
-          </button>
-          <button id="themeToggle" class="p-2 rounded-lg bg-slate-200 dark:bg-slate-700 text-sm font-medium hover:bg-slate-300 dark:hover:bg-slate-600 transition" aria-label="Toggle dark mode">
-            <span class="dark:hidden">🌙</span>
-            <span class="hidden dark:inline">☀️</span>
-          </button>
-          <!-- Auth: role badge + logout -->
-          <span id="roleBadge" class="hidden text-xs font-medium px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"></span>
-          <button id="logoutBtn" class="hidden p-2 rounded-lg bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-sm font-medium hover:bg-red-200 dark:hover:bg-red-900/50 transition" aria-label="Logout">⏻</button>
-          <!-- Hamburger (mobile only) -->
-          <button id="menuToggle" class="sm:hidden p-2 rounded-lg bg-slate-200 dark:bg-slate-700 text-sm font-medium hover:bg-slate-300 dark:hover:bg-slate-600 transition" aria-label="Toggle menu">
-            <svg id="menuIconOpen" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
-            <svg id="menuIconClose" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-          </button>
-        </div>
+    <!-- Desktop Sidebar -->
+    <FintechSidebar balance={balance} alerts={alerts} client:load />
+
+    <!-- Mobile Top Bar -->
+    <div class="lg:hidden fixed top-0 left-0 right-0 h-14 flex items-center justify-between px-4 z-40 bg-navy-950/95 backdrop-blur-xl border-b border-white/[0.05]">
+      <a href="/" class="w-8 h-8 rounded-lg flex items-center justify-center no-underline" style="background:linear-gradient(135deg, #34d399, #0ea5e9)">
+        <span class="text-white font-bold text-xs">FD</span>
+      </a>
+      <h1 class="text-sm font-bold text-white">{title}</h1>
+      <div class="flex items-center gap-2">
+        <!-- Dark mode toggle -->
+        <button id="themeToggle" class="p-1.5 rounded-lg bg-white/[0.05] text-white/60 hover:text-white hover:bg-white/10 transition text-sm" aria-label="Toggle dark mode">
+          <span class="dark:hidden">🌙</span>
+          <span class="hidden dark:inline">☀️</span>
+        </button>
+        <!-- Auth -->
+        <span id="roleBadge" class="hidden text-xs font-medium px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"></span>
+        <button id="logoutBtn" class="hidden p-1.5 rounded-lg bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-sm font-medium hover:bg-red-200 dark:hover:bg-red-900/50 transition" aria-label="Logout">⏻</button>
       </div>
+    </div>
+    <!-- Mobile top bar spacer -->
+    <div class="lg:hidden h-14"></div>
 
-      <!-- Desktop nav bar — categorized with dropdown groups -->
-      <nav id="desktopNav" class="hidden sm:flex flex-wrap items-center justify-center gap-1 mb-6 p-3 rounded-xl bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700">
-        <!-- Primary links -->
-        <a href="/" class="nav-link px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600">Dashboard</a>
-        <a href="/transactions" class="nav-link px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600">Transactions</a>
-        <a href="/networth" class="nav-link px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600">Networth</a>
-        <a href="/portfolio" class="nav-link px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600 text-violet-600 dark:text-violet-400">Portfolio</a>
-        <a href="/budget" class="nav-link px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600">Budget</a>
-        <a href="/recurring" class="nav-link px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600">Recurring</a>
-
-        <!-- Divider -->
-        <div class="w-px h-5 bg-slate-200 dark:bg-slate-600 mx-1"></div>
-
-        <!-- Insights dropdown -->
-        <div class="relative" data-dropdown>
-          <button class="nav-dropdown-trigger flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600" data-dropdown-trigger>
-            📊 Insights
-            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-          </button>
-          <div class="nav-dropdown-menu hidden absolute left-0 top-full mt-1 w-56 rounded-xl bg-white dark:bg-slate-800 shadow-lg border border-slate-200 dark:border-slate-700 py-2 z-50">
-            <a href="/analytics" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition">Analytics</a>
-            <a href="/compare" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition">Compare</a>
-            <a href="/savings-rate" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition text-emerald-600 dark:text-emerald-400">Savings Rate</a>
-            <a href="/spending-mix" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition text-indigo-600 dark:text-indigo-400">Spending Mix</a>
-            <a href="/matrix" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition text-fuchsia-600 dark:text-fuchsia-400">Matrix</a>
-            <a href="/cashflow" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition">Cash Flow</a>
-            <a href="/calendar" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition">Calendar</a>
-            <a href="/weekly" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition text-indigo-600 dark:text-indigo-400">Weekly 📅</a>
-            <a href="/spending-rhythm" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition text-indigo-600 dark:text-indigo-400">Spending Rhythm</a>
-            <a href="/merchants" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition text-sky-600 dark:text-sky-400">Merchants</a>
-          </div>
-        </div>
-
-        <!-- Planning dropdown -->
-        <div class="relative" data-dropdown>
-          <button class="nav-dropdown-trigger flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600" data-dropdown-trigger>
-            🎯 Planning
-            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-          </button>
-          <div class="nav-dropdown-menu hidden absolute left-0 top-full mt-1 w-56 rounded-xl bg-white dark:bg-slate-800 shadow-lg border border-slate-200 dark:border-slate-700 py-2 z-50">
-            <a href="/forecast" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition text-rose-600 dark:text-rose-400">Forecast</a>
-            <a href="/fire" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition text-orange-600 dark:text-orange-400">FIRE 🔥</a>
-            <a href="/what-if" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition text-cyan-600 dark:text-cyan-400">What-If</a>
-            <a href="/goals" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition">Goals</a>
-            <a href="/health" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition text-indigo-600 dark:text-indigo-400">Health</a>
-            <a href="/runway" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition text-teal-600 dark:text-teal-400">Runway 🛡️</a>
-            <a href="/dna" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition text-violet-600 dark:text-violet-400">Spending DNA 🧬</a>
-          </div>
-        </div>
-
-        <!-- More dropdown -->
-        <div class="relative" data-dropdown>
-          <button class="nav-dropdown-trigger flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600" data-dropdown-trigger>
-            ✨ More
-            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-          </button>
-          <div class="nav-dropdown-menu hidden absolute left-0 top-full mt-1 w-56 rounded-xl bg-white dark:bg-slate-800 shadow-lg border border-slate-200 dark:border-slate-700 py-2 z-50">
-            <a href="/credit-card" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition text-amber-600 dark:text-amber-400">Credit Card</a>
-            <a href="/recommendations" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition text-indigo-600 dark:text-indigo-400">Recommendations</a>
-            <a href="/streaks" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition text-orange-600 dark:text-orange-400">Streaks 🔥</a>
-            <a href="/achievements" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition text-yellow-600 dark:text-yellow-400">Achievements 🏆</a>
-            <a href="/yearly" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition">Yearly</a>
-            <a href="/report" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition text-teal-600 dark:text-teal-400">Monthly Report</a>
-            <a href="/recurring-audit" class="nav-link block px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition text-cyan-600 dark:text-cyan-400">Recurring Audit 🔄</a>
-          </div>
-        </div>
-
-        <!-- Divider -->
-        <div class="w-px h-5 bg-slate-200 dark:bg-slate-600 mx-1"></div>
-
-        <a href="/settings" class="nav-link viewer-hide px-3 py-1.5 rounded-lg text-sm font-medium transition hover:bg-slate-200 dark:hover:bg-slate-600">⚙️ Settings</a>
-        <a href="/add" class="nav-link-cta viewer-hide px-3 py-1.5 rounded-lg text-sm font-bold transition bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm">+ Add</a>
-      </nav>
-
-      <!-- Mobile nav dropdown — grouped with collapsible sections -->
-      <nav id="mobileNav" class="sm:hidden hidden mb-6 p-3 rounded-xl bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700">
-        <!-- Primary links -->
-        <div class="grid grid-cols-2 gap-1.5 mb-3">
-          <a href="/" class="nav-link px-3 py-2.5 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700">Dashboard</a>
-          <a href="/transactions" class="nav-link px-3 py-2.5 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700">Transactions</a>
-          <a href="/networth" class="nav-link px-3 py-2.5 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700">Networth</a>
-          <a href="/portfolio" class="nav-link px-3 py-2.5 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-violet-600 dark:text-violet-400">Portfolio</a>
-          <a href="/budget" class="nav-link px-3 py-2.5 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700">Budget</a>
-          <a href="/recurring" class="nav-link px-3 py-2.5 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700">Recurring</a>
-        </div>
-
-        <!-- Collapsible: Insights -->
-        <div class="mobile-nav-group mb-2">
-          <button class="mobile-group-toggle w-full flex items-center justify-between px-3 py-2 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition">
-            📊 Insights
-            <svg class="mobile-group-chevron w-3.5 h-3.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-          </button>
-          <div class="mobile-group-content hidden grid grid-cols-2 gap-1.5 px-1 pb-1">
-            <a href="/analytics" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700">Analytics</a>
-            <a href="/compare" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700">Compare</a>
-            <a href="/savings-rate" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-emerald-600 dark:text-emerald-400">Savings</a>
-            <a href="/spending-mix" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-indigo-600 dark:text-indigo-400">Mix</a>
-            <a href="/matrix" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-fuchsia-600 dark:text-fuchsia-400">Matrix</a>
-            <a href="/cashflow" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700">Cash Flow</a>
-            <a href="/calendar" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700">Calendar</a>
-            <a href="/weekly" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-indigo-600 dark:text-indigo-400">Weekly</a>
-            <a href="/spending-rhythm" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-indigo-600 dark:text-indigo-400">Rhythm</a>
-            <a href="/merchants" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-sky-600 dark:text-sky-400">Merchants</a>
-          </div>
-        </div>
-
-        <!-- Collapsible: Planning -->
-        <div class="mobile-nav-group mb-2">
-          <button class="mobile-group-toggle w-full flex items-center justify-between px-3 py-2 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition">
-            🎯 Planning
-            <svg class="mobile-group-chevron w-3.5 h-3.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-          </button>
-          <div class="mobile-group-content hidden grid grid-cols-2 gap-1.5 px-1 pb-1">
-            <a href="/forecast" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-rose-600 dark:text-rose-400">Forecast</a>
-            <a href="/fire" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-orange-600 dark:text-orange-400">FIRE</a>
-            <a href="/what-if" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-cyan-600 dark:text-cyan-400">What-If</a>
-            <a href="/goals" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700">Goals</a>
-            <a href="/health" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-indigo-600 dark:text-indigo-400">Health</a>
-            <a href="/runway" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-teal-600 dark:text-teal-400">Runway</a>
-            <a href="/dna" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-violet-600 dark:text-violet-400">DNA</a>
-          </div>
-        </div>
-
-        <!-- Collapsible: More -->
-        <div class="mobile-nav-group mb-3">
-          <button class="mobile-group-toggle w-full flex items-center justify-between px-3 py-2 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition">
-            ✨ More
-            <svg class="mobile-group-chevron w-3.5 h-3.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-          </button>
-          <div class="mobile-group-content hidden grid grid-cols-2 gap-1.5 px-1 pb-1">
-            <a href="/credit-card" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-amber-600 dark:text-amber-400">Credit Card</a>
-            <a href="/recommendations" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-indigo-600 dark:text-indigo-400">Recommend</a>
-            <a href="/streaks" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-orange-600 dark:text-orange-400">Streaks</a>
-            <a href="/achievements" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-yellow-600 dark:text-yellow-400">Trophies</a>
-            <a href="/yearly" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700">Yearly</a>
-            <a href="/report" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-teal-600 dark:text-teal-400">Report</a>
-            <a href="/recurring-audit" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700 text-cyan-600 dark:text-cyan-400">Audit</a>
-          </div>
-        </div>
-
-        <!-- Bottom: Settings + Add -->
-        <div class="grid grid-cols-2 gap-1.5">
-          <a href="/settings" class="nav-link viewer-hide px-3 py-2.5 rounded-lg text-sm font-medium text-center transition hover:bg-slate-100 dark:hover:bg-slate-700">⚙️ Settings</a>
-          <a href="/add" class="nav-link-cta viewer-hide px-3 py-2.5 rounded-lg text-sm font-bold text-center transition bg-emerald-600 text-white col-span-2 hover:bg-emerald-700 shadow-sm">+ Add Data</a>
-        </div>
-      </nav>
-
-      <slot />
-      <footer class="mt-12 text-center text-xs text-slate-400 dark:text-slate-600 pb-8">
-        Financial Dashboard · Built with Astro & React
-      </footer>
+    <!-- Desktop Top Bar -->
+    <div class="hidden lg:flex items-center justify-between h-16 px-6 border-b border-white/[0.05] ml-[240px] transition-all duration-300" id="desktop-topbar">
+      <div>
+        <h1 class="text-lg font-bold text-white">{title}</h1>
+        <p class="text-xs text-white/30">Financial Dashboard</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <!-- Dark mode toggle -->
+        <button id="themeToggleDesktop" class="p-2 rounded-xl bg-white/[0.05] text-white/60 hover:text-white hover:bg-white/10 transition" aria-label="Toggle dark mode">
+          <span class="dark:hidden">🌙</span>
+          <span class="hidden dark:inline">☀️</span>
+        </button>
+        <!-- Auth -->
+        <span id="roleBadgeDesktop" class="hidden text-xs font-medium px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"></span>
+        <button id="logoutBtnDesktop" class="hidden p-2 rounded-lg bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-sm font-medium hover:bg-red-200 dark:hover:bg-red-900/50 transition" aria-label="Logout">⏻</button>
+        <a href="/add" id="quickAddBtn" class="viewer-hide flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all hover:scale-105 no-underline" style="background:linear-gradient(135deg, #34d399, #0ea5e9)">
+          + Add
+        </a>
+      </div>
     </div>
 
+    <!-- Main content -->
+    <main class="p-4 sm:p-6 lg:pl-6 max-w-7xl mx-auto pb-24 lg:pb-8">
+      <slot />
+    </main>
+
+    <!-- Mobile Bottom Tabs -->
+    <FintechBottomTabs client:load />
+
+    <footer class="text-center text-xs text-white/20 pb-8 hidden lg:block">
+      Financial Dashboard · Built with Astro & React
+    </footer>
+
+    <!-- Dark mode toggle scripts -->
     <script is:inline>
-      // Dark mode toggle
-      const themeToggle = document.getElementById('themeToggle');
-      themeToggle.addEventListener('click', () => {
-        const isDark = document.documentElement.classList.toggle('dark');
-        localStorage.setItem('theme', isDark ? 'dark' : 'light');
-      });
-
-      // Mobile menu toggle
-      const menuToggle = document.getElementById('menuToggle');
-      const mobileNav = document.getElementById('mobileNav');
-      const menuIconOpen = document.getElementById('menuIconOpen');
-      const menuIconClose = document.getElementById('menuIconClose');
-
-      menuToggle.addEventListener('click', () => {
-        const isOpen = !mobileNav.classList.contains('hidden');
-        mobileNav.classList.toggle('hidden');
-        menuIconOpen.classList.toggle('hidden');
-        menuIconClose.classList.toggle('hidden');
-      });
-
-      // Active page highlighting (works on both desktop and mobile nav)
-      function highlightActivePage() {
-        const currentPath = window.location.pathname.replace(/\/$/, '') || '/';
-        document.querySelectorAll('.nav-link, .nav-link-cta').forEach(link => {
-          const href = link.getAttribute('href').replace(/\/$/, '') || '/';
-          if (href === currentPath) {
-            // For dropdown items, highlight the link itself
-            if (link.closest('.nav-dropdown-menu')) {
-              link.classList.add('bg-slate-100', 'dark:bg-slate-600', 'rounded-lg');
-            } else {
-              link.classList.add('bg-slate-200', 'dark:bg-slate-600');
-            }
-          }
-        });
-      }
-      highlightActivePage();
-
-      // Desktop dropdown behavior
-      const dropdowns = document.querySelectorAll('[data-dropdown]');
-      let activeDropdown = null;
-
-      dropdowns.forEach(dropdown => {
-        const trigger = dropdown.querySelector('[data-dropdown-trigger]');
-        const menu = dropdown.querySelector('.nav-dropdown-menu');
-
-        trigger.addEventListener('click', (e) => {
-          e.stopPropagation();
-          if (activeDropdown && activeDropdown !== dropdown) {
-            activeDropdown.querySelector('.nav-dropdown-menu').classList.add('hidden');
-            activeDropdown = null;
-          }
-          menu.classList.toggle('hidden');
-          activeDropdown = menu.classList.contains('hidden') ? null : dropdown;
-        });
-
-        // Hover support: open on hover, close on leave (desktop)
-        dropdown.addEventListener('mouseenter', () => {
-          if (activeDropdown && activeDropdown !== dropdown) {
-            activeDropdown.querySelector('.nav-dropdown-menu').classList.add('hidden');
-          }
-          menu.classList.remove('hidden');
-          activeDropdown = dropdown;
-        });
-
-        dropdown.addEventListener('mouseleave', () => {
-          menu.classList.add('hidden');
-          if (activeDropdown === dropdown) activeDropdown = null;
-        });
-      });
-
-      // Close dropdowns on outside click
-      document.addEventListener('click', () => {
-        if (activeDropdown) {
-          activeDropdown.querySelector('.nav-dropdown-menu').classList.add('hidden');
-          activeDropdown = null;
+      for (const id of ['themeToggle', 'themeToggleDesktop']) {
+        const btn = document.getElementById(id);
+        if (btn) {
+          btn.addEventListener('click', () => {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+          });
         }
-      });
-
-      // Mobile nav collapsible groups
-      document.querySelectorAll('.mobile-group-toggle').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const content = btn.nextElementSibling;
-          const chevron = btn.querySelector('.mobile-group-chevron');
-          content.classList.toggle('hidden');
-          chevron.style.transform = content.classList.contains('hidden') ? '' : 'rotate(180deg)';
-        });
-      });
+      }
     </script>
 
     <!-- Command Palette + Quick Add FAB + Toaster -->
@@ -310,7 +113,6 @@ const { title = 'Financial Dashboard' } = Astro.props;
       import QuickAddFAB from '../components/QuickAddFAB';
       import { Toaster } from '../components/ui/sonner';
       import { ConfirmProvider } from '../components/ConfirmDialog';
-      // Mount command palette + FAB on all pages
       const container = document.createElement('div');
       container.id = 'cmd-palette-root';
       document.body.appendChild(container);
@@ -328,42 +130,57 @@ const { title = 'Financial Dashboard' } = Astro.props;
     </script>
 
     <style is:global>
-      /* Hide scrollbar on mobile nav if it ever appears */
       nav::-webkit-scrollbar { display: none; }
-
-      /* Dropdown menu animation */
-      .nav-dropdown-menu {
-        animation: dropdown-fade-in 0.15s ease-out;
-      }
-      @keyframes dropdown-fade-in {
-        from {
-          opacity: 0;
-          transform: translateY(-4px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      /* Active dropdown trigger */
-      [data-dropdown]:hover [data-dropdown-trigger] {
-        background-color: rgb(226 232 240);
-      }
-      .dark [data-dropdown]:hover [data-dropdown-trigger] {
-        background-color: rgb(71 85 105);
-      }
     </style>
   </body>
   <script is:inline>
+    // Service Worker
     if ('serviceWorker' in navigator) {
+      let swRegistration = null;
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').catch(() => {});
+        navigator.serviceWorker.register('/sw.js')
+          .then(reg => {
+            swRegistration = reg;
+            setInterval(() => { reg.update().catch(() => {}); }, 30 * 60 * 1000);
+            reg.addEventListener('updatefound', () => {
+              const newWorker = reg.installing;
+              if (!newWorker) return;
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  showUpdateBanner();
+                }
+              });
+            });
+          }).catch(() => {});
       });
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        if (event.data && event.data.type === 'SW_UPDATED' && navigator.serviceWorker.controller) {
+          showUpdateBanner();
+        }
+      });
+      function showUpdateBanner() {
+        const banner = document.createElement('div');
+        banner.id = 'sw-update-banner';
+        banner.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);z-index:9999;' +
+          'background:#059669;color:#fff;padding:12px 20px;border-radius:12px;font-size:14px;font-weight:600;' +
+          'box-shadow:0 4px 20px rgba(0,0,0,0.3);cursor:pointer;display:flex;align-items:center;gap:8px;' +
+          'animation:slideUp 0.3s ease;';
+        banner.innerHTML = '🔄 Update available — tap to refresh';
+        banner.addEventListener('click', () => {
+          banner.remove();
+          navigator.serviceWorker.controller?.postMessage({ type: 'SKIP_WAITING' });
+          window.location.reload();
+        });
+        document.body.appendChild(banner);
+        const style = document.createElement('style');
+        style.textContent = '@keyframes slideUp{from{transform:translateX(-50%) translateY(80px);opacity:0}to{transform:translateX(-50%) translateY(0);opacity:1}}';
+        document.head.appendChild(style);
+        setTimeout(() => banner.remove(), 15000);
+      }
     }
   </script>
   <script>
-    // Auth state: fetch user, show role badge, handle logout, hide write controls for viewer
+    // Auth state
     async function initAuth() {
       try {
         const res = await fetch('/api/auth/me');
@@ -371,30 +188,20 @@ const { title = 'Financial Dashboard' } = Astro.props;
         const user = await res.json();
         sessionStorage.setItem('fin_user', JSON.stringify(user));
         window.__finUser = user;
-
-        // Show role badge + logout button
-        const badge = document.getElementById('roleBadge');
-        const logoutBtn = document.getElementById('logoutBtn');
-        if (badge) {
-          badge.textContent = user.role === 'admin' ? '⚡ Admin' : '👁 Viewer';
+        // Show role badges on ALL elements
+        document.querySelectorAll('[id^="roleBadge"]').forEach(badge => {
+          (badge as HTMLElement).textContent = user.role === 'admin' ? '⚡ Admin' : '👁 Viewer';
           badge.classList.remove('hidden');
-          if (user.role === 'viewer') {
-            badge.className = badge.className.replace(/bg-emerald-100|text-emerald-700|dark:bg-emerald-900\/30|dark:text-emerald-400/g, '');
-            badge.classList.add('bg-blue-100', 'text-blue-700', 'dark:bg-blue-900/30', 'dark:text-blue-400');
-          }
-        }
-        if (logoutBtn) logoutBtn.classList.remove('hidden');
-
-        // Logout handler
-        if (logoutBtn) {
-          logoutBtn.addEventListener('click', async () => {
+        });
+        document.querySelectorAll('[id^="logoutBtn"]').forEach(btn => {
+          btn.classList.remove('hidden');
+          btn.addEventListener('click', async () => {
             await fetch('/api/auth/logout', { method: 'POST' });
             sessionStorage.removeItem('fin_user');
             window.location.href = '/login';
           });
-        }
-
-        // Hide write controls for viewer role
+        });
+        // Hide write controls for viewer
         if (user.role === 'viewer') {
           document.querySelectorAll('.viewer-hide').forEach(el => el.classList.add('hidden'));
         }

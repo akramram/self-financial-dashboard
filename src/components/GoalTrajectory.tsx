@@ -164,7 +164,7 @@ export default function GoalTrajectory() {
         )}
 
         {data.has_sufficient_data && (
-          <div className="rounded-md border border-slate-200 dark:border-slate-700 px-3 py-2 flex items-center justify-between gap-3">
+          <div className="rounded-md border border-white/[0.06] px-3 py-2 flex items-center justify-between gap-3">
             <div className="flex items-center gap-2 min-w-0">
               <Gauge className="w-4 h-4 text-indigo-500 shrink-0" />
               <div className="text-xs text-muted-foreground truncate">
@@ -256,7 +256,7 @@ function GoalTrajectoryRowCard({ goal, hasData }: { goal: GoalTrajectoryRow; has
       : `${(paceRatio * 100).toFixed(0)}% dari kebutuhan`;
 
   return (
-    <div className="rounded-lg border border-slate-200 dark:border-slate-700 p-3">
+    <div className="rounded-lg border border-white/[0.06] p-3">
       <div className="flex items-center justify-between gap-2 mb-2">
         <div className="flex items-center gap-2 min-w-0">
           <span
@@ -290,7 +290,7 @@ function GoalTrajectoryRowCard({ goal, hasData }: { goal: GoalTrajectoryRow; has
         </div>
         <Progress
           value={progressPct}
-          className="h-1.5 bg-slate-200 dark:bg-slate-700"
+          className="h-1.5 bg-white/[0.08]"
           indicatorStyle={{ backgroundColor: goal.color }}
         />
       </div>
@@ -298,7 +298,7 @@ function GoalTrajectoryRowCard({ goal, hasData }: { goal: GoalTrajectoryRow; has
       {/* Key metrics grid */}
       <div className="grid grid-cols-2 gap-x-3 gap-y-2 text-xs">
         <Metric
-          icon={<CalendarClock className="w-3.5 h-3.5 text-slate-400" />}
+          icon={<CalendarClock className="w-3.5 h-3.5 text-white/40" />}
           label="Target tanggal"
           value={formatDate(goal.target_date)}
         />
@@ -317,12 +317,12 @@ function GoalTrajectoryRowCard({ goal, hasData }: { goal: GoalTrajectoryRow; has
           }
         />
         <Metric
-          icon={<Minus className="w-3.5 h-3.5 text-slate-400" />}
+          icon={<Minus className="w-3.5 h-3.5 text-white/40" />}
           label="Selisih waktu"
           value={hasData ? formatDelta(goal.days_delta) : '—'}
         />
         <Metric
-          icon={<Gauge className="w-3.5 h-3.5 text-slate-400" />}
+          icon={<Gauge className="w-3.5 h-3.5 text-white/40" />}
           label="Pace vs kebutuhan"
           value={hasData ? paceLabel : '—'}
           valueClassName={

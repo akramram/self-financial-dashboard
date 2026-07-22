@@ -259,7 +259,7 @@ export default function RecurringManager() {
                   value={addForm.end_date}
                   onChange={(e) => setAddForm((p) => ({ ...p, end_date: e.target.value }))}
                 />
-                <p className="text-xs text-slate-400">Stop auto-adding after this month (e.g., last installment)</p>
+                <p className="text-xs text-white/40">Stop auto-adding after this month (e.g., last installment)</p>
               </div>
               <div className="space-y-1.5">
                 <Label>Tgl Transaksi</Label>
@@ -270,7 +270,7 @@ export default function RecurringManager() {
                   value={addForm.created_at}
                   onChange={(e) => setAddForm((p) => ({ ...p, created_at: e.target.value }))}
                 />
-                <p className="text-xs text-slate-400">Tanggal transaksi muncul tiap bulan (1-28, default: hari ini)</p>
+                <p className="text-xs text-white/40">Tanggal transaksi muncul tiap bulan (1-28, default: hari ini)</p>
               </div>
             </div>
             <div className="flex justify-end">
@@ -410,17 +410,17 @@ export default function RecurringManager() {
                       <TableCell className="text-xs">
                         {item.type === 'cash' ? 'Cash' : item.type === 'credit_expense' ? 'Credit' : 'Credit Pay'}
                       </TableCell>
-                      <TableCell className="text-xs text-slate-400">
+                      <TableCell className="text-xs text-white/40">
                         {item.end_date || '—'}
                       </TableCell>
-                      <TableCell className="text-xs text-slate-400">
+                      <TableCell className="text-xs text-white/40">
                         {item.created_at || '—'}
                       </TableCell>
                       <TableCell>
                         {item.done ? (
                           <span className="text-xs text-emerald-600 font-medium">Paid</span>
                         ) : (
-                          <span className="text-xs text-slate-400">—</span>
+                          <span className="text-xs text-white/40">—</span>
                         )}
                       </TableCell>
                       <TableCell>

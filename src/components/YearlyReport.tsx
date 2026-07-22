@@ -235,7 +235,7 @@ export default function YearlyReport({ summaries, categories }: Props) {
     <div className="space-y-6">
       {/* Year Selector */}
       <div className="flex items-center gap-3">
-        <label className="text-sm font-medium text-slate-600 dark:text-slate-300">Year:</label>
+        <label className="text-sm font-medium text-white/60">Year:</label>
         <Select value={String(selectedYear)} onValueChange={(v) => setSelectedYear(Number(v))}>
           <SelectTrigger className="w-[140px]">
             <SelectValue />
@@ -324,7 +324,7 @@ export default function YearlyReport({ summaries, categories }: Props) {
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-base font-semibold flex items-center gap-2">
-                <CalendarDays className="w-4 h-4 text-slate-500" />
+                <CalendarDays className="w-4 h-4 text-white/50" />
                 Monthly Breakdown — {selectedYear}
               </CardTitle>
             </CardHeader>
@@ -356,9 +356,9 @@ export default function YearlyReport({ summaries, categories }: Props) {
                 <CardContent>
                   <div className="space-y-2">
                     {topSpendingMonths.map((m, i) => (
-                      <div key={m.month} className="flex justify-between items-center p-2 rounded-lg bg-slate-50 dark:bg-slate-700/50">
+                      <div key={m.month} className="flex justify-between items-center p-2 rounded-lg bg-slate-50 bg-white/[0.06]">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs font-semibold text-slate-400 w-4">#{i + 1}</span>
+                          <span className="text-xs font-semibold text-white/40 w-4">#{i + 1}</span>
                           <span className="text-sm font-medium">{m.month}</span>
                         </div>
                         <span className="text-sm font-semibold">{formatIdr(m.outcome.total)}</span>
@@ -378,9 +378,9 @@ export default function YearlyReport({ summaries, categories }: Props) {
                 <CardContent>
                   <div className="space-y-2">
                     {topSavingsMonths.map((m, i) => (
-                      <div key={m.month} className="flex justify-between items-center p-2 rounded-lg bg-slate-50 dark:bg-slate-700/50">
+                      <div key={m.month} className="flex justify-between items-center p-2 rounded-lg bg-slate-50 bg-white/[0.06]">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs font-semibold text-slate-400 w-4">#{i + 1}</span>
+                          <span className="text-xs font-semibold text-white/40 w-4">#{i + 1}</span>
                           <span className="text-sm font-medium">{m.month}</span>
                         </div>
                         <span className={`text-sm font-semibold ${m.savings >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
@@ -404,21 +404,21 @@ export default function YearlyReport({ summaries, categories }: Props) {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="p-4 rounded-lg border bg-slate-50 dark:bg-slate-800/50">
+                <div className="p-4 rounded-lg border bg-white/[0.03]">
                   <p className="text-xs text-muted-foreground mb-1">Cash Expenses</p>
                   <p className="text-xl font-semibold">{formatIdr(totals.cash)}</p>
                   <p className="text-xs text-muted-foreground mt-1">
                     {totals.spending > 0 ? ((totals.cash / totals.spending) * 100).toFixed(1) : 0}% of total
                   </p>
                 </div>
-                <div className="p-4 rounded-lg border bg-slate-50 dark:bg-slate-800/50">
+                <div className="p-4 rounded-lg border bg-white/[0.03]">
                   <p className="text-xs text-muted-foreground mb-1">Credit Payments</p>
                   <p className="text-xl font-semibold">{formatIdr(totals.credit)}</p>
                   <p className="text-xs text-muted-foreground mt-1">
                     {totals.spending > 0 ? ((totals.credit / totals.spending) * 100).toFixed(1) : 0}% of total
                   </p>
                 </div>
-                <div className="p-4 rounded-lg border bg-slate-50 dark:bg-slate-800/50">
+                <div className="p-4 rounded-lg border bg-white/[0.03]">
                   <p className="text-xs text-muted-foreground mb-1">Monthly Average</p>
                   <p className="text-xl font-semibold">{formatIdr(totals.spending / yearSummaries.length)}</p>
                   <p className="text-xs text-muted-foreground mt-1">
@@ -456,7 +456,7 @@ export default function YearlyReport({ summaries, categories }: Props) {
                         const savingsPct = prev && prev.savings !== 0 ? (savingsChange / Math.abs(prev.savings)) * 100 : null;
                         const isUp = savingsChange > 0;
                         return (
-                          <TableRow key={row.year} className={row.year === selectedYear ? 'bg-slate-50 dark:bg-slate-800/50' : undefined}>
+                          <TableRow key={row.year} className={row.year === selectedYear ? 'bg-white/[0.03]' : undefined}>
                             <TableCell className="font-medium">{row.year}</TableCell>
                             <TableCell className="text-right">{row.months}</TableCell>
                             <TableCell className="text-right">{formatIdr(row.income)}</TableCell>

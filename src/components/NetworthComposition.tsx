@@ -170,9 +170,9 @@ export default function NetworthComposition({ data }: Props) {
       {/* Donut + Metrics row */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         {/* Donut chart */}
-        <div className="lg:col-span-3 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+        <div className="lg:col-span-3 glass-card p-6">
           <h2 className="text-lg font-semibold mb-2">Portfolio Allocation</h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
+          <p className="text-xs text-white/60 mb-4">
             {latest.month} · Total: <span className="font-semibold text-violet-600 dark:text-violet-400">{formatIdr(latest.total)}</span>
           </p>
           {donutData ? (
@@ -185,14 +185,14 @@ export default function NetworthComposition({ data }: Props) {
         </div>
 
         {/* Investment Metrics */}
-        <div className="lg:col-span-2 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+        <div className="lg:col-span-2 glass-card p-6">
           <h2 className="text-lg font-semibold mb-4">Investment Details</h2>
           {metrics.length > 0 ? (
             <div className="space-y-3 max-h-72 overflow-y-auto pr-1">
               {metrics.map((m) => (
                 <div
                   key={m.key}
-                  className="p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition"
+                  className="p-3 rounded-lg border border-white/[0.06] hover:bg-white/[0.04] transition"
                 >
                   <div className="flex items-center gap-2 mb-2">
                     <span
@@ -227,7 +227,7 @@ export default function NetworthComposition({ data }: Props) {
       </div>
 
       {/* Stacked bar: composition trend over time */}
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+      <div className="glass-card p-6">
         <h2 className="text-lg font-semibold mb-4">Composition Trend</h2>
         <div className="relative h-80">
           <Bar data={barData} options={barOptions} />

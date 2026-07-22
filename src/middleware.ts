@@ -7,7 +7,7 @@ export interface Locals {
 
 // Public paths that don't require auth
 const PUBLIC_PATHS = ['/login', '/api/auth/login', '/api/auth/me', '/api/auth/logout'];
-const PUBLIC_PREFIXES = ['/sw.js', '/manifest.json', '/favicon.svg', '/icons/', '/_astro/', '/data/'];
+const PUBLIC_PREFIXES = ['/sw.js', '/manifest.json', '/favicon.svg', '/icons/', '/_astro/', '/data/', '/prototype-'];
 
 export const onRequest = defineMiddleware(async ({ cookies, request, url, locals, redirect }, next) => {
   // Clean expired sessions occasionally (on login page access is a good trigger)

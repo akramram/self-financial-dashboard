@@ -136,10 +136,10 @@ export default function MonthlyReport({
   if (!reportSummary) {
     return (
       <div className="text-center py-20">
-        <p className="text-slate-500 dark:text-slate-400 text-lg">
+        <p className="text-white/50 text-lg">
           No data available for the selected period.
         </p>
-        <p className="text-slate-400 dark:text-slate-500 text-sm mt-2">
+        <p className="text-white/40 text-sm mt-2">
           Add transactions and net worth data first.
         </p>
       </div>
@@ -166,7 +166,7 @@ export default function MonthlyReport({
               ))}
             </SelectContent>
           </Select>
-          <span className="text-sm text-slate-500 dark:text-slate-400">
+          <span className="text-sm text-white/50">
             {reportSummary.start_date && reportSummary.end_date
               ? `${reportSummary.start_date} → ${reportSummary.end_date}`
               : ''}
@@ -181,19 +181,19 @@ export default function MonthlyReport({
       {/* Report Content */}
       <div className="space-y-6">
         {/* Report Header */}
-        <div className="text-center border-b border-slate-300 dark:border-slate-600 pb-6 print:pb-4">
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 print:text-black">
+        <div className="text-center border-b border-white/[0.08] pb-6 print:pb-4">
+          <h1 className="text-2xl font-bold text-white/90 print:text-black">
             Monthly Financial Report
           </h1>
-          <h2 className="text-xl font-semibold text-slate-700 dark:text-slate-300 mt-1 print:text-gray-700">
+          <h2 className="text-xl font-semibold text-white/70 mt-1 print:text-gray-700">
             {reportSummary.month}
           </h2>
           {reportSummary.start_date && reportSummary.end_date && (
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 print:text-gray-500">
+            <p className="text-sm text-white/50 mt-1 print:text-gray-500">
               Period: {reportSummary.start_date} – {reportSummary.end_date}
             </p>
           )}
-          <p className="text-xs text-slate-400 dark:text-slate-500 mt-2 print:text-gray-400">
+          <p className="text-xs text-white/40 mt-2 print:text-gray-400">
             Generated: {generatedAt}
           </p>
         </div>
@@ -202,7 +202,7 @@ export default function MonthlyReport({
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 print:grid-cols-4">
           <Card className="print:border print:border-gray-300 print:shadow-none">
             <CardHeader className="pb-2 print:pb-1">
-              <CardTitle className="text-sm font-medium text-slate-500 dark:text-slate-400 print:text-gray-600">
+              <CardTitle className="text-sm font-medium text-white/50 print:text-gray-600">
                 Total Income
               </CardTitle>
             </CardHeader>
@@ -214,7 +214,7 @@ export default function MonthlyReport({
           </Card>
           <Card className="print:border print:border-gray-300 print:shadow-none">
             <CardHeader className="pb-2 print:pb-1">
-              <CardTitle className="text-sm font-medium text-slate-500 dark:text-slate-400 print:text-gray-600">
+              <CardTitle className="text-sm font-medium text-white/50 print:text-gray-600">
                 Total Outcome
               </CardTitle>
             </CardHeader>
@@ -222,7 +222,7 @@ export default function MonthlyReport({
               <p className="text-2xl font-bold text-red-600 dark:text-red-400 print:text-red-700">
                 {formatIdr(totalOutcome)}
               </p>
-              <div className="text-xs text-slate-400 mt-1 print:text-gray-500">
+              <div className="text-xs text-white/40 mt-1 print:text-gray-500">
                 <span className="inline-block mr-3">
                   Cash: {formatIdr(reportSummary.outcome.cash)}
                 </span>
@@ -234,7 +234,7 @@ export default function MonthlyReport({
           </Card>
           <Card className="print:border print:border-gray-300 print:shadow-none">
             <CardHeader className="pb-2 print:pb-1">
-              <CardTitle className="text-sm font-medium text-slate-500 dark:text-slate-400 print:text-gray-600">
+              <CardTitle className="text-sm font-medium text-white/50 print:text-gray-600">
                 Savings
               </CardTitle>
             </CardHeader>
@@ -252,7 +252,7 @@ export default function MonthlyReport({
           </Card>
           <Card className="print:border print:border-gray-300 print:shadow-none">
             <CardHeader className="pb-2 print:pb-1">
-              <CardTitle className="text-sm font-medium text-slate-500 dark:text-slate-400 print:text-gray-600">
+              <CardTitle className="text-sm font-medium text-white/50 print:text-gray-600">
                 Savings Rate
               </CardTitle>
             </CardHeader>
@@ -302,7 +302,7 @@ export default function MonthlyReport({
                   return (
                     <>
                       <div>
-                        <p className="text-slate-500 dark:text-slate-400 print:text-gray-600 text-xs">
+                        <p className="text-white/50 print:text-gray-600 text-xs">
                           Income Change
                         </p>
                         <p
@@ -321,7 +321,7 @@ export default function MonthlyReport({
                         </p>
                       </div>
                       <div>
-                        <p className="text-slate-500 dark:text-slate-400 print:text-gray-600 text-xs">
+                        <p className="text-white/50 print:text-gray-600 text-xs">
                           Spending Change
                         </p>
                         <p
@@ -341,7 +341,7 @@ export default function MonthlyReport({
                         </p>
                       </div>
                       <div>
-                        <p className="text-slate-500 dark:text-slate-400 print:text-gray-600 text-xs">
+                        <p className="text-white/50 print:text-gray-600 text-xs">
                           Savings Rate Δ
                         </p>
                         <p
@@ -356,7 +356,7 @@ export default function MonthlyReport({
                         </p>
                       </div>
                       <div>
-                        <p className="text-slate-500 dark:text-slate-400 print:text-gray-600 text-xs">
+                        <p className="text-white/50 print:text-gray-600 text-xs">
                           Net Worth Change
                         </p>
                         <p
@@ -393,7 +393,7 @@ export default function MonthlyReport({
             </CardHeader>
             <CardContent>
               {categoryBreakdown.length === 0 ? (
-                <p className="text-sm text-slate-500">No category data.</p>
+                <p className="text-sm text-white/50">No category data.</p>
               ) : (
                 <Table>
                   <TableHeader>
@@ -428,7 +428,7 @@ export default function MonthlyReport({
                           <TableCell className="text-right text-sm">
                             {cat.pct.toFixed(1)}%
                           </TableCell>
-                          <TableCell className="text-right text-sm text-slate-500">
+                          <TableCell className="text-right text-sm text-white/50">
                             {cat.limit > 0 ? formatIdr(cat.limit) : '—'}
                           </TableCell>
                           <TableCell>
@@ -453,7 +453,7 @@ export default function MonthlyReport({
                                 </Badge>
                               )
                             ) : (
-                              <span className="text-xs text-slate-400">
+                              <span className="text-xs text-white/40">
                                 No limit
                               </span>
                             )}
@@ -478,16 +478,16 @@ export default function MonthlyReport({
               {reportNetworth ? (
                 <div className="space-y-3">
                   <div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 print:text-gray-600">
+                    <p className="text-xs text-white/50 print:text-gray-600">
                       Total
                     </p>
-                    <p className="text-2xl font-bold text-slate-900 dark:text-slate-100 print:text-black">
+                    <p className="text-2xl font-bold text-white/90 print:text-black">
                       {formatIdr(reportNetworth.total)}
                     </p>
                   </div>
                   {reportNetworth.month_over_month_change != null && (
                     <div>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 print:text-gray-600">
+                      <p className="text-xs text-white/50 print:text-gray-600">
                         Month-over-Month
                       </p>
                       <p
@@ -518,8 +518,8 @@ export default function MonthlyReport({
                   )}
                   {reportNetworth.breakdown &&
                     Object.keys(reportNetworth.breakdown).length > 0 && (
-                      <div className="border-t border-slate-200 dark:border-slate-700 pt-3 print:border-gray-300">
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mb-2 print:text-gray-600">
+                      <div className="border-t border-white/[0.06] pt-3 print:border-gray-300">
+                        <p className="text-xs text-white/50 mb-2 print:text-gray-600">
                           Composition
                         </p>
                         <div className="space-y-1.5">
@@ -530,7 +530,7 @@ export default function MonthlyReport({
                                 key={key}
                                 className="flex justify-between text-sm"
                               >
-                                <span className="text-slate-600 dark:text-slate-300 print:text-gray-700">
+                                <span className="text-white/60 print:text-gray-700">
                                   {key}
                                 </span>
                                 <span className="font-medium font-mono">
@@ -543,7 +543,7 @@ export default function MonthlyReport({
                     )}
                 </div>
               ) : (
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-white/50">
                   No net worth data for this period.
                 </p>
               )}
@@ -560,7 +560,7 @@ export default function MonthlyReport({
           </CardHeader>
           <CardContent>
             {topTransactions.length === 0 ? (
-              <p className="text-sm text-slate-500">No transactions.</p>
+              <p className="text-sm text-white/50">No transactions.</p>
             ) : (
               <Table>
                 <TableHeader>
@@ -595,7 +595,7 @@ export default function MonthlyReport({
                           {tx.title}
                         </TableCell>
                         <TableCell>{tx.category}</TableCell>
-                        <TableCell className="text-sm text-slate-500">
+                        <TableCell className="text-sm text-white/50">
                           {dateStr}
                         </TableCell>
                         <TableCell>
@@ -677,7 +677,7 @@ export default function MonthlyReport({
           <CardContent>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
               <div>
-                <p className="text-xs text-slate-500 dark:text-slate-400 print:text-gray-600">
+                <p className="text-xs text-white/50 print:text-gray-600">
                   Total Transactions
                 </p>
                 <p className="text-xl font-bold">
@@ -685,7 +685,7 @@ export default function MonthlyReport({
                 </p>
               </div>
               <div>
-                <p className="text-xs text-slate-500 dark:text-slate-400 print:text-gray-600">
+                <p className="text-xs text-white/50 print:text-gray-600">
                   Avg Transaction
                 </p>
                 <p className="text-xl font-bold">
@@ -699,7 +699,7 @@ export default function MonthlyReport({
                 </p>
               </div>
               <div>
-                <p className="text-xs text-slate-500 dark:text-slate-400 print:text-gray-600">
+                <p className="text-xs text-white/50 print:text-gray-600">
                   Largest Transaction
                 </p>
                 <p className="text-xl font-bold">
@@ -709,7 +709,7 @@ export default function MonthlyReport({
                 </p>
               </div>
               <div>
-                <p className="text-xs text-slate-500 dark:text-slate-400 print:text-gray-600">
+                <p className="text-xs text-white/50 print:text-gray-600">
                   Categories Used
                 </p>
                 <p className="text-xl font-bold">
@@ -721,7 +721,7 @@ export default function MonthlyReport({
         </Card>
 
         {/* Footer */}
-        <div className="text-center text-xs text-slate-400 dark:text-slate-500 pt-4 border-t border-slate-200 dark:border-slate-700 print:text-gray-500 print:border-gray-300">
+        <div className="text-center text-xs text-white/40 pt-4 border-t border-white/[0.06] print:text-gray-500 print:border-gray-300">
           <p>Financial Dashboard · Monthly Report · {generatedAt}</p>
         </div>
       </div>

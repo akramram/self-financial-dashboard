@@ -11,6 +11,7 @@ import {
 import { Bar } from 'react-chartjs-2';
 import type { MonthlySummary } from '../lib/data';
 import { formatIdr } from '../lib/utils';
+import { FP } from '../lib/chartConfig';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -26,13 +27,13 @@ export default function OutcomeChart({ data }: { data: MonthlySummary[] }) {
       {
         label: 'Cash Outcome',
         data: cashOutcomes,
-        backgroundColor: '#3b82f6',
+        backgroundColor: FP.coral,
         borderRadius: 4,
       },
       {
         label: 'Credit Payment',
         data: creditPayments,
-        backgroundColor: '#f59e0b',
+        backgroundColor: FP.gold,
         borderRadius: 4,
       },
     ],

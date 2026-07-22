@@ -168,7 +168,7 @@ export default function CategorySettings() {
                         key={c}
                         type="button"
                         onClick={() => setAddForm((p) => ({ ...p, color: c }))}
-                        className="h-5 w-5 rounded-full border border-slate-200 dark:border-slate-700"
+                        className="h-5 w-5 rounded-full border border-white/[0.06]"
                         style={{ backgroundColor: c }}
                       />
                     ))}
@@ -248,7 +248,7 @@ export default function CategorySettings() {
                     <TableRow key={cat.id}>
                       <TableCell>
                         <div
-                          className="h-5 w-5 rounded-full border border-slate-200 dark:border-slate-700"
+                          className="h-5 w-5 rounded-full border border-white/[0.06]"
                           style={{ backgroundColor: cat.color }}
                         />
                       </TableCell>
