@@ -3,7 +3,6 @@ import type { Category } from '../lib/data';
 import { fetchCategories, createCategory, updateCategoryApi, deleteCategoryApi } from '../lib/api';
 import { formatIdr } from '../lib/utils';
 import { useConfirm } from './ConfirmDialog';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -118,14 +117,14 @@ export default function CategorySettings() {
   };
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Categories</CardTitle>
+    <div className="glass-card p-5">
+      
+        <h3 className="text-white/80">Categories</h3>
         <Button size="sm" onClick={() => setIsAdding((v) => !v)}>
           {isAdding ? 'Cancel' : '+ Add Category'}
         </Button>
-      </CardHeader>
-      <CardContent>
+      
+      
         {error && (
           <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-300">
             {error}
@@ -273,7 +272,7 @@ export default function CategorySettings() {
             </TableBody>
           </Table>
         </div>
-      </CardContent>
-    </Card>
+      
+    </div>
   );
 }

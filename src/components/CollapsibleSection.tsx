@@ -1,5 +1,4 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 
@@ -26,9 +25,8 @@ export default function CollapsibleSection({
   badge,
 }: Props) {
   return (
-    <Card className={className}>
-      <CardHeader className="pb-0">
-        <div className="flex items-center justify-between">
+    <div className="glass-card p-5" className={className}>
+      <div className="flex items-center justify-between">
           <button
             type="button"
             onClick={onToggle}
@@ -43,11 +41,11 @@ export default function CollapsibleSection({
                 <ChevronDown className="w-4 h-4" />
               )}
             </span>
-            <CardTitle className="text-base font-semibold flex items-center gap-2">
+            <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
               {icon}
               {title}
               {badge && <span className="ml-1">{badge}</span>}
-            </CardTitle>
+            </h3>
           </button>
           <Button
             variant="ghost"
@@ -59,17 +57,14 @@ export default function CollapsibleSection({
             {isCollapsed ? 'Show' : 'Hide'}
           </Button>
         </div>
-      </CardHeader>
       <div
         id={`widget-content-${id}`}
         className={`transition-all duration-300 ease-in-out overflow-hidden ${
           isCollapsed ? 'max-h-0 opacity-0' : 'max-h-[5000px] opacity-100'
         }`}
       >
-        <CardContent className={isCollapsed ? 'pt-0' : undefined}>
-          {children}
-        </CardContent>
-      </div>
-    </Card>
+        {children}
+        </div>
+    </div>
   );
 }

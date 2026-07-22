@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import type { MonthlySummary, Category } from '../lib/data';
 import { formatIdr } from '../lib/utils';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Select,
   SelectContent,
@@ -249,18 +248,15 @@ export default function YearlyReport({ summaries, categories }: Props) {
       </div>
 
       {yearSummaries.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center text-muted-foreground">
-            No data available for {selectedYear}.
-          </CardContent>
-        </Card>
+        <div className="glass-card p-5">
+          No data available for {selectedYear}.
+          </div>
       ) : (
         <>
           {/* Summary Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-center gap-3">
+            <div className="glass-card p-5">
+              <div className="flex items-center gap-3">
                   <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/30">
                     <Wallet className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                   </div>
@@ -270,11 +266,9 @@ export default function YearlyReport({ summaries, categories }: Props) {
                     <DeltaBadge current={totals.income} previous={prevTotals.income} />
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-center gap-3">
+              </div>
+            <div className="glass-card p-5">
+              <div className="flex items-center gap-3">
                   <div className="p-2 rounded-lg bg-red-100 dark:bg-red-900/30">
                     <Receipt className="w-5 h-5 text-red-600 dark:text-red-400" />
                   </div>
@@ -284,11 +278,9 @@ export default function YearlyReport({ summaries, categories }: Props) {
                     <span className="text-xs text-muted-foreground">vs {formatIdr(prevTotals.spending)} last year</span>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-center gap-3">
+              </div>
+            <div className="glass-card p-5">
+              <div className="flex items-center gap-3">
                   <div className={`p-2 rounded-lg ${totals.savings >= 0 ? 'bg-emerald-100 dark:bg-emerald-900/30' : 'bg-red-100 dark:bg-red-900/30'}`}>
                     <PiggyBank className={`w-5 h-5 ${totals.savings >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`} />
                   </div>
@@ -300,11 +292,9 @@ export default function YearlyReport({ summaries, categories }: Props) {
                     <DeltaBadge current={totals.savings} previous={prevTotals.savings} />
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-center gap-3">
+              </div>
+            <div className="glass-card p-5">
+              <div className="flex items-center gap-3">
                   <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30">
                     <TrendingUp className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                   </div>
@@ -316,45 +306,33 @@ export default function YearlyReport({ summaries, categories }: Props) {
                     </span>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
           </div>
 
           {/* Monthly Trend Chart */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base font-semibold flex items-center gap-2">
+          <div className="glass-card p-5">
+            <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
                 <CalendarDays className="w-4 h-4 text-white/50" />
                 Monthly Breakdown — {selectedYear}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="relative h-80">
+              </h3>
+            <div className="relative h-80">
                 <Bar data={barChartData} options={barOptions} />
               </div>
-            </CardContent>
-          </Card>
+            </div>
 
           {/* Category + Highlights Row */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base font-semibold">Top Spending Categories</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="relative h-72">
+            <div className="glass-card p-5">
+              <h3 className="text-base font-semibold text-white/80">Top Spending Categories</h3>
+              <div className="relative h-72">
                   <Doughnut data={doughnutData} options={doughnutOptions} />
                 </div>
-              </CardContent>
-            </Card>
+              </div>
 
             <div className="space-y-6">
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base font-semibold">Top Spending Months</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
+              <div className="glass-card p-5">
+                <h3 className="text-base font-semibold text-white/80">Top Spending Months</h3>
+                <div className="space-y-2">
                     {topSpendingMonths.map((m, i) => (
                       <div key={m.month} className="flex justify-between items-center p-2 rounded-lg bg-slate-50 bg-white/[0.06]">
                         <div className="flex items-center gap-2">
@@ -368,15 +346,11 @@ export default function YearlyReport({ summaries, categories }: Props) {
                       <p className="text-sm text-muted-foreground text-center py-4">No data</p>
                     )}
                   </div>
-                </CardContent>
-              </Card>
+                </div>
 
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base font-semibold">Top Savings Months</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
+              <div className="glass-card p-5">
+                <h3 className="text-base font-semibold text-white/80">Top Savings Months</h3>
+                <div className="space-y-2">
                     {topSavingsMonths.map((m, i) => (
                       <div key={m.month} className="flex justify-between items-center p-2 rounded-lg bg-slate-50 bg-white/[0.06]">
                         <div className="flex items-center gap-2">
@@ -392,18 +366,14 @@ export default function YearlyReport({ summaries, categories }: Props) {
                       <p className="text-sm text-muted-foreground text-center py-4">No data</p>
                     )}
                   </div>
-                </CardContent>
-              </Card>
+                </div>
             </div>
           </div>
 
           {/* Spending Composition */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base font-semibold">Spending Composition</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="glass-card p-5">
+            <h3 className="text-base font-semibold text-white/80">Spending Composition</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="p-4 rounded-lg border bg-white/[0.03]">
                   <p className="text-xs text-muted-foreground mb-1">Cash Expenses</p>
                   <p className="text-xl font-semibold">{formatIdr(totals.cash)}</p>
@@ -426,17 +396,13 @@ export default function YearlyReport({ summaries, categories }: Props) {
                   </p>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
 
           {/* Year-over-Year Table */}
           {allYearsStats.length > 1 && (
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base font-semibold">Year-over-Year Comparison</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="rounded-xl border overflow-hidden">
+            <div className="glass-card p-5">
+              <h3 className="text-base font-semibold text-white/80">Year-over-Year Comparison</h3>
+              <div className="rounded-xl border overflow-hidden">
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -483,8 +449,7 @@ export default function YearlyReport({ summaries, categories }: Props) {
                     </TableBody>
                   </Table>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
           )}
         </>
       )}

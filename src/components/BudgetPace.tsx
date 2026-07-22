@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
   Select,
@@ -111,30 +110,30 @@ export default function BudgetPace() {
 
   if (loading) {
     return (
-      <Card>
-        <CardContent className="py-10 text-center text-slate-400">
+      <div className="glass-card p-5">
+        
           Loading budget pace...
-        </CardContent>
-      </Card>
+        
+      </div>
     );
   }
 
   if (!data || data.total_budget === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <div className="glass-card p-5">
+        
+          <h3 className="flex items-center gap-2 text-white/80">
             <Gauge className="h-5 w-5" />
             Budget Pace Tracker
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="py-10 text-center text-slate-400">
+          </h3>
+        
+        
           <p>No budget limits set.</p>
           <p className="text-sm mt-2">
             Set category budget limits in <a href="/settings" className="underline text-blue-500">Settings</a> to track your spending pace.
           </p>
-        </CardContent>
-      </Card>
+        
+      </div>
     );
   }
 
@@ -144,9 +143,9 @@ export default function BudgetPace() {
   return (
     <div className="space-y-4">
       {/* Overall Summary Card */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between flex-wrap gap-2">
+      <div className="glass-card p-5">
+        
+          <h3 className="flex items-center justify-between flex-wrap gap-2 text-white/80">
             <span className="flex items-center gap-2">
               <Gauge className="h-5 w-5" />
               Budget Pace Tracker
@@ -155,9 +154,9 @@ export default function BudgetPace() {
               <StatusIcon className="h-3 w-3 mr-1" />
               {statusConfig.label}
             </Badge>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+          </h3>
+        
+        
           {/* Period info */}
           <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
             <CalendarClock className="h-4 w-4" />
@@ -225,15 +224,15 @@ export default function BudgetPace() {
               </p>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        
+      </div>
 
       {/* Per-Category Breakdown */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-sm">Category Pace Breakdown</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
+      <div className="glass-card p-5">
+        
+          <h3 className="text-sm text-white/80">Category Pace Breakdown</h3>
+        
+        
           {sortedCategories.map((cat) => {
             const cfg = STATUS_CONFIG[cat.pace_status];
             const CatIcon = cfg.icon;
@@ -277,8 +276,8 @@ export default function BudgetPace() {
               </div>
             );
           })}
-        </CardContent>
-      </Card>
+        
+      </div>
     </div>
   );
 }

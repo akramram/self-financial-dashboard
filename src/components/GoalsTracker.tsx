@@ -8,7 +8,6 @@ import {
   updateGoalApi,
   deleteGoalApi,
 } from '../lib/api';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -311,9 +310,8 @@ export default function GoalsTracker({ networth }: Props) {
     <div className="space-y-6">
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
+        <div className="glass-card p-5">
+          <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400">
                 <Target className="w-5 h-5" />
               </div>
@@ -322,12 +320,10 @@ export default function GoalsTracker({ networth }: Props) {
                 <p className="text-2xl font-bold">{activeGoals.length}</p>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
+        <div className="glass-card p-5">
+          <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400">
                 <TrendingUp className="w-5 h-5" />
               </div>
@@ -336,12 +332,10 @@ export default function GoalsTracker({ networth }: Props) {
                 <p className="text-lg font-bold">{formatIdr(totalSaved)}</p>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
+        <div className="glass-card p-5">
+          <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400">
                 <Clock className="w-5 h-5" />
               </div>
@@ -350,12 +344,10 @@ export default function GoalsTracker({ networth }: Props) {
                 <p className="text-lg font-bold">{formatIdr(Math.max(0, totalTarget - totalSaved))}</p>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
+        <div className="glass-card p-5">
+          <div className="flex items-center gap-3">
               <div className="relative">
                 <CircularProgress
                   progress={overallProgress}
@@ -374,8 +366,7 @@ export default function GoalsTracker({ networth }: Props) {
                 </p>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
       </div>
 
       {/* Action Bar */}
@@ -396,9 +387,8 @@ export default function GoalsTracker({ networth }: Props) {
 
       {/* Active Goals */}
       {activeGoals.length === 0 && completedGoals.length === 0 ? (
-        <Card>
-          <CardContent className="py-12">
-            <div className="text-center">
+        <div className="glass-card p-5">
+          <div className="text-center">
               <div className="inline-flex p-4 rounded-full bg-white/[0.05] mb-4">
                 <Target className="w-8 h-8 text-white/40" />
               </div>
@@ -411,8 +401,7 @@ export default function GoalsTracker({ networth }: Props) {
                 Create Your First Goal
               </Button>
             </div>
-          </CardContent>
-        </Card>
+          </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {activeGoals.map((goal) => {
@@ -426,15 +415,14 @@ export default function GoalsTracker({ networth }: Props) {
             const monthlyRate = daysTotal > 0 ? (goal.target_amount - goal.current_amount) / (daysTotal / 30) : 0;
 
             return (
-              <Card key={goal.id} className="relative overflow-hidden">
+              <div key={goal.id} className="glass-card p-5 relative overflow-hidden">
                 {/* Color accent bar */}
                 <div
                   className="absolute top-0 left-0 right-0 h-1"
                   style={{ backgroundColor: goal.color }}
                 />
 
-                <CardContent className="p-5 pt-6">
-                  <div className="flex items-start justify-between mb-4">
+                <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
                       <div
                         className="p-2 rounded-lg"
@@ -537,8 +525,7 @@ export default function GoalsTracker({ networth }: Props) {
                       </button>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
             );
           })}
         </div>
@@ -553,13 +540,12 @@ export default function GoalsTracker({ networth }: Props) {
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {completedGoals.map((goal) => (
-              <Card key={goal.id} className="opacity-75">
+              <div key={goal.id} className="glass-card p-5 opacity-75">
                 <div
                   className="absolute top-0 left-0 right-0 h-1"
                   style={{ backgroundColor: '#22c55e' }}
                 />
-                <CardContent className="p-5 pt-6">
-                  <div className="flex items-start justify-between">
+                <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
                       <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400">
                         {ICON_MAP[goal.icon] || ICON_MAP.target}
@@ -588,8 +574,7 @@ export default function GoalsTracker({ networth }: Props) {
                       </button>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
             ))}
           </div>
         </div>
@@ -597,15 +582,12 @@ export default function GoalsTracker({ networth }: Props) {
 
       {/* Networth Context */}
       {latestNetworth && activeGoals.length > 0 && (
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium">Networth Context</CardTitle>
-            <CardDescription className="text-xs">
+        <div className="glass-card p-5">
+          <h3 className="text-sm font-medium text-white/80">Networth Context</h3>
+            <p className="text-xs text-white/50">
               Your latest networth compared to your goals
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            </p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
                 <p className="text-xs text-muted-foreground mb-1">Current Networth</p>
                 <p className="text-lg font-bold">{formatIdr(latestNetworth.total)}</p>
@@ -621,8 +603,7 @@ export default function GoalsTracker({ networth }: Props) {
                 </p>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
       )}
 
       {/* Create/Edit Dialog */}

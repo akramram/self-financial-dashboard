@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo } from 'react';
 import type { MonthlySummary, Category, Transaction } from '../lib/data';
 import type { Anomaly } from '../lib/db';
 import { formatIdr } from '../lib/utils';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -272,10 +271,10 @@ export default function AlertsPanel({
   };
 
   return (
-    <Card className={cardBorderClass}>
-      <CardHeader className="pb-2">
+    <div className={`glass-card p-5 ${cardBorderClass}`}>
+      
         <div className="flex items-center justify-between">
-          <CardTitle className="text-base font-semibold flex items-center gap-2">
+          <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
             <AlertTriangle className="w-4 h-4 text-amber-500" />
             Alerts
             <div className="flex items-center gap-1.5 ml-1">
@@ -301,10 +300,10 @@ export default function AlertsPanel({
                 </Badge>
               )}
             </div>
-          </CardTitle>
+          </h3>
         </div>
-      </CardHeader>
-      <CardContent className="space-y-2">
+      
+      
         {displayItems.map((alert) => (
           <div
             key={alert.id}
@@ -370,7 +369,7 @@ export default function AlertsPanel({
             )}
           </Button>
         )}
-      </CardContent>
-    </Card>
+      
+    </div>
   );
 }

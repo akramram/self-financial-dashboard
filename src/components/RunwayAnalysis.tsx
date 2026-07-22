@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Sparkline from './Sparkline';
 import { formatIdr } from '../lib/utils';
@@ -225,65 +224,65 @@ export default function RunwayAnalysis({ periodId, compact = false }: Props) {
 
   if (loading) {
     return (
-      <Card className="border-white/[0.06] shadow-none">
-        <CardContent className="p-5">
+      <div className="glass-card p-5 border-white/[0.06] shadow-none">
+        
           <div className="animate-pulse space-y-3">
             <div className="h-5 w-32 bg-white/[0.08] rounded" />
             <div className="h-40 w-40 mx-auto bg-white/[0.08] rounded-full" />
           </div>
-        </CardContent>
-      </Card>
+        
+      </div>
     );
   }
 
   if (error || !data) {
     return (
-      <Card className="border-white/[0.06] shadow-none">
-        <CardContent className="p-5">
+      <div className="glass-card p-5 border-white/[0.06] shadow-none">
+        
           <div className="flex items-center gap-2 text-white/50 text-sm">
             <AlertTriangle className="w-4 h-4" />
             <span>Gagal memuat data runway. Coba lagi nanti.</span>
           </div>
-        </CardContent>
-      </Card>
+        
+      </div>
     );
   }
 
   // No data available
   if (data.total_assets === 0) {
     return (
-      <Card className="border-white/[0.06] shadow-none">
-        <CardContent className="p-5">
+      <div className="glass-card p-5 border-white/[0.06] shadow-none">
+        
           <div className="flex items-center gap-2 text-white/50 text-sm">
             <Droplet className="w-4 h-4" />
             <span>Belum ada data networth. Tambahkan data networth untuk menghitung runway.</span>
           </div>
-        </CardContent>
-      </Card>
+        
+      </div>
     );
   }
 
   return (
-    <Card className={`border ${config.borderColor} shadow-none`}>
-      <CardHeader className="pb-3">
+    <div className={`glass-card p-5 border ${config.borderColor} shadow-none`}>
+      
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className={`p-1.5 rounded-lg ${config.bgColor} ${config.textColor}`}>
               {config.icon}
             </div>
             <div>
-              <CardTitle className="text-base">Emergency Fund Runway</CardTitle>
-              <CardDescription className="text-xs">
+              <h3 className="text-base text-white/80">Emergency Fund Runway</h3>
+              <p className="text-xs text-white/50">
                 {data.month ? `Periode ${data.month}` : 'Periode terbaru'}
-              </CardDescription>
+              </p>
             </div>
           </div>
           <Badge variant="outline" className={`${config.textColor} ${config.borderColor}`}>
             {config.label}
           </Badge>
         </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
+      
+      
         {/* Gauge + key stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
           <div className="flex justify-center">
@@ -366,7 +365,7 @@ export default function RunwayAnalysis({ periodId, compact = false }: Props) {
             <ArrowRight className="w-3 h-3" />
           </a>
         )}
-      </CardContent>
-    </Card>
+      
+    </div>
   );
 }

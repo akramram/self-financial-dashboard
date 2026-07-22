@@ -1,7 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import type { MonthlySummary, Category } from '../lib/data';
 import { formatIdr } from '../lib/utils';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { AlertTriangle, TrendingUp, X, ChevronDown, ChevronUp } from 'lucide-react';
@@ -135,10 +134,10 @@ export default function BudgetAlerts({ summaries, categories, activeMonth, trans
   const approachingCount = alerts.filter((a) => !a.isOver).length;
 
   return (
-    <Card className="border-l-4 border-l-red-500 dark:border-l-red-400 shadow-md">
-      <CardHeader className="pb-2">
+    <div className="glass-card p-5 border-l-4 border-l-red-500 dark:border-l-red-400 shadow-md">
+      
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-base">
+          <h3 className="flex items-center gap-2 text-base text-white/80">
             <AlertTriangle className="h-5 w-5 text-red-500 dark:text-red-400" />
             Budget Alerts
             {overCount > 0 && (
@@ -151,7 +150,7 @@ export default function BudgetAlerts({ summaries, categories, activeMonth, trans
                 {approachingCount} approaching
               </Badge>
             )}
-          </CardTitle>
+          </h3>
           <Button
             variant="ghost"
             size="sm"
@@ -162,9 +161,9 @@ export default function BudgetAlerts({ summaries, categories, activeMonth, trans
             {collapsed ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
           </Button>
         </div>
-      </CardHeader>
+      
       {!collapsed && (
-        <CardContent className="pt-0 pb-4">
+        
           <div className="space-y-3">
             {alerts.map((alert) => {
               const visualPct = Math.min(100, alert.pct);
@@ -239,8 +238,8 @@ export default function BudgetAlerts({ summaries, categories, activeMonth, trans
               );
             })}
           </div>
-        </CardContent>
+        
       )}
-    </Card>
+    </div>
   );
 }

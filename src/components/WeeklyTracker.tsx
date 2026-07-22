@@ -16,7 +16,6 @@ import { Bar, Doughnut, Line } from 'react-chartjs-2';
 import type { MonthlySummary } from '../lib/data';
 import { formatIdr, formatNumber } from '../lib/utils';
 import { fetchSummaries } from '../lib/api';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -399,14 +398,14 @@ export default function WeeklyTracker() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4">
+        <div className="glass-card p-5">
+          
             <p className="text-xs text-white/50 font-medium">Income</p>
             <p className="text-lg font-bold">{formatIdr(weeklyData.income)}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
+          
+        </div>
+        <div className="glass-card p-5">
+          
             <p className="text-xs text-white/50 font-medium">Total Spent</p>
             <p className="text-lg font-bold">{formatIdr(weeklyData.totalSpend)}</p>
             {weeklyData.income > 0 && (
@@ -416,17 +415,17 @@ export default function WeeklyTracker() {
                   : `${Math.round(((weeklyData.totalSpend - weeklyData.income) / weeklyData.income) * 100)}% over`}
               </p>
             )}
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
+          
+        </div>
+        <div className="glass-card p-5">
+          
             <p className="text-xs text-white/50 font-medium">Weekly Budget</p>
             <p className="text-lg font-bold">{formatIdr(weeklyData.weeklyBudget)}</p>
             <p className="text-xs text-white/40 mt-1">{weeklyData.weeks.length} weeks in period</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
+          
+        </div>
+        <div className="glass-card p-5">
+          
             <p className="text-xs text-white/50 font-medium">Avg Daily Spend</p>
             <p className="text-lg font-bold">
               {formatIdr(
@@ -434,20 +433,20 @@ export default function WeeklyTracker() {
               )}
             </p>
             <p className="text-xs text-white/40 mt-1">{weeklyData.totalTxCount} transactions</p>
-          </CardContent>
-        </Card>
+          
+        </div>
       </div>
 
       {/* Insights */}
       {insights.length > 0 && (
-        <Card className="border-indigo-200 dark:border-indigo-800/50 bg-indigo-50/50 dark:bg-indigo-950/20">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
+        <div className="glass-card p-5 border-indigo-200 dark:border-indigo-800/50 bg-indigo-50/50 dark:bg-indigo-950/20">
+          
+            <h3 className="text-sm font-medium flex items-center gap-2 text-white/80">
               <Target className="w-4 h-4 text-indigo-500" />
               Weekly Insights
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+            </h3>
+          
+          
             <ul className="space-y-2">
               {insights.map((ins, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm">
@@ -458,32 +457,32 @@ export default function WeeklyTracker() {
                 </li>
               ))}
             </ul>
-          </CardContent>
-        </Card>
+          
+        </div>
       )}
 
       {/* Main Chart: Weekly Spending vs Budget */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Weekly Spending vs Budget</CardTitle>
-          <CardDescription>Each bar represents total spending for that week. The dashed line is your weekly budget target.</CardDescription>
-        </CardHeader>
-        <CardContent>
+      <div className="glass-card p-5">
+        
+          <h3 className="text-base text-white/80">Weekly Spending vs Budget</h3>
+          <p className="text-white/50">Each bar represents total spending for that week. The dashed line is your weekly budget target.</p>
+        
+        
           <div style={{ height: 300 }}>
             <Bar data={barChartData} options={chartOptions} />
           </div>
-        </CardContent>
-      </Card>
+        
+      </div>
 
       {/* Row: Weekly cards + Average daily trend */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Weekly Breakdown Cards */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Week-by-Week Breakdown</CardTitle>
-            <CardDescription>Click a week to see its category breakdown.</CardDescription>
-          </CardHeader>
-          <CardContent>
+        <div className="glass-card p-5">
+          
+            <h3 className="text-base text-white/80">Week-by-Week Breakdown</h3>
+            <p className="text-white/50">Click a week to see its category breakdown.</p>
+          
+          
             <div className="space-y-3">
               {weeklyData.weeks.map((w, idx) => {
                 const isOver = w.total > weeklyData.weeklyBudget;
@@ -564,16 +563,16 @@ export default function WeeklyTracker() {
                 );
               })}
             </div>
-          </CardContent>
-        </Card>
+          
+        </div>
 
         {/* Average Daily Spend Trend */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Average Daily Spend Trend</CardTitle>
-            <CardDescription>How your daily spending pace shifts across the period.</CardDescription>
-          </CardHeader>
-          <CardContent>
+        <div className="glass-card p-5">
+          
+            <h3 className="text-base text-white/80">Average Daily Spend Trend</h3>
+            <p className="text-white/50">How your daily spending pace shifts across the period.</p>
+          
+          
             <div style={{ height: 300 }}>
               <Line data={trendData} options={lineOptions} />
             </div>
@@ -600,19 +599,19 @@ export default function WeeklyTracker() {
                 );
               })}
             </div>
-          </CardContent>
-        </Card>
+          
+        </div>
       </div>
 
       {/* Row: Category donut + Full table */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Category Distribution Donut */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Category Distribution</CardTitle>
-            <CardDescription>Where your money goes across the whole period.</CardDescription>
-          </CardHeader>
-          <CardContent>
+        <div className="glass-card p-5">
+          
+            <h3 className="text-base text-white/80">Category Distribution</h3>
+            <p className="text-white/50">Where your money goes across the whole period.</p>
+          
+          
             <div className="max-w-[250px] mx-auto" style={{ height: 250 }}>
               <Doughnut
                 data={categoryDonutData}
@@ -634,16 +633,16 @@ export default function WeeklyTracker() {
                 }}
               />
             </div>
-          </CardContent>
-        </Card>
+          
+        </div>
 
         {/* Full Category × Week Table */}
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="text-base">Category × Week Matrix</CardTitle>
-            <CardDescription>Spending per category across each week of the period.</CardDescription>
-          </CardHeader>
-          <CardContent>
+        <div className="glass-card p-5 lg:col-span-2">
+          
+            <h3 className="text-base text-white/80">Category × Week Matrix</h3>
+            <p className="text-white/50">Spending per category across each week of the period.</p>
+          
+          
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
@@ -692,8 +691,8 @@ export default function WeeklyTracker() {
                 </TableBody>
               </Table>
             </div>
-          </CardContent>
-        </Card>
+          
+        </div>
       </div>
     </div>
   );

@@ -1,12 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { formatIdr, formatNumber } from '../lib/utils';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -159,11 +152,11 @@ export default function Forecast() {
 
   if (!data?.forecast) {
     return (
-      <Card>
-        <CardContent className="py-12 text-center">
+      <div className="glass-card p-5">
+        
           <p className="text-white/50">No transaction data available for forecasting. Add some transactions first!</p>
-        </CardContent>
-      </Card>
+        
+      </div>
     );
   }
 
@@ -325,11 +318,11 @@ export default function Forecast() {
 
       {/* Key metrics cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Current Spending</CardDescription>
-          </CardHeader>
-          <CardContent>
+        <div className="glass-card p-5">
+          
+            <p className="text-white/50">Current Spending</p>
+          
+          
             <div className="text-2xl font-bold">{formatIdr(f.totalSpent)}</div>
             <p className="text-xs text-white/50 mt-1">
               Day {f.daysElapsed} of ~{f.periodLength} · Avg {formatIdr(f.dailyAvg)}/day
@@ -339,14 +332,14 @@ export default function Forecast() {
                 + {formatIdr(f.totalUnpaid)} unpaid
               </p>
             )}
-          </CardContent>
-        </Card>
+          
+        </div>
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Projected Total</CardDescription>
-          </CardHeader>
-          <CardContent>
+        <div className="glass-card p-5">
+          
+            <p className="text-white/50">Projected Total</p>
+          
+          
             <div className="flex items-center gap-2">
               <div className="text-2xl font-bold">{formatIdr(f.projectedTotal)}</div>
               <ConfidenceBadge level={f.projectionConfidence} />
@@ -354,47 +347,47 @@ export default function Forecast() {
             <p className="text-xs text-white/50 mt-1">
               {f.daysRemaining} days remaining
             </p>
-          </CardContent>
-        </Card>
+          
+        </div>
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Spending Velocity</CardDescription>
-          </CardHeader>
-          <CardContent>
+        <div className="glass-card p-5">
+          
+            <p className="text-white/50">Spending Velocity</p>
+          
+          
             <div className={`text-2xl font-bold ${f.velocityVsHistory > 20 ? 'text-red-600 dark:text-red-400' : f.velocityVsHistory < -20 ? 'text-emerald-600 dark:text-emerald-400' : ''}`}>
               {f.velocityVsHistory > 0 ? '+' : ''}{Math.round(f.velocityVsHistory)}%
             </div>
             <p className="text-xs text-white/50 mt-1">
               vs {f.daysElapsed}-day historical average
             </p>
-          </CardContent>
-        </Card>
+          
+        </div>
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Credit Outstanding</CardDescription>
-          </CardHeader>
-          <CardContent>
+        <div className="glass-card p-5">
+          
+            <p className="text-white/50">Credit Outstanding</p>
+          
+          
             <div className={`text-2xl font-bold ${f.creditStatus.outstanding > 0 ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
               {formatIdr(f.creditStatus.outstanding)}
             </div>
             <p className="text-xs text-white/50 mt-1">
               {formatIdr(f.creditStatus.creditExpenses)} spent · {formatIdr(f.creditStatus.creditPayments)} paid
             </p>
-          </CardContent>
-        </Card>
+          
+        </div>
       </div>
 
       {/* Trajectory chart */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Spending Trajectory</CardTitle>
-          <CardDescription>
+      <div className="glass-card p-5">
+        
+          <h3 className="text-lg text-white/80">Spending Trajectory</h3>
+          <p className="text-white/50">
             Actual cumulative spending vs projected end-of-month total
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+          </p>
+        
+        
           <div className="h-[300px]">
             <Line data={trajectoryChart} options={{
               ...chartOptions,
@@ -417,20 +410,20 @@ export default function Forecast() {
               <span className="w-4 h-0.5 bg-red-500 inline-block border-dashed border-t border-red-500"></span> Projected
             </span>
           </div>
-        </CardContent>
-      </Card>
+        
+      </div>
 
       {/* Two-column: Budget burn rate + Credit utilization */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Budget burn rate */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Budget Burn Rate</CardTitle>
-            <CardDescription>
+        <div className="glass-card p-5">
+          
+            <h3 className="text-lg text-white/80">Budget Burn Rate</h3>
+            <p className="text-white/50">
               Category spending vs budget limits (with projection)
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+            </p>
+          
+          
             {f.budgetStatus.length === 0 ? (
               <p className="text-sm text-white/50 py-4 text-center">
                 No category budgets set. Configure limits in Settings to see burn rates.
@@ -466,18 +459,18 @@ export default function Forecast() {
                 ))}
               </div>
             )}
-          </CardContent>
-        </Card>
+          
+        </div>
 
         {/* Credit utilization */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Credit Utilization</CardTitle>
-            <CardDescription>
+        <div className="glass-card p-5">
+          
+            <h3 className="text-lg text-white/80">Credit Utilization</h3>
+            <p className="text-white/50">
               Credit card expenses vs payments this period
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+            </p>
+          
+          
             <div className="flex items-center justify-center mb-4">
               <div className="w-[200px] h-[200px]">
                 <Doughnut
@@ -526,19 +519,19 @@ export default function Forecast() {
                 </div>
               )}
             </div>
-          </CardContent>
-        </Card>
+          
+        </div>
       </div>
 
       {/* Historical comparison chart */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Historical Monthly Spending</CardTitle>
-          <CardDescription>
+      <div className="glass-card p-5">
+        
+          <h3 className="text-lg text-white/80">Historical Monthly Spending</h3>
+          <p className="text-white/50">
             Total spending per month compared to daily average × 30 (normalized projection)
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+          </p>
+        
+        
           <div className="h-[250px]">
             <Bar data={historicalChart} options={{
               ...chartOptions,
@@ -548,18 +541,18 @@ export default function Forecast() {
               },
             }} />
           </div>
-        </CardContent>
-      </Card>
+        
+      </div>
 
       {/* Velocity breakdown table */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Spending Velocity Breakdown</CardTitle>
-          <CardDescription>
+      <div className="glass-card p-5">
+        
+          <h3 className="text-lg text-white/80">Spending Velocity Breakdown</h3>
+          <p className="text-white/50">
             Detailed velocity metrics comparing current period to historical patterns
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+          </p>
+        
+        
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div className="p-4 rounded-xl bg-white/[0.03]">
               <div className="text-xs text-white/50 mb-1">Current Avg/Day</div>
@@ -588,8 +581,8 @@ export default function Forecast() {
               </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        
+      </div>
     </div>
   );
 }

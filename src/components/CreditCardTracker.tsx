@@ -15,7 +15,6 @@ import {
   Filler,
 } from 'chart.js';
 import { Line, Bar } from 'react-chartjs-2';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -309,8 +308,8 @@ export default function CreditCardTracker() {
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Card 1: Outstanding Balance */}
-        <Card>
-          <CardContent className="pt-6">
+        <div className="glass-card p-5">
+          
             <div className="flex items-center gap-2 mb-1">
               <CreditCard className="w-4 h-4 text-amber-500" />
               <span className="text-xs text-white/50">Outstanding Balance</span>
@@ -321,12 +320,12 @@ export default function CreditCardTracker() {
             <p className="text-xs text-white/40 mt-1">
               {formatNumber(creditExpenses.length)} transactions + {formatNumber(unpaidCreditExpenses.length)} pending
             </p>
-          </CardContent>
-        </Card>
+          
+        </div>
 
         {/* Card 2: Paid This Period */}
-        <Card>
-          <CardContent className="pt-6">
+        <div className="glass-card p-5">
+          
             <div className="flex items-center gap-2 mb-1">
               <CheckCircle2 className="w-4 h-4 text-emerald-500" />
               <span className="text-xs text-white/50">Paid This Period</span>
@@ -337,12 +336,12 @@ export default function CreditCardTracker() {
             <p className="text-xs text-white/40 mt-1">
               {formatNumber(creditPayments.length)} payment{creditPayments.length !== 1 ? 's' : ''}
             </p>
-          </CardContent>
-        </Card>
+          
+        </div>
 
         {/* Card 3: Unpaid Expenses */}
-        <Card>
-          <CardContent className="pt-6">
+        <div className="glass-card p-5">
+          
             <div className="flex items-center gap-2 mb-1">
               <Clock className="w-4 h-4 text-red-500" />
               <span className="text-xs text-white/50">Unpaid Expenses</span>
@@ -355,12 +354,12 @@ export default function CreditCardTracker() {
                 {formatNumber(unpaidCreditExpenses.length)} item{unpaidCreditExpenses.length !== 1 ? 's' : ''}
               </Badge>
             </div>
-          </CardContent>
-        </Card>
+          
+        </div>
 
         {/* Card 4: Payment Progress */}
-        <Card>
-          <CardContent className="pt-6">
+        <div className="glass-card p-5">
+          
             <div className="flex items-center gap-2 mb-1">
               <Wallet className="w-4 h-4 text-blue-500" />
               <span className="text-xs text-white/50">Payment Coverage</span>
@@ -383,59 +382,59 @@ export default function CreditCardTracker() {
             <p className="text-xs text-white/40 mt-1">
               of {formatIdr(outstandingBalance)} charged
             </p>
-          </CardContent>
-        </Card>
+          
+        </div>
       </div>
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Balance Trend */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2">
+        <div className="glass-card p-5">
+          
+            <h3 className="text-base flex items-center gap-2 text-white/80">
               <TrendingUp className="w-4 h-4 text-amber-500" />
               Credit Balance Trend
-            </CardTitle>
-            <CardDescription>
+            </h3>
+            <p className="text-white/50">
               Running outstanding balance over time (expenses - payments)
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+            </p>
+          
+          
             <div style={{ height: 280 }}>
               <Line data={balanceChartData} options={balanceChartOptions} />
             </div>
-          </CardContent>
-        </Card>
+          
+        </div>
 
         {/* Expenses vs Payments Comparison */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2">
+        <div className="glass-card p-5">
+          
+            <h3 className="text-base flex items-center gap-2 text-white/80">
               <ArrowDownLeft className="w-4 h-4 text-emerald-500" />
               Expenses vs Payments
-            </CardTitle>
-            <CardDescription>
+            </h3>
+            <p className="text-white/50">
               Per-period credit card spending and payment amounts
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+            </p>
+          
+          
             <div style={{ height: 280 }}>
               <Bar data={comparisonChartData} options={comparisonChartOptions} />
             </div>
-          </CardContent>
-        </Card>
+          
+        </div>
       </div>
 
       {/* Category Breakdown */}
       {categoryBreakdown.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Credit Spending by Category</CardTitle>
-            <CardDescription>
+        <div className="glass-card p-5">
+          
+            <h3 className="text-base text-white/80">Credit Spending by Category</h3>
+            <p className="text-white/50">
               Where your credit card spending goes in {activeSummary?.month || 'the selected period'}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+            </p>
+          
+          
             <div className="space-y-3">
               {categoryBreakdown.map(([cat, data]) => {
                 const color = categoryColorMap[cat] || '#6b7280';
@@ -478,22 +477,22 @@ export default function CreditCardTracker() {
                 );
               })}
             </div>
-          </CardContent>
-        </Card>
+          
+        </div>
       )}
 
       {/* Unpaid Credit Expenses Table */}
-      <Card>
-        <CardHeader>
+      <div className="glass-card p-5">
+        
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-base flex items-center gap-2">
+              <h3 className="text-base flex items-center gap-2 text-white/80">
                 <AlertTriangle className="w-4 h-4 text-red-500" />
                 Unpaid Credit Expenses
-              </CardTitle>
-              <CardDescription>
+              </h3>
+              <p className="text-white/50">
                 Credit card charges waiting to be paid ({unpaidCreditExpenses.length} item{unpaidCreditExpenses.length !== 1 ? 's' : ''})
-              </CardDescription>
+              </p>
             </div>
             {unpaidTotal > 0 && (
               <Badge className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300">
@@ -501,8 +500,8 @@ export default function CreditCardTracker() {
               </Badge>
             )}
           </div>
-        </CardHeader>
-        <CardContent>
+        
+        
           {sortedUnpaid.length === 0 ? (
             <div className="text-center py-8 text-white/40">
               <CheckCircle2 className="w-8 h-8 mx-auto mb-2 text-emerald-400" />
@@ -546,21 +545,21 @@ export default function CreditCardTracker() {
               </TableBody>
             </Table>
           )}
-        </CardContent>
-      </Card>
+        
+      </div>
 
       {/* Payment History Table */}
-      <Card>
-        <CardHeader>
+      <div className="glass-card p-5">
+        
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-base flex items-center gap-2">
+              <h3 className="text-base flex items-center gap-2 text-white/80">
                 <ArrowUpRight className="w-4 h-4 text-emerald-500" />
                 Payment History
-              </CardTitle>
-              <CardDescription>
+              </h3>
+              <p className="text-white/50">
                 Credit card payments in this period
-              </CardDescription>
+              </p>
             </div>
             {totalCreditPayments > 0 && (
               <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
@@ -568,8 +567,8 @@ export default function CreditCardTracker() {
               </Badge>
             )}
           </div>
-        </CardHeader>
-        <CardContent>
+        
+        
           {sortedPayments.length === 0 ? (
             <div className="text-center py-8 text-white/40">
               <Wallet className="w-8 h-8 mx-auto mb-2 text-white/30" />
@@ -601,18 +600,18 @@ export default function CreditCardTracker() {
               </TableBody>
             </Table>
           )}
-        </CardContent>
-      </Card>
+        
+      </div>
 
       {/* Balance Trend Data Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Period-by-Period Summary</CardTitle>
-          <CardDescription>
+      <div className="glass-card p-5">
+        
+          <h3 className="text-base text-white/80">Period-by-Period Summary</h3>
+          <p className="text-white/50">
             Credit expenses, payments, and running balance for each period
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+          </p>
+        
+        
           <Table>
             <TableHeader>
               <TableRow>
@@ -653,8 +652,8 @@ export default function CreditCardTracker() {
               })}
             </TableBody>
           </Table>
-        </CardContent>
-      </Card>
+        
+      </div>
     </div>
   );
 }

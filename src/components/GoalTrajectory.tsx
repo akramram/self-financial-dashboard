@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import Sparkline from './Sparkline';
@@ -78,21 +77,17 @@ export default function GoalTrajectory() {
 
   if (loading) {
     return (
-      <Card>
-        <CardContent className="py-8 text-center text-sm text-muted-foreground">
-          Memuat proyeksi trajectory goal…
-        </CardContent>
-      </Card>
+      <div className="glass-card p-5">
+        Memuat proyeksi trajectory goal…
+        </div>
     );
   }
 
   if (error) {
     return (
-      <Card>
-        <CardContent className="py-8 text-center text-sm text-red-600 dark:text-red-400">
-          Gagal memuat proyeksi: {error}
-        </CardContent>
-      </Card>
+      <div className="glass-card p-5">
+        Gagal memuat proyeksi: {error}
+        </div>
     );
   }
 
@@ -100,34 +95,29 @@ export default function GoalTrajectory() {
 
   if (summary.totalGoals === 0) {
     return (
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base font-semibold flex items-center gap-2">
+      <div className="glass-card p-5">
+        <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
             <Target className="w-4 h-4 text-indigo-500" />
             Proyeksi Trajectory Goal
-          </CardTitle>
-          <CardDescription className="text-xs">
+          </h3>
+          <p className="text-xs text-white/50">
             Estimasi pencapaian goal berbasis kecepatan tabungan historis
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="py-6 text-center text-sm text-muted-foreground">
-          <Info className="w-5 h-5 mx-auto mb-2 opacity-50" />
+          </p>
+        <Info className="w-5 h-5 mx-auto mb-2 opacity-50" />
           Tidak ada goal aktif. Buat goal di halaman ini untuk melihat proyeksi.
-        </CardContent>
-      </Card>
+        </div>
     );
   }
 
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <CardTitle className="text-base font-semibold flex items-center gap-2">
+    <div className="glass-card p-5">
+      <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
           <Target className="w-4 h-4 text-indigo-500" />
           Proyeksi Trajectory Goal
-        </CardTitle>
-        <CardDescription className="text-xs">
+        </h3>
+        <p className="text-xs text-white/50">
           Estimasi pencapaian goal berbasis kecepatan tabungan {Math.max(2, Math.min(6, data.trend.length))} periode terakhir
-        </CardDescription>
+        </p>
         {/* Summary chips */}
         <div className="flex flex-wrap gap-2 mt-2">
           {summary.ahead > 0 && (
@@ -151,9 +141,7 @@ export default function GoalTrajectory() {
             </Badge>
           )}
         </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {!data.has_sufficient_data && (
+      {!data.has_sufficient_data && (
           <div className="rounded-md border border-amber-200 dark:border-amber-800/60 bg-amber-50 dark:bg-amber-900/20 px-3 py-2 text-xs text-amber-700 dark:text-amber-300 flex items-start gap-2">
             <Info className="w-3.5 h-3.5 mt-0.5 shrink-0" />
             <span>
@@ -193,8 +181,7 @@ export default function GoalTrajectory() {
         {data.goals.map((g) => (
           <GoalTrajectoryRowCard key={g.id} goal={g} hasData={data.has_sufficient_data} />
         ))}
-      </CardContent>
-    </Card>
+      </div>
   );
 }
 

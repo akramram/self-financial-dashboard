@@ -17,7 +17,6 @@ import {
   Legend,
 } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
   Table,
@@ -153,17 +152,15 @@ export default function RecurringCostAnalyzer() {
 
   if (!data || data.activeItems.length === 0) {
     return (
-      <Card>
-        <CardContent className="py-12 text-center">
-          <RefreshCw className="w-10 h-10 mx-auto mb-3 text-slate-300" />
+      <div className="glass-card p-5">
+        <RefreshCw className="w-10 h-10 mx-auto mb-3 text-slate-300" />
           <p className="text-slate-500 dark:text-slate-400">
             No active recurring transactions found.
           </p>
           <p className="text-xs text-slate-400 mt-1">
             Add recurring transactions on the <a href="/recurring" className="text-blue-500 hover:underline">Recurring page</a> to see your subscription cost analysis.
           </p>
-        </CardContent>
-      </Card>
+        </div>
     );
   }
 
@@ -173,31 +170,26 @@ export default function RecurringCostAnalyzer() {
     <div className="space-y-6">
       {/* ─── Summary Cards ──────────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="border-l-4 border-l-blue-500">
-          <CardContent className="pt-5 pb-4">
-            <div className="flex items-center justify-between mb-1">
+        <div className="glass-card p-5 border-l-4 border-l-blue-500">
+          <div className="flex items-center justify-between mb-1">
               <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Monthly Cost</span>
               <DollarSign className="w-4 h-4 text-blue-500" />
             </div>
             <p className="text-xl font-bold text-slate-800 dark:text-slate-100">{formatIdr(monthlyTotal)}</p>
             <p className="text-[11px] text-slate-400 mt-0.5">per salary period</p>
-          </CardContent>
-        </Card>
+          </div>
 
-        <Card className="border-l-4 border-l-emerald-500">
-          <CardContent className="pt-5 pb-4">
-            <div className="flex items-center justify-between mb-1">
+        <div className="glass-card p-5 border-l-4 border-l-emerald-500">
+          <div className="flex items-center justify-between mb-1">
               <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Annual Cost</span>
               <Calendar className="w-4 h-4 text-emerald-500" />
             </div>
             <p className="text-xl font-bold text-slate-800 dark:text-slate-100">{formatIdr(annualTotal)}</p>
             <p className="text-[11px] text-slate-400 mt-0.5">projected per year</p>
-          </CardContent>
-        </Card>
+          </div>
 
-        <Card className="border-l-4 border-l-amber-500">
-          <CardContent className="pt-5 pb-4">
-            <div className="flex items-center justify-between mb-1">
+        <div className="glass-card p-5 border-l-4 border-l-amber-500">
+          <div className="flex items-center justify-between mb-1">
               <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Active Items</span>
               <RefreshCw className="w-4 h-4 text-amber-500" />
             </div>
@@ -205,50 +197,40 @@ export default function RecurringCostAnalyzer() {
             <p className="text-[11px] text-slate-400 mt-0.5">
               {temporaryCount > 0 ? `${temporaryCount} temporary` : 'all permanent'}
             </p>
-          </CardContent>
-        </Card>
+          </div>
 
-        <Card className="border-l-4 border-l-violet-500">
-          <CardContent className="pt-5 pb-4">
-            <div className="flex items-center justify-between mb-1">
+        <div className="glass-card p-5 border-l-4 border-l-violet-500">
+          <div className="flex items-center justify-between mb-1">
               <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Avg / Item</span>
               <PieChart className="w-4 h-4 text-violet-500" />
             </div>
             <p className="text-xl font-bold text-slate-800 dark:text-slate-100">{formatIdr(avgPerItem)}</p>
             <p className="text-[11px] text-slate-400 mt-0.5">monthly average</p>
-          </CardContent>
-        </Card>
+          </div>
       </div>
 
       {/* ─── Category Breakdown + Insight ────────────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Donut chart */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm flex items-center gap-2">
+        <div className="glass-card p-5">
+          <h3 className="text-sm flex items-center gap-2 text-white/80">
               <PieChart className="w-4 h-4 text-slate-500" />
               Category Breakdown
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {donutData && (
+            </h3>
+          {donutData && (
               <div style={{ height: 300 }}>
                 <Doughnut data={donutData} options={donutOptions} />
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
 
         {/* Insights */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm flex items-center gap-2">
+        <div className="glass-card p-5">
+          <h3 className="text-sm flex items-center gap-2 text-white/80">
               <Lightbulb className="w-4 h-4 text-amber-500" />
               Cost Insights
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 pt-2">
-            {largestItem && (
+            </h3>
+          {largestItem && (
               <div className="rounded-lg bg-slate-50 dark:bg-slate-800/60 p-3 border border-slate-200 dark:border-slate-700">
                 <div className="flex items-center gap-2 mb-1">
                   <TrendingDown className="w-3.5 h-3.5 text-red-500" />
@@ -294,17 +276,13 @@ export default function RecurringCostAnalyzer() {
                 ))}
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
       </div>
 
       {/* ─── Category Bars ──────────────────────────────────────────────────── */}
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm">Category Cost Breakdown</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
+      <div className="glass-card p-5">
+        <h3 className="text-sm text-white/80">Category Cost Breakdown</h3>
+        <div className="space-y-3">
             {categoryEntries.map(([cat, amt], i) => {
               const pct = ((amt / monthlyTotal) * 100);
               return (
@@ -326,17 +304,15 @@ export default function RecurringCostAnalyzer() {
               );
             })}
           </div>
-        </CardContent>
-      </Card>
+        </div>
 
       {/* ─── Items Table ─────────────────────────────────────────────────────── */}
-      <Card>
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-sm flex items-center gap-2">
+      <div className="glass-card p-5">
+        <div className="flex items-center justify-between">
+            <h3 className="text-sm flex items-center gap-2 text-white/80">
               Recurring Items
               <Badge variant="secondary" className="text-xs">{displayItems.length}</Badge>
-            </CardTitle>
+            </h3>
             {data.pausedItems.length > 0 && (
               <button
                 onClick={() => setShowPaused(!showPaused)}
@@ -347,9 +323,7 @@ export default function RecurringCostAnalyzer() {
               </button>
             )}
           </div>
-        </CardHeader>
-        <CardContent>
-          <Table>
+        <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Title</TableHead>
@@ -404,8 +378,7 @@ export default function RecurringCostAnalyzer() {
               })}
             </TableBody>
           </Table>
-        </CardContent>
-      </Card>
+        </div>
     </div>
   );
 }

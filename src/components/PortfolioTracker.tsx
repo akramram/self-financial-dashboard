@@ -41,7 +41,6 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useSortState } from '../hooks/useSortState';
 import SortableHeader from './SortableHeader';
 import {
@@ -289,25 +288,20 @@ export default function PortfolioTracker() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-        <Card>
-          <CardContent className="p-4">
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Total Invested</p>
+        <div className="glass-card p-5">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Total Invested</p>
             <p className="text-lg font-bold text-slate-800 dark:text-slate-100">
               {formatIdr(summary?.totalInvested ?? 0)}
             </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Current Value</p>
+          </div>
+        <div className="glass-card p-5">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Current Value</p>
             <p className="text-lg font-bold text-slate-800 dark:text-slate-100">
               {formatIdr(summary?.totalCurrentValue ?? 0)}
             </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Total Gain/Loss</p>
+          </div>
+        <div className="glass-card p-5">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Total Gain/Loss</p>
             <div className="flex items-center gap-1.5">
               {(summary?.totalGainLoss ?? 0) >= 0 ? (
                 <TrendingUp className="w-4 h-4 text-emerald-500" />
@@ -322,11 +316,9 @@ export default function PortfolioTracker() {
                 {formatIdr(summary?.totalGainLoss ?? 0)}
               </p>
             </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Return</p>
+          </div>
+        <div className="glass-card p-5">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Return</p>
             <p className={`text-lg font-bold ${
               (summary?.totalGainLossPct ?? 0) >= 0
                 ? 'text-emerald-600 dark:text-emerald-400'
@@ -335,44 +327,34 @@ export default function PortfolioTracker() {
               {(summary?.totalGainLossPct ?? 0) >= 0 ? '+' : ''}
               {(summary?.totalGainLossPct ?? 0).toFixed(2)}%
             </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Holdings</p>
+          </div>
+        <div className="glass-card p-5">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Holdings</p>
             <p className="text-lg font-bold text-slate-800 dark:text-slate-100">
               {summary?.holdingsCount ?? 0}
             </p>
-          </CardContent>
-        </Card>
+          </div>
       </div>
 
       {/* Allocation Chart + By-Type Breakdown */}
       {donutData && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <Card className="lg:col-span-1">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base font-semibold flex items-center gap-2">
+          <div className="glass-card p-5 lg:col-span-1">
+            <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
                 <PieChart className="w-4 h-4 text-slate-500" />
                 Allocation by Type
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-64">
+              </h3>
+            <div className="h-64">
                 <Doughnut data={donutData} options={donutOptions} />
               </div>
-            </CardContent>
-          </Card>
+            </div>
 
-          <Card className="lg:col-span-2">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base font-semibold flex items-center gap-2">
+          <div className="glass-card p-5 lg:col-span-2">
+            <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
                 <Wallet className="w-4 h-4 text-slate-500" />
                 Breakdown by Type
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
+              </h3>
+            <div className="space-y-3">
                 {Object.entries(summary?.byType ?? {}).map(([type, data]) => {
                   const pct = summary && summary.totalCurrentValue > 0
                     ? (data.currentValue / summary.totalCurrentValue) * 100
@@ -426,27 +408,23 @@ export default function PortfolioTracker() {
                   );
                 })}
               </div>
-            </CardContent>
-          </Card>
+            </div>
         </div>
       )}
 
       {/* Investments Table */}
-      <Card>
-        <CardHeader className="pb-3">
-          <div className="flex justify-between items-center">
-            <CardTitle className="text-base font-semibold flex items-center gap-2">
+      <div className="glass-card p-5">
+        <div className="flex justify-between items-center">
+            <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
               <Wallet className="w-4 h-4 text-slate-500" />
               Holdings ({investments.length})
-            </CardTitle>
+            </h3>
             <Button size="sm" onClick={openAdd} className="bg-emerald-600 hover:bg-emerald-700 text-white">
               <Plus className="w-4 h-4 mr-1" />
               Add Holding
             </Button>
           </div>
-        </CardHeader>
-        <CardContent className="pt-0">
-          {investments.length === 0 ? (
+        {investments.length === 0 ? (
             <div className="text-center py-12 text-slate-500 dark:text-slate-400">
               <Wallet className="w-10 h-10 mx-auto mb-3 opacity-30" />
               <p className="text-sm font-medium">No investments tracked yet</p>
@@ -548,8 +526,7 @@ export default function PortfolioTracker() {
               </Table>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
 
       {/* Add/Edit Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

@@ -14,7 +14,6 @@ import Sparkline from './Sparkline';
 import { DollarSign, Wallet, BarChart3, TrendingUp, TrendingDown, Scale, Shield, Bell, Plus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -382,21 +381,15 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
         {/* ═══════════ CHARTS — lower section ═══════════ */}
         <section>
           <p className="text-xs uppercase tracking-wider text-white/20 mb-3">Charts</p>
-          <Card className="bg-white/[0.02] border-white/[0.06] mb-4">
-            <CardHeader className="pb-2"><CardTitle className="text-base font-semibold text-white/80">Cash Outcome vs Credit Payment</CardTitle></CardHeader>
-            <CardContent><OutcomeChart data={filteredSummaries} /></CardContent>
-          </Card>
-          <Card className="bg-white/[0.02] border-white/[0.06] mb-4">
-            <CardHeader className="pb-2"><CardTitle className="text-base font-semibold text-white/80">Savings Rate Trend</CardTitle></CardHeader>
-            <CardContent><SavingsRateChart data={filteredSummaries} /></CardContent>
-          </Card>
-          <Card className="bg-white/[0.02] border-white/[0.06] mb-4">
-            <CardHeader className="pb-2"><CardTitle className="text-base font-semibold text-white/80">Category Spending Trend</CardTitle></CardHeader>
-            <CardContent><CategoryTrendChart data={filteredSummaries} categories={categories} /></CardContent>
-          </Card>
+          <div className="glass-card p-5 bg-white/[0.02] border-white/[0.06] mb-4">
+            <h3 className="text-base font-semibold text-white/80 text-white/80">Cash Outcome vs Credit Payment</h3><OutcomeChart data={filteredSummaries} /></div>
+          <div className="glass-card p-5 bg-white/[0.02] border-white/[0.06] mb-4">
+            <h3 className="text-base font-semibold text-white/80 text-white/80">Savings Rate Trend</h3><SavingsRateChart data={filteredSummaries} /></div>
+          <div className="glass-card p-5 bg-white/[0.02] border-white/[0.06] mb-4">
+            <h3 className="text-base font-semibold text-white/80 text-white/80">Category Spending Trend</h3><CategoryTrendChart data={filteredSummaries} categories={categories} /></div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-            <Card className="bg-white/[0.02] border-white/[0.06]"><CardHeader className="pb-2"><CardTitle className="text-base font-semibold text-white/80">Networth Trend</CardTitle></CardHeader><CardContent className="h-72"><NetworthChart data={filteredNetworth} /></CardContent></Card>
-            <Card className="bg-white/[0.02] border-white/[0.06]"><CardHeader className="pb-2"><CardTitle className="text-base font-semibold text-white/80">{isAllTime ? 'Latest Month Categories' : `${activeSummary?.month ?? ''} Categories`}</CardTitle></CardHeader><CardContent className="h-72">{activeSummary?.category_totals && Object.keys(activeSummary.category_totals).length > 0 ? <CategoryChart data={activeSummary.category_totals} categories={categories} onCategoryClick={openCategoryDialog} /> : <p className="text-white/30 text-sm">No category data available.</p>}</CardContent></Card>
+            <div className="glass-card p-5 bg-white/[0.02] border-white/[0.06]"><h3 className="text-base font-semibold text-white/80 text-white/80">Networth Trend</h3><NetworthChart data={filteredNetworth} /></div>
+            <div className="glass-card p-5 bg-white/[0.02] border-white/[0.06]"><h3 className="text-base font-semibold text-white/80 text-white/80">{isAllTime ? 'Latest Month Categories' : `${activeSummary?.month ?? ''} Categories`}</h3>{activeSummary?.category_totals && Object.keys(activeSummary.category_totals).length > 0 ? <CategoryChart data={activeSummary.category_totals} categories={categories} onCategoryClick={openCategoryDialog} /> : <p className="text-white/30 text-sm">No category data available.</p>}</div>
           </div>
           <PeriodVsAverage summaries={filteredSummaries} categories={categories} activePeriodId={filterPeriodId} />
         </section>

@@ -1,7 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import type { Transaction } from '../lib/data';
 import { formatIdr } from '../lib/utils';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -257,9 +256,8 @@ export default function SpendingCalendar({ transactions, periods }: Props) {
       </div>
 
       {/* Calendar Grid */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base font-semibold flex items-center gap-2">
+      <div className="glass-card p-5">
+        <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
             <CalendarDays className="w-4 h-4 text-white/40" />
             Spending Heatmap — {selectedMonth}
             {selectedPeriodId && (
@@ -267,10 +265,8 @@ export default function SpendingCalendar({ transactions, periods }: Props) {
                 (Period transactions)
               </span>
             )}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-7 gap-1">
+          </h3>
+        <div className="grid grid-cols-7 gap-1">
             {WEEKDAYS.map((wd) => (
               <div key={wd} className="text-center text-xs font-medium text-white/30 py-2">
                 {wd}
@@ -316,35 +312,28 @@ export default function SpendingCalendar({ transactions, periods }: Props) {
               );
             })}
           </div>
-        </CardContent>
-      </Card>
+        </div>
 
       {/* Monthly Summary */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-xs text-white/40 mb-1">Days with Spending</div>
+        <div className="glass-card p-5">
+          <div className="text-xs text-white/40 mb-1">Days with Spending</div>
             <div className="text-2xl font-semibold">
               {Object.values(dailyTotals).filter((d) => d.total > 0).length}
             </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-xs text-white/40 mb-1">Total Transactions</div>
+          </div>
+        <div className="glass-card p-5">
+          <div className="text-xs text-white/40 mb-1">Total Transactions</div>
             <div className="text-2xl font-semibold">
               {Object.values(dailyTotals).reduce((s, d) => s + d.count, 0)}
             </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-xs text-white/40 mb-1">Monthly Spend</div>
+          </div>
+        <div className="glass-card p-5">
+          <div className="text-xs text-white/40 mb-1">Monthly Spend</div>
             <div className="text-2xl font-semibold">
               {formatIdr(Object.values(dailyTotals).reduce((s, d) => s + d.total, 0))}
             </div>
-          </CardContent>
-        </Card>
+          </div>
       </div>
 
       {/* Day Detail Dialog */}

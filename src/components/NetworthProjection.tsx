@@ -13,7 +13,6 @@ import {
 import { Line } from 'react-chartjs-2';
 import type { NetworthRecord } from '../lib/data';
 import { formatIdr } from '../lib/utils';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { TrendingUp, Calendar, PiggyBank, Percent } from 'lucide-react';
@@ -181,11 +180,11 @@ export default function NetworthProjection({ data }: Props) {
 
   if (sortedData.length === 0) {
     return (
-      <Card>
-        <CardContent className="py-8 text-center text-sm text-white/50">
+      <div className="glass-card p-5">
+        
           Add net worth data to see projections.
-        </CardContent>
-      </Card>
+        
+      </div>
     );
   }
 
@@ -194,14 +193,14 @@ export default function NetworthProjection({ data }: Props) {
   return (
     <div className="space-y-6">
       {/* Controls */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base font-semibold flex items-center gap-2">
+      <div className="glass-card p-5">
+        
+          <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
             <TrendingUp className="w-4 h-4 text-violet-500" />
             Projection Settings
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </h3>
+        
+        
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Projection length */}
             <div className="space-y-2">
@@ -289,41 +288,41 @@ export default function NetworthProjection({ data }: Props) {
               </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        
+      </div>
 
       {/* Projection Chart */}
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-base font-semibold flex items-center gap-2">
+      <div className="glass-card p-5">
+        
+          <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
             <TrendingUp className="w-4 h-4 text-violet-500" />
             Net Worth Projection
-          </CardTitle>
+          </h3>
           <p className="text-xs text-white/50">
             Solid line = historical. Dashed amber line = projected with {effectiveContribution > 0 ? `${formatIdr(effectiveContribution)}/mo contributions` : 'no additional contributions'} and {annualReturnRate}% annual return.
           </p>
-        </CardHeader>
-        <CardContent>
+        
+        
           <div className="h-[350px]">
             <Line data={chartData} options={chartOptions} />
           </div>
-        </CardContent>
-      </Card>
+        
+      </div>
 
       {/* Summary Stats */}
       {summary && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card>
-            <CardContent className="pt-4 pb-4">
+          <div className="glass-card p-5">
+            
               <p className="text-xs text-white/50 mb-1">Current Net Worth</p>
               <p className="text-lg font-bold text-white/90">
                 {formatIdr(summary.lastValue)}
               </p>
-            </CardContent>
-          </Card>
+            
+          </div>
           {summary.at12 && (
-            <Card>
-              <CardContent className="pt-4 pb-4">
+            <div className="glass-card p-5">
+              
                 <p className="text-xs text-white/50 mb-1">In 12 Months</p>
                 <p className="text-lg font-bold text-amber-400">
                   {formatIdr(summary.at12)}
@@ -335,12 +334,12 @@ export default function NetworthProjection({ data }: Props) {
                     : 0}
                   %)
                 </p>
-              </CardContent>
-            </Card>
+              
+            </div>
           )}
           {summary.at24 && (
-            <Card>
-              <CardContent className="pt-4 pb-4">
+            <div className="glass-card p-5">
+              
                 <p className="text-xs text-white/50 mb-1">In 24 Months</p>
                 <p className="text-lg font-bold text-amber-400">
                   {formatIdr(summary.at24)}
@@ -352,12 +351,12 @@ export default function NetworthProjection({ data }: Props) {
                     : 0}
                   %)
                 </p>
-              </CardContent>
-            </Card>
+              
+            </div>
           )}
           {summary.at36 && (
-            <Card>
-              <CardContent className="pt-4 pb-4">
+            <div className="glass-card p-5">
+              
                 <p className="text-xs text-white/50 mb-1">In 36 Months</p>
                 <p className="text-lg font-bold text-amber-400">
                   {formatIdr(summary.at36)}
@@ -369,16 +368,16 @@ export default function NetworthProjection({ data }: Props) {
                     : 0}
                   %)
                 </p>
-              </CardContent>
-            </Card>
+              
+            </div>
           )}
         </div>
       )}
 
       {/* Breakdown */}
       {summary && summary.totalContributions > 0 && (
-        <Card>
-          <CardContent className="pt-4 pb-4">
+        <div className="glass-card p-5">
+          
             <div className="flex flex-wrap gap-6 text-sm">
               <div>
                 <span className="text-white/50">Total contributions: </span>
@@ -398,8 +397,8 @@ export default function NetworthProjection({ data }: Props) {
                 </span>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          
+        </div>
       )}
     </div>
   );

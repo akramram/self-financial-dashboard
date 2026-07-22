@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from 'react';
 import { importDataApi, type ImportResult } from '../lib/api';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -168,12 +167,9 @@ export default function ImportData() {
   const previewHeaders = previewRows.length > 0 ? Object.keys(previewRows[0]) : [];
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Import Data</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-2">
+    <div className="glass-card p-5">
+      <h3 className="text-white/80">Import Data</h3>
+      <div className="space-y-2">
           <Label htmlFor="import-file">File (JSON or CSV)</Label>
           <Input id="import-file" type="file" accept=".json,.csv" onChange={handleFileChange} />
         </div>
@@ -251,7 +247,6 @@ export default function ImportData() {
             {loading ? 'Importing...' : `Import ${allRows.length} Rows`}
           </Button>
         )}
-      </CardContent>
-    </Card>
+      </div>
   );
 }

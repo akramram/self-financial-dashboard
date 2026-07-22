@@ -1,12 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import type { Transaction, NetworthRecord, MonthlySummary, Category } from '../lib/data';
 import { formatIdr, getActivePeriodMonth } from '../lib/utils';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -200,26 +194,19 @@ export default function MonthlyReport({
 
         {/* Summary Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 print:grid-cols-4">
-          <Card className="print:border print:border-gray-300 print:shadow-none">
-            <CardHeader className="pb-2 print:pb-1">
-              <CardTitle className="text-sm font-medium text-white/50 print:text-gray-600">
+          <div className="glass-card p-5 print:border print:border-gray-300 print:shadow-none">
+            <h3 className="text-sm font-medium text-white/50 print:text-gray-600 text-white/80">
                 Total Income
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 print:text-emerald-700">
+              </h3>
+            <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 print:text-emerald-700">
                 {formatIdr(income)}
               </p>
-            </CardContent>
-          </Card>
-          <Card className="print:border print:border-gray-300 print:shadow-none">
-            <CardHeader className="pb-2 print:pb-1">
-              <CardTitle className="text-sm font-medium text-white/50 print:text-gray-600">
+            </div>
+          <div className="glass-card p-5 print:border print:border-gray-300 print:shadow-none">
+            <h3 className="text-sm font-medium text-white/50 print:text-gray-600 text-white/80">
                 Total Outcome
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold text-red-600 dark:text-red-400 print:text-red-700">
+              </h3>
+            <p className="text-2xl font-bold text-red-600 dark:text-red-400 print:text-red-700">
                 {formatIdr(totalOutcome)}
               </p>
               <div className="text-xs text-white/40 mt-1 print:text-gray-500">
@@ -230,16 +217,12 @@ export default function MonthlyReport({
                   Credit Pay: {formatIdr(reportSummary.outcome.credit_payment)}
                 </span>
               </div>
-            </CardContent>
-          </Card>
-          <Card className="print:border print:border-gray-300 print:shadow-none">
-            <CardHeader className="pb-2 print:pb-1">
-              <CardTitle className="text-sm font-medium text-white/50 print:text-gray-600">
+            </div>
+          <div className="glass-card p-5 print:border print:border-gray-300 print:shadow-none">
+            <h3 className="text-sm font-medium text-white/50 print:text-gray-600 text-white/80">
                 Savings
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p
+              </h3>
+            <p
                 className={`text-2xl font-bold ${
                   reportSummary.savings >= 0
                     ? 'text-emerald-600 dark:text-emerald-400 print:text-emerald-700'
@@ -248,16 +231,12 @@ export default function MonthlyReport({
               >
                 {formatIdr(reportSummary.savings)}
               </p>
-            </CardContent>
-          </Card>
-          <Card className="print:border print:border-gray-300 print:shadow-none">
-            <CardHeader className="pb-2 print:pb-1">
-              <CardTitle className="text-sm font-medium text-white/50 print:text-gray-600">
+            </div>
+          <div className="glass-card p-5 print:border print:border-gray-300 print:shadow-none">
+            <h3 className="text-sm font-medium text-white/50 print:text-gray-600 text-white/80">
                 Savings Rate
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p
+              </h3>
+            <p
                 className={`text-2xl font-bold ${
                   reportSummary.savings_rate_pct >= 20
                     ? 'text-emerald-600 dark:text-emerald-400 print:text-emerald-700'
@@ -268,21 +247,17 @@ export default function MonthlyReport({
               >
                 {reportSummary.savings_rate_pct.toFixed(1)}%
               </p>
-            </CardContent>
-          </Card>
+            </div>
         </div>
 
         {/* Period-over-Period Comparison */}
         {prevSummary && (
-          <Card className="print:border print:border-gray-300 print:shadow-none">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base font-semibold flex items-center gap-2">
+          <div className="glass-card p-5 print:border print:border-gray-300 print:shadow-none">
+            <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
                 <ArrowRight className="w-4 h-4" />
                 vs Previous Period ({prevSummary.month})
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+              </h3>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
                 {(() => {
                   const incomeChange = prevSummary.income > 0
                     ? ((income - prevSummary.income) / prevSummary.income) * 100
@@ -378,21 +353,17 @@ export default function MonthlyReport({
                   );
                 })()}
               </div>
-            </CardContent>
-          </Card>
+            </div>
         )}
 
         {/* Two-column: Category Breakdown + Net Worth */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 print:grid-cols-3">
           {/* Category Breakdown */}
-          <Card className="lg:col-span-2 print:col-span-2 print:border print:border-gray-300 print:shadow-none">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base font-semibold">
+          <div className="glass-card p-5 lg:col-span-2 print:col-span-2 print:border print:border-gray-300 print:shadow-none">
+            <h3 className="text-base font-semibold text-white/80">
                 Category Breakdown
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {categoryBreakdown.length === 0 ? (
+              </h3>
+            {categoryBreakdown.length === 0 ? (
                 <p className="text-sm text-white/50">No category data.</p>
               ) : (
                 <Table>
@@ -464,18 +435,14 @@ export default function MonthlyReport({
                   </TableBody>
                 </Table>
               )}
-            </CardContent>
-          </Card>
+            </div>
 
           {/* Net Worth Snapshot */}
-          <Card className="print:border print:border-gray-300 print:shadow-none">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base font-semibold">
+          <div className="glass-card p-5 print:border print:border-gray-300 print:shadow-none">
+            <h3 className="text-base font-semibold text-white/80">
                 Net Worth
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {reportNetworth ? (
+              </h3>
+            {reportNetworth ? (
                 <div className="space-y-3">
                   <div>
                     <p className="text-xs text-white/50 print:text-gray-600">
@@ -547,19 +514,15 @@ export default function MonthlyReport({
                   No net worth data for this period.
                 </p>
               )}
-            </CardContent>
-          </Card>
+            </div>
         </div>
 
         {/* Top Transactions */}
-        <Card className="print:border print:border-gray-300 print:shadow-none">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base font-semibold">
+        <div className="glass-card p-5 print:border print:border-gray-300 print:shadow-none">
+          <h3 className="text-base font-semibold text-white/80">
               Top 10 Transactions
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {topTransactions.length === 0 ? (
+            </h3>
+          {topTransactions.length === 0 ? (
               <p className="text-sm text-white/50">No transactions.</p>
             ) : (
               <Table>
@@ -612,20 +575,16 @@ export default function MonthlyReport({
                 </TableBody>
               </Table>
             )}
-          </CardContent>
-        </Card>
+          </div>
 
         {/* Anomalies */}
         {anomalies.length > 0 && (
-          <Card className="print:border print:border-gray-300 print:shadow-none">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base font-semibold flex items-center gap-2">
+          <div className="glass-card p-5 print:border print:border-gray-300 print:shadow-none">
+            <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
                 <AlertTriangle className="w-4 h-4 text-amber-500" />
                 Spending Anomalies
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
+              </h3>
+            <div className="space-y-3">
                 {anomalies.map((a) => {
                   const severityColor =
                     a.severity === 'high'
@@ -663,19 +622,15 @@ export default function MonthlyReport({
                   );
                 })}
               </div>
-            </CardContent>
-          </Card>
+            </div>
         )}
 
         {/* Transaction Summary Stats */}
-        <Card className="print:border print:border-gray-300 print:shadow-none">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base font-semibold">
+        <div className="glass-card p-5 print:border print:border-gray-300 print:shadow-none">
+          <h3 className="text-base font-semibold text-white/80">
               Transaction Summary
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+            </h3>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
               <div>
                 <p className="text-xs text-white/50 print:text-gray-600">
                   Total Transactions
@@ -717,8 +672,7 @@ export default function MonthlyReport({
                 </p>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
 
         {/* Footer */}
         <div className="text-center text-xs text-white/40 pt-4 border-t border-white/[0.06] print:text-gray-500 print:border-gray-300">

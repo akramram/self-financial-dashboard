@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
 import type { MonthlySummary, Category } from '../lib/data';
 import { formatIdr } from '../lib/utils';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Chart as ChartJS,
   RadialLinearScale,
@@ -152,14 +151,14 @@ export default function CategoryRadarChart({
   };
 
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <CardTitle className="text-base font-semibold flex items-center gap-2">
+    <div className="glass-card p-5">
+      
+        <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
           <Crosshair className="w-4 h-4 text-slate-500" />
           Category Spending Radar
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
+        </h3>
+      
+      
         {hasData ? (
           <div className="h-[400px] w-full">
             <Radar data={chartData} options={options} />
@@ -169,7 +168,7 @@ export default function CategoryRadarChart({
             No category data available for the selected periods.
           </div>
         )}
-      </CardContent>
-    </Card>
+      
+    </div>
   );
 }

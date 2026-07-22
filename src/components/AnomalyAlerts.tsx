@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import type { Anomaly } from '../lib/db';
 import { formatIdr } from '../lib/utils';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -91,13 +90,13 @@ export default function AnomalyAlerts({ month }: Props) {
   const displayItems = expanded ? filtered : filtered.slice(0, 3);
 
   return (
-    <Card className="border-amber-200 dark:border-amber-800">
-      <CardHeader className="pb-2">
+    <div className="glass-card p-5 border-amber-200 dark:border-amber-800">
+      
         <div className="flex items-center justify-between">
-          <CardTitle className="text-base font-semibold flex items-center gap-2">
+          <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
             <AlertTriangle className="w-4 h-4 text-amber-500" />
             Spending Anomalies Detected
-          </CardTitle>
+          </h3>
           <div className="flex items-center gap-2">
             {highCount > 0 && (
               <button
@@ -149,8 +148,8 @@ export default function AnomalyAlerts({ month }: Props) {
         <p className="text-xs text-slate-400">
           These transactions look unusual compared to your historical spending patterns.
         </p>
-      </CardHeader>
-      <CardContent className="space-y-2">
+      
+      
         {filtered.length === 0 ? (
           <p className="text-xs text-slate-400 text-center py-3">
             No {severityFilter} severity anomalies found.
@@ -216,7 +215,7 @@ export default function AnomalyAlerts({ month }: Props) {
             )}
           </Button>
         )}
-      </CardContent>
-    </Card>
+      
+    </div>
   );
 }

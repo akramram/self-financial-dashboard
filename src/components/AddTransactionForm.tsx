@@ -3,7 +3,6 @@ import { createTransaction, fetchCategories } from '../lib/api';
 import type { Category } from '../lib/data';
 import { getActivePeriod } from '../lib/utils';
 import { useCategorySuggestion } from '../hooks/useCategorySuggestion';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -141,11 +140,11 @@ export default function AddTransactionForm() {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Add Transaction</CardTitle>
-      </CardHeader>
-      <CardContent>
+    <div className="glass-card p-5">
+      
+        <h3 className="text-white/80">Add Transaction</h3>
+      
+      
         <form onSubmit={handleSubmit} className="space-y-4">
           {message && (
             <Badge variant="outline" className="w-full justify-start px-3 py-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-200 border-emerald-200 dark:border-emerald-800">
@@ -286,7 +285,7 @@ export default function AddTransactionForm() {
             Add Transaction
           </Button>
         </form>
-      </CardContent>
+      
 
       <Dialog open={showDuplicateDialog} onOpenChange={setShowDuplicateDialog}>
         <DialogContent>
@@ -306,6 +305,6 @@ export default function AddTransactionForm() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </Card>
+    </div>
   );
 }

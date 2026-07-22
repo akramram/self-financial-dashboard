@@ -1,12 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { formatIdr, formatNumber } from '../lib/utils';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -241,11 +234,9 @@ export default function WhatIfPlanner() {
 
   if (error || !data || !projection) {
     return (
-      <Card>
-        <CardContent className="pt-6">
-          <p className="text-destructive">Error loading data: {error || 'Unknown error'}</p>
-        </CardContent>
-      </Card>
+      <div className="glass-card p-5">
+        <p className="text-destructive">Error loading data: {error || 'Unknown error'}</p>
+        </div>
     );
   }
 
@@ -354,61 +345,52 @@ export default function WhatIfPlanner() {
     <div className="space-y-6">
       {/* ─── Summary KPI cards ─────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <Card>
-          <CardContent className="pt-4 pb-4 px-4">
-            <p className="text-[11px] text-muted-foreground uppercase tracking-wide font-medium">Projected Net Worth</p>
+        <div className="glass-card p-5">
+          <p className="text-[11px] text-muted-foreground uppercase tracking-wide font-medium">Projected Net Worth</p>
             <p className={`text-xl font-bold mt-1 ${projection.networthDifference >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
               {formatIdr(projection.finalScenario)}
             </p>
             <p className="text-[11px] mt-1 text-muted-foreground">
               {projection.networthDifference >= 0 ? '▲' : '▼'} {formatIdr(Math.abs(projection.networthDifference))} vs baseline
             </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4 pb-4 px-4">
-            <p className="text-[11px] text-muted-foreground uppercase tracking-wide font-medium">Monthly Savings</p>
+          </div>
+        <div className="glass-card p-5">
+          <p className="text-[11px] text-muted-foreground uppercase tracking-wide font-medium">Monthly Savings</p>
             <p className={`text-xl font-bold mt-1 ${projection.monthlyNet >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
               {formatIdr(projection.monthlyNet)}
             </p>
             <p className="text-[11px] mt-1 text-muted-foreground">
               vs {formatIdr(data.avgSavings)} baseline
             </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4 pb-4 px-4">
-            <p className="text-[11px] text-muted-foreground uppercase tracking-wide font-medium">Savings Rate</p>
+          </div>
+        <div className="glass-card p-5">
+          <p className="text-[11px] text-muted-foreground uppercase tracking-wide font-medium">Savings Rate</p>
             <p className={`text-xl font-bold mt-1 ${projection.adjustedIncome > 0 && projection.monthlyNet / projection.adjustedIncome >= 0.2 ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}`}>
               {projection.adjustedIncome > 0 ? ((projection.monthlyNet / projection.adjustedIncome) * 100).toFixed(1) : '0'}%
             </p>
             <p className="text-[11px] mt-1 text-muted-foreground">
               vs {data.savingsRate.toFixed(1)}% baseline
             </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4 pb-4 px-4">
-            <p className="text-[11px] text-muted-foreground uppercase tracking-wide font-medium">Total Saved ({projectionMonths}mo)</p>
+          </div>
+        <div className="glass-card p-5">
+          <p className="text-[11px] text-muted-foreground uppercase tracking-wide font-medium">Total Saved ({projectionMonths}mo)</p>
             <p className={`text-xl font-bold mt-1 ${projection.totalSaved >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
               {formatIdr(projection.totalSaved)}
             </p>
             <p className="text-[11px] mt-1 text-muted-foreground">
               vs {formatIdr(projection.baselineTotalSaved)} baseline
             </p>
-          </CardContent>
-        </Card>
+          </div>
       </div>
 
       {/* ─── Net Worth Projection Chart ────────────────────────────────────── */}
-      <Card>
-        <CardHeader className="pb-2">
-          <div className="flex items-center justify-between flex-wrap gap-2">
+      <div className="glass-card p-5">
+        <div className="flex items-center justify-between flex-wrap gap-2">
             <div>
-              <CardTitle className="text-lg">Net Worth Projection</CardTitle>
-              <CardDescription className="text-xs">
+              <h3 className="text-lg text-white/80">Net Worth Projection</h3>
+              <p className="text-xs text-white/50">
                 Baseline trend vs your what-if scenario over {projectionMonths} months
-              </CardDescription>
+              </p>
             </div>
             <div className="flex gap-1">
               {([6, 12, 24] as ProjectionMonths[]).map((m) => (
@@ -424,43 +406,33 @@ export default function WhatIfPlanner() {
               ))}
             </div>
           </div>
-        </CardHeader>
-        <CardContent>
-          <div style={{ height: 320 }}>
+        <div style={{ height: 320 }}>
             <Line data={networthChartData} options={networthChartOptions} />
           </div>
-        </CardContent>
-      </Card>
+        </div>
 
       {/* ─── Cashflow Comparison ───────────────────────────────────────────── */}
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-lg">Monthly Cashflow: Baseline vs Scenario</CardTitle>
-          <CardDescription className="text-xs">
+      <div className="glass-card p-5">
+        <h3 className="text-lg text-white/80">Monthly Cashflow: Baseline vs Scenario</h3>
+          <p className="text-xs text-white/50">
             How income, spending, and savings change with your adjustments
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div style={{ height: 240 }}>
+          </p>
+        <div style={{ height: 240 }}>
             <Bar data={cashflowData} options={cashflowOptions} />
           </div>
-        </CardContent>
-      </Card>
+        </div>
 
       {/* ─── Controls ──────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Income Control */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center gap-2">
+        <div className="glass-card p-5">
+          <h3 className="text-base flex items-center gap-2 text-white/80">
               💰 Income Adjustment
-            </CardTitle>
-            <CardDescription className="text-xs">
+            </h3>
+            <p className="text-xs text-white/50">
               Simulate a raise, bonus, or income loss
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
+            </p>
+          <div>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium">Income Change</span>
                 <Badge variant={incomeChangePct >= 0 ? 'default' : 'destructive'} className="text-xs">
@@ -494,28 +466,24 @@ export default function WhatIfPlanner() {
                 </p>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
 
         {/* One-Time Events */}
-        <Card>
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
+        <div className="glass-card p-5">
+          <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-base flex items-center gap-2">
+                <h3 className="text-base flex items-center gap-2 text-white/80">
                   🎯 One-Time Events
-                </CardTitle>
-                <CardDescription className="text-xs">
+                </h3>
+                <p className="text-xs text-white/50">
                   Bonuses, large purchases, or unexpected costs
-                </CardDescription>
+                </p>
               </div>
               <Button size="sm" variant="outline" onClick={addOneTimeEvent} className="h-8 text-xs">
                 + Add Event
               </Button>
             </div>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {oneTimeEvents.length === 0 ? (
+          {oneTimeEvents.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-6">
                 No one-time events. Add a bonus, tax refund, or large purchase.
               </p>
@@ -559,21 +527,19 @@ export default function WhatIfPlanner() {
             <p className="text-[10px] text-muted-foreground">
               💡 Use negative amounts for expenses, positive for income.
             </p>
-          </CardContent>
-        </Card>
+          </div>
       </div>
 
       {/* ─── Category Spending Adjustments ─────────────────────────────────── */}
-      <Card>
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between flex-wrap gap-2">
+      <div className="glass-card p-5">
+        <div className="flex items-center justify-between flex-wrap gap-2">
             <div>
-              <CardTitle className="text-base flex items-center gap-2">
+              <h3 className="text-base flex items-center gap-2 text-white/80">
                 🛒 Category Spending Adjustments
-              </CardTitle>
-              <CardDescription className="text-xs">
+              </h3>
+              <p className="text-xs text-white/50">
                 Drag sliders to simulate cutting or increasing spending per category
-              </CardDescription>
+              </p>
             </div>
             <div className="flex items-center gap-2">
               {Object.keys(categoryAdjustments).length > 0 && (
@@ -586,9 +552,7 @@ export default function WhatIfPlanner() {
               </Button>
             </div>
           </div>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {visibleCategories.map((cat) => {
+        {visibleCategories.map((cat) => {
             const adj = categoryAdjustments[cat.name];
             const pct = adj?.pct ?? 0;
             const newAmount = cat.avg_spending + (adj?.delta ?? 0);
@@ -619,14 +583,12 @@ export default function WhatIfPlanner() {
               </div>
             );
           })}
-        </CardContent>
-      </Card>
+        </div>
 
       {/* ─── Reset & Insight Bar ───────────────────────────────────────────── */}
       {(incomeChangePct !== 0 || Object.keys(categoryAdjustments).length > 0 || oneTimeEvents.length > 0) && (
-        <Card className={`border-l-4 ${projection.networthDifference >= 0 ? 'border-l-emerald-500' : 'border-l-amber-500'}`}>
-          <CardContent className="py-4 flex items-center justify-between flex-wrap gap-3">
-            <div className="flex-1 min-w-0">
+        <div className={`glass-card p-5 border-l-4 ${projection.networthDifference >= 0 ? 'border-l-emerald-500' : 'border-l-amber-500'}`}>
+          <div className="flex-1 min-w-0">
               <p className="text-sm font-medium">
                 {projection.networthDifference >= 0 ? '✅' : '⚠️'}{' '}
                 {projection.networthDifference >= 0
@@ -640,8 +602,7 @@ export default function WhatIfPlanner() {
             <Button size="sm" variant="outline" onClick={resetScenario} className="flex-shrink-0">
               ↺ Reset All
             </Button>
-          </CardContent>
-        </Card>
+          </div>
       )}
     </div>
   );
