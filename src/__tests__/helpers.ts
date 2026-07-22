@@ -137,11 +137,20 @@ export function createTestDb() {
 }
 
 /**
- * Helper: seed a period and return it.
+ * Seed a period with proper salary-cycle dates (21st → 20th).
+ * e.g., 'August 2026' → start 2026-07-21, end 2026-08-20.
  */
 export function seedPeriod(db: Database.Database, month = 'July 2026') {
+  const d = new Date(month + ' 1');
+  const y = d.getFullYear();
+  const m = d.getMonth(); // 0-indexed
+  // Period label = end month. Start is 21st of previous month.
+  const startMonth = m === 0 ? 11 : m - 1; // previous month
+  const startYear = m === 0 ? y - 1 : y;
+  const startDate = `${startYear}-${String(startMonth + 1).padStart(2, '0')}-21`;
+  const endDate   = `${y}-${String(m + 1).padStart(2, '0')}-20`;
   db.prepare('INSERT INTO periods (month, start_date, end_date) VALUES (?, ?, ?)')
-    .run(month, '2026-06-21', '2026-07-20');
+    .run(month, startDate, endDate);
   return db.prepare('SELECT * FROM periods WHERE month = ?').get(month) as any;
 }
 
