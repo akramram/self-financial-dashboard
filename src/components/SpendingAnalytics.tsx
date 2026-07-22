@@ -388,7 +388,7 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-base font-semibold flex items-center gap-2">
-            <Activity className="w-4 h-4 text-slate-500" />
+            <Activity className="w-4 h-4 text-white/40" />
             Daily Spending Trend
           </CardTitle>
           <p className="text-xs text-white/30">
@@ -438,7 +438,7 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-base font-semibold flex items-center gap-2">
-              <BarChart3 className="w-4 h-4 text-slate-500" />
+              <BarChart3 className="w-4 h-4 text-white/40" />
               Spending by Day of Week
             </CardTitle>
             <p className="text-xs text-white/30">
@@ -495,7 +495,7 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-base font-semibold flex items-center gap-2">
-              <PieChart className="w-4 h-4 text-slate-500" />
+              <PieChart className="w-4 h-4 text-white/40" />
               Category Breakdown
             </CardTitle>
             <p className="text-xs text-white/30">
@@ -573,7 +573,7 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-base font-semibold flex items-center gap-2">
-            <Hash className="w-4 h-4 text-slate-500" />
+            <Hash className="w-4 h-4 text-white/40" />
             Transaction Statistics
           </CardTitle>
         </CardHeader>
@@ -582,7 +582,7 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
             <TableHeader>
               <TableRow>
                 <TableHead className="text-white/40">Metric</TableHead>
-                <TableHead className="text-right">Value</TableHead>
+                <TableHead className="text-right text-white/40">Value</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -592,7 +592,7 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
               </TableRow>
               <TableRow>
                 <TableCell className="text-white/60">Unpaid Total</TableCell>
-                <TableCell className="text-right font-semibold text-amber-600 dark:text-amber-400">{formatIdr(stats.unpaid_amount)}</TableCell>
+                <TableCell className="text-right font-semibold text-amber-400">{formatIdr(stats.unpaid_amount)}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell className="text-white/60">Average Transaction (paid)</TableCell>
@@ -627,9 +627,9 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
               <TableRow>
                 <TableCell className="text-white/60">Paid / Unpaid</TableCell>
                 <TableCell className="text-right">
-                  <span className="text-emerald-600 dark:text-emerald-400">{stats.paid_count}</span>
+                  <span className="text-emerald-400">{stats.paid_count}</span>
                   <span className="text-white/30 mx-1">/</span>
-                  <span className="text-amber-600 dark:text-amber-400">{stats.unpaid_count}</span>
+                  <span className="text-amber-400">{stats.unpaid_count}</span>
                 </TableCell>
               </TableRow>
             </TableBody>
@@ -641,7 +641,7 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-base font-semibold flex items-center gap-2">
-            <Zap className="w-4 h-4 text-slate-500" />
+            <Zap className="w-4 h-4 text-white/40" />
             Spending Velocity
           </CardTitle>
         </CardHeader>
@@ -657,7 +657,7 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
             </div>
             <div className="text-center">
               <div className="text-sm text-white/40 mb-1">vs Historical</div>
-              <div className={`text-lg font-bold ${velocityUp ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
+              <div className={`text-lg font-bold ${velocityUp ? 'text-red-400' : 'text-emerald-400'}`}>
                 {velocityUp ? '+' : ''}{velocity.velocity_vs_history.toFixed(1)}%
               </div>
               <div className="flex items-center justify-center gap-1 mt-1">
@@ -688,7 +688,7 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-base font-semibold flex items-center gap-2">
-              <Hash className="w-4 h-4 text-slate-500" />
+              <Hash className="w-4 h-4 text-white/40" />
               Top Merchants
             </CardTitle>
             <p className="text-xs text-white/30">
