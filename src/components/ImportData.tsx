@@ -236,7 +236,7 @@ export default function ImportData() {
         )}
 
         {result && (
-          <div className="rounded-lg bg-slate-50 dark:bg-slate-800 p-3 space-y-1">
+          <div className="rounded-lg bg-white/[0.03] p-3 space-y-1">
             <div className="text-sm font-medium">Import Result</div>
             <div className="text-sm text-muted-foreground">
               <span className="text-emerald-600 font-medium">{result.imported}</span> imported,{' '}

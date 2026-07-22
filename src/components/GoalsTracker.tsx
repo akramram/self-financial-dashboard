@@ -117,7 +117,7 @@ function CircularProgress({ progress, color, size = 80, strokeWidth = 6 }: { pro
         stroke="currentColor"
         strokeWidth={strokeWidth}
         fill="none"
-        className="text-slate-200 dark:text-slate-700"
+        className="text-white/15"
       />
       <circle
         cx={size / 2}
@@ -399,8 +399,8 @@ export default function GoalsTracker({ networth }: Props) {
         <Card>
           <CardContent className="py-12">
             <div className="text-center">
-              <div className="inline-flex p-4 rounded-full bg-slate-100 dark:bg-slate-800 mb-4">
-                <Target className="w-8 h-8 text-slate-400 dark:text-slate-500" />
+              <div className="inline-flex p-4 rounded-full bg-white/[0.05] mb-4">
+                <Target className="w-8 h-8 text-white/40" />
               </div>
               <h3 className="text-lg font-semibold mb-1">No goals yet</h3>
               <p className="text-sm text-muted-foreground mb-4">
@@ -453,14 +453,14 @@ export default function GoalsTracker({ networth }: Props) {
                     <div className="flex items-center gap-1 shrink-0">
                       <button
                         onClick={() => setContributeTo(goal)}
-                        className="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 text-emerald-600 dark:text-emerald-400 transition"
+                        className="p-1.5 rounded-md hover:bg-white/[0.08] text-emerald-600 dark:text-emerald-400 transition"
                         title="Add contribution"
                       >
                         <Plus className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => openEditDialog(goal)}
-                        className="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 transition"
+                        className="p-1.5 rounded-md hover:bg-white/[0.08] text-white/50 transition"
                         title="Edit"
                       >
                         <Pencil className="w-4 h-4" />
@@ -489,7 +489,7 @@ export default function GoalsTracker({ networth }: Props) {
                           <span className="text-muted-foreground">Saved</span>
                           <span className="font-medium">{formatIdr(goal.current_amount)}</span>
                         </div>
-                        <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+                        <div className="w-full bg-white/[0.08] rounded-full h-2">
                           <div
                             className="h-2 rounded-full transition-all duration-500"
                             style={{ width: `${Math.min(100, progress)}%`, backgroundColor: goal.color }}
@@ -721,11 +721,11 @@ export default function GoalsTracker({ networth }: Props) {
                     className={`p-2 rounded-lg border transition ${
                       form.icon === icon
                         ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 ring-1 ring-indigo-500'
-                        : 'border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
+                        : 'border-white/[0.06] hover:bg-slate-50 dark:hover:bg-slate-800'
                     }`}
                     title={icon}
                   >
-                    <span className={form.icon === icon ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-600 dark:text-slate-400'}>
+                    <span className={form.icon === icon ? 'text-indigo-600 dark:text-indigo-400' : 'text-white/60'}>
                       {ICON_MAP[icon]}
                     </span>
                   </button>
@@ -754,7 +754,7 @@ export default function GoalsTracker({ networth }: Props) {
 
             {/* Preview */}
             {form.name && form.target_amount && Number(form.target_amount) > 0 && (
-              <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+              <div className="p-3 rounded-lg bg-white/[0.03] border-white/[0.06]">
                 <p className="text-xs font-medium text-muted-foreground mb-2">Preview</p>
                 <div className="flex items-center gap-3">
                   <div className="p-2 rounded-lg" style={{ backgroundColor: `${form.color}20`, color: form.color }}>
@@ -835,7 +835,7 @@ export default function GoalsTracker({ networth }: Props) {
             </div>
 
             {contributeTo && contributeAmount && Number(contributeAmount) > 0 && (
-              <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm">
+              <div className="p-3 rounded-lg bg-white/[0.03] border-white/[0.06] text-sm">
                 <div className="flex justify-between mb-1">
                   <span className="text-muted-foreground">Current</span>
                   <span>{formatIdr(contributeTo.current_amount)}</span>
@@ -844,7 +844,7 @@ export default function GoalsTracker({ networth }: Props) {
                   <span className="text-muted-foreground">Contribution</span>
                   <span className="text-emerald-600 dark:text-emerald-400">+{formatIdr(Number(contributeAmount))}</span>
                 </div>
-                <div className="flex justify-between font-semibold pt-1 border-t border-slate-200 dark:border-slate-700">
+                <div className="flex justify-between font-semibold pt-1 border-t border-white/[0.06]">
                   <span>New Total</span>
                   <span>{formatIdr(contributeTo.current_amount + Number(contributeAmount))}</span>
                 </div>

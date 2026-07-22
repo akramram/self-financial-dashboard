@@ -182,8 +182,8 @@ export default function NetworthProjection({ data }: Props) {
   if (sortedData.length === 0) {
     return (
       <Card>
-        <CardContent className="py-8 text-center text-slate-400">
-          <p>Add net worth data to see projections.</p>
+        <CardContent className="py-8 text-center text-sm text-white/50">
+          Add net worth data to see projections.
         </CardContent>
       </Card>
     );
@@ -206,7 +206,7 @@ export default function NetworthProjection({ data }: Props) {
             {/* Projection length */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label className="text-xs text-slate-500 flex items-center gap-1.5">
+                <Label className="text-xs text-white/50 flex items-center gap-1.5">
                   <Calendar className="w-3.5 h-3.5" />
                   Projection Period
                 </Label>
@@ -221,8 +221,8 @@ export default function NetworthProjection({ data }: Props) {
                     onClick={() => setProjectionMonths(m)}
                     className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
                       projectionMonths === m
-                        ? 'bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300 ring-1 ring-violet-300 dark:ring-violet-700'
-                        : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
+                        ? 'bg-violet-900/40 text-violet-300 ring-1 ring-violet-700'
+                        : 'bg-white/[0.05] text-white/50 hover:bg-white/[0.08]'
                     }`}
                   >
                     {m >= 12 ? `${m / 12}y` : `${m}m`}
@@ -234,7 +234,7 @@ export default function NetworthProjection({ data }: Props) {
             {/* Monthly contribution */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label className="text-xs text-slate-500 flex items-center gap-1.5">
+                <Label className="text-xs text-white/50 flex items-center gap-1.5">
                   <PiggyBank className="w-3.5 h-3.5" />
                   Monthly Savings
                 </Label>
@@ -249,14 +249,14 @@ export default function NetworthProjection({ data }: Props) {
                 step={100_000}
                 value={monthlyContribution || avgMonthlySavings}
                 onChange={(e) => setMonthlyContribution(Number(e.target.value))}
-                className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-violet-500"
+                className="w-full h-2 bg-white/[0.08] rounded-lg appearance-none cursor-pointer accent-violet-500"
               />
-              <div className="flex justify-between text-[10px] text-slate-400">
+              <div className="flex justify-between text-[10px] text-white/40">
                 <span>{formatIdr(0)}</span>
                 <span>{formatIdr(Math.max(avgMonthlySavings * 3, 10_000_000))}</span>
               </div>
               {monthlyContribution === 0 && avgMonthlySavings > 0 && (
-                <p className="text-[10px] text-slate-400 italic">
+                <p className="text-[10px] text-white/40 italic">
                   Auto: {formatIdr(avgMonthlySavings)}/mo (from {sortedData.length}-period avg)
                 </p>
               )}
@@ -265,7 +265,7 @@ export default function NetworthProjection({ data }: Props) {
             {/* Annual return rate */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label className="text-xs text-slate-500 flex items-center gap-1.5">
+                <Label className="text-xs text-white/50 flex items-center gap-1.5">
                   <Percent className="w-3.5 h-3.5" />
                   Annual Return
                 </Label>
@@ -280,9 +280,9 @@ export default function NetworthProjection({ data }: Props) {
                 step={0.5}
                 value={annualReturnRate}
                 onChange={(e) => setAnnualReturnRate(Number(e.target.value))}
-                className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-violet-500"
+                className="w-full h-2 bg-white/[0.08] rounded-lg appearance-none cursor-pointer accent-violet-500"
               />
-              <div className="flex justify-between text-[10px] text-slate-400">
+              <div className="flex justify-between text-[10px] text-white/40">
                 <span>0%</span>
                 <span>10%</span>
                 <span>20%</span>
@@ -299,7 +299,7 @@ export default function NetworthProjection({ data }: Props) {
             <TrendingUp className="w-4 h-4 text-violet-500" />
             Net Worth Projection
           </CardTitle>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-white/50">
             Solid line = historical. Dashed amber line = projected with {effectiveContribution > 0 ? `${formatIdr(effectiveContribution)}/mo contributions` : 'no additional contributions'} and {annualReturnRate}% annual return.
           </p>
         </CardHeader>
@@ -315,8 +315,8 @@ export default function NetworthProjection({ data }: Props) {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Card>
             <CardContent className="pt-4 pb-4">
-              <p className="text-xs text-slate-500 mb-1">Current Net Worth</p>
-              <p className="text-lg font-bold text-slate-800 dark:text-slate-100">
+              <p className="text-xs text-white/50 mb-1">Current Net Worth</p>
+              <p className="text-lg font-bold text-white/90">
                 {formatIdr(summary.lastValue)}
               </p>
             </CardContent>
@@ -324,11 +324,11 @@ export default function NetworthProjection({ data }: Props) {
           {summary.at12 && (
             <Card>
               <CardContent className="pt-4 pb-4">
-                <p className="text-xs text-slate-500 mb-1">In 12 Months</p>
-                <p className="text-lg font-bold text-amber-600 dark:text-amber-400">
+                <p className="text-xs text-white/50 mb-1">In 12 Months</p>
+                <p className="text-lg font-bold text-amber-400">
                   {formatIdr(summary.at12)}
                 </p>
-                <p className="text-[10px] text-slate-400">
+                <p className="text-[10px] text-white/40">
                   +{formatIdr(summary.at12 - summary.lastValue)} (
                   {summary.lastValue > 0
                     ? ((summary.at12 / summary.lastValue - 1) * 100).toFixed(1)
@@ -341,11 +341,11 @@ export default function NetworthProjection({ data }: Props) {
           {summary.at24 && (
             <Card>
               <CardContent className="pt-4 pb-4">
-                <p className="text-xs text-slate-500 mb-1">In 24 Months</p>
-                <p className="text-lg font-bold text-amber-600 dark:text-amber-400">
+                <p className="text-xs text-white/50 mb-1">In 24 Months</p>
+                <p className="text-lg font-bold text-amber-400">
                   {formatIdr(summary.at24)}
                 </p>
-                <p className="text-[10px] text-slate-400">
+                <p className="text-[10px] text-white/40">
                   +{formatIdr(summary.at24 - summary.lastValue)} (
                   {summary.lastValue > 0
                     ? ((summary.at24 / summary.lastValue - 1) * 100).toFixed(1)
@@ -358,11 +358,11 @@ export default function NetworthProjection({ data }: Props) {
           {summary.at36 && (
             <Card>
               <CardContent className="pt-4 pb-4">
-                <p className="text-xs text-slate-500 mb-1">In 36 Months</p>
-                <p className="text-lg font-bold text-amber-600 dark:text-amber-400">
+                <p className="text-xs text-white/50 mb-1">In 36 Months</p>
+                <p className="text-lg font-bold text-amber-400">
                   {formatIdr(summary.at36)}
                 </p>
-                <p className="text-[10px] text-slate-400">
+                <p className="text-[10px] text-white/40">
                   +{formatIdr(summary.at36 - summary.lastValue)} (
                   {summary.lastValue > 0
                     ? ((summary.at36 / summary.lastValue - 1) * 100).toFixed(1)
@@ -381,19 +381,19 @@ export default function NetworthProjection({ data }: Props) {
           <CardContent className="pt-4 pb-4">
             <div className="flex flex-wrap gap-6 text-sm">
               <div>
-                <span className="text-slate-500">Total contributions: </span>
+                <span className="text-white/50">Total contributions: </span>
                 <span className="font-semibold">{formatIdr(summary.totalContributions)}</span>
               </div>
               <div>
-                <span className="text-slate-500">Investment returns: </span>
-                <span className={`font-semibold ${summary.investmentGains >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
+                <span className="text-white/50">Investment returns: </span>
+                <span className={`font-semibold ${summary.investmentGains >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                   {summary.investmentGains >= 0 ? '+' : ''}
                   {formatIdr(summary.investmentGains)}
                 </span>
               </div>
               <div>
-                <span className="text-slate-500">Projected total: </span>
-                <span className="font-semibold text-violet-600 dark:text-violet-400">
+                <span className="text-white/50">Projected total: </span>
+                <span className="font-semibold text-violet-400">
                   {formatIdr(summary.lastValue + summary.totalContributions + summary.investmentGains)}
                 </span>
               </div>

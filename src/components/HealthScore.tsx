@@ -114,7 +114,7 @@ function ScoreGauge({ score, grade, gradeColor }: { score: number; grade: string
         : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
 
   return (
-    <div className={`flex flex-col items-center justify-center p-8 rounded-2xl ${bgColor} border border-slate-200 dark:border-slate-700`}>
+    <div className={`flex flex-col items-center justify-center p-8 rounded-2xl ${bgColor} border border-white/[0.06]`}>
       <div className="relative">
         <svg height={radius * 2} width={radius * 2} className="-rotate-90">
           {/* Background circle */}
@@ -122,7 +122,7 @@ function ScoreGauge({ score, grade, gradeColor }: { score: number; grade: string
             stroke="currentColor"
             fill="transparent"
             strokeWidth={stroke}
-            className="text-slate-200 dark:text-slate-700"
+            className="text-white/15"
             r={normalizedRadius}
             cx={radius}
             cy={radius}
@@ -142,13 +142,13 @@ function ScoreGauge({ score, grade, gradeColor }: { score: number; grade: string
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center rotate-0">
           <span className={`text-4xl font-bold ${textColor}`}>{score}</span>
-          <span className="text-xs text-slate-500 dark:text-slate-400">/ 100</span>
+          <span className="text-xs text-white/50">/ 100</span>
         </div>
       </div>
       <div className="mt-4 flex items-center gap-2">
         <Badge className={`${badgeBg} text-lg px-3 py-1`}>{grade}</Badge>
       </div>
-      <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">Financial Health Score</p>
+      <p className="mt-2 text-sm text-white/60">Financial Health Score</p>
     </div>
   );
 }
@@ -185,27 +185,27 @@ function FactorCard({ factor }: { factor: HealthFactor }) {
         : 'bg-red-500';
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
+    <div className="glass-card p-4">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <FactorIcon icon={factor.icon} score={factor.score} maxScore={factor.maxScore} />
-          <span className="font-medium text-sm text-slate-700 dark:text-slate-200">{factor.name}</span>
+          <span className="font-medium text-sm text-white/70">{factor.name}</span>
         </div>
         <div className="text-right">
-          <span className="text-sm font-bold text-slate-800 dark:text-slate-100">{factor.score}</span>
-          <span className="text-xs text-slate-400">/{factor.maxScore}</span>
+          <span className="text-sm font-bold text-white/80">{factor.score}</span>
+          <span className="text-xs text-white/40">/{factor.maxScore}</span>
         </div>
       </div>
-      <div className="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2 mb-2">
+      <div className="w-full bg-white/[0.05] rounded-full h-2 mb-2">
         <div
           className={`${barColor} h-2 rounded-full transition-all duration-700`}
           style={{ width: `${pct}%` }}
         />
       </div>
       <div className="flex justify-between items-center">
-        <span className="text-xs text-slate-500 dark:text-slate-400">{factor.label}</span>
+        <span className="text-xs text-white/50">{factor.label}</span>
       </div>
-      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{factor.detail}</p>
+      <p className="text-xs text-white/50 mt-1">{factor.detail}</p>
     </div>
   );
 }
@@ -287,7 +287,7 @@ export default function HealthScore({ summaries, categories }: Props) {
     return (
       <div className="flex items-center justify-center py-20">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500" />
-        <span className="ml-3 text-slate-500">Calculating health score...</span>
+        <span className="ml-3 text-white/50">Calculating health score...</span>
       </div>
     );
   }
@@ -296,9 +296,9 @@ export default function HealthScore({ summaries, categories }: Props) {
     return (
       <Card>
         <CardContent className="py-12 text-center">
-          <Heart className="mx-auto h-12 w-12 text-slate-300 dark:text-slate-600 mb-4" />
-          <p className="text-slate-500 dark:text-slate-400">Not enough data to calculate health score.</p>
-          <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">Add transactions and income data to get started.</p>
+          <Heart className="mx-auto h-12 w-12 text-white/30 mb-4" />
+          <p className="text-white/50">Not enough data to calculate health score.</p>
+          <p className="text-sm text-white/40 mt-1">Add transactions and income data to get started.</p>
         </CardContent>
       </Card>
     );
@@ -308,7 +308,7 @@ export default function HealthScore({ summaries, categories }: Props) {
     <div className="space-y-6">
       {/* Month selector */}
       <div className="flex items-center gap-3">
-        <label className="text-sm font-medium text-slate-600 dark:text-slate-300">Period:</label>
+        <label className="text-sm font-medium text-white/60">Period:</label>
         <Select value={selectedMonth} onValueChange={setSelectedMonth}>
           <SelectTrigger className="w-[180px]">
             <SelectValue />
@@ -320,7 +320,7 @@ export default function HealthScore({ summaries, categories }: Props) {
             ))}
           </SelectContent>
         </Select>
-        <span className="text-xs text-slate-400 ml-2">
+        <span className="text-xs text-white/40 ml-2">
           {healthData.month}
         </span>
       </div>
@@ -353,8 +353,8 @@ export default function HealthScore({ summaries, categories }: Props) {
                 </>
               ) : (
                 <>
-                  <Minus className="text-slate-500" />
-                  <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
+                  <Minus className="text-white/50" />
+                  <span className="text-sm font-medium text-white/60">
                     No change from last month
                   </span>
                 </>
@@ -364,16 +364,16 @@ export default function HealthScore({ summaries, categories }: Props) {
         </div>
 
         {/* History Chart */}
-        <div className="lg:col-span-2 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+        <div className="lg:col-span-2 glass-card p-6">
           <div className="flex items-center gap-2 mb-4">
             <Trophy className="h-5 w-5 text-indigo-500" />
-            <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-200">Score History</h3>
+            <h3 className="text-lg font-semibold text-white/70">Score History</h3>
           </div>
           <div className="h-[220px]">
             {trendChart && healthData.history.length > 1 ? (
               <Line data={trendChart} options={trendOptions} />
             ) : (
-              <div className="flex items-center justify-center h-full text-slate-400 text-sm">
+              <div className="flex items-center justify-center h-full text-white/40 text-sm">
                 Need at least 2 months of data for trend chart
               </div>
             )}
@@ -385,8 +385,8 @@ export default function HealthScore({ summaries, categories }: Props) {
       <div>
         <div className="flex items-center gap-2 mb-4">
           <Activity className="h-5 w-5 text-indigo-500" />
-          <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-200">Factor Breakdown</h3>
-          <span className="text-xs text-slate-400">Each factor contributes 0-20 points</span>
+          <h3 className="text-lg font-semibold text-white/70">Factor Breakdown</h3>
+          <span className="text-xs text-white/40">Each factor contributes 0-20 points</span>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {healthData.factors.map((factor) => (
@@ -407,7 +407,7 @@ export default function HealthScore({ summaries, categories }: Props) {
           <CardContent>
             <ul className="space-y-2">
               {healthData.tips.map((tip, i) => (
-                <li key={i} className="flex items-start gap-2 text-sm text-slate-600 dark:text-slate-300">
+                <li key={i} className="flex items-start gap-2 text-sm text-white/60">
                   <span className="text-indigo-400 mt-0.5">•</span>
                   <span>{tip}</span>
                 </li>
@@ -423,25 +423,25 @@ export default function HealthScore({ summaries, categories }: Props) {
           <CardTitle className="text-base">How is the score calculated?</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-600 dark:text-slate-300">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-white/60">
             <div>
-              <h4 className="font-medium text-slate-700 dark:text-slate-200 mb-1">🎯 Savings Rate (0-20)</h4>
+              <h4 className="font-medium text-white/70 mb-1">🎯 Savings Rate (0-20)</h4>
               <p>Higher savings rates = better score. 30%+ savings earns full points.</p>
             </div>
             <div>
-              <h4 className="font-medium text-slate-700 dark:text-slate-200 mb-1">🎯 Budget Adherence (0-20)</h4>
+              <h4 className="font-medium text-white/70 mb-1">🎯 Budget Adherence (0-20)</h4>
               <p>Based on how many categories stay within their monthly limits.</p>
             </div>
             <div>
-              <h4 className="font-medium text-slate-700 dark:text-slate-200 mb-1">📈 Networth Growth (0-20)</h4>
+              <h4 className="font-medium text-white/70 mb-1">📈 Networth Growth (0-20)</h4>
               <p>Measures month-over-month networth change. 5%+ growth = full points.</p>
             </div>
             <div>
-              <h4 className="font-medium text-slate-700 dark:text-slate-200 mb-1">💰 Spending Control (0-20)</h4>
+              <h4 className="font-medium text-white/70 mb-1">💰 Spending Control (0-20)</h4>
               <p>Reward for spending well below income. Under 50% = full points.</p>
             </div>
             <div className="md:col-span-2">
-              <h4 className="font-medium text-slate-700 dark:text-slate-200 mb-1">🔄 Consistency (0-20)</h4>
+              <h4 className="font-medium text-white/70 mb-1">🔄 Consistency (0-20)</h4>
               <p>Measures stability of savings rate over 3 months. Low variance = high score.</p>
             </div>
           </div>

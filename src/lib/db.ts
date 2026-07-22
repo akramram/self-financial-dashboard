@@ -1,4 +1,5 @@
 import Database from 'better-sqlite3';
+import bcrypt from 'bcryptjs';
 import path from 'path';
 
 const DB_PATH = path.resolve('./data/financial.db');
@@ -117,6 +118,37 @@ export function initSchema() {
   try { db.exec(`ALTER TABLE transactions ADD COLUMN notes TEXT DEFAULT ''`); } catch (_) { /* already exists */ }
   try { db.exec('ALTER TABLE recurring_transactions ADD COLUMN end_date TEXT'); } catch (_) { /* already exists */ }
   try { db.exec('ALTER TABLE recurring_transactions ADD COLUMN created_at TEXT DEFAULT CURRENT_TIMESTAMP'); } catch (_) { /* already exists */ }
+
+  // Auth tables
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      username TEXT NOT NULL UNIQUE,
+      password_hash TEXT NOT NULL,
+      role TEXT NOT NULL DEFAULT 'viewer' CHECK(role IN ('admin', 'viewer')),
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS sessions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      token TEXT NOT NULL UNIQUE,
+      expires_at TEXT NOT NULL,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_sessions_token ON sessions(token);
+    CREATE INDEX IF NOT EXISTS idx_sessions_expires ON sessions(expires_at);
+  `);
+
+  // Seed default users (only if no users exist)
+  const userCount = db.prepare('SELECT COUNT(*) as count FROM users').get() as { count: number };
+  if (userCount.count === 0) {
+    const adminHash = bcrypt.hashSync('Deimon98', 10);
+    const viewerHash = bcrypt.hashSync('viewer', 10);
+    db.prepare('INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)').run('chowderlatte', adminHash, 'admin');
+    db.prepare('INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)').run('viewer', viewerHash, 'viewer');
+  }
 }
 
 // ─── Period helpers ─────────────────────────────────────────────────────────
@@ -502,7 +534,7 @@ export function insertRecurringTransaction(tx: Omit<any, 'id'>) {
     done: tx.done ? 1 : 0,
     active: tx.active !== false ? 1 : 0,
     end_date: tx.end_date || null,
-    created_at: tx.created_at || '21',
+    created_at: tx.created_at || new Date().toISOString(),
   });
   return result.lastInsertRowid as number;
 }

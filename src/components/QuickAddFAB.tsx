@@ -44,10 +44,10 @@ export default function QuickAddFAB() {
 
   return (
     <>
-      {/* Floating Action Button */}
+      {/* Floating Action Button — desktop only (mobile uses bottom-tab center button) */}
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg hover:shadow-xl transition-all hover:scale-110 flex items-center justify-center group sm:bottom-8 sm:right-8"
+        className="hidden lg:flex fixed bottom-8 right-8 z-40 w-14 h-14 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg hover:shadow-xl transition-all hover:scale-110 items-center justify-center group"
         aria-label="Quick add transaction (Shift+N)"
         title="Quick Add Transaction (Shift+N)"
       >

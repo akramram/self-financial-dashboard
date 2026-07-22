@@ -81,8 +81,8 @@ export default function FireCalculator() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-600 dark:border-slate-300" />
-        <span className="ml-3 text-slate-500">Crunching the numbers...</span>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-mint-500/40" />
+        <span className="ml-3 text-white/50">Crunching the numbers...</span>
       </div>
     );
   }
@@ -140,7 +140,7 @@ export default function FireCalculator() {
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Sliders className="w-5 h-5 text-slate-500" />
+              <Sliders className="w-5 h-5 text-white/50" />
               <CardTitle className="text-lg">Adjust Assumptions</CardTitle>
             </div>
             <Button
@@ -164,8 +164,8 @@ export default function FireCalculator() {
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <Label className="text-xs text-slate-500 mb-1 block">
-                Withdrawal Rate: <span className="font-semibold text-slate-700 dark:text-slate-300">{wr}%</span>
+              <Label className="text-xs text-white/50 mb-1 block">
+                Withdrawal Rate: <span className="font-semibold text-white/70">{wr}%</span>
               </Label>
               <input
                 type="range"
@@ -176,14 +176,14 @@ export default function FireCalculator() {
                 onChange={(e) => setWr(parseFloat(e.target.value))}
                 className="w-full accent-emerald-600"
               />
-              <div className="flex justify-between text-[10px] text-slate-400">
+              <div className="flex justify-between text-[10px] text-white/40">
                 <span>2% (conservative)</span>
                 <span>8% (aggressive)</span>
               </div>
             </div>
             <div>
-              <Label className="text-xs text-slate-500 mb-1 block">
-                Expected Return: <span className="font-semibold text-slate-700 dark:text-slate-300">{er}%</span>
+              <Label className="text-xs text-white/50 mb-1 block">
+                Expected Return: <span className="font-semibold text-white/70">{er}%</span>
               </Label>
               <input
                 type="range"
@@ -194,14 +194,14 @@ export default function FireCalculator() {
                 onChange={(e) => setEr(parseFloat(e.target.value))}
                 className="w-full accent-blue-600"
               />
-              <div className="flex justify-between text-[10px] text-slate-400">
+              <div className="flex justify-between text-[10px] text-white/40">
                 <span>2% (bonds)</span>
                 <span>14% (aggressive)</span>
               </div>
             </div>
             <div>
-              <Label className="text-xs text-slate-500 mb-1 block">
-                Inflation: <span className="font-semibold text-slate-700 dark:text-slate-300">{inf}%</span>
+              <Label className="text-xs text-white/50 mb-1 block">
+                Inflation: <span className="font-semibold text-white/70">{inf}%</span>
               </Label>
               <input
                 type="range"
@@ -212,7 +212,7 @@ export default function FireCalculator() {
                 onChange={(e) => setInf(parseFloat(e.target.value))}
                 className="w-full accent-amber-600"
               />
-              <div className="flex justify-between text-[10px] text-slate-400">
+              <div className="flex justify-between text-[10px] text-white/40">
                 <span>0%</span>
                 <span>8% (high)</span>
               </div>
@@ -227,11 +227,11 @@ export default function FireCalculator() {
         <Card className={isFi ? 'border-emerald-300 dark:border-emerald-700 bg-emerald-50/50 dark:bg-emerald-900/10' : ''}>
           <CardContent className="pt-6">
             <div className="flex items-center gap-2 mb-2">
-              <Target className={`w-4 h-4 ${isFi ? 'text-emerald-500' : 'text-slate-500'}`} />
-              <span className="text-xs font-medium text-slate-500">FIRE Number</span>
+              <Target className={`w-4 h-4 ${isFi ? 'text-emerald-500' : 'text-white/50'}`} />
+              <span className="text-xs font-medium text-white/50">FIRE Number</span>
             </div>
             <p className="text-2xl font-bold">{formatIdr(fireNumber)}</p>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-white/40 mt-1">
               {Math.round(params.withdrawalRate * 100)}% rule: {Math.round(1 / params.withdrawalRate)}× annual expenses
             </p>
           </CardContent>
@@ -241,17 +241,17 @@ export default function FireCalculator() {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-2 mb-2">
-              <Wallet className="w-4 h-4 text-slate-500" />
-              <span className="text-xs font-medium text-slate-500">Current Networth</span>
+              <Wallet className="w-4 h-4 text-white/50" />
+              <span className="text-xs font-medium text-white/50">Current Networth</span>
             </div>
             <p className="text-2xl font-bold">{formatIdr(currentNetworth)}</p>
-            <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 mt-2">
+            <div className="w-full bg-white/[0.08] rounded-full h-2 mt-2">
               <div
                 className={`h-2 rounded-full transition-all ${progressPct >= 100 ? 'bg-emerald-500' : 'bg-blue-500'}`}
                 style={{ width: `${Math.min(100, progressPct)}%` }}
               />
             </div>
-            <p className="text-xs text-slate-400 mt-1">{progressPct}% of FIRE target</p>
+            <p className="text-xs text-white/40 mt-1">{progressPct}% of FIRE target</p>
           </CardContent>
         </Card>
 
@@ -259,13 +259,13 @@ export default function FireCalculator() {
         <Card className={isFi ? 'border-emerald-300 dark:border-emerald-700 bg-emerald-50/50 dark:bg-emerald-900/10' : ''}>
           <CardContent className="pt-6">
             <div className="flex items-center gap-2 mb-2">
-              <Clock className={`w-4 h-4 ${isFi ? 'text-emerald-500' : 'text-slate-500'}`} />
-              <span className="text-xs font-medium text-slate-500">Time to FI</span>
+              <Clock className={`w-4 h-4 ${isFi ? 'text-emerald-500' : 'text-white/50'}`} />
+              <span className="text-xs font-medium text-white/50">Time to FI</span>
             </div>
             <p className={`text-2xl font-bold ${isFi ? 'text-emerald-600 dark:text-emerald-400' : ''}`}>
               {formatYears(yearsToFi)}
             </p>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-white/40 mt-1">
               {projectedFiDate || '—'}
             </p>
           </CardContent>
@@ -276,12 +276,12 @@ export default function FireCalculator() {
           <CardContent className="pt-6">
             <div className="flex items-center gap-2 mb-2">
               <PiggyBank className={`w-4 h-4 ${isNegativeSavings ? 'text-red-500' : 'text-emerald-500'}`} />
-              <span className="text-xs font-medium text-slate-500">Monthly Savings</span>
+              <span className="text-xs font-medium text-white/50">Monthly Savings</span>
             </div>
             <p className={`text-2xl font-bold ${isNegativeSavings ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
               {formatIdr(monthlySavings)}
             </p>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-white/40 mt-1">
               Savings rate: {savingsRate}%
             </p>
           </CardContent>
@@ -293,7 +293,7 @@ export default function FireCalculator() {
         <Card>
           <CardHeader className="pb-2">
             <div className="flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-slate-500" />
+              <TrendingUp className="w-5 h-5 text-white/50" />
               <CardTitle className="text-lg">Journey to Financial Independence</CardTitle>
             </div>
             <CardDescription>
@@ -357,7 +357,7 @@ export default function FireCalculator() {
                   return (
                     <div key={i} className="flex-1 text-center">
                       {showLabel && (
-                        <span className="text-[10px] text-slate-400 whitespace-nowrap">
+                        <span className="text-[10px] text-white/40 whitespace-nowrap">
                           {p.year === 0 ? 'Now' : `Y${p.year}`}
                         </span>
                       )}
@@ -368,7 +368,7 @@ export default function FireCalculator() {
             </div>
 
             {/* Legend */}
-            <div className="flex items-center gap-4 mt-4 text-xs text-slate-500">
+            <div className="flex items-center gap-4 mt-4 text-xs text-white/50">
               <div className="flex items-center gap-1.5">
                 <div className="w-3 h-3 rounded bg-blue-500/60" />
                 <span>Accumulation phase</span>
@@ -392,32 +392,32 @@ export default function FireCalculator() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-base flex items-center gap-2">
-              <Wallet className="w-4 h-4 text-slate-500" />
+              <Wallet className="w-4 h-4 text-white/50" />
               Monthly Cash Flow
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               <div className="flex justify-between">
-                <span className="text-sm text-slate-600 dark:text-slate-400">Monthly Income</span>
+                <span className="text-sm text-white/60">Monthly Income</span>
                 <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
                   {formatIdr(monthlyIncome)}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm text-slate-600 dark:text-slate-400">Monthly Expenses</span>
+                <span className="text-sm text-white/60">Monthly Expenses</span>
                 <span className="text-sm font-semibold text-red-600 dark:text-red-400">
                   {formatIdr(monthlyExpenses)}
                 </span>
               </div>
-              <div className="border-t border-slate-200 dark:border-slate-700 pt-2 flex justify-between">
+              <div className="border-t border-white/[0.06] pt-2 flex justify-between">
                 <span className="text-sm font-medium">Monthly Savings</span>
                 <span className={`text-sm font-bold ${monthlySavings >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
                   {formatIdr(monthlySavings)}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm text-slate-600 dark:text-slate-400">Savings Rate</span>
+                <span className="text-sm text-white/60">Savings Rate</span>
                 <span className={`text-sm font-semibold ${savingsRate >= 20 ? 'text-emerald-600' : savingsRate >= 0 ? 'text-amber-600' : 'text-red-600'}`}>
                   {savingsRate}%
                   {savingsRate >= 50 && <Badge className="ml-1.5 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 text-[10px]">Super Saver</Badge>}
@@ -431,29 +431,29 @@ export default function FireCalculator() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-base flex items-center gap-2">
-              <Info className="w-4 h-4 text-slate-500" />
+              <Info className="w-4 h-4 text-white/50" />
               The Math Behind Your Number
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
-                <span className="text-slate-600 dark:text-slate-400">Annual Expenses</span>
+                <span className="text-white/60">Annual Expenses</span>
                 <span className="font-semibold">{formatIdr(annualExpenses)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-600 dark:text-slate-400">Withdrawal Rate</span>
+                <span className="text-white/60">Withdrawal Rate</span>
                 <span className="font-semibold">{params.withdrawalRate * 100}%</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-600 dark:text-slate-400">Multiplier (1 ÷ WR)</span>
+                <span className="text-white/60">Multiplier (1 ÷ WR)</span>
                 <span className="font-semibold">{Math.round(1 / params.withdrawalRate)}×</span>
               </div>
-              <div className="border-t border-slate-200 dark:border-slate-700 pt-2 flex justify-between">
+              <div className="border-t border-white/[0.06] pt-2 flex justify-between">
                 <span className="font-medium">FIRE Number</span>
                 <span className="font-bold text-lg">{formatIdr(fireNumber)}</span>
               </div>
-              <div className="flex justify-between text-xs text-slate-500">
+              <div className="flex justify-between text-xs text-white/50">
                 <span>Real Return (after inflation)</span>
                 <span className="font-mono">{(((1 + params.expectedReturn) / (1 + params.inflation) - 1) * 100).toFixed(2)}%</span>
               </div>
@@ -477,7 +477,7 @@ export default function FireCalculator() {
               <Flame className="w-5 h-5 text-orange-500 mt-0.5 shrink-0" />
               <div>
                 <h3 className="font-semibold text-sm mb-2">Ways to reach FI faster:</h3>
-                <ul className="text-xs text-slate-600 dark:text-slate-400 space-y-1 list-disc list-inside">
+                <ul className="text-xs text-white/60 space-y-1 list-disc list-inside">
                   {savingsRate < 50 && (
                     <li>Increase your savings rate from {savingsRate}% to 50%+ for dramatic acceleration</li>
                   )}

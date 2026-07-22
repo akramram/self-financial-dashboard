@@ -10,10 +10,10 @@ const periods = getAllPeriods().map((p: any) => ({ period_id: p.id, month: p.mon
 <Layout title="Transactions">
   <div class="mb-6">
     <h1 class="text-2xl font-bold">Transactions</h1>
-    <p class="text-slate-500 dark:text-slate-400 text-sm">All cash and credit expenses</p>
+    <p class="text-white/60 text-sm">All cash and credit expenses</p>
   </div>
 
-  <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+  <div class="glass-card p-6">
     <TransactionTable
       transactions={transactions}
       showMonth={true}

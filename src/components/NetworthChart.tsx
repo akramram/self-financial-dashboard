@@ -13,6 +13,7 @@ import {
 import { Line } from 'react-chartjs-2';
 import type { NetworthRecord } from '../lib/data';
 import { formatIdr } from '../lib/utils';
+import { FP, getAreaGradient } from '../lib/chartConfig';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Filler, Legend);
 
@@ -27,8 +28,12 @@ export default function NetworthChart({ data }: { data: NetworthRecord[] }) {
       {
         label: 'Networth',
         data: values,
-        borderColor: '#8b5cf6',
-        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+        borderColor: FP.mint,
+        backgroundColor: (context: any) => {
+          const { chart } = context;
+          if (!chart.chartArea) return FP.mint + '20';
+          return getAreaGradient(chart.ctx, chart.chartArea, FP.mint);
+        },
         fill: true,
         tension: 0.3,
         pointRadius: 4,

@@ -52,7 +52,7 @@ interface AchievementsResult {
 // ── Tier styling ───────────────────────────────────────────────────────────
 const TIER_STYLES: Record<string, { ring: string; bg: string; text: string; glow: string; label: string }> = {
   bronze:   { ring: 'ring-amber-700/40',   bg: 'from-amber-700/10 to-amber-600/5',   text: 'text-amber-700 dark:text-amber-500',   glow: 'shadow-amber-700/10',   label: 'Bronze' },
-  silver:   { ring: 'ring-slate-400/40',   bg: 'from-slate-400/10 to-slate-300/5',   text: 'text-slate-600 dark:text-slate-300',  glow: 'shadow-slate-400/10',   label: 'Silver' },
+  silver:   { ring: 'ring-slate-400/40',   bg: 'from-slate-400/10 to-slate-300/5',   text: 'text-white/60',  glow: 'shadow-slate-400/10',   label: 'Silver' },
   gold:     { ring: 'ring-yellow-500/40',  bg: 'from-yellow-500/10 to-amber-400/5',  text: 'text-yellow-600 dark:text-yellow-400', glow: 'shadow-yellow-500/10',  label: 'Gold' },
   platinum: { ring: 'ring-cyan-400/40',    bg: 'from-cyan-400/10 to-blue-400/5',     text: 'text-cyan-600 dark:text-cyan-300',     glow: 'shadow-cyan-400/10',    label: 'Platinum' },
 };
@@ -107,26 +107,26 @@ function BadgeCard({ badge }: { badge: AchievementBadge }) {
       className={`relative rounded-xl border p-4 transition-all hover:scale-[1.02] ${
         badge.unlocked
           ? `bg-gradient-to-br ${tier.bg} border-transparent ring-1 ${tier.ring} shadow-md ${tier.glow}`
-          : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 opacity-80 hover:opacity-100'
+          : 'bg-white/[0.03] border-white/[0.06] opacity-80 hover:opacity-100'
       }`}
     >
       {/* Tier ribbon */}
       <div className="absolute top-2 right-2">
-        <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${tier.text} bg-white/60 dark:bg-slate-900/40`}>
+        <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${tier.text} bg-white/60 bg-white/[0.04]`}>
           {tier.label}
         </span>
       </div>
 
       {/* Icon */}
       <div className={`text-4xl mb-2 ${badge.unlocked ? '' : 'grayscale opacity-50'}`}>
-        {badge.unlocked ? badge.icon : <span className="inline-block"><Lock className="w-7 h-7 text-slate-400" /></span>}
+        {badge.unlocked ? badge.icon : <span className="inline-block"><Lock className="w-7 h-7 text-white/40" /></span>}
       </div>
 
       {/* Title + description */}
-      <h4 className={`font-semibold text-sm mb-1 ${badge.unlocked ? 'text-slate-800 dark:text-slate-100' : 'text-slate-500 dark:text-slate-400'}`}>
+      <h4 className={`font-semibold text-sm mb-1 ${badge.unlocked ? 'text-white/80' : 'text-white/50'}`}>
         {badge.title}
       </h4>
-      <p className="text-xs text-slate-500 dark:text-slate-400 mb-2 leading-snug min-h-[2.5rem]">
+      <p className="text-xs text-white/50 mb-2 leading-snug min-h-[2.5rem]">
         {badge.description}
       </p>
 
@@ -138,11 +138,11 @@ function BadgeCard({ badge }: { badge: AchievementBadge }) {
         </div>
       ) : badge.progress ? (
         <div className="space-y-1">
-          <div className="flex justify-between text-[10px] text-slate-500 dark:text-slate-400 font-mono">
+          <div className="flex justify-between text-[10px] text-white/50 font-mono">
             <span>{formatProgress(badge.progress.current, badge.progress.target, badge.progress.unit)}</span>
             <span>{pct.toFixed(0)}%</span>
           </div>
-          <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-1.5 overflow-hidden">
+          <div className="w-full bg-white/[0.08] rounded-full h-1.5 overflow-hidden">
             <div
               className="h-full rounded-full transition-all duration-500"
               style={{ width: `${pct}%`, backgroundColor: badge.tier === 'platinum' ? '#22d3ee' : badge.tier === 'gold' ? '#eab308' : badge.tier === 'silver' ? '#94a3b8' : '#b45309' }}
@@ -150,7 +150,7 @@ function BadgeCard({ badge }: { badge: AchievementBadge }) {
           </div>
         </div>
       ) : (
-        <div className="text-[10px] text-slate-400 italic">Locked</div>
+        <div className="text-[10px] text-white/40 italic">Locked</div>
       )}
     </div>
   );
@@ -159,13 +159,13 @@ function BadgeCard({ badge }: { badge: AchievementBadge }) {
 // ── Highlight Card ─────────────────────────────────────────────────────────
 function HighlightCard({ h }: { h: MilestoneHighlight }) {
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 hover:shadow-md transition-shadow">
+    <div className="glass-card p-4 hover:shadow-md transition-shadow">
       <div className="flex items-start justify-between mb-1">
         <span className="text-2xl">{h.icon}</span>
       </div>
-      <div className="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide mb-1">{h.label}</div>
-      <div className="text-lg font-bold text-slate-800 dark:text-slate-100">{h.value}</div>
-      {h.subtext && <div className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">{h.subtext}</div>}
+      <div className="text-xs text-white/50 font-medium uppercase tracking-wide mb-1">{h.label}</div>
+      <div className="text-lg font-bold text-white/80">{h.value}</div>
+      {h.subtext && <div className="text-[11px] text-white/40 mt-1">{h.subtext}</div>}
     </div>
   );
 }
@@ -274,29 +274,29 @@ export default function Achievements({ data }: Props) {
                 <Target className="w-3 h-3" />
                 <span>Next Milestone</span>
               </div>
-              <div className="font-semibold text-slate-800 dark:text-slate-100 truncate">{data.nextMilestone.title}</div>
+              <div className="font-semibold text-white/80 truncate">{data.nextMilestone.title}</div>
               {data.nextMilestone.progress && (
                 <div className="mt-1.5 flex items-center gap-3">
-                  <div className="flex-1 bg-slate-200 dark:bg-slate-700 rounded-full h-2 overflow-hidden max-w-xs">
+                  <div className="flex-1 bg-white/[0.08] rounded-full h-2 overflow-hidden max-w-xs">
                     <div
                       className="h-full bg-indigo-600 rounded-full transition-all duration-700"
                       style={{ width: `${progressPct(data.nextMilestone.progress.current, data.nextMilestone.progress.target)}%` }}
                     />
                   </div>
-                  <span className="text-xs font-mono text-slate-500 dark:text-slate-400 whitespace-nowrap">
+                  <span className="text-xs font-mono text-white/50 whitespace-nowrap">
                     {formatProgress(data.nextMilestone.progress.current, data.nextMilestone.progress.target, data.nextMilestone.progress.unit)}
                   </span>
                 </div>
               )}
             </div>
-            <ChevronRight className="w-5 h-5 text-slate-300 dark:text-slate-600 flex-shrink-0" />
+            <ChevronRight className="w-5 h-5 text-white/30 flex-shrink-0" />
           </CardContent>
         </Card>
       )}
 
       {/* ── Highlight stat cards ───────────────────────────────────────── */}
       <div>
-        <h2 className="text-lg font-semibold mb-3 text-slate-700 dark:text-slate-200 flex items-center gap-2">
+        <h2 className="text-lg font-semibold mb-3 text-white/70 flex items-center gap-2">
           <Sparkles className="w-5 h-5 text-amber-500" />
           Your Financial Story
         </h2>
@@ -309,7 +309,7 @@ export default function Achievements({ data }: Props) {
 
       {/* ── Filter chips ───────────────────────────────────────────────── */}
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-sm text-slate-500 dark:text-slate-400 mr-1">Filter:</span>
+        <span className="text-sm text-white/50 mr-1">Filter:</span>
         {filterOptions.map((opt) => (
           <button
             key={opt.key}
@@ -317,7 +317,7 @@ export default function Achievements({ data }: Props) {
             className={`px-3 py-1 rounded-full text-xs font-medium transition ${
               filter === opt.key
                 ? 'bg-indigo-600 text-white shadow-sm'
-                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                : 'bg-white/[0.05] text-white/60 hover:bg-slate-200 dark:hover:bg-slate-700'
             }`}
           >
             {opt.label}
@@ -328,7 +328,7 @@ export default function Achievements({ data }: Props) {
       {/* ── Badge trophy case (grouped) ────────────────────────────────── */}
       {filteredBadges.length === 0 ? (
         <Card>
-          <CardContent className="py-12 text-center text-slate-500">
+          <CardContent className="py-12 text-center text-white/50">
             No badges in this category yet.
           </CardContent>
         </Card>
@@ -341,8 +341,8 @@ export default function Achievements({ data }: Props) {
             return (
               <div key={cat.key}>
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="text-slate-500 dark:text-slate-400">{cat.icon}</span>
-                  <h3 className="text-base font-semibold text-slate-700 dark:text-slate-200">{cat.label}</h3>
+                  <span className="text-white/50">{cat.icon}</span>
+                  <h3 className="text-base font-semibold text-white/70">{cat.label}</h3>
                   <Badge variant="secondary" className="text-[10px]">
                     {unlockedInCat}/{items.length}
                   </Badge>

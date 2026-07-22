@@ -258,7 +258,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
     <div className="space-y-6">
       {/* Month Filter */}
       <div className="flex items-center gap-3">
-        <label className="text-sm font-medium text-slate-600 dark:text-slate-300">Period:</label>
+        <label className="text-sm font-medium text-white/60">Period:</label>
         <Select value={filterMonth} onValueChange={setFilterMonth}>
           <SelectTrigger className="w-[180px]">
             <SelectValue />
@@ -277,11 +277,11 @@ export default function BudgetReport({ summaries, categories }: Props) {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-slate-100 dark:bg-slate-700">
-                <Wallet className="w-5 h-5 text-slate-600 dark:text-slate-300" />
+              <div className="p-2 rounded-lg bg-white/[0.06]">
+                <Wallet className="w-5 h-5 text-white/40" />
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Total Budget</p>
+                <p className="text-xs text-white/40">Total Budget</p>
                 <p className="text-lg font-semibold">{formatIdr(totalBudget)}</p>
               </div>
             </div>
@@ -290,11 +290,11 @@ export default function BudgetReport({ summaries, categories }: Props) {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-red-100 dark:bg-red-900/30">
-                <TrendingDown className="w-5 h-5 text-red-600 dark:text-red-400" />
+              <div className="p-2 rounded-lg bg-red-500/10">
+                <TrendingDown className="w-5 h-5 text-red-400" />
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Total Spent</p>
+                <p className="text-xs text-white/40">Total Spent</p>
                 <p className="text-lg font-semibold">{formatIdr(totalSpent)}</p>
               </div>
             </div>
@@ -303,12 +303,12 @@ export default function BudgetReport({ summaries, categories }: Props) {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className={`p-2 rounded-lg ${totalRemaining >= 0 ? 'bg-emerald-100 dark:bg-emerald-900/30' : 'bg-red-100 dark:bg-red-900/30'}`}>
-                <PiggyBank className={`w-5 h-5 ${totalRemaining >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`} />
+              <div className={`p-2 rounded-lg ${totalRemaining >= 0 ? 'bg-emerald-500/10' : 'bg-red-500/10'}`}>
+                <PiggyBank className={`w-5 h-5 ${totalRemaining >= 0 ? 'text-emerald-400' : 'text-red-400'}`} />
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Remaining</p>
-                <p className={`text-lg font-semibold ${totalRemaining >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
+                <p className="text-xs text-white/40">Remaining</p>
+                <p className={`text-lg font-semibold ${totalRemaining >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                   {formatIdr(totalRemaining)}
                 </p>
               </div>
@@ -318,11 +318,11 @@ export default function BudgetReport({ summaries, categories }: Props) {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-amber-100 dark:bg-amber-900/30">
-                <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+              <div className="p-2 rounded-lg bg-amber-500/10">
+                <AlertTriangle className="w-5 h-5 text-amber-400" />
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Alerts</p>
+                <p className="text-xs text-white/40">Alerts</p>
                 <div className="flex gap-2 mt-0.5">
                   {overspentCount > 0 && (
                     <Badge variant="destructive" className="text-[10px] px-1.5 py-0">
@@ -335,7 +335,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
                     </Badge>
                   )}
                   {overspentCount === 0 && nearLimitCount === 0 && (
-                    <span className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">All Good</span>
+                    <span className="text-sm text-emerald-400 font-medium">All Good</span>
                   )}
                 </div>
               </div>
@@ -385,7 +385,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
                   return (
                     <TableRow
                       key={row.name}
-                      className="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition"
+                      className="cursor-pointer hover:bg-white/[0.04] transition"
                       onClick={() => openCategoryDialog(row.name)}
                     >
                       <TableCell>
@@ -403,7 +403,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
                       <TableCell className="text-right font-medium">
                         {formatIdr(row.spent)}
                       </TableCell>
-                      <TableCell className={`text-right font-medium ${row.remaining < 0 ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
+                      <TableCell className={`text-right font-medium ${row.remaining < 0 ? 'text-red-400' : 'text-emerald-400'}`}>
                         {hasLimit ? formatIdr(row.remaining) : '—'}
                       </TableCell>
                       <TableCell className="text-right">

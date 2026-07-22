@@ -282,7 +282,7 @@ export default function CreditCardTracker() {
     return (
       <div className="flex items-center justify-center py-20">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500" />
-        <span className="ml-3 text-slate-500">Loading credit card data...</span>
+        <span className="ml-3 text-white/50">Loading credit card data...</span>
       </div>
     );
   }
@@ -292,7 +292,7 @@ export default function CreditCardTracker() {
       {/* Period Filter */}
       <div className="flex items-center gap-3">
         <CreditCard className="w-5 h-5 text-amber-500" />
-        <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Period:</span>
+        <span className="text-sm font-medium text-white/60">Period:</span>
         <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
           <SelectTrigger className="w-[180px]">
             <SelectValue />
@@ -313,12 +313,12 @@ export default function CreditCardTracker() {
           <CardContent className="pt-6">
             <div className="flex items-center gap-2 mb-1">
               <CreditCard className="w-4 h-4 text-amber-500" />
-              <span className="text-xs text-slate-500 dark:text-slate-400">Outstanding Balance</span>
+              <span className="text-xs text-white/50">Outstanding Balance</span>
             </div>
             <p className="text-xl font-bold text-amber-600 dark:text-amber-400">
               {formatIdr(outstandingBalance)}
             </p>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-white/40 mt-1">
               {formatNumber(creditExpenses.length)} transactions + {formatNumber(unpaidCreditExpenses.length)} pending
             </p>
           </CardContent>
@@ -329,12 +329,12 @@ export default function CreditCardTracker() {
           <CardContent className="pt-6">
             <div className="flex items-center gap-2 mb-1">
               <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-              <span className="text-xs text-slate-500 dark:text-slate-400">Paid This Period</span>
+              <span className="text-xs text-white/50">Paid This Period</span>
             </div>
             <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
               {formatIdr(totalCreditPayments)}
             </p>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-white/40 mt-1">
               {formatNumber(creditPayments.length)} payment{creditPayments.length !== 1 ? 's' : ''}
             </p>
           </CardContent>
@@ -345,7 +345,7 @@ export default function CreditCardTracker() {
           <CardContent className="pt-6">
             <div className="flex items-center gap-2 mb-1">
               <Clock className="w-4 h-4 text-red-500" />
-              <span className="text-xs text-slate-500 dark:text-slate-400">Unpaid Expenses</span>
+              <span className="text-xs text-white/50">Unpaid Expenses</span>
             </div>
             <p className="text-xl font-bold text-red-600 dark:text-red-400">
               {formatIdr(unpaidTotal)}
@@ -363,12 +363,12 @@ export default function CreditCardTracker() {
           <CardContent className="pt-6">
             <div className="flex items-center gap-2 mb-1">
               <Wallet className="w-4 h-4 text-blue-500" />
-              <span className="text-xs text-slate-500 dark:text-slate-400">Payment Coverage</span>
+              <span className="text-xs text-white/50">Payment Coverage</span>
             </div>
             <p className="text-xl font-bold text-blue-600 dark:text-blue-400">
               {paymentRatio.toFixed(0)}%
             </p>
-            <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 mt-2">
+            <div className="w-full bg-white/[0.08] rounded-full h-2 mt-2">
               <div
                 className={`h-2 rounded-full transition-all ${
                   paymentRatio >= 100
@@ -380,7 +380,7 @@ export default function CreditCardTracker() {
                 style={{ width: `${Math.min(100, paymentRatio)}%` }}
               />
             </div>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-white/40 mt-1">
               of {formatIdr(outstandingBalance)} charged
             </p>
           </CardContent>
@@ -450,20 +450,20 @@ export default function CreditCardTracker() {
                           className="w-2.5 h-2.5 rounded-full shrink-0"
                           style={{ backgroundColor: color }}
                         />
-                        <span className="text-sm font-medium text-slate-700 dark:text-slate-200">{cat}</span>
+                        <span className="text-sm font-medium text-white/70">{cat}</span>
                         <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
                           {data.count}
                         </Badge>
                       </div>
                       <div className="flex items-center gap-3 text-right">
-                        <span className="text-xs text-slate-400">
+                        <span className="text-xs text-white/40">
                           {paidPct.toFixed(0)}% paid
                         </span>
                         <span className="text-sm font-semibold">{formatIdr(data.total)}</span>
                       </div>
                     </div>
                     <div className="flex gap-1">
-                      <div className="flex-1 bg-slate-100 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
+                      <div className="flex-1 bg-white/[0.05] rounded-full h-2 overflow-hidden">
                         <div
                           className="h-2 rounded-full transition-all"
                           style={{
@@ -504,7 +504,7 @@ export default function CreditCardTracker() {
         </CardHeader>
         <CardContent>
           {sortedUnpaid.length === 0 ? (
-            <div className="text-center py-8 text-slate-400 dark:text-slate-500">
+            <div className="text-center py-8 text-white/40">
               <CheckCircle2 className="w-8 h-8 mx-auto mb-2 text-emerald-400" />
               <p className="text-sm">All credit expenses are paid! 🎉</p>
             </div>
@@ -535,7 +535,7 @@ export default function CreditCardTracker() {
                     <TableCell className="text-right font-semibold text-red-600 dark:text-red-400">
                       {formatIdr(tx.amount)}
                     </TableCell>
-                    <TableCell className="text-slate-500 dark:text-slate-400">{tx.payment_method}</TableCell>
+                    <TableCell className="text-white/50">{tx.payment_method}</TableCell>
                     <TableCell>
                       <Badge variant="outline" className="text-amber-600 dark:text-amber-400 border-amber-300 dark:border-amber-700 text-[10px]">
                         Pending
@@ -571,8 +571,8 @@ export default function CreditCardTracker() {
         </CardHeader>
         <CardContent>
           {sortedPayments.length === 0 ? (
-            <div className="text-center py-8 text-slate-400 dark:text-slate-500">
-              <Wallet className="w-8 h-8 mx-auto mb-2 text-slate-300" />
+            <div className="text-center py-8 text-white/40">
+              <Wallet className="w-8 h-8 mx-auto mb-2 text-white/30" />
               <p className="text-sm">No credit card payments recorded yet</p>
             </div>
           ) : (
@@ -591,7 +591,7 @@ export default function CreditCardTracker() {
                     <TableCell className="text-right font-semibold text-emerald-600 dark:text-emerald-400">
                       {formatIdr(tx.amount)}
                     </TableCell>
-                    <TableCell className="text-slate-500 dark:text-slate-400 text-sm">
+                    <TableCell className="text-white/50 text-sm">
                       {tx.created_time
                         ? new Date(tx.created_time).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
                         : '—'}
@@ -645,7 +645,7 @@ export default function CreditCardTracker() {
                       ) : trend < 0 ? (
                         <TrendingUp className="w-4 h-4 text-emerald-500 inline rotate-180" />
                       ) : (
-                        <span className="text-slate-400">—</span>
+                        <span className="text-white/40">—</span>
                       )}
                     </TableCell>
                   </TableRow>
