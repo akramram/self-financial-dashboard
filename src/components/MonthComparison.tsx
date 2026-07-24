@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import type { Transaction, NetworthRecord, MonthlySummary, Category } from '../lib/data';
 import { formatIdr } from '../lib/utils';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Select,
   SelectContent,
@@ -143,9 +142,8 @@ export default function MonthComparison({ transactions, networth, summaries, cat
     inverse?: boolean;
     format?: (n: number) => string;
   }) => (
-    <Card>
-      <CardContent className="pt-6">
-        <div className="flex items-center gap-2 mb-3">
+    <div className="glass-card p-5">
+      <div className="flex items-center gap-2 mb-3">
           <div className="p-1.5 rounded-md bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
             {icon}
           </div>
@@ -164,8 +162,7 @@ export default function MonthComparison({ transactions, networth, summaries, cat
             </div>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
   );
 
   const handleSwap = () => {
@@ -262,15 +259,12 @@ export default function MonthComparison({ transactions, networth, summaries, cat
       </div>
 
       {/* Cash vs Credit Breakdown */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base font-semibold flex items-center gap-2">
+      <div className="glass-card p-5">
+        <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
             <CreditCard className="w-4 h-4 text-slate-500" />
             Cash vs Credit Breakdown
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Left Month */}
             <div className="space-y-3">
               <p className="text-sm font-medium text-slate-700 dark:text-slate-200">{leftMonth}</p>
@@ -308,8 +302,7 @@ export default function MonthComparison({ transactions, networth, summaries, cat
               </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
 
       {/* Category Radar Chart */}
       <CategoryRadarChart
@@ -321,15 +314,12 @@ export default function MonthComparison({ transactions, networth, summaries, cat
       />
 
       {/* Category Comparison Table */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base font-semibold flex items-center gap-2">
+      <div className="glass-card p-5">
+        <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
             <TrendingDown className="w-4 h-4 text-slate-500" />
             Category Comparison
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="rounded-xl border overflow-hidden">
+          </h3>
+        <div className="rounded-xl border overflow-hidden">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -401,17 +391,13 @@ export default function MonthComparison({ transactions, networth, summaries, cat
               </TableBody>
             </Table>
           </div>
-        </CardContent>
-      </Card>
+        </div>
 
       {/* Top Transactions */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base font-semibold">Top Transactions — {leftMonth}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
+        <div className="glass-card p-5">
+          <h3 className="text-base font-semibold text-white/80">Top Transactions — {leftMonth}</h3>
+          <div className="space-y-2">
               {[...leftTxs]
                 .sort((a, b) => b.amount - a.amount)
                 .slice(0, 5)
@@ -428,14 +414,10 @@ export default function MonthComparison({ transactions, networth, summaries, cat
                 <p className="text-sm text-white/30 text-center py-4">No transactions</p>
               )}
             </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base font-semibold">Top Transactions — {rightMonth}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
+          </div>
+        <div className="glass-card p-5">
+          <h3 className="text-base font-semibold text-white/80">Top Transactions — {rightMonth}</h3>
+          <div className="space-y-2">
               {[...rightTxs]
                 .sort((a, b) => b.amount - a.amount)
                 .slice(0, 5)
@@ -452,8 +434,7 @@ export default function MonthComparison({ transactions, networth, summaries, cat
                 <p className="text-sm text-white/30 text-center py-4">No transactions</p>
               )}
             </div>
-          </CardContent>
-        </Card>
+          </div>
       </div>
     </div>
   );

@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
 import type { Transaction, NetworthRecord, MonthlySummary, Category } from '../lib/data';
 import { formatIdr } from '../lib/utils';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { TrendingUp, TrendingDown, AlertTriangle, CheckCircle, Wallet, PiggyBank, Receipt } from 'lucide-react';
 
@@ -174,14 +173,14 @@ export default function FinancialInsights({ transactions, networth, summaries, c
   };
 
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <CardTitle className="text-base font-semibold flex items-center gap-2">
+    <div className="glass-card p-5">
+      
+        <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
           <Wallet className="w-4 h-4 text-slate-500" />
           Insights
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="pt-0">
+        </h3>
+      
+      
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
           {insights.map((insight) => (
             <div
@@ -201,7 +200,7 @@ export default function FinancialInsights({ transactions, networth, summaries, c
             </div>
           ))}
         </div>
-      </CardContent>
-    </Card>
+      
+    </div>
   );
 }

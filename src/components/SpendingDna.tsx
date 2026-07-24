@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
   Chart as ChartJS,
@@ -370,9 +369,8 @@ export default function SpendingDna() {
   return (
     <div className="space-y-6">
       {/* ── Personality Type Hero ──────────────────────────────────────── */}
-      <Card className="border-violet-200 dark:border-violet-800 bg-gradient-to-br from-violet-50 to-fuchsia-50 dark:from-slate-800 dark:to-slate-900">
-        <CardContent className="pt-6">
-          <div className="flex flex-col md:flex-row items-center gap-6">
+      <div className="glass-card p-5 border-violet-200 dark:border-violet-800 bg-gradient-to-br from-violet-50 to-fuchsia-50 dark:from-slate-800 dark:to-slate-900">
+        <div className="flex flex-col md:flex-row items-center gap-6">
             <div className="text-7xl">{data.personality.emoji}</div>
             <div className="flex-1 text-center md:text-left">
               <h2 className="text-2xl font-bold text-violet-900 dark:text-violet-200">
@@ -400,34 +398,26 @@ export default function SpendingDna() {
               <Trophy className="w-16 h-16 text-violet-300 dark:text-violet-700" />
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
 
       {/* ── Radar Chart + Dimension Breakdown ────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+        <div className="glass-card p-5">
+          <h3 className="flex items-center gap-2 text-white/80">
               <Brain className="w-5 h-5 text-violet-500" />
               Behavioral Radar
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div style={{ height: 320, maxWidth: 380, margin: '0 auto' }}>
+            </h3>
+          <div style={{ height: 320, maxWidth: 380, margin: '0 auto' }}>
               {radarData && <Radar data={radarData} options={radarOptions} />}
             </div>
-          </CardContent>
-        </Card>
+          </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+        <div className="glass-card p-5">
+          <h3 className="flex items-center gap-2 text-white/80">
               <BarChart3 className="w-5 h-5 text-slate-500" />
               Dimension Breakdown
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
+            </h3>
+          <div className="space-y-4">
               {Object.entries(data.dimensions).map(([key, value]) => (
                 <div key={key}>
                   <div className="flex items-center justify-between mb-1">
@@ -446,20 +436,16 @@ export default function SpendingDna() {
                 </div>
               ))}
             </div>
-          </CardContent>
-        </Card>
+          </div>
       </div>
 
       {/* ── Key Insights ──────────────────────────────────────────────── */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <div className="glass-card p-5">
+        <h3 className="flex items-center gap-2 text-white/80">
             <Zap className="w-5 h-5 text-amber-500" />
             Key Insights
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
+          </h3>
+        <div className="space-y-3">
             {data.insights.map((insight, i) => (
               <div
                 key={i}
@@ -470,20 +456,16 @@ export default function SpendingDna() {
               </div>
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
 
       {/* ── DNA Timeline Charts ──────────────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+        <div className="glass-card p-5">
+          <h3 className="flex items-center gap-2 text-white/80">
               <TrendingUp className="w-5 h-5 text-emerald-500" />
               Savings Rate Over Time
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {savingsChartData ? (
+            </h3>
+          {savingsChartData ? (
               <div style={{ height: 220 }}>
                 <Bar data={savingsChartData} options={savingsChartOptions} />
               </div>
@@ -492,18 +474,14 @@ export default function SpendingDna() {
                 No income data available for savings rate calculation
               </p>
             )}
-          </CardContent>
-        </Card>
+          </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+        <div className="glass-card p-5">
+          <h3 className="flex items-center gap-2 text-white/80">
               <Target className="w-5 h-5 text-pink-500" />
               Recurring vs Discretionary Split
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {compositionChartData ? (
+            </h3>
+          {compositionChartData ? (
               <div style={{ height: 220 }}>
                 <Bar data={compositionChartData} options={compositionChartOptions} />
               </div>
@@ -512,20 +490,16 @@ export default function SpendingDna() {
                 No spending data available
               </p>
             )}
-          </CardContent>
-        </Card>
+          </div>
       </div>
 
       {/* ── Timeline Sparkline Cards ─────────────────────────────────── */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <div className="glass-card p-5">
+        <h3 className="flex items-center gap-2 text-white/80">
             <Heart className="w-5 h-5 text-rose-500" />
             Monthly DNA Timeline
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+          </h3>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
             {data.timeline.slice(-12).map((entry) => (
               <div
                 key={entry.period_id}
@@ -556,22 +530,18 @@ export default function SpendingDna() {
               </div>
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
 
       {/* ── Category Loyalty Scores ──────────────────────────────────── */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <div className="glass-card p-5">
+        <h3 className="flex items-center gap-2 text-white/80">
             <Shield className="w-5 h-5 text-sky-500" />
             Category Loyalty Scores
-          </CardTitle>
+          </h3>
           <p className="text-xs text-slate-500">
             How consistent each category's spending is across periods (lower CV = more loyal)
           </p>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
+        <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-200 dark:border-slate-700">
@@ -635,8 +605,7 @@ export default function SpendingDna() {
               </tbody>
             </table>
           </div>
-        </CardContent>
-      </Card>
+        </div>
     </div>
   );
 }

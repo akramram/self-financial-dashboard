@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import type { MonthlySummary, Category } from '../lib/data';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
   Select,
@@ -294,13 +293,13 @@ export default function HealthScore({ summaries, categories }: Props) {
 
   if (!healthData) {
     return (
-      <Card>
-        <CardContent className="py-12 text-center">
+      <div className="glass-card p-5">
+        
           <Heart className="mx-auto h-12 w-12 text-white/30 mb-4" />
           <p className="text-white/50">Not enough data to calculate health score.</p>
           <p className="text-sm text-white/40 mt-1">Add transactions and income data to get started.</p>
-        </CardContent>
-      </Card>
+        
+      </div>
     );
   }
 
@@ -397,14 +396,14 @@ export default function HealthScore({ summaries, categories }: Props) {
 
       {/* Improvement Tips */}
       {healthData.tips.length > 0 && (
-        <Card className="border-indigo-200 dark:border-indigo-900 bg-indigo-50/50 dark:bg-indigo-950/20">
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-base">
+        <div className="glass-card p-5 border-indigo-200 dark:border-indigo-900 bg-indigo-50/50 dark:bg-indigo-950/20">
+          
+            <h3 className="flex items-center gap-2 text-base text-white/80">
               <Lightbulb className="h-5 w-5 text-indigo-500" />
               Improvement Tips
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+            </h3>
+          
+          
             <ul className="space-y-2">
               {healthData.tips.map((tip, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm text-white/60">
@@ -413,16 +412,16 @@ export default function HealthScore({ summaries, categories }: Props) {
                 </li>
               ))}
             </ul>
-          </CardContent>
-        </Card>
+          
+        </div>
       )}
 
       {/* How it works */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">How is the score calculated?</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div className="glass-card p-5">
+        
+          <h3 className="text-base text-white/80">How is the score calculated?</h3>
+        
+        
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-white/60">
             <div>
               <h4 className="font-medium text-white/70 mb-1">🎯 Savings Rate (0-20)</h4>
@@ -445,8 +444,8 @@ export default function HealthScore({ summaries, categories }: Props) {
               <p>Measures stability of savings rate over 3 months. Low variance = high score.</p>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        
+      </div>
     </div>
   );
 }

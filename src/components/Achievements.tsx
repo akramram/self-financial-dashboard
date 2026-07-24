@@ -1,5 +1,4 @@
 import React, { useState, useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -213,8 +212,8 @@ export default function Achievements({ data }: Props) {
   return (
     <div className="space-y-6">
       {/* ── Hero: Level & Rank ─────────────────────────────────────────── */}
-      <Card className="overflow-hidden border-0 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white">
-        <CardContent className="p-6 sm:p-8">
+      <div className="glass-card p-5 overflow-hidden border-0 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white">
+        
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
             <div className="flex items-center gap-5">
               {/* Level badge */}
@@ -261,13 +260,13 @@ export default function Achievements({ data }: Props) {
               </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        
+      </div>
 
       {/* ── Next Milestone banner ──────────────────────────────────────── */}
       {data.nextMilestone && (
-        <Card className="border-dashed border-2 border-indigo-300 dark:border-indigo-700">
-          <CardContent className="p-5 flex items-center gap-4">
+        <div className="glass-card p-5 border-dashed border-2 border-indigo-300 dark:border-indigo-700">
+          
             <div className="text-3xl">{data.nextMilestone.icon}</div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 text-xs text-indigo-600 dark:text-indigo-400 font-medium uppercase tracking-wide">
@@ -290,8 +289,8 @@ export default function Achievements({ data }: Props) {
               )}
             </div>
             <ChevronRight className="w-5 h-5 text-white/30 flex-shrink-0" />
-          </CardContent>
-        </Card>
+          
+        </div>
       )}
 
       {/* ── Highlight stat cards ───────────────────────────────────────── */}
@@ -327,11 +326,11 @@ export default function Achievements({ data }: Props) {
 
       {/* ── Badge trophy case (grouped) ────────────────────────────────── */}
       {filteredBadges.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center text-white/50">
+        <div className="glass-card p-5">
+          
             No badges in this category yet.
-          </CardContent>
-        </Card>
+          
+        </div>
       ) : (
         <div className="space-y-6">
           {categoryOrder.map((cat) => {

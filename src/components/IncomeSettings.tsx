@@ -3,7 +3,6 @@ import type { MonthlyIncome } from '../lib/api';
 import { fetchMonthlyIncome, upsertMonthlyIncomeApi, updateMonthlyIncomeApi, deleteMonthlyIncomeApi } from '../lib/api';
 import { formatIdr } from '../lib/utils';
 import { useConfirm } from './ConfirmDialog';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -112,11 +111,11 @@ export default function IncomeSettings() {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Monthly Income</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-6">
+    <div className="glass-card p-5">
+      
+        <h3 className="text-white/80">Monthly Income</h3>
+      
+      
         {/* Add Form */}
         <form onSubmit={handleAdd} className="flex flex-col sm:flex-row gap-3 items-end">
           <div className="space-y-1.5 flex-1">
@@ -235,7 +234,7 @@ export default function IncomeSettings() {
             </Table>
           </div>
         )}
-      </CardContent>
-    </Card>
+      
+    </div>
   );
 }

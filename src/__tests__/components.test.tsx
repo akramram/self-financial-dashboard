@@ -128,7 +128,7 @@ describe('DashboardSummaryCards', () => {
       />,
     );
     const balanceEl = screen.getByText('Balance');
-    const card = balanceEl.closest('[class*="bg-"]')!;
+    const card = balanceEl.closest('.glass-card')!;
     expect(card.textContent).toContain('3,000,000');
   });
 
@@ -141,7 +141,7 @@ describe('DashboardSummaryCards', () => {
       />,
     );
     const balanceEl = screen.getByText('Balance');
-    const card = balanceEl.closest('[class*="bg-"]')!;
+    const card = balanceEl.closest('.glass-card')!;
     expect(card.textContent).toContain('-2,000,000');
   });
 
@@ -158,7 +158,7 @@ describe('DashboardSummaryCards', () => {
       />,
     );
     const balanceEl = screen.getByText('Balance');
-    const card = balanceEl.closest('[class*="bg-"]')!;
+    const card = balanceEl.closest('.glass-card')!;
     expect(card.textContent).toContain('IDR 1,000,000');
   });
 
@@ -213,7 +213,7 @@ describe('DashboardSummaryCards', () => {
       />,
     );
     const balanceEl = screen.getByText('Balance');
-    const card = balanceEl.closest('[class*="bg-"]')!;
+    const card = balanceEl.closest('.glass-card')!;
     expect(card.textContent).toContain('%');
   });
 });
@@ -474,7 +474,7 @@ describe('AlertsPanel', () => {
       />,
     );
     await waitFor(() => {
-      const card = document.querySelector('[data-testid="card"]') as HTMLElement;
+      const card = document.querySelector('.glass-card') as HTMLElement;
       expect(card?.className).toContain('border-red-300');
     });
   });

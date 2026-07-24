@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { formatIdr } from '../lib/utils';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
   Select,
@@ -228,14 +227,11 @@ export default function RecurringBreakdown() {
       {/* Summary Cards Row */}
       {currentPeriod && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-white/40">
+          <div className="glass-card p-5">
+            <h3 className="text-sm font-medium text-white/40 text-white/80">
                 Flexibility Score
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
+              </h3>
+            <div className="text-2xl font-bold">
                 {currentPeriod.discretionary_pct}%
               </div>
               <p className="text-xs text-white/30 mt-1">
@@ -264,74 +260,58 @@ export default function RecurringBreakdown() {
                     : 'Stable'}
                 </Badge>
               )}
-            </CardContent>
-          </Card>
+            </div>
 
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-white/40">
+          <div className="glass-card p-5">
+            <h3 className="text-sm font-medium text-white/40 text-white/80">
                 Recurring
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
+              </h3>
+            <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
                 {formatIdr(currentPeriod.recurring)}
               </div>
               <p className="text-xs text-white/30 mt-1">
                 {currentPeriod.recurring_count} transactions · {currentPeriod.recurring_pct}%
               </p>
-            </CardContent>
-          </Card>
+            </div>
 
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-white/40">
+          <div className="glass-card p-5">
+            <h3 className="text-sm font-medium text-white/40 text-white/80">
                 Discretionary
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+              </h3>
+            <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
                 {formatIdr(currentPeriod.discretionary)}
               </div>
               <p className="text-xs text-white/30 mt-1">
                 {currentPeriod.discretionary_count} transactions · {currentPeriod.discretionary_pct}%
               </p>
-            </CardContent>
-          </Card>
+            </div>
 
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-white/40">
+          <div className="glass-card p-5">
+            <h3 className="text-sm font-medium text-white/40 text-white/80">
                 Total Spending
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
+              </h3>
+            <div className="text-2xl font-bold">
                 {formatIdr(currentPeriod.total)}
               </div>
               <p className="text-xs text-white/30 mt-1">
                 {currentPeriod.month}
               </p>
-            </CardContent>
-          </Card>
+            </div>
         </div>
       )}
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Donut Chart */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2">
+        <div className="glass-card p-5">
+          <h3 className="text-base flex items-center gap-2 text-white/80">
               <Repeat className="w-4 h-4 text-indigo-500" />
               Current Breakdown
-            </CardTitle>
-            <CardDescription>
+            </h3>
+            <p className="text-white/50">
               {currentPeriod?.month || 'Latest period'}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {donutData ? (
+            </p>
+          {donutData ? (
               <div className="max-w-[280px] mx-auto" style={{ height: 280 }}>
                 <Doughnut
                   data={donutData}
@@ -373,22 +353,18 @@ export default function RecurringBreakdown() {
                 No spending data for this period
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
 
         {/* Trend Line */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2">
+        <div className="glass-card p-5">
+          <h3 className="text-base flex items-center gap-2 text-white/80">
               <Zap className="w-4 h-4 text-amber-500" />
               Trend Over Time
-            </CardTitle>
-            <CardDescription>
+            </h3>
+            <p className="text-white/50">
               How the recurring/discretionary mix has shifted
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {trendData ? (
+            </p>
+          {trendData ? (
               <div style={{ height: 300 }}>
                 <Line
                   data={trendData}
@@ -453,24 +429,20 @@ export default function RecurringBreakdown() {
                 Need at least 2 periods of data
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
       </div>
 
       {/* Top Recurring Expenses Table */}
       {data.topRecurring.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2">
+        <div className="glass-card p-5">
+          <h3 className="text-base flex items-center gap-2 text-white/80">
               <Repeat className="w-4 h-4 text-indigo-500" />
               Top Recurring Expenses (All Time)
-            </CardTitle>
-            <CardDescription>
+            </h3>
+            <p className="text-white/50">
               Highest total spending on recurring items across all periods
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Table>
+            </p>
+          <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>#</TableHead>
@@ -498,15 +470,13 @@ export default function RecurringBreakdown() {
                 ))}
               </TableBody>
             </Table>
-          </CardContent>
-        </Card>
+          </div>
       )}
 
       {/* No recurring data notice */}
       {data.topRecurring.length === 0 && (
-        <Card>
-          <CardContent className="py-8 text-center">
-            <Repeat className="w-12 h-12 mx-auto text-white/10 mb-3" />
+        <div className="glass-card p-5">
+          <Repeat className="w-12 h-12 mx-auto text-white/10 mb-3" />
             <p className="text-white/40 font-medium">
               No recurring transactions found
             </p>
@@ -517,8 +487,7 @@ export default function RecurringBreakdown() {
               </a>{' '}
               to see the breakdown between recurring and discretionary spending.
             </p>
-          </CardContent>
-        </Card>
+          </div>
       )}
     </div>
   );

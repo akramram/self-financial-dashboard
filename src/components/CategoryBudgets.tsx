@@ -2,7 +2,6 @@ import React, { useMemo, useState } from 'react';
 import type { MonthlySummary, Category } from '../lib/data';
 import { formatIdr } from '../lib/utils';
 import { PieChart } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -46,8 +45,8 @@ export default function CategoryBudgets({ summaries, categories, activeMonth, on
   const displayEntries = showAll ? entries : entries.slice(0, TOP_N);
 
   return (
-    <Card className="shadow-none">
-      <CardContent className="p-5">
+    <div className="glass-card p-5 shadow-none">
+      
         {/* Header — Similarity: same icon+title+meta pattern as AlertsPanel */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
@@ -138,7 +137,7 @@ export default function CategoryBudgets({ summaries, categories, activeMonth, on
               : `Show all ${entries.length} categories`}
           </Button>
         )}
-      </CardContent>
-    </Card>
+      
+    </div>
   );
 }

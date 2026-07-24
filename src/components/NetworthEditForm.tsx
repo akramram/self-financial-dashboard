@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { fetchNetworth, updateNetworthApi } from '../lib/api';
 import { formatIdr } from '../lib/utils';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -61,11 +60,11 @@ export default function NetworthEditForm() {
   }
 
   return (
-    <Card className="max-w-xl">
-      <CardHeader>
-        <CardTitle>Edit Networth</CardTitle>
-      </CardHeader>
-      <CardContent>
+    <div className="glass-card p-5 max-w-xl">
+      
+        <h3 className="text-white/80">Edit Networth</h3>
+      
+      
         <form onSubmit={handleSubmit} className="space-y-4">
           {message && (
             <Badge variant="outline" className="w-full justify-start px-3 py-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-200 border-emerald-200 dark:border-emerald-800">
@@ -133,7 +132,7 @@ export default function NetworthEditForm() {
             </Button>
           </div>
         </form>
-      </CardContent>
-    </Card>
+      
+    </div>
   );
 }

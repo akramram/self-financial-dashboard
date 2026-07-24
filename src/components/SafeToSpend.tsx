@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
 import { formatIdr } from '../lib/utils';
 import { TrendingUp, TrendingDown, Minus, CalendarClock, Wallet, Flame } from 'lucide-react';
 
@@ -84,11 +83,9 @@ export default function SafeToSpend({ periodId }: Props) {
   // Loading skeleton — must render consistently to avoid hydration issues
   if (loading) {
     return (
-      <Card className="border-slate-200 dark:border-slate-700 shadow-none animate-pulse">
-        <CardContent className="p-5">
-          <div className="h-24 bg-slate-100 dark:bg-slate-800 rounded-lg" />
-        </CardContent>
-      </Card>
+      <div className="glass-card p-5 border-slate-200 dark:border-slate-700 shadow-none animate-pulse">
+        <div className="h-24 bg-slate-100 dark:bg-slate-800 rounded-lg" />
+        </div>
     );
   }
 
@@ -108,12 +105,11 @@ export default function SafeToSpend({ periodId }: Props) {
     : 0;
 
   return (
-    <Card className={`bg-card relative overflow-hidden border ${cfg.border} shadow-none`}>
+    <div className="glass-card p-5" className={`bg-card relative overflow-hidden border ${cfg.border} shadow-none`}>
       {/* Top accent bar */}
       <div className={`absolute top-0 left-0 right-0 h-1 ${cfg.accent}`} />
 
-      <CardContent className="p-5 pt-6">
-        <div className="flex flex-col sm:flex-row items-start gap-4">
+      <div className="flex flex-col sm:flex-row items-start gap-4">
           {/* Left: Big Number */}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
@@ -207,7 +203,6 @@ export default function SafeToSpend({ periodId }: Props) {
             />
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
   );
 }

@@ -1,5 +1,4 @@
 import React, { useState, useMemo, useRef, useCallback } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -544,18 +543,15 @@ export default function DataImport() {
 
       {/* Step 1: Select import type and source */}
       {step === 'select' && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+        <div className="glass-card p-5">
+          <h3 className="flex items-center gap-2 text-white/80">
               <Upload className="w-5 h-5" />
               Import Data
-            </CardTitle>
-            <CardDescription>
+            </h3>
+            <p className="text-white/50">
               Import transactions, net worth, or income data from CSV or JSON files.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Import type */}
+            </p>
+          {/* Import type */}
             <div className="grid gap-2">
               <Label>What are you importing?</Label>
               <Select value={importType} onValueChange={(v) => { setImportType(v); resetState(); }}>
@@ -655,27 +651,23 @@ export default function DataImport() {
             )}
 
             {/* Info card */}
-            <Card className="bg-indigo-50/50 dark:bg-indigo-950/20 border-indigo-200 dark:border-indigo-900">
-              <CardContent className="py-4 text-sm text-slate-600 dark:text-slate-300">
-                <p className="font-medium mb-1">📋 Import Format</p>
+            <div className="glass-card p-5 bg-indigo-50/50 dark:bg-indigo-950/20 border-indigo-200 dark:border-indigo-900">
+              <p className="font-medium mb-1">📋 Import Format</p>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
                   For <strong>transactions</strong>, required fields are: {requiredFields.map((f) => fieldMap[f]).join(', ')}.
                   The <strong>month</strong> field should be in "Month Year" format (e.g., "June 2026").
                   The <strong>type</strong> must be one of: cash, credit_expense, credit_payment.
                 </p>
-              </CardContent>
-            </Card>
-          </CardContent>
-        </Card>
+              </div>
+          </div>
       )}
 
       {/* Step 2: Preview & Map Columns */}
       {step === 'preview' && (
         <div className="space-y-6">
           {/* File info */}
-          <Card>
-            <CardContent className="py-3">
-              <div className="flex items-center justify-between">
+          <div className="glass-card p-5">
+            <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-sm">
                   {fileName.endsWith('.json') ? (
                     <FileJson className="w-4 h-4 text-amber-500" />
@@ -691,19 +683,15 @@ export default function DataImport() {
                   </Button>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
 
           {/* Column Mapping */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Map Columns</CardTitle>
-              <CardDescription>
+          <div className="glass-card p-5">
+            <h3 className="text-base text-white/80">Map Columns</h3>
+              <p className="text-white/50">
                 Match CSV columns to {importType} fields. Required fields are marked with *.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+              </p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                 {csvHeaders.map((header) => (
                   <div key={header} className="flex flex-col gap-1">
                     <span className="text-xs text-slate-500 truncate" title={header}>
@@ -728,13 +716,11 @@ export default function DataImport() {
                   </div>
                 ))}
               </div>
-            </CardContent>
-          </Card>
+            </div>
 
           {/* Preview Table */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base flex items-center justify-between">
+          <div className="glass-card p-5">
+            <h3 className="text-base flex items-center justify-between text-white/80">
                 <span>Preview</span>
                 <div className="flex items-center gap-2 text-sm font-normal">
                   <Badge variant={validCount === previewRows.length ? 'default' : 'destructive'}>
@@ -744,10 +730,8 @@ export default function DataImport() {
                     Showing first {Math.min(totalRows, 10)} of {totalRows} rows
                   </span>
                 </div>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="overflow-x-auto">
+              </h3>
+            <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -795,8 +779,7 @@ export default function DataImport() {
               {previewRows.length === 0 && (
                 <p className="text-center py-8 text-slate-400">No data to preview.</p>
               )}
-            </CardContent>
-          </Card>
+            </div>
 
           {/* Import button */}
           <div className="flex items-center justify-between">
@@ -836,19 +819,16 @@ export default function DataImport() {
 
       {/* Step 3: Result */}
       {step === 'result' && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+        <div className="glass-card p-5">
+          <h3 className="flex items-center gap-2 text-white/80">
               {resultError ? (
                 <XCircle className="w-6 h-6 text-red-500" />
               ) : (
                 <CheckCircle className="w-6 h-6 text-emerald-500" />
               )}
               {resultError ? 'Import Failed' : 'Import Complete'}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {resultError ? (
+            </h3>
+          {resultError ? (
               <p className="text-red-600 dark:text-red-400">{resultError}</p>
             ) : result && (
               <div className="grid grid-cols-3 gap-4 text-center">
@@ -878,8 +858,7 @@ export default function DataImport() {
                 <a href="/">Back to Dashboard</a>
               </Button>
             </div>
-          </CardContent>
-        </Card>
+          </div>
       )}
     </div>
   );

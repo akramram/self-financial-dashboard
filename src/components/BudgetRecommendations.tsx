@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { formatIdr } from '../lib/utils';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -132,27 +131,27 @@ export default function BudgetRecommendations() {
 
   if (error) {
     return (
-      <Card>
-        <CardContent className="py-12 text-center">
+      <div className="glass-card p-5">
+        
           <AlertTriangle className="w-8 h-8 text-red-500 mx-auto mb-3" />
           <p className="text-red-600 dark:text-red-400 font-medium">Failed to load recommendations</p>
           <p className="text-sm text-muted-foreground mt-1">{error}</p>
-        </CardContent>
-      </Card>
+        
+      </div>
     );
   }
 
   if (stats.length === 0) {
     return (
-      <Card>
-        <CardContent className="py-12 text-center">
+      <div className="glass-card p-5">
+        
           <BarChart3 className="w-8 h-8 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
           <p className="text-muted-foreground">No transaction data available yet.</p>
           <p className="text-sm text-muted-foreground mt-1">
             Add some transactions to get budget recommendations.
           </p>
-        </CardContent>
-      </Card>
+        
+      </div>
     );
   }
 
@@ -160,50 +159,50 @@ export default function BudgetRecommendations() {
     <div className="space-y-6">
       {/* Summary Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-        <Card>
-          <CardContent className="pt-4 pb-3 text-center">
+        <div className="glass-card p-5">
+          
             <p className="text-2xl font-bold">{summary.total}</p>
             <p className="text-xs text-muted-foreground">Categories</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4 pb-3 text-center">
+          
+        </div>
+        <div className="glass-card p-5">
+          
             <p className="text-2xl font-bold text-amber-600 dark:text-amber-400">{summary.noLimit}</p>
             <p className="text-xs text-muted-foreground">No Limit Set</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4 pb-3 text-center">
+          
+        </div>
+        <div className="glass-card p-5">
+          
             <p className="text-2xl font-bold text-red-600 dark:text-red-400">{summary.overBudget}</p>
             <p className="text-xs text-muted-foreground">Over Budget</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4 pb-3 text-center">
+          
+        </div>
+        <div className="glass-card p-5">
+          
             <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{summary.underBudget}</p>
             <p className="text-xs text-muted-foreground">Under Budget</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4 pb-3 text-center">
+          
+        </div>
+        <div className="glass-card p-5">
+          
             <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">{summary.rising}</p>
             <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
               <TrendingUp className="w-3 h-3" /> Rising
             </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4 pb-3 text-center">
+          
+        </div>
+        <div className="glass-card p-5">
+          
             <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{summary.highVol}</p>
             <p className="text-xs text-muted-foreground">High Volatility</p>
-          </CardContent>
-        </Card>
+          
+        </div>
       </div>
 
       {/* Apply All Button */}
       {needsUpdate > 0 && (
-        <Card className="border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-900/10">
-          <CardContent className="py-4 flex items-center justify-between">
+        <div className="glass-card p-5 border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-900/10">
+          
             <div className="flex items-center gap-3">
               <Lightbulb className="w-5 h-5 text-amber-600 dark:text-amber-400" />
               <div>
@@ -229,23 +228,23 @@ export default function BudgetRecommendations() {
                 'Apply All'
               )}
             </Button>
-          </CardContent>
-        </Card>
+          
+        </div>
       )}
 
       {/* Recommendations Table */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base font-semibold flex items-center gap-2">
+      <div className="glass-card p-5">
+        
+          <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
             <Target className="w-4 h-4 text-slate-500" />
             Budget Recommendations
-          </CardTitle>
-          <CardDescription>
+          </h3>
+          <p className="text-white/50">
             Data-driven budget limits based on your historical spending patterns.
             Click any row to see details.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+          </p>
+        
+        
           <div className="rounded-xl border overflow-hidden">
             <Table>
               <TableHeader>
@@ -360,15 +359,15 @@ export default function BudgetRecommendations() {
               </TableBody>
             </Table>
           </div>
-        </CardContent>
-      </Card>
+        
+      </div>
 
       {/* Detail Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {stats.slice(0, 6).map((stat) => (
-          <Card key={stat.category}>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-semibold flex items-center justify-between">
+          <div className="glass-card p-5" key={stat.category}>
+            
+              <h3 className="text-sm font-semibold flex items-center justify-between text-white/80">
                 <span>{stat.category}</span>
                 <Badge
                   variant="outline"
@@ -376,9 +375,9 @@ export default function BudgetRecommendations() {
                 >
                   {CONFIDENCE_LABELS[stat.confidence]}
                 </Badge>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
+              </h3>
+            
+            
               <div className="grid grid-cols-2 gap-2 text-xs">
                 <div>
                   <p className="text-muted-foreground">Average</p>
@@ -422,8 +421,8 @@ export default function BudgetRecommendations() {
                   {formatIdr(stat.recommendedLimit)}
                 </span>
               </div>
-            </CardContent>
-          </Card>
+            
+          </div>
         ))}
       </div>
     </div>

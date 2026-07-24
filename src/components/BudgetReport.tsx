@@ -2,7 +2,6 @@ import React, { useMemo, useState, useEffect } from 'react';
 import type { MonthlySummary, Category, Transaction } from '../lib/data';
 import { formatIdr } from '../lib/utils';
 import { fetchTransactions } from '../lib/api';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -274,8 +273,8 @@ export default function BudgetReport({ summaries, categories }: Props) {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="pt-6">
+        <div className="glass-card p-5">
+          
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-white/[0.06]">
                 <Wallet className="w-5 h-5 text-white/40" />
@@ -285,10 +284,10 @@ export default function BudgetReport({ summaries, categories }: Props) {
                 <p className="text-lg font-semibold">{formatIdr(totalBudget)}</p>
               </div>
             </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
+          
+        </div>
+        <div className="glass-card p-5">
+          
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-red-500/10">
                 <TrendingDown className="w-5 h-5 text-red-400" />
@@ -298,10 +297,10 @@ export default function BudgetReport({ summaries, categories }: Props) {
                 <p className="text-lg font-semibold">{formatIdr(totalSpent)}</p>
               </div>
             </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
+          
+        </div>
+        <div className="glass-card p-5">
+          
             <div className="flex items-center gap-3">
               <div className={`p-2 rounded-lg ${totalRemaining >= 0 ? 'bg-emerald-500/10' : 'bg-red-500/10'}`}>
                 <PiggyBank className={`w-5 h-5 ${totalRemaining >= 0 ? 'text-emerald-400' : 'text-red-400'}`} />
@@ -313,10 +312,10 @@ export default function BudgetReport({ summaries, categories }: Props) {
                 </p>
               </div>
             </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
+          
+        </div>
+        <div className="glass-card p-5">
+          
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-amber-500/10">
                 <AlertTriangle className="w-5 h-5 text-amber-400" />
@@ -340,30 +339,30 @@ export default function BudgetReport({ summaries, categories }: Props) {
                 </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          
+        </div>
       </div>
 
       {/* Budget vs Actual Chart */}
       {chartCategories.length > 0 && (
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base font-semibold">Budget vs Actual</CardTitle>
-          </CardHeader>
-          <CardContent>
+        <div className="glass-card p-5">
+          
+            <h3 className="text-base font-semibold text-white/80">Budget vs Actual</h3>
+          
+          
             <div className="relative h-80">
               <Bar data={chartData} options={chartOptions} />
             </div>
-          </CardContent>
-        </Card>
+          
+        </div>
       )}
 
       {/* Category Budget Table */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base font-semibold">Category Breakdown</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div className="glass-card p-5">
+        
+          <h3 className="text-base font-semibold text-white/80">Category Breakdown</h3>
+        
+        
           <div className="rounded-xl border overflow-hidden">
             <Table>
               <TableHeader>
@@ -445,8 +444,8 @@ export default function BudgetReport({ summaries, categories }: Props) {
               </TableBody>
             </Table>
           </div>
-        </CardContent>
-      </Card>
+        
+      </div>
 
       {/* Category Drill-down Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

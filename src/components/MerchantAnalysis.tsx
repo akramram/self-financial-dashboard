@@ -1,13 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import type { Transaction, MonthlySummary, Category } from '../lib/data';
 import { formatIdr } from '../lib/utils';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
   Select,
@@ -341,63 +334,44 @@ export default function MerchantAnalysis({
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+        <div className="glass-card p-5">
+          <h3 className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5 text-white/80">
               <Store className="w-3.5 h-3.5" />
               Merchants
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{stats.totalMerchants}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+            </h3>
+          <p className="text-2xl font-bold">{stats.totalMerchants}</p>
+          </div>
+        <div className="glass-card p-5">
+          <h3 className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5 text-white/80">
               <Hash className="w-3.5 h-3.5" />
               Transactions
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{stats.totalTransactions}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+            </h3>
+          <p className="text-2xl font-bold">{stats.totalTransactions}</p>
+          </div>
+        <div className="glass-card p-5">
+          <h3 className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5 text-white/80">
               <BarChart3 className="w-3.5 h-3.5" />
               Total Spent
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-lg font-bold text-slate-800 dark:text-slate-100">
+            </h3>
+          <p className="text-lg font-bold text-slate-800 dark:text-slate-100">
               {formatIdr(stats.totalSpent)}
             </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+          </div>
+        <div className="glass-card p-5">
+          <h3 className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5 text-white/80">
               <TrendingUp className="w-3.5 h-3.5" />
               Avg / Merchant
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-lg font-bold">
+            </h3>
+          <p className="text-lg font-bold">
               {formatIdr(stats.avgPerMerchant)}
             </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+          </div>
+        <div className="glass-card p-5">
+          <h3 className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5 text-white/80">
               <Sparkles className="w-3.5 h-3.5" />
               Top Merchant
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate" title={stats.topMerchant?.title}>
+            </h3>
+          <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate" title={stats.topMerchant?.title}>
               {stats.topMerchant?.title ?? '—'}
             </p>
             {stats.topMerchant && (
@@ -405,24 +379,20 @@ export default function MerchantAnalysis({
                 {formatIdr(stats.topMerchant.totalPaid)}
               </p>
             )}
-          </CardContent>
-        </Card>
+          </div>
       </div>
 
       {/* New Merchants Alert */}
       {newMerchants.length > 0 && viewMode === 'period' && (
-        <Card className="border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold text-amber-800 dark:text-amber-300 flex items-center gap-2">
+        <div className="glass-card p-5 border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20">
+          <h3 className="text-sm font-semibold text-amber-800 dark:text-amber-300 flex items-center gap-2 text-white/80">
               <Sparkles className="w-4 h-4" />
               New Merchants This Period
-            </CardTitle>
-            <CardDescription className="text-xs text-amber-600 dark:text-amber-400">
+            </h3>
+            <p className="text-xs text-amber-600 dark:text-amber-400 text-white/50">
               {newMerchants.length} merchant{newMerchants.length !== 1 ? 's' : ''} appearing for the first time
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap gap-2">
+            </p>
+          <div className="flex flex-wrap gap-2">
               {newMerchants.slice(0, 15).map((m) => (
                 <Badge
                   key={m.title}
@@ -441,30 +411,26 @@ export default function MerchantAnalysis({
                 </Badge>
               )}
             </div>
-          </CardContent>
-        </Card>
+          </div>
       )}
 
       {/* Merchant Table */}
-      <Card>
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
+      <div className="glass-card p-5">
+        <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-base font-semibold flex items-center gap-2">
+              <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
                 <Store className="w-4 h-4 text-slate-500" />
                 {viewMode === 'period'
                   ? `Merchants — ${selectedPeriodLabel}`
                   : 'All-Time Merchant Summary'}
-              </CardTitle>
-              <CardDescription className="text-xs mt-0.5">
+              </h3>
+              <p className="text-xs mt-0.5 text-white/50">
                 {sortedMerchants.length} merchant{sortedMerchants.length !== 1 ? 's' : ''}
                 {selectedCategory !== 'all' && ` in "${selectedCategory}"`}
-              </CardDescription>
+              </p>
             </div>
           </div>
-        </CardHeader>
-        <CardContent className="pt-0">
-          {sortedMerchants.length === 0 ? (
+        {sortedMerchants.length === 0 ? (
             <div className="text-center py-12">
               <Store className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
               <p className="text-slate-500 dark:text-slate-400 text-sm">
@@ -580,23 +546,19 @@ export default function MerchantAnalysis({
               </Table>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
 
       {/* All-Time: Most Frequent Merchants */}
       {viewMode === 'all' && frequentMerchants.length > 0 && (
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base font-semibold flex items-center gap-2">
+        <div className="glass-card p-5">
+          <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
               <Clock className="w-4 h-4 text-slate-500" />
               Most Frequent Merchants
-            </CardTitle>
-            <CardDescription className="text-xs">
+            </h3>
+            <p className="text-xs text-white/50">
               Top 10 merchants by transaction count across all periods
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="pt-0">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {frequentMerchants.map((m) => {
                 const maxCount = frequentMerchants[0]?.txCount ?? 1;
                 const barWidth = (m.txCount / maxCount) * 100;
@@ -630,8 +592,7 @@ export default function MerchantAnalysis({
                 );
               })}
             </div>
-          </CardContent>
-        </Card>
+          </div>
       )}
     </div>
   );

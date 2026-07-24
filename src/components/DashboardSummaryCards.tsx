@@ -2,7 +2,6 @@ import React, { useMemo } from 'react';
 import type { MonthlySummary, NetworthRecord } from '../lib/data';
 import { formatIdr } from '../lib/utils';
 import Sparkline from './Sparkline';
-import { Card } from '@/components/ui/card';
 import { TrendingUp, TrendingDown, DollarSign, Wallet, Scale, BarChart3 } from 'lucide-react';
 
 interface Props {
@@ -142,9 +141,9 @@ export default function DashboardSummaryCards({ summaries, networth, activeMonth
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
       {cards.map((card) => (
-        <Card
+        <div 
           key={card.label}
-          className="bg-card relative overflow-hidden hover:shadow-md transition-shadow p-5 pt-6"
+          className="glass-card p-5 relative overflow-hidden hover:shadow-md transition-shadow pt-6"
         >
           {/* Subtle color bar at top — figure/ground accent */}
           <div
@@ -200,7 +199,7 @@ export default function DashboardSummaryCards({ summaries, networth, activeMonth
                 <Sparkline data={card.sparklineData} color={card.color} height={40} width={72} />
               </div>
             </div>
-        </Card>
+        </div>
       ))}
     </div>
   );

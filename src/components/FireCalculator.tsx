@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -89,11 +88,9 @@ export default function FireCalculator() {
 
   if (error) {
     return (
-      <Card className="border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20">
-        <CardContent className="pt-6 text-center">
-          <p className="text-red-700 dark:text-red-300">{error}</p>
-        </CardContent>
-      </Card>
+      <div className="glass-card p-5 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20">
+        <p className="text-red-700 dark:text-red-300">{error}</p>
+        </div>
     );
   }
 
@@ -136,12 +133,11 @@ export default function FireCalculator() {
   return (
     <div className="space-y-6">
       {/* Assumptions Panel */}
-      <Card>
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
+      <div className="glass-card p-5">
+        <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Sliders className="w-5 h-5 text-white/50" />
-              <CardTitle className="text-lg">Adjust Assumptions</CardTitle>
+              <h3 className="text-lg text-white/80">Adjust Assumptions</h3>
             </div>
             <Button
               variant="ghost"
@@ -154,15 +150,13 @@ export default function FireCalculator() {
             </Button>
           </div>
           {showHelp && (
-            <CardDescription className="pt-2 space-y-1 text-xs">
+            <p className="pt-2 space-y-1 text-xs text-white/50">
               <p><strong>Withdrawal Rate:</strong> The % of your portfolio you withdraw annually in retirement. The "4% Rule" is standard.</p>
               <p><strong>Expected Return:</strong> Your assumed annual investment return (after fees). Historical S&P 500: ~7% after inflation.</p>
               <p><strong>Inflation:</strong> How much prices rise each year. Affects your purchasing power and real returns.</p>
-            </CardDescription>
+            </p>
           )}
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
               <Label className="text-xs text-white/50 mb-1 block">
                 Withdrawal Rate: <span className="font-semibold text-white/70">{wr}%</span>
@@ -218,15 +212,13 @@ export default function FireCalculator() {
               </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
 
       {/* Key Metrics Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {/* FIRE Number */}
-        <Card className={isFi ? 'border-emerald-300 dark:border-emerald-700 bg-emerald-50/50 dark:bg-emerald-900/10' : ''}>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-2 mb-2">
+        <div className={`glass-card p-5 ${isFi ? 'border-emerald-300 dark:border-emerald-700 bg-emerald-50/50 dark:bg-emerald-900/10' : ''}`}>
+          <div className="flex items-center gap-2 mb-2">
               <Target className={`w-4 h-4 ${isFi ? 'text-emerald-500' : 'text-white/50'}`} />
               <span className="text-xs font-medium text-white/50">FIRE Number</span>
             </div>
@@ -234,13 +226,11 @@ export default function FireCalculator() {
             <p className="text-xs text-white/40 mt-1">
               {Math.round(params.withdrawalRate * 100)}% rule: {Math.round(1 / params.withdrawalRate)}× annual expenses
             </p>
-          </CardContent>
-        </Card>
+          </div>
 
         {/* Current Networth */}
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-2 mb-2">
+        <div className="glass-card p-5">
+          <div className="flex items-center gap-2 mb-2">
               <Wallet className="w-4 h-4 text-white/50" />
               <span className="text-xs font-medium text-white/50">Current Networth</span>
             </div>
@@ -252,13 +242,11 @@ export default function FireCalculator() {
               />
             </div>
             <p className="text-xs text-white/40 mt-1">{progressPct}% of FIRE target</p>
-          </CardContent>
-        </Card>
+          </div>
 
         {/* Years to FI */}
-        <Card className={isFi ? 'border-emerald-300 dark:border-emerald-700 bg-emerald-50/50 dark:bg-emerald-900/10' : ''}>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-2 mb-2">
+        <div className={`glass-card p-5 ${isFi ? 'border-emerald-300 dark:border-emerald-700 bg-emerald-50/50 dark:bg-emerald-900/10' : ''}`}>
+          <div className="flex items-center gap-2 mb-2">
               <Clock className={`w-4 h-4 ${isFi ? 'text-emerald-500' : 'text-white/50'}`} />
               <span className="text-xs font-medium text-white/50">Time to FI</span>
             </div>
@@ -268,13 +256,11 @@ export default function FireCalculator() {
             <p className="text-xs text-white/40 mt-1">
               {projectedFiDate || '—'}
             </p>
-          </CardContent>
-        </Card>
+          </div>
 
         {/* Monthly Savings */}
-        <Card className={isNegativeSavings ? 'border-red-300 dark:border-red-700 bg-red-50/50 dark:bg-red-900/10' : ''}>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-2 mb-2">
+        <div className={`glass-card p-5 ${isNegativeSavings ? 'border-red-300 dark:border-red-700 bg-red-50/50 dark:bg-red-900/10' : ''}`}>
+          <div className="flex items-center gap-2 mb-2">
               <PiggyBank className={`w-4 h-4 ${isNegativeSavings ? 'text-red-500' : 'text-emerald-500'}`} />
               <span className="text-xs font-medium text-white/50">Monthly Savings</span>
             </div>
@@ -284,24 +270,20 @@ export default function FireCalculator() {
             <p className="text-xs text-white/40 mt-1">
               Savings rate: {savingsRate}%
             </p>
-          </CardContent>
-        </Card>
+          </div>
       </div>
 
       {/* Journey to FI Chart */}
       {projection.length > 1 && (
-        <Card>
-          <CardHeader className="pb-2">
-            <div className="flex items-center gap-2">
+        <div className="glass-card p-5">
+          <div className="flex items-center gap-2">
               <TrendingUp className="w-5 h-5 text-white/50" />
-              <CardTitle className="text-lg">Journey to Financial Independence</CardTitle>
+              <h3 className="text-lg text-white/80">Journey to Financial Independence</h3>
             </div>
-            <CardDescription>
+            <p className="text-white/50">
               Projected networth growth with your current savings rate and assumptions
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="relative" style={{ height: chartHeight + 60 }}>
+            </p>
+          <div className="relative" style={{ height: chartHeight + 60 }}>
               {/* Chart area */}
               <div className="relative" style={{ height: chartHeight }}>
                 {/* FI Threshold line */}
@@ -382,22 +364,18 @@ export default function FireCalculator() {
                 <span>FIRE Target</span>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
       )}
 
       {/* Breakdown Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Monthly Breakdown */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base flex items-center gap-2">
+        <div className="glass-card p-5">
+          <h3 className="text-base flex items-center gap-2 text-white/80">
               <Wallet className="w-4 h-4 text-white/50" />
               Monthly Cash Flow
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
+            </h3>
+          <div className="space-y-3">
               <div className="flex justify-between">
                 <span className="text-sm text-white/60">Monthly Income</span>
                 <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
@@ -424,19 +402,15 @@ export default function FireCalculator() {
                 </span>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
 
         {/* FIRE Math */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base flex items-center gap-2">
+        <div className="glass-card p-5">
+          <h3 className="text-base flex items-center gap-2 text-white/80">
               <Info className="w-4 h-4 text-white/50" />
               The Math Behind Your Number
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3 text-sm">
+            </h3>
+          <div className="space-y-3 text-sm">
               <div className="flex justify-between">
                 <span className="text-white/60">Annual Expenses</span>
                 <span className="font-semibold">{formatIdr(annualExpenses)}</span>
@@ -465,15 +439,13 @@ export default function FireCalculator() {
                 </div>
               )}
             </div>
-          </CardContent>
-        </Card>
+          </div>
       </div>
 
       {/* Tips Section */}
       {!isFi && (
-        <Card className="border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-900/10">
-          <CardContent className="pt-6">
-            <div className="flex items-start gap-3">
+        <div className="glass-card p-5 border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-900/10">
+          <div className="flex items-start gap-3">
               <Flame className="w-5 h-5 text-orange-500 mt-0.5 shrink-0" />
               <div>
                 <h3 className="font-semibold text-sm mb-2">Ways to reach FI faster:</h3>
@@ -490,14 +462,12 @@ export default function FireCalculator() {
                 </ul>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
       )}
 
       {isFi && (
-        <Card className="border-emerald-300 dark:border-emerald-700 bg-emerald-50/50 dark:bg-emerald-900/10">
-          <CardContent className="pt-6 text-center">
-            <Flame className="w-10 h-10 text-emerald-500 mx-auto mb-2" />
+        <div className="glass-card p-5 border-emerald-300 dark:border-emerald-700 bg-emerald-50/50 dark:bg-emerald-900/10">
+          <Flame className="w-10 h-10 text-emerald-500 mx-auto mb-2" />
             <h3 className="text-lg font-bold text-emerald-700 dark:text-emerald-300">
               🎉 Congratulations — You're Financially Independent!
             </h3>
@@ -505,8 +475,7 @@ export default function FireCalculator() {
               Your networth of {formatIdr(currentNetworth)} exceeds your FIRE number of {formatIdr(fireNumber)}.
               Your portfolio can sustain {formatIdr(annualExpenses)}/year at {params.withdrawalRate * 100}% withdrawal.
             </p>
-          </CardContent>
-        </Card>
+          </div>
       )}
     </div>
   );

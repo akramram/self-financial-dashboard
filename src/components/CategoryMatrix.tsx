@@ -1,5 +1,4 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -246,24 +245,20 @@ export default function CategoryMatrix({}: Props) {
 
   if (error) {
     return (
-      <Card>
-        <CardContent className="pt-6">
-          <div className="text-center text-rose-500">Error: {error}</div>
-        </CardContent>
-      </Card>
+      <div className="glass-card p-5">
+        <div className="text-center text-rose-500">Error: {error}</div>
+        </div>
     );
   }
 
   if (!matrix || matrix.categories.length === 0 || matrix.periods.length === 0) {
     return (
-      <Card>
-        <CardContent className="pt-6">
-          <div className="text-center text-slate-400 py-12">
+      <div className="glass-card p-5">
+        <div className="text-center text-slate-400 py-12">
             <Grid3x3 className="w-12 h-12 mx-auto mb-3 opacity-50" />
             <p>No spending data available. Add transactions to see the matrix.</p>
           </div>
-        </CardContent>
-      </Card>
+        </div>
     );
   }
 
@@ -273,9 +268,8 @@ export default function CategoryMatrix({}: Props) {
   return (
     <div className="space-y-4">
       {/* Info Banner */}
-      <Card className="border-blue-200 dark:border-blue-900 bg-blue-50/50 dark:bg-blue-950/20">
-        <CardContent className="pt-4 pb-4">
-          <div className="flex items-start gap-3">
+      <div className="glass-card p-5 border-blue-200 dark:border-blue-900 bg-blue-50/50 dark:bg-blue-950/20">
+        <div className="flex items-start gap-3">
             <Info className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
             <div className="text-sm text-slate-600 dark:text-slate-300">
               <strong className="text-slate-800 dark:text-slate-100">How to read this:</strong>{' '}
@@ -286,19 +280,15 @@ export default function CategoryMatrix({}: Props) {
               <span className="text-emerald-600 dark:text-emerald-400">green</span> = decreasing.
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
 
       {/* Matrix Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base">
+      <div className="glass-card p-5">
+        <h3 className="flex items-center gap-2 text-base text-white/80">
             <Grid3x3 className="w-4 h-4 text-indigo-500" />
             Category × Period Spending Matrix
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
+          </h3>
+        <div className="overflow-x-auto">
             <Table className="text-xs">
               <TableHeader>
                 <TableRow>
@@ -391,19 +381,15 @@ export default function CategoryMatrix({}: Props) {
               </TableBody>
             </Table>
           </div>
-        </CardContent>
-      </Card>
+        </div>
 
       {/* Summary Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-slate-500 dark:text-slate-400">
+        <div className="glass-card p-5">
+          <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 text-white/80">
               Most Consistent Categories
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
+            </h3>
+          <div className="space-y-2">
               {[...matrix.categories]
                 .filter((r) => r.periodCount >= 2)
                 .map((r) => ({
@@ -427,17 +413,13 @@ export default function CategoryMatrix({}: Props) {
                   </div>
                 ))}
             </div>
-          </CardContent>
-        </Card>
+          </div>
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-slate-500 dark:text-slate-400">
+        <div className="glass-card p-5">
+          <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 text-white/80">
               Fastest Rising Categories
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
+            </h3>
+          <div className="space-y-2">
               {[...matrix.categories]
                 .filter((r) => r.trendPct !== null && r.trendPct > 0)
                 .sort((a, b) => (b.trendPct ?? 0) - (a.trendPct ?? 0))
@@ -460,17 +442,13 @@ export default function CategoryMatrix({}: Props) {
                 <p className="text-xs text-slate-400">No rising trends detected.</p>
               )}
             </div>
-          </CardContent>
-        </Card>
+          </div>
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-slate-500 dark:text-slate-400">
+        <div className="glass-card p-5">
+          <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 text-white/80">
               Declining Categories
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
+            </h3>
+          <div className="space-y-2">
               {[...matrix.categories]
                 .filter((r) => r.trendPct !== null && r.trendPct < 0)
                 .sort((a, b) => (a.trendPct ?? 0) - (b.trendPct ?? 0))
@@ -493,8 +471,7 @@ export default function CategoryMatrix({}: Props) {
                 <p className="text-xs text-slate-400">No declining trends detected.</p>
               )}
             </div>
-          </CardContent>
-        </Card>
+          </div>
       </div>
 
       {/* Drill-down Dialog */}

@@ -11,7 +11,6 @@ import {
 import { Bar } from 'react-chartjs-2';
 import type { MonthlySummary, Category } from '../lib/data';
 import { formatIdr } from '../lib/utils';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Select,
   SelectContent,
@@ -274,18 +273,15 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
       </div>
 
       {!summary ? (
-        <Card>
-          <CardContent className="py-12 text-center text-muted-foreground">
-            <p>No data available for the selected month.</p>
-          </CardContent>
-        </Card>
+        <div className="glass-card p-5">
+          <p>No data available for the selected month.</p>
+          </div>
       ) : (
         <>
           {/* Top Stats Row */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-center gap-3">
+            <div className="glass-card p-5">
+              <div className="flex items-center gap-3">
                   <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/30">
                     <Wallet className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                   </div>
@@ -294,11 +290,9 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
                     <p className="text-lg font-semibold text-emerald-600 dark:text-emerald-400">{formatIdr(totalIncome)}</p>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-center gap-3">
+              </div>
+            <div className="glass-card p-5">
+              <div className="flex items-center gap-3">
                   <div className="p-2 rounded-lg bg-red-100 dark:bg-red-900/30">
                     <TrendingDown className="w-5 h-5 text-red-600 dark:text-red-400" />
                   </div>
@@ -308,11 +302,9 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
                     <p className="text-[10px] text-muted-foreground">{totalIncome > 0 ? `${((totalSpent / totalIncome) * 100).toFixed(1)}% of income` : ''}</p>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-center gap-3">
+              </div>
+            <div className="glass-card p-5">
+              <div className="flex items-center gap-3">
                   <div className={`p-2 rounded-lg ${totalSavings >= 0 ? 'bg-emerald-100 dark:bg-emerald-900/30' : 'bg-red-100 dark:bg-red-900/30'}`}>
                     <PiggyBank className={`w-5 h-5 ${totalSavings >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`} />
                   </div>
@@ -324,11 +316,9 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
                     <p className="text-[10px] text-muted-foreground">Savings rate: {savingsRate.toFixed(1)}%</p>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-center gap-3">
+              </div>
+            <div className="glass-card p-5">
+              <div className="flex items-center gap-3">
                   <div className="p-2 rounded-lg bg-slate-100 dark:bg-slate-700">
                     <Minus className="w-5 h-5 text-slate-600 dark:text-slate-300" />
                   </div>
@@ -340,8 +330,7 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
                     </p>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
           </div>
 
           {/* Over Budget Warnings */}
@@ -360,35 +349,28 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
 
           {/* Waterfall Chart */}
           {chartData && items.length > 1 && (
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base font-semibold flex items-center gap-2">
+            <div className="glass-card p-5">
+              <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
                   <ArrowDown className="w-4 h-4 text-slate-500" />
                   Cash Flow Waterfall — {selectedMonth}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-xs text-muted-foreground mb-4">
+                </h3>
+              <p className="text-xs text-muted-foreground mb-4">
                   Shows how your income flows through each spending category to your remaining savings.
                   Green bars increase your balance; colored bars show category spending; the final bar shows what's left.
                 </p>
                 <div className="relative" style={{ height: Math.max(300, items.length * 30 + 100) }}>
                   <Bar data={chartData} options={chartOptions} />
                 </div>
-              </CardContent>
-            </Card>
+              </div>
           )}
 
           {/* Detailed Breakdown Table */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base font-semibold flex items-center gap-2">
+          <div className="glass-card p-5">
+            <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
                 <TrendingDown className="w-4 h-4 text-slate-500" />
                 Detailed Breakdown
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
+              </h3>
+            <div className="space-y-2">
                 {/* Income Row */}
                 <div className="flex items-center gap-3 p-3 rounded-lg bg-emerald-50 dark:bg-emerald-900/20">
                   <span className="text-lg">💰</span>
@@ -444,19 +426,15 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
                   </span>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
 
           {/* Savings Rate Bar */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base font-semibold flex items-center gap-2">
+          <div className="glass-card p-5">
+            <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
                 <PiggyBank className="w-4 h-4 text-slate-500" />
                 Savings Rate Indicator
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
+              </h3>
+            <div className="space-y-3">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Savings Rate</span>
                   <span className={`font-semibold ${savingsRate < 0 ? 'text-red-600 dark:text-red-400' : savingsRate < 20 ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
@@ -512,8 +490,7 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
                   </p>
                 )}
               </div>
-            </CardContent>
-          </Card>
+            </div>
         </>
       )}
     </div>
