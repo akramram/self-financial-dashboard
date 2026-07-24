@@ -37,12 +37,14 @@ interface Props {
   periods?: PeriodOption[];
 }
 
+const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const MONTH_ABBR = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
 function parseMonthYear(monthStr: string): { year: number; monthIndex: number } {
   const d = new Date(`${monthStr} 1`);
   if (!isNaN(d.getTime())) {
     return { year: d.getFullYear(), monthIndex: d.getMonth() };
   }
-  // Fallback: try to parse manually
   const parts = monthStr.split(' ');
   const monthNames = [
     'january','february','march','april','may','june',
@@ -57,41 +59,26 @@ function parseMonthYear(monthStr: string): { year: number; monthIndex: number } 
   return { year: now.getFullYear(), monthIndex: now.getMonth() };
 }
 
-function getDaysInMonth(year: number, month: number): number {
-  return new Date(year, month + 1, 0).getDate();
-}
-
-function getFirstDayOfMonth(year: number, month: number): number {
-  return new Date(year, month, 1).getDay();
-}
-
-function formatDateKey(year: number, month: number, day: number): string {
-  const m = String(month + 1).padStart(2, '0');
-  const d = String(day).padStart(2, '0');
-  return `${year}-${m}-${d}`;
-}
-
-function parseTxDate(tx: Transaction): string | null {
-  // created_time is the actual transaction timestamp; date is just the period start (always 1st)
-  const raw = tx.created_time || tx.date;
-  if (!raw) return null;
-  const d = new Date(raw);
-  if (isNaN(d.getTime())) return null;
+function dateKey(d: Date): string {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
   return `${y}-${m}-${day}`;
 }
 
-const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+function parseTxDate(tx: Transaction): string | null {
+  const raw = tx.created_time || tx.date;
+  if (!raw) return null;
+  const d = new Date(raw);
+  if (isNaN(d.getTime())) return null;
+  return dateKey(d);
+}
 
 export default function SpendingCalendar({ transactions, periods }: Props) {
-  // Build month options from periods prop (post-migration: transactions have no month column)
   const monthOptions = useMemo(() => {
     if (periods && periods.length > 0) {
       return [...periods].reverse().map((p) => p.month);
     }
-    // Fallback: derive from created_time dates when periods not provided
     const set = new Set<string>();
     const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
     transactions.forEach((t) => {
@@ -110,55 +97,76 @@ export default function SpendingCalendar({ transactions, periods }: Props) {
   }, [transactions, periods]);
 
   const [selectedMonth, setSelectedMonth] = useState<string>(() => {
-    if (monthOptions.length > 0) return monthOptions[monthOptions.length - 1];
+    if (monthOptions.length > 0) return monthOptions[0];
     const now = new Date();
     return `${now.toLocaleDateString('en-US', { month: 'long' })} ${now.getFullYear()}`;
   });
 
   useEffect(() => {
     if (monthOptions.length > 0 && !monthOptions.includes(selectedMonth)) {
-      setSelectedMonth(monthOptions[monthOptions.length - 1]);
+      setSelectedMonth(monthOptions[0]);
     }
   }, [monthOptions, selectedMonth]);
 
   const { year, monthIndex } = useMemo(() => parseMonthYear(selectedMonth), [selectedMonth]);
 
-  const daysInMonth = useMemo(() => getDaysInMonth(year, monthIndex), [year, monthIndex]);
-  const firstDay = useMemo(() => getFirstDayOfMonth(year, monthIndex), [year, monthIndex]);
+  // ── Period range: 21st of previous month → 20th of selected month ──
+  const periodDates = useMemo(() => {
+    const prevMonth = monthIndex === 0 ? 11 : monthIndex - 1;
+    const prevMonthYear = monthIndex === 0 ? year - 1 : year;
+    const start = new Date(prevMonthYear, prevMonth, 21);
+    const end = new Date(year, monthIndex, 20);
 
-  // Find the period_id for the selected month
+    const dates: Date[] = [];
+    const cur = new Date(start);
+    while (cur <= end) {
+      dates.push(new Date(cur));
+      cur.setDate(cur.getDate() + 1);
+    }
+    return dates;
+  }, [year, monthIndex]);
+
+  const periodLabel = useMemo(() => {
+    if (periodDates.length === 0) return selectedMonth;
+    const first = periodDates[0];
+    const last = periodDates[periodDates.length - 1];
+    return `${MONTH_ABBR[first.getMonth()]} ${first.getDate()} – ${MONTH_ABBR[last.getMonth()]} ${last.getDate()}`;
+  }, [periodDates, selectedMonth]);
+
   const selectedPeriodId = useMemo(() => {
     if (!periods) return null;
     const match = periods.find((p) => p.month === selectedMonth);
     return match ? match.period_id : null;
   }, [periods, selectedMonth]);
 
-  // Filter transactions to the selected period (by period_id when available, fallback to date matching)
   const periodTransactions = useMemo(() => {
     if (selectedPeriodId !== null) {
       return transactions.filter((t) => t.period_id === selectedPeriodId);
     }
-    // Fallback: match by created_time month/year
     return transactions.filter((tx) => {
       const raw = tx.created_time || tx.date || '';
       const d = new Date(raw);
       if (isNaN(d.getTime())) return false;
-      return d.getFullYear() === year && d.getMonth() === monthIndex;
+      // Salary period: 21st of prev month to 20th of current
+      const prevMonth = monthIndex === 0 ? 11 : monthIndex - 1;
+      const prevMonthYear = monthIndex === 0 ? year - 1 : year;
+      const start = new Date(prevMonthYear, prevMonth, 21);
+      const end = new Date(year, monthIndex, 20, 23, 59, 59);
+      return d >= start && d <= end;
     });
   }, [transactions, selectedPeriodId, year, monthIndex]);
 
   const dailyTotals = useMemo(() => {
     const map: Record<string, { total: number; count: number; transactions: Transaction[] }> = {};
     periodTransactions.forEach((tx) => {
-      const dateKey = parseTxDate(tx);
-      if (!dateKey) return;
-
-      if (!map[dateKey]) {
-        map[dateKey] = { total: 0, count: 0, transactions: [] };
+      const dKey = parseTxDate(tx);
+      if (!dKey) return;
+      if (!map[dKey]) {
+        map[dKey] = { total: 0, count: 0, transactions: [] };
       }
-      map[dateKey].total += tx.amount;
-      map[dateKey].count += 1;
-      map[dateKey].transactions.push(tx);
+      map[dKey].total += tx.amount;
+      map[dKey].count += 1;
+      map[dKey].transactions.push(tx);
     });
     return map;
   }, [periodTransactions]);
@@ -169,15 +177,21 @@ export default function SpendingCalendar({ transactions, periods }: Props) {
   }, [dailyTotals]);
 
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [selectedDay, setSelectedDay] = useState<number | null>(null);
+  const [selectedDateKey, setSelectedDateKey] = useState<string | null>(null);
 
-  const openDay = (day: number) => {
-    setSelectedDay(day);
+  const openDay = (dKey: string) => {
+    setSelectedDateKey(dKey);
     setDialogOpen(true);
   };
 
-  const selectedDayKey = selectedDay != null ? formatDateKey(year, monthIndex, selectedDay) : null;
-  const selectedDayData = selectedDayKey ? dailyTotals[selectedDayKey] : null;
+  const selectedDayData = selectedDateKey ? dailyTotals[selectedDateKey] : null;
+
+  const selectedDateLabel = useMemo(() => {
+    if (!selectedDateKey) return '';
+    const d = new Date(selectedDateKey + 'T00:00:00');
+    if (isNaN(d.getTime())) return selectedDateKey;
+    return `${MONTH_ABBR[d.getMonth()]} ${d.getDate()}`;
+  }, [selectedDateKey]);
 
   const goToPrevMonth = () => {
     const idx = monthOptions.indexOf(selectedMonth);
@@ -199,13 +213,13 @@ export default function SpendingCalendar({ transactions, periods }: Props) {
     return 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400';
   };
 
-  const days: (number | null)[] = [];
-  for (let i = 0; i < firstDay; i++) days.push(null);
-  for (let d = 1; d <= daysInMonth; d++) days.push(d);
+  // Grid: leading nulls for weekday alignment, then all period dates
+  const firstDayOfWeek = periodDates.length > 0 ? periodDates[0].getDay() : 0;
+  const cells: (Date | null)[] = [];
+  for (let i = 0; i < firstDayOfWeek; i++) cells.push(null);
+  cells.push(...periodDates);
 
-  const today = new Date();
-  const isCurrentMonth = today.getFullYear() === year && today.getMonth() === monthIndex;
-  const todayDay = today.getDate();
+  const todayKey = dateKey(new Date());
 
   return (
     <div className="space-y-6">
@@ -258,82 +272,89 @@ export default function SpendingCalendar({ transactions, periods }: Props) {
       {/* Calendar Grid */}
       <div className="glass-card p-5">
         <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
-            <CalendarDays className="w-4 h-4 text-white/40" />
-            Spending Heatmap — {selectedMonth}
-            {selectedPeriodId && (
-              <span className="text-xs font-normal text-white/40">
-                (Period transactions)
-              </span>
-            )}
-          </h3>
-        <div className="grid grid-cols-7 gap-1">
-            {WEEKDAYS.map((wd) => (
-              <div key={wd} className="text-center text-xs font-medium text-white/30 py-2">
-                {wd}
-              </div>
-            ))}
-            {days.map((day, idx) => {
-              if (day === null) {
-                return <div key={`empty-${idx}`} className="aspect-square" />;
-              }
-              const dateKey = formatDateKey(year, monthIndex, day);
-              const data = dailyTotals[dateKey];
-              const total = data?.total ?? 0;
-              const count = data?.count ?? 0;
-              const isToday = isCurrentMonth && day === todayDay;
-              const heatClass = getHeatColor(total);
+          <CalendarDays className="w-4 h-4 text-white/40" />
+          Spending Heatmap — {periodLabel}
+          <span className="text-xs font-normal text-white/30">
+            ({selectedMonth} salary period)
+          </span>
+        </h3>
+        <div className="grid grid-cols-7 gap-1 mt-4">
+          {WEEKDAYS.map((wd) => (
+            <div key={wd} className="text-center text-xs font-medium text-white/30 py-2">
+              {wd}
+            </div>
+          ))}
+          {cells.map((date, idx) => {
+            if (date === null) {
+              return <div key={`empty-${idx}`} className="aspect-square" />;
+            }
+            const dKey = dateKey(date);
+            const data = dailyTotals[dKey];
+            const total = data?.total ?? 0;
+            const count = data?.count ?? 0;
+            const isToday = dKey === todayKey;
+            const heatClass = getHeatColor(total);
+            // Show month abbreviation on period start (21st) and month boundary (1st)
+            const showMonthLabel = date.getDate() === 21 || date.getDate() === 1;
+            const isMonthBoundary = date.getDate() === 1;
 
-              return (
-                <button
-                  key={day}
-                  onClick={() => openDay(day)}
-                  className={`
-                    aspect-square rounded-lg border transition-all hover:scale-105 hover:shadow-sm
-                    flex flex-col items-center justify-center gap-0.5
-                    ${heatClass}
-                    ${isToday ? 'ring-2 ring-blue-500 ring-offset-1 ring-offset-navy-950' : 'border-white/[0.06]'}
-                    ${count > 0 ? 'cursor-pointer' : 'cursor-default'}
-                  `}
-                >
-                  <span className={`text-xs font-medium ${isToday ? 'text-blue-400' : ''}`}>
-                    {day}
+            return (
+              <button
+                key={dKey}
+                onClick={() => count > 0 && openDay(dKey)}
+                className={`
+                  aspect-square rounded-lg border transition-all hover:scale-105 hover:shadow-sm
+                  flex flex-col items-center justify-center gap-0.5
+                  ${heatClass}
+                  ${isToday ? 'ring-2 ring-blue-500 ring-offset-1 ring-offset-navy-950' : 'border-white/[0.06]'}
+                  ${count > 0 ? 'cursor-pointer' : 'cursor-default'}
+                  ${isMonthBoundary ? 'ring-1 ring-white/10' : ''}
+                `}
+              >
+                <span className={`text-xs font-medium ${isToday ? 'text-blue-400' : ''}`}>
+                  {date.getDate()}
+                </span>
+                {showMonthLabel && (
+                  <span className="text-[8px] opacity-50 leading-none uppercase tracking-wide">
+                    {MONTH_ABBR[date.getMonth()]}
                   </span>
-                  {count > 0 && (
-                    <>
-                      <span className="text-[10px] font-semibold leading-none">
-                        {formatIdr(total)}
-                      </span>
-                      <span className="text-[9px] opacity-70 leading-none">
-                        {count} tx
-                      </span>
-                    </>
-                  )}
-                </button>
-              );
-            })}
-          </div>
+                )}
+                {count > 0 && (
+                  <>
+                    <span className="text-[10px] font-semibold leading-none">
+                      {formatIdr(total)}
+                    </span>
+                    <span className="text-[9px] opacity-70 leading-none">
+                      {count} tx
+                    </span>
+                  </>
+                )}
+              </button>
+            );
+          })}
         </div>
+      </div>
 
       {/* Monthly Summary */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="glass-card p-5">
           <div className="text-xs text-white/40 mb-1">Days with Spending</div>
-            <div className="text-2xl font-semibold">
-              {Object.values(dailyTotals).filter((d) => d.total > 0).length}
-            </div>
+          <div className="text-2xl font-semibold">
+            {Object.values(dailyTotals).filter((d) => d.total > 0).length}
           </div>
+        </div>
         <div className="glass-card p-5">
           <div className="text-xs text-white/40 mb-1">Total Transactions</div>
-            <div className="text-2xl font-semibold">
-              {Object.values(dailyTotals).reduce((s, d) => s + d.count, 0)}
-            </div>
+          <div className="text-2xl font-semibold">
+            {Object.values(dailyTotals).reduce((s, d) => s + d.count, 0)}
           </div>
+        </div>
         <div className="glass-card p-5">
-          <div className="text-xs text-white/40 mb-1">Monthly Spend</div>
-            <div className="text-2xl font-semibold">
-              {formatIdr(Object.values(dailyTotals).reduce((s, d) => s + d.total, 0))}
-            </div>
+          <div className="text-xs text-white/40 mb-1">Period Spend</div>
+          <div className="text-2xl font-semibold">
+            {formatIdr(Object.values(dailyTotals).reduce((s, d) => s + d.total, 0))}
           </div>
+        </div>
       </div>
 
       {/* Day Detail Dialog */}
@@ -342,7 +363,7 @@ export default function SpendingCalendar({ transactions, periods }: Props) {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <CalendarDays className="w-5 h-5 text-white/40" />
-              {selectedMonth} {selectedDay}
+              {selectedDateLabel}
             </DialogTitle>
             <DialogDescription>
               {selectedDayData
