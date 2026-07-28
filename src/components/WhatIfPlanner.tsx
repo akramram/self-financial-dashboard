@@ -587,7 +587,7 @@ export default function WhatIfPlanner() {
 
       {/* ─── Reset & Insight Bar ───────────────────────────────────────────── */}
       {(incomeChangePct !== 0 || Object.keys(categoryAdjustments).length > 0 || oneTimeEvents.length > 0) && (
-        <div className={`glass-card p-5 border-l-4 ${projection.networthDifference >= 0 ? 'border-l-emerald-500' : 'border-l-amber-500'}`}>
+        <div className="glass-card p-5">
           <div className="flex-1 min-w-0">
               <p className="text-sm font-medium">
                 {projection.networthDifference >= 0 ? '✅' : '⚠️'}{' '}

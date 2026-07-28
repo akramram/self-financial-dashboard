@@ -170,7 +170,7 @@ export default function RecurringCostAnalyzer() {
     <div className="space-y-6">
       {/* ─── Summary Cards ──────────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="glass-card p-5 border-l-4 border-l-blue-500">
+        <div className="glass-card p-5">
           <div className="flex items-center justify-between mb-1">
               <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Monthly Cost</span>
               <DollarSign className="w-4 h-4 text-blue-500" />
@@ -179,7 +179,7 @@ export default function RecurringCostAnalyzer() {
             <p className="text-[11px] text-slate-400 mt-0.5">per salary period</p>
           </div>
 
-        <div className="glass-card p-5 border-l-4 border-l-emerald-500">
+        <div className="glass-card p-5">
           <div className="flex items-center justify-between mb-1">
               <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Annual Cost</span>
               <Calendar className="w-4 h-4 text-emerald-500" />
@@ -188,7 +188,7 @@ export default function RecurringCostAnalyzer() {
             <p className="text-[11px] text-slate-400 mt-0.5">projected per year</p>
           </div>
 
-        <div className="glass-card p-5 border-l-4 border-l-amber-500">
+        <div className="glass-card p-5">
           <div className="flex items-center justify-between mb-1">
               <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Active Items</span>
               <RefreshCw className="w-4 h-4 text-amber-500" />
@@ -199,7 +199,7 @@ export default function RecurringCostAnalyzer() {
             </p>
           </div>
 
-        <div className="glass-card p-5 border-l-4 border-l-violet-500">
+        <div className="glass-card p-5">
           <div className="flex items-center justify-between mb-1">
               <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Avg / Item</span>
               <PieChart className="w-4 h-4 text-violet-500" />

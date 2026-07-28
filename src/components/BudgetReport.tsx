@@ -494,7 +494,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
                     return (
                       <TableRow
                         key={tx.id}
-                        className={isOverBudget ? 'border-l-2 border-l-red-500 bg-red-50/60 dark:bg-red-950/30' : ''}
+                        className={isOverBudget ? 'bg-red-50/60 dark:bg-red-950/30' : ''}
                       >
                         <TableCell className="font-medium">{tx.title}</TableCell>
                         <TableCell className="text-muted-foreground text-xs">{dateStr}</TableCell>

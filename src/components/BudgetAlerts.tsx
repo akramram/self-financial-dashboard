@@ -134,7 +134,7 @@ export default function BudgetAlerts({ summaries, categories, activeMonth, trans
   const approachingCount = alerts.filter((a) => !a.isOver).length;
 
   return (
-    <div className="glass-card p-5 border-l-4 border-l-red-500 dark:border-l-red-400 shadow-md">
+    <div className="glass-card p-5">
       
         <div className="flex items-center justify-between">
           <h3 className="flex items-center gap-2 text-base text-white/80">
