@@ -2,6 +2,8 @@ import React, { useState, useMemo } from 'react';
 import {
   LayoutDashboard, ArrowRightLeft, PieChart, Target, Settings,
   TrendingUp, Calendar, Shield, Wallet, CreditCard, Menu, X, Bell,
+  Trophy, Flame, Heart, BarChart3, FlaskConical, Briefcase, PiggyBank,
+  Repeat, Search, FileText, GitCompare, Activity, Layers, CalendarDays, Zap, Grid3x3,
 } from 'lucide-react';
 
 interface Props {
@@ -19,10 +21,41 @@ const PRIMARY = [
 
 const SECONDARY = [
   { path: '/budget', label: 'Budget', icon: Wallet },
+  { path: '/budget-pace', label: 'Budget Pace', icon: Activity },
   { path: '/savings-rate', label: 'Savings', icon: TrendingUp },
-  { path: '/calendar', label: 'Calendar', icon: Calendar },
+  { path: '/calendar', label: 'Calendar', icon: CalendarDays },
   { path: '/runway', label: 'Runway', icon: Shield },
   { path: '/credit-card', label: 'Credit', icon: CreditCard },
+];
+
+const ANALYTICS = [
+  { path: '/streaks', label: 'Streaks', icon: Zap },
+  { path: '/achievements', label: 'Achievements', icon: Trophy },
+  { path: '/health', label: 'Health Score', icon: Heart },
+  { path: '/spending-mix', label: 'Spending Mix', icon: Layers },
+  { path: '/spending-rhythm', label: 'Rhythm', icon: BarChart3 },
+  { path: '/dna', label: 'Spending DNA', icon: FlaskConical },
+  { path: '/matrix', label: 'Category Matrix', icon: Grid3x3 },
+  { path: '/merchants', label: 'Merchants', icon: Search },
+];
+
+const PLANNING = [
+  { path: '/fire', label: 'FIRE', icon: Flame },
+  { path: '/what-if', label: 'What-If', icon: FlaskConical },
+  { path: '/forecast', label: 'Forecast', icon: TrendingUp },
+  { path: '/portfolio', label: 'Portfolio', icon: Briefcase },
+  { path: '/networth', label: 'Net Worth', icon: PiggyBank },
+];
+
+const REPORTS = [
+  { path: '/weekly', label: 'Weekly', icon: Calendar },
+  { path: '/report', label: 'Monthly', icon: FileText },
+  { path: '/yearly', label: 'Yearly', icon: CalendarDays },
+  { path: '/compare', label: 'Compare', icon: GitCompare },
+  { path: '/cashflow', label: 'Cashflow', icon: BarChart3 },
+  { path: '/recurring', label: 'Recurring', icon: Repeat },
+  { path: '/recurring-audit', label: 'Recurring Audit', icon: Search },
+  { path: '/recommendations', label: 'Tips', icon: Trophy },
 ];
 
 export default function FintechSidebar({ balance, alerts = 0 }: Props) {
@@ -103,12 +136,33 @@ export default function FintechSidebar({ balance, alerts = 0 }: Props) {
         )}
 
         {/* Primary nav */}
-        <nav className="flex-1 py-4 space-y-1 px-2 overflow-y-auto">
+        <nav className="flex-1 py-4 space-y-1 px-2 overflow-y-auto sidebar-scroll">
           {PRIMARY.map((item) => (
             <NavButton key={item.path} item={item} isPrimary />
           ))}
           <div className={`my-2 border-t ${collapsed ? 'mx-2' : 'mx-3'}`} style={{ borderColor: 'rgba(255,255,255,0.05)' }} />
           {SECONDARY.map((item) => (
+            <NavButton key={item.path} item={item} isPrimary={false} />
+          ))}
+
+          {!collapsed && (
+            <p className="px-3 pt-4 pb-1 text-[10px] font-semibold uppercase tracking-wider text-white/20">Analytics</p>
+          )}
+          {ANALYTICS.map((item) => (
+            <NavButton key={item.path} item={item} isPrimary={false} />
+          ))}
+
+          {!collapsed && (
+            <p className="px-3 pt-4 pb-1 text-[10px] font-semibold uppercase tracking-wider text-white/20">Planning</p>
+          )}
+          {PLANNING.map((item) => (
+            <NavButton key={item.path} item={item} isPrimary={false} />
+          ))}
+
+          {!collapsed && (
+            <p className="px-3 pt-4 pb-1 text-[10px] font-semibold uppercase tracking-wider text-white/20">Reports</p>
+          )}
+          {REPORTS.map((item) => (
             <NavButton key={item.path} item={item} isPrimary={false} />
           ))}
         </nav>
