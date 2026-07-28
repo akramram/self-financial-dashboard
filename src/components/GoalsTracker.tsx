@@ -312,7 +312,7 @@ export default function GoalsTracker({ networth }: Props) {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="glass-card p-5">
           <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400">
+              <div className="p-2 rounded-lg bg-mint-100 dark:bg-mint-900/30 text-mint-600 dark:text-mint-400">
                 <Target className="w-5 h-5" />
               </div>
               <div>
@@ -379,7 +379,7 @@ export default function GoalsTracker({ networth }: Props) {
               : 'No active goals yet — create one to get started'}
           </p>
         </div>
-        <Button onClick={openCreateDialog} className="bg-indigo-600 hover:bg-indigo-700 text-white gap-2">
+        <Button onClick={openCreateDialog} className="bg-mint-600 hover:bg-mint-700 text-white gap-2">
           <Plus className="w-4 h-4" />
           New Goal
         </Button>
@@ -701,12 +701,12 @@ export default function GoalsTracker({ networth }: Props) {
                     onClick={() => handleFormChange('icon', icon)}
                     className={`p-2 rounded-lg border transition ${
                       form.icon === icon
-                        ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 ring-1 ring-indigo-500'
+                        ? 'border-mint-500 bg-mint-50 dark:bg-mint-900/30 ring-1 ring-mint-500'
                         : 'border-white/[0.06] hover:bg-slate-50 dark:hover:bg-slate-800'
                     }`}
                     title={icon}
                   >
-                    <span className={form.icon === icon ? 'text-indigo-600 dark:text-indigo-400' : 'text-white/60'}>
+                    <span className={form.icon === icon ? 'text-mint-600 dark:text-mint-400' : 'text-white/60'}>
                       {ICON_MAP[icon]}
                     </span>
                   </button>
@@ -759,7 +759,7 @@ export default function GoalsTracker({ networth }: Props) {
             <Button variant="outline" onClick={() => setDialogOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleSubmit} className="bg-indigo-600 hover:bg-indigo-700 text-white">
+            <Button onClick={handleSubmit} className="bg-mint-600 hover:bg-mint-700 text-white">
               {editingGoal ? 'Save Changes' : 'Create Goal'}
             </Button>
           </DialogFooter>

@@ -268,7 +268,7 @@ export default function CategoryMatrix({}: Props) {
   return (
     <div className="space-y-4">
       {/* Info Banner */}
-      <div className="glass-card p-5 border-blue-200 dark:border-blue-900 bg-blue-50/50 dark:bg-blue-950/20">
+      <div className="glass-card p-5 border-mint-400/30 dark:border-mint-500/20 bg-mint-500/5 dark:bg-mint-500/10">
         <div className="flex items-start gap-3">
             <Info className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
             <div className="text-sm text-slate-600 dark:text-slate-300">

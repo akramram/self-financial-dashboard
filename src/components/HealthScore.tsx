@@ -365,7 +365,7 @@ export default function HealthScore({ summaries, categories }: Props) {
         {/* History Chart */}
         <div className="lg:col-span-2 glass-card p-6">
           <div className="flex items-center gap-2 mb-4">
-            <Trophy className="h-5 w-5 text-indigo-500" />
+            <Trophy className="h-5 w-5 text-mint-500" />
             <h3 className="text-lg font-semibold text-white/70">Score History</h3>
           </div>
           <div className="h-[220px]">
@@ -383,7 +383,7 @@ export default function HealthScore({ summaries, categories }: Props) {
       {/* Factor Breakdown */}
       <div>
         <div className="flex items-center gap-2 mb-4">
-          <Activity className="h-5 w-5 text-indigo-500" />
+          <Activity className="h-5 w-5 text-mint-500" />
           <h3 className="text-lg font-semibold text-white/70">Factor Breakdown</h3>
           <span className="text-xs text-white/40">Each factor contributes 0-20 points</span>
         </div>
@@ -396,10 +396,10 @@ export default function HealthScore({ summaries, categories }: Props) {
 
       {/* Improvement Tips */}
       {healthData.tips.length > 0 && (
-        <div className="glass-card p-5 border-indigo-200 dark:border-indigo-900 bg-indigo-50/50 dark:bg-indigo-950/20">
+        <div className="glass-card p-5 border-mint-400/30 dark:border-mint-500/20 bg-mint-500/5 dark:bg-mint-500/10">
           
             <h3 className="flex items-center gap-2 text-base text-white/80">
-              <Lightbulb className="h-5 w-5 text-indigo-500" />
+              <Lightbulb className="h-5 w-5 text-mint-500" />
               Improvement Tips
             </h3>
           
@@ -407,7 +407,7 @@ export default function HealthScore({ summaries, categories }: Props) {
             <ul className="space-y-2">
               {healthData.tips.map((tip, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm text-white/60">
-                  <span className="text-indigo-400 mt-0.5">•</span>
+                  <span className="text-mint-400 mt-0.5">•</span>
                   <span>{tip}</span>
                 </li>
               ))}

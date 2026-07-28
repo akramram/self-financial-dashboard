@@ -404,7 +404,7 @@ export default function Forecast() {
           </div>
           <div className="flex items-center justify-center gap-6 mt-3 text-xs text-white/50">
             <span className="flex items-center gap-2">
-              <span className="w-4 h-0.5 bg-indigo-500 inline-block"></span> Actual
+              <span className="w-4 h-0.5 bg-mint-500 inline-block"></span> Actual
             </span>
             <span className="flex items-center gap-2">
               <span className="w-4 h-0.5 bg-red-500 inline-block border-dashed border-t border-red-500"></span> Projected
