@@ -68,8 +68,8 @@ const { title = 'Financial Dashboard', balance, alerts = 0 } = Astro.props;
     <!-- Desktop Top Bar -->
     <div class="hidden lg:flex items-center justify-between h-16 px-6 border-b border-white/[0.05] ml-[240px] transition-all duration-300" id="desktop-topbar">
       <div>
-        <h1 class="text-lg font-bold text-white">{title}</h1>
-        <p class="text-xs text-white/30">Financial Dashboard</p>
+        <h1 class="text-xl font-bold text-white">{title}</h1>
+        <p class="text-xs text-white/40">Financial Dashboard</p>
       </div>
       <div class="flex items-center gap-3">
         <!-- Dark mode toggle (desktop) -->
@@ -94,7 +94,7 @@ const { title = 'Financial Dashboard', balance, alerts = 0 } = Astro.props;
     <!-- Mobile Bottom Tabs -->
     <FintechBottomTabs client:load />
 
-    <footer class="text-center text-xs text-white/20 pb-8 hidden lg:block">
+    <footer class="text-center text-xs text-white/30 pb-8 hidden lg:block">
       Financial Dashboard · Built with Astro & React
     </footer>
 
