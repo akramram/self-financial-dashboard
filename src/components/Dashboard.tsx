@@ -152,7 +152,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
         <section>
           {/* Period filter pill */}
           <div className="flex items-center justify-between mb-3">
-            <p className="text-xs uppercase tracking-wider text-white/20">Pulse</p>
+            <p className="text-xs uppercase tracking-wider text-white/40">Pulse</p>
             <Select value={filterPeriodId?.toString() ?? "all"} onValueChange={v => { setFilterAllTime(v === "all"); setFilterPeriodId(v === "all" ? null : parseInt(v)); setTxPage(1); }}>
               <SelectTrigger className="w-[150px] h-8 text-xs bg-white/[0.05] border-white/[0.08] text-white/60">
                 <SelectValue />
@@ -177,7 +177,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
                       {glance.balance >= glance.prevBalance ? '+' : ''}{formatIdr(glance.balance - glance.prevBalance)}
                     </span>
                   )}
-                  <span className="text-xs text-white/20">vs last period</span>
+                  <span className="text-xs text-white/40">vs last period</span>
                 </div>
               </div>
             </GlassCard>
@@ -195,7 +195,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
 
         {/* ═══════════ SECTION 2: FLOW — "Ke mana duit?" ═══════════ */}
         <section>
-          <p className="text-xs uppercase tracking-wider text-white/20 mb-3">Flow</p>
+          <p className="text-xs uppercase tracking-wider text-white/40 mb-3">Flow</p>
 
           {/* Spending Pulse + Safe to Spend merged */}
           <GlassCard className="mb-4">
@@ -231,7 +231,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
                       <div className="bg-coral-500 h-2 rounded-full transition-all" style={{ width: `${activeSummary.outcome.total > 0 ? Math.round(((activeSummary.outcome.credit_expenses ?? 0) / activeSummary.outcome.total) * 100) : 0}%` }} />
                     </div>
                   </div>
-                  <p className="text-xs text-white/20">Credit expenses this month will be paid next month.</p>
+                  <p className="text-xs text-white/40">Credit expenses this month will be paid next month.</p>
                 </div>
               )}
             </GlassCard>
@@ -241,7 +241,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
         {/* ═══════════ SECTION 3: ACT — "Apa yang harus dilakukan?" ═══════════ */}
         <section>
           <div className="flex items-center justify-between mb-3">
-            <p className="text-xs uppercase tracking-wider text-white/20">Act</p>
+            <p className="text-xs uppercase tracking-wider text-white/40">Act</p>
             {/* Alert bell */}
             <button onClick={() => setShowAlerts(!showAlerts)} className="relative p-2 rounded-xl hover:bg-white/10 transition">
               <Bell className="w-5 h-5 text-white/40" strokeWidth={1.8} />
@@ -278,7 +278,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
 
         {/* ═══════════ SECTION 4: INSIGHTS — "Pahami lebih dalam" ═══════════ */}
         <section>
-          <p className="text-xs uppercase tracking-wider text-white/20 mb-3">Insights</p>
+          <p className="text-xs uppercase tracking-wider text-white/40 mb-3">Insights</p>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
             {/* Net Worth mini chart */}
@@ -301,7 +301,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
                   <p className="text-xs text-white/40">months of emergency fund</p>
                 </div>
               </div>
-              <p className="text-xs text-white/20 mt-3">Based on average monthly burn rate</p>
+              <p className="text-xs text-white/40 mt-3">Based on average monthly burn rate</p>
             </GlassCard>
           </div>
 
@@ -314,7 +314,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
         {/* ═══════════ SECTION 5: FEED — Recent transactions ═══════════ */}
         <section>
           <div className="flex items-center justify-between mb-3">
-            <p className="text-xs uppercase tracking-wider text-white/20">Feed</p>
+            <p className="text-xs uppercase tracking-wider text-white/40">Feed</p>
             <a href="/transactions" className="text-xs text-white/40 hover:text-white/70 no-underline">View all →</a>
           </div>
 
@@ -380,7 +380,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
 
         {/* ═══════════ CHARTS — lower section ═══════════ */}
         <section>
-          <p className="text-xs uppercase tracking-wider text-white/20 mb-3">Charts</p>
+          <p className="text-xs uppercase tracking-wider text-white/40 mb-3">Charts</p>
           <div className="glass-card p-5 bg-white/[0.02] border-white/[0.06] mb-4">
             <h3 className="text-base font-semibold text-white/80 text-white/80">Cash Outcome vs Credit Payment</h3><OutcomeChart data={filteredSummaries} /></div>
           <div className="glass-card p-5 bg-white/[0.02] border-white/[0.06] mb-4">
