@@ -280,7 +280,7 @@ export default function CreditCardTracker() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-mint-500/40" />
         <span className="ml-3 text-white/50">Loading credit card data...</span>
       </div>
     );

@@ -481,10 +481,10 @@ export default function BudgetReport({ summaries, categories }: Props) {
                     const isOverBudget = overBudgetPeriods.has(tx.period_id);
                     const typeClass =
                       tx.type === 'cash'
-                        ? 'text-blue-600 dark:text-blue-400'
+                        ? 'text-mint-600 dark:text-mint-400'
                         : tx.type === 'credit_payment'
-                        ? 'text-amber-600 dark:text-amber-400'
-                        : 'text-purple-600 dark:text-purple-400';
+                        ? 'text-gold-600 dark:text-gold-400'
+                        : 'text-coral-500 dark:text-coral-400';
                     const typeLabel =
                       tx.type === 'cash' ? 'Cash' : tx.type === 'credit_payment' ? 'Credit Pay' : 'Credit';
                     const dateObj = tx.created_time ? new Date(tx.created_time) : new Date(tx.date);

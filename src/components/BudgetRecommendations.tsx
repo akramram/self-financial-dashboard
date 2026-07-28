@@ -124,7 +124,7 @@ export default function BudgetRecommendations() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-600 dark:border-slate-400" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-mint-500/40" />
       </div>
     );
   }
@@ -193,7 +193,7 @@ export default function BudgetRecommendations() {
         </div>
         <div className="glass-card p-5">
           
-            <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{summary.highVol}</p>
+            <p className="text-2xl font-bold text-mint-600 dark:text-mint-400">{summary.highVol}</p>
             <p className="text-xs text-muted-foreground">High Volatility</p>
           
         </div>
@@ -332,7 +332,7 @@ export default function BudgetRecommendations() {
                         <span
                           className={
                             isChanged
-                              ? 'font-semibold text-indigo-600 dark:text-indigo-400'
+                              ? 'font-semibold text-mint-600 dark:text-mint-400'
                               : 'text-muted-foreground'
                           }
                         >
@@ -417,7 +417,7 @@ export default function BudgetRecommendations() {
               </div>
               <div className="flex items-center justify-between pt-1 border-t">
                 <span className="text-xs text-muted-foreground">Recommended limit:</span>
-                <span className="text-sm font-semibold text-indigo-600 dark:text-indigo-400">
+                <span className="text-sm font-semibold text-mint-600 dark:text-mint-400">
                   {formatIdr(stat.recommendedLimit)}
                 </span>
               </div>

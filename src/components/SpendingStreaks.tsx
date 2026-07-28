@@ -199,14 +199,14 @@ export default function SpendingStreaks() {
         </div>
 
         {/* Longest streak */}
-        <div className="rounded-xl border p-6 shadow-sm bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-950/40 dark:to-purple-950/30 border-violet-200 dark:border-violet-800">
+        <div className="rounded-xl border p-6 shadow-sm bg-gradient-to-br dark:from-navy-800/40 dark:to-navy-900/30 border-white/[0.08]">
           <div className="flex items-center justify-between">
             <p className="text-xs font-semibold uppercase tracking-wide text-white/50">
               Longest Streak
             </p>
-            <Trophy className="w-5 h-5 text-violet-500" />
+            <Trophy className="w-5 h-5 text-gold-500" />
           </div>
-          <p className="text-4xl font-bold mt-3 text-violet-600 dark:text-violet-400">
+          <p className="text-4xl font-bold mt-3 text-gold-400 dark:text-gold-400">
             {data.longestStreak}
             <span className="text-lg font-medium ml-1">day{data.longestStreak === 1 ? '' : 's'}</span>
           </p>

@@ -98,7 +98,7 @@ function heatColor(amount: number, rowMax: number, categoryColor?: string): stri
   // Intensity scales from 0.12 (faint) to 0.85 (strong)
   const alpha = 0.12 + ratio * 0.73;
 
-  // Parse category color if provided, otherwise default to indigo
+  // Parse category color if provided, otherwise default to mint
   if (categoryColor) {
     const hex = categoryColor.replace('#', '');
     if (hex.length === 6) {
@@ -108,8 +108,8 @@ function heatColor(amount: number, rowMax: number, categoryColor?: string): stri
       return `rgba(${r}, ${g}, ${b}, ${alpha})`;
     }
   }
-  // Default indigo
-  return `rgba(99, 102, 241, ${alpha})`;
+  // Default mint
+  return `rgba(16, 185, 129, ${alpha})`;
 }
 
 /** Text color: dark text on light backgrounds, white text when intensity is high */
@@ -285,7 +285,7 @@ export default function CategoryMatrix({}: Props) {
       {/* Matrix Table */}
       <div className="glass-card p-5">
         <h3 className="flex items-center gap-2 text-base text-white/80">
-            <Grid3x3 className="w-4 h-4 text-indigo-500" />
+            <Grid3x3 className="w-4 h-4 text-mint-500" />
             Category × Period Spending Matrix
           </h3>
         <div className="overflow-x-auto">

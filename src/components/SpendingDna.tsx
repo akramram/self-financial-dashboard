@@ -114,7 +114,7 @@ const dimensionColors: Record<keyof DnaDimensions, string> = {
   savingsDiscipline: 'bg-emerald-500',
   creditUsage: 'bg-amber-500',
   stability: 'bg-sky-500',
-  growth: 'bg-violet-500',
+  growth: 'bg-gold-500',
 };
 
 const dimensionIcons: Record<keyof DnaDimensions, React.ReactNode> = {
@@ -369,11 +369,11 @@ export default function SpendingDna() {
   return (
     <div className="space-y-6">
       {/* ── Personality Type Hero ──────────────────────────────────────── */}
-      <div className="glass-card p-5 border-violet-200 dark:border-violet-800 bg-gradient-to-br from-violet-50 to-fuchsia-50 dark:from-slate-800 dark:to-slate-900">
+      <div className="glass-card p-5 border-white/[0.08] bg-gradient-to-br dark:from-navy-800/40 dark:to-navy-900/20">
         <div className="flex flex-col md:flex-row items-center gap-6">
             <div className="text-7xl">{data.personality.emoji}</div>
             <div className="flex-1 text-center md:text-left">
-              <h2 className="text-2xl font-bold text-violet-900 dark:text-violet-200">
+              <h2 className="text-2xl font-bold text-gold-400 dark:text-gold-400">
                 {data.personality.type}
               </h2>
               <p className="text-slate-600 dark:text-slate-400 mt-2 max-w-xl">
@@ -395,7 +395,7 @@ export default function SpendingDna() {
               </div>
             </div>
             <div className="flex-shrink-0">
-              <Trophy className="w-16 h-16 text-violet-300 dark:text-violet-700" />
+              <Trophy className="w-16 h-16 text-gold-400 dark:text-gold-500" />
             </div>
           </div>
         </div>
@@ -404,7 +404,7 @@ export default function SpendingDna() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="glass-card p-5">
           <h3 className="flex items-center gap-2 text-white/80">
-              <Brain className="w-5 h-5 text-violet-500" />
+              <Brain className="w-5 h-5 text-gold-500" />
               Behavioral Radar
             </h3>
           <div style={{ height: 320, maxWidth: 380, margin: '0 auto' }}>
@@ -442,7 +442,7 @@ export default function SpendingDna() {
       {/* ── Key Insights ──────────────────────────────────────────────── */}
       <div className="glass-card p-5">
         <h3 className="flex items-center gap-2 text-white/80">
-            <Zap className="w-5 h-5 text-amber-500" />
+            <Zap className="w-5 h-5 text-gold-500" />
             Key Insights
           </h3>
         <div className="space-y-3">
@@ -451,7 +451,7 @@ export default function SpendingDna() {
                 key={i}
                 className="flex gap-3 items-start p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50"
               >
-                <ArrowRight className="w-4 h-4 text-violet-500 mt-0.5 flex-shrink-0" />
+                <ArrowRight className="w-4 h-4 text-gold-500 mt-0.5 flex-shrink-0" />
                 <p className="text-sm text-slate-700 dark:text-slate-300">{insight}</p>
               </div>
             ))}

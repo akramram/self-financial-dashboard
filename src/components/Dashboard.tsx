@@ -216,19 +216,19 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
                   <div>
                     <div className="flex justify-between text-sm mb-1">
                       <span className="text-white/50">Credit Payment (Prior Month)</span>
-                      <span className="font-semibold text-amber-400">{formatIdr(activeSummary.outcome.credit_payment ?? 0)}</span>
+                      <span className="font-semibold text-gold-400">{formatIdr(activeSummary.outcome.credit_payment ?? 0)}</span>
                     </div>
                     <div className="w-full bg-white/[0.06] rounded-full h-2">
-                      <div className="bg-amber-500 h-2 rounded-full transition-all" style={{ width: `${activeSummary.outcome.total > 0 ? Math.round(((activeSummary.outcome.credit_payment ?? 0) / activeSummary.outcome.total) * 100) : 0}%` }} />
+                      <div className="bg-gold-500 h-2 rounded-full transition-all" style={{ width: `${activeSummary.outcome.total > 0 ? Math.round(((activeSummary.outcome.credit_payment ?? 0) / activeSummary.outcome.total) * 100) : 0}%` }} />
                     </div>
                   </div>
                   <div>
                     <div className="flex justify-between text-sm mb-1">
                       <span className="text-white/50">Current Month Credit Expenses</span>
-                      <span className="font-semibold text-purple-400">{formatIdr(activeSummary.outcome.credit_expenses ?? 0)}</span>
+                      <span className="font-semibold text-coral-400">{formatIdr(activeSummary.outcome.credit_expenses ?? 0)}</span>
                     </div>
                     <div className="w-full bg-white/[0.06] rounded-full h-2">
-                      <div className="bg-purple-500 h-2 rounded-full transition-all" style={{ width: `${activeSummary.outcome.total > 0 ? Math.round(((activeSummary.outcome.credit_expenses ?? 0) / activeSummary.outcome.total) * 100) : 0}%` }} />
+                      <div className="bg-coral-500 h-2 rounded-full transition-all" style={{ width: `${activeSummary.outcome.total > 0 ? Math.round(((activeSummary.outcome.credit_expenses ?? 0) / activeSummary.outcome.total) * 100) : 0}%` }} />
                     </div>
                   </div>
                   <p className="text-xs text-white/20">Credit expenses this month will be paid next month.</p>
@@ -336,7 +336,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
                   {pagedTransactions.map(row => {
                     const createdDate = parseCreatedTime(row);
                     const dateStr = isNaN(createdDate.getTime()) ? row.date : createdDate.toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' });
-                    const typeClass = row.type === 'cash' ? 'text-cyan-400' : row.type === 'credit_payment' ? 'text-amber-400' : 'text-purple-400';
+                    const typeClass = row.type === 'cash' ? 'text-mint-400' : row.type === 'credit_payment' ? 'text-gold-400' : 'text-coral-400';
                     const typeLabel = row.type === 'cash' ? 'Cash' : row.type === 'credit_payment' ? 'Credit Pay' : 'Credit';
                     return (
                       <TableRow key={row.id} className="border-white/[0.03] hover:bg-white/[0.03]">

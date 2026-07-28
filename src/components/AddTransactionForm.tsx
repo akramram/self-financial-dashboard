@@ -197,7 +197,7 @@ export default function AddTransactionForm() {
                     setCategory('');
                     setCategoryUserTouched(true);
                   }}
-                  className="inline-flex items-center gap-1 text-[11px] font-medium text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 transition"
+                  className="inline-flex items-center gap-1 text-[11px] font-medium text-mint-500 dark:text-mint-400 hover:text-mint-600 dark:hover:text-mint-300 transition"
                   title="Suggested based on your history — click to clear"
                 >
                   <Sparkles className="w-3 h-3" />
@@ -222,7 +222,7 @@ export default function AddTransactionForm() {
               }}
               placeholder={isAutoFilled && !categoryUserTouched ? 'Auto-suggested' : 'e.g. 🏠 Kontrakan'}
               list="category-list"
-              className={isAutoFilled && !categoryUserTouched ? 'border-violet-300 dark:border-violet-700 bg-violet-50/40 dark:bg-violet-950/20' : ''}
+              className={isAutoFilled && !categoryUserTouched ? 'border-mint-400/30 bg-mint-500/5 dark:bg-mint-500/10' : ''}
             />
             <datalist id="category-list">
               {categories.map((c) => (

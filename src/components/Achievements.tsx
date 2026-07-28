@@ -212,7 +212,7 @@ export default function Achievements({ data }: Props) {
   return (
     <div className="space-y-6">
       {/* ── Hero: Level & Rank ─────────────────────────────────────────── */}
-      <div className="glass-card p-5 overflow-hidden border-0 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white">
+      <div className="glass-card p-5 overflow-hidden border-0 bg-gradient-to-r from-mint-500 to-cyan-600 text-white">
         
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
             <div className="flex items-center gap-5">
@@ -221,7 +221,7 @@ export default function Achievements({ data }: Props) {
                 <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-sm border-2 border-white/40 flex items-center justify-center">
                   <Award className="w-9 h-9" />
                 </div>
-                <div className="absolute -bottom-1 -right-1 bg-white text-indigo-600 rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm shadow-lg">
+                <div className="absolute -bottom-1 -right-1 bg-white text-mint-600 rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm shadow-lg">
                   {data.levelInfo.level}
                 </div>
               </div>
@@ -265,11 +265,11 @@ export default function Achievements({ data }: Props) {
 
       {/* ── Next Milestone banner ──────────────────────────────────────── */}
       {data.nextMilestone && (
-        <div className="glass-card p-5 border-dashed border-2 border-indigo-300 dark:border-indigo-700">
-          
+        <div className="glass-card p-5 border-dashed border-2 border-mint-400/30">
+
             <div className="text-3xl">{data.nextMilestone.icon}</div>
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 text-xs text-indigo-600 dark:text-indigo-400 font-medium uppercase tracking-wide">
+              <div className="flex items-center gap-2 text-xs text-mint-500 dark:text-mint-400 font-medium uppercase tracking-wide">
                 <Target className="w-3 h-3" />
                 <span>Next Milestone</span>
               </div>
@@ -278,7 +278,7 @@ export default function Achievements({ data }: Props) {
                 <div className="mt-1.5 flex items-center gap-3">
                   <div className="flex-1 bg-white/[0.08] rounded-full h-2 overflow-hidden max-w-xs">
                     <div
-                      className="h-full bg-indigo-600 rounded-full transition-all duration-700"
+                      className="h-full bg-mint-500 rounded-full transition-all duration-700"
                       style={{ width: `${progressPct(data.nextMilestone.progress.current, data.nextMilestone.progress.target)}%` }}
                     />
                   </div>
@@ -296,7 +296,7 @@ export default function Achievements({ data }: Props) {
       {/* ── Highlight stat cards ───────────────────────────────────────── */}
       <div>
         <h2 className="text-lg font-semibold mb-3 text-white/70 flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-amber-500" />
+          <Sparkles className="w-5 h-5 text-gold-500" />
           Your Financial Story
         </h2>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
@@ -315,7 +315,7 @@ export default function Achievements({ data }: Props) {
             onClick={() => setFilter(opt.key)}
             className={`px-3 py-1 rounded-full text-xs font-medium transition ${
               filter === opt.key
-                ? 'bg-indigo-600 text-white shadow-sm'
+                ? 'bg-mint-500 text-white shadow-sm'
                 : 'bg-white/[0.05] text-white/60 hover:bg-slate-200 dark:hover:bg-slate-700'
             }`}
           >

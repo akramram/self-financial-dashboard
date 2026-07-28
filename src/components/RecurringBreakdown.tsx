@@ -199,7 +199,7 @@ export default function RecurringBreakdown() {
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h2 className="text-xl font-bold flex items-center gap-2">
-            <ArrowRightLeft className="w-5 h-5 text-indigo-500" />
+            <ArrowRightLeft className="w-5 h-5 text-mint-500" />
             Recurring vs Discretionary
           </h2>
           <p className="text-sm text-white/40">
@@ -266,7 +266,7 @@ export default function RecurringBreakdown() {
             <h3 className="text-sm font-medium text-white/40 text-white/80">
                 Recurring
               </h3>
-            <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
+            <div className="text-2xl font-bold text-mint-600 dark:text-mint-400">
                 {formatIdr(currentPeriod.recurring)}
               </div>
               <p className="text-xs text-white/30 mt-1">
@@ -305,7 +305,7 @@ export default function RecurringBreakdown() {
         {/* Donut Chart */}
         <div className="glass-card p-5">
           <h3 className="text-base flex items-center gap-2 text-white/80">
-              <Repeat className="w-4 h-4 text-indigo-500" />
+              <Repeat className="w-4 h-4 text-mint-500" />
               Current Breakdown
             </h3>
             <p className="text-white/50">
@@ -358,7 +358,7 @@ export default function RecurringBreakdown() {
         {/* Trend Line */}
         <div className="glass-card p-5">
           <h3 className="text-base flex items-center gap-2 text-white/80">
-              <Zap className="w-4 h-4 text-amber-500" />
+              <Zap className="w-4 h-4 text-gold-500" />
               Trend Over Time
             </h3>
             <p className="text-white/50">
@@ -436,7 +436,7 @@ export default function RecurringBreakdown() {
       {data.topRecurring.length > 0 && (
         <div className="glass-card p-5">
           <h3 className="text-base flex items-center gap-2 text-white/80">
-              <Repeat className="w-4 h-4 text-indigo-500" />
+              <Repeat className="w-4 h-4 text-mint-500" />
               Top Recurring Expenses (All Time)
             </h3>
             <p className="text-white/50">
@@ -482,7 +482,7 @@ export default function RecurringBreakdown() {
             </p>
             <p className="text-sm text-white/30 mt-1">
               Add recurring templates in{' '}
-              <a href="/recurring" className="text-indigo-500 hover:underline">
+              <a href="/recurring" className="text-mint-500 hover:underline">
                 Settings → Recurring
               </a>{' '}
               to see the breakdown between recurring and discretionary spending.

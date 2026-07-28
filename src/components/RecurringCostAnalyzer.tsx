@@ -202,7 +202,7 @@ export default function RecurringCostAnalyzer() {
         <div className="glass-card p-5">
           <div className="flex items-center justify-between mb-1">
               <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Avg / Item</span>
-              <PieChart className="w-4 h-4 text-violet-500" />
+              <PieChart className="w-4 h-4 text-gold-500" />
             </div>
             <p className="text-xl font-bold text-slate-800 dark:text-slate-100">{formatIdr(avgPerItem)}</p>
             <p className="text-[11px] text-slate-400 mt-0.5">monthly average</p>
