@@ -196,7 +196,7 @@ export default function NetworthProjection({ data }: Props) {
       <div className="glass-card p-5">
         
           <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
-            <TrendingUp className="w-4 h-4 text-violet-500" />
+            <TrendingUp className="w-4 h-4 text-gold-500" />
             Projection Settings
           </h3>
         
@@ -220,7 +220,7 @@ export default function NetworthProjection({ data }: Props) {
                     onClick={() => setProjectionMonths(m)}
                     className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
                       projectionMonths === m
-                        ? 'bg-violet-900/40 text-violet-300 ring-1 ring-violet-700'
+                        ? 'bg-gold-900/40 text-gold-300 ring-1 ring-gold-700'
                         : 'bg-white/[0.05] text-white/50 hover:bg-white/[0.08]'
                     }`}
                   >
@@ -248,7 +248,7 @@ export default function NetworthProjection({ data }: Props) {
                 step={100_000}
                 value={monthlyContribution || avgMonthlySavings}
                 onChange={(e) => setMonthlyContribution(Number(e.target.value))}
-                className="w-full h-2 bg-white/[0.08] rounded-lg appearance-none cursor-pointer accent-violet-500"
+                className="w-full h-2 bg-white/[0.08] rounded-lg appearance-none cursor-pointer accent-gold-500"
               />
               <div className="flex justify-between text-[10px] text-white/40">
                 <span>{formatIdr(0)}</span>
@@ -279,7 +279,7 @@ export default function NetworthProjection({ data }: Props) {
                 step={0.5}
                 value={annualReturnRate}
                 onChange={(e) => setAnnualReturnRate(Number(e.target.value))}
-                className="w-full h-2 bg-white/[0.08] rounded-lg appearance-none cursor-pointer accent-violet-500"
+                className="w-full h-2 bg-white/[0.08] rounded-lg appearance-none cursor-pointer accent-gold-500"
               />
               <div className="flex justify-between text-[10px] text-white/40">
                 <span>0%</span>
@@ -295,7 +295,7 @@ export default function NetworthProjection({ data }: Props) {
       <div className="glass-card p-5">
         
           <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
-            <TrendingUp className="w-4 h-4 text-violet-500" />
+            <TrendingUp className="w-4 h-4 text-gold-500" />
             Net Worth Projection
           </h3>
           <p className="text-xs text-white/50">
@@ -324,7 +324,7 @@ export default function NetworthProjection({ data }: Props) {
             <div className="glass-card p-5">
               
                 <p className="text-xs text-white/50 mb-1">In 12 Months</p>
-                <p className="text-lg font-bold text-amber-400">
+                <p className="text-lg font-bold text-gold-400">
                   {formatIdr(summary.at12)}
                 </p>
                 <p className="text-[10px] text-white/40">
@@ -341,7 +341,7 @@ export default function NetworthProjection({ data }: Props) {
             <div className="glass-card p-5">
               
                 <p className="text-xs text-white/50 mb-1">In 24 Months</p>
-                <p className="text-lg font-bold text-amber-400">
+                <p className="text-lg font-bold text-gold-400">
                   {formatIdr(summary.at24)}
                 </p>
                 <p className="text-[10px] text-white/40">
@@ -358,7 +358,7 @@ export default function NetworthProjection({ data }: Props) {
             <div className="glass-card p-5">
               
                 <p className="text-xs text-white/50 mb-1">In 36 Months</p>
-                <p className="text-lg font-bold text-amber-400">
+                <p className="text-lg font-bold text-gold-400">
                   {formatIdr(summary.at36)}
                 </p>
                 <p className="text-[10px] text-white/40">
@@ -392,7 +392,7 @@ export default function NetworthProjection({ data }: Props) {
               </div>
               <div>
                 <span className="text-white/50">Projected total: </span>
-                <span className="font-semibold text-violet-400">
+                <span className="font-semibold text-gold-400">
                   {formatIdr(summary.lastValue + summary.totalContributions + summary.investmentGains)}
                 </span>
               </div>

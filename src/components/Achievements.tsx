@@ -50,10 +50,10 @@ interface AchievementsResult {
 
 // ── Tier styling ───────────────────────────────────────────────────────────
 const TIER_STYLES: Record<string, { ring: string; bg: string; text: string; glow: string; label: string }> = {
-  bronze:   { ring: 'ring-amber-700/40',   bg: 'from-amber-700/10 to-amber-600/5',   text: 'text-amber-700 dark:text-amber-500',   glow: 'shadow-amber-700/10',   label: 'Bronze' },
+  bronze:   { ring: 'ring-gold-700/40',   bg: 'from-gold-700/10 to-gold-600/5',   text: 'text-gold-700 dark:text-gold-500',   glow: 'shadow-gold-700/10',   label: 'Bronze' },
   silver:   { ring: 'ring-slate-400/40',   bg: 'from-slate-400/10 to-slate-300/5',   text: 'text-white/60',  glow: 'shadow-slate-400/10',   label: 'Silver' },
-  gold:     { ring: 'ring-yellow-500/40',  bg: 'from-yellow-500/10 to-amber-400/5',  text: 'text-yellow-600 dark:text-yellow-400', glow: 'shadow-yellow-500/10',  label: 'Gold' },
-  platinum: { ring: 'ring-cyan-400/40',    bg: 'from-cyan-400/10 to-blue-400/5',     text: 'text-cyan-600 dark:text-cyan-300',     glow: 'shadow-cyan-400/10',    label: 'Platinum' },
+  gold:     { ring: 'ring-gold-500/40',  bg: 'from-gold-500/10 to-gold-400/5',  text: 'text-gold-600 dark:text-gold-400', glow: 'shadow-gold-500/10',  label: 'Gold' },
+  platinum: { ring: 'ring-cyan-400/40',    bg: 'from-cyan-400/10 to-mint-400/5',     text: 'text-mint-500 dark:text-mint-300',     glow: 'shadow-cyan-400/10',    label: 'Platinum' },
 };
 
 const CATEGORY_LABELS: Record<string, string> = {

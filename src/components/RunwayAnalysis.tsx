@@ -66,9 +66,9 @@ const STATUS_CONFIG: Record<RunwayData['status'], {
   caution: {
     label: 'Hati-hati',
     color: '#f59e0b',
-    bgColor: 'bg-amber-50 dark:bg-amber-950/30',
-    borderColor: 'border-amber-200 dark:border-amber-800',
-    textColor: 'text-amber-700 dark:text-amber-300',
+    bgColor: 'bg-gold-500/5 dark:bg-gold-700/10',
+    borderColor: 'border-gold-400/20 dark:border-gold-700/40',
+    textColor: 'text-gold-700 dark:text-gold-300',
     gaugeColor: '#f59e0b',
     icon: <AlertTriangle className="w-5 h-5" />,
   },
@@ -84,9 +84,9 @@ const STATUS_CONFIG: Record<RunwayData['status'], {
   strong: {
     label: 'Sangat Sehat',
     color: '#06b6d4',
-    bgColor: 'bg-cyan-50 dark:bg-cyan-950/30',
-    borderColor: 'border-cyan-200 dark:border-cyan-800',
-    textColor: 'text-cyan-700 dark:text-cyan-300',
+    bgColor: 'bg-mint-500/5 dark:bg-mint-700/10/30',
+    borderColor: 'border-mint-200 dark:border-mint-800',
+    textColor: 'text-mint-600 dark:text-mint-300',
     gaugeColor: '#06b6d4',
     icon: <ShieldCheck className="w-5 h-5" />,
   },
@@ -153,7 +153,7 @@ function LiquidityBar({ breakdown }: { breakdown: AssetBreakdown[] }) {
         {sorted.map((b, i) => {
           const widthPct = (b.value / total) * 100;
           const hue = b.liquidityPct >= 0.9 ? 'bg-emerald-400'
-            : b.liquidityPct >= 0.5 ? 'bg-amber-400'
+            : b.liquidityPct >= 0.5 ? 'bg-gold-400'
             : 'bg-slate-400';
           return (
             <div
@@ -171,7 +171,7 @@ function LiquidityBar({ breakdown }: { breakdown: AssetBreakdown[] }) {
             <span
               className={`inline-block w-2 h-2 rounded-full ${
                 b.liquidityPct >= 0.9 ? 'bg-emerald-400'
-                  : b.liquidityPct >= 0.5 ? 'bg-amber-400'
+                  : b.liquidityPct >= 0.5 ? 'bg-gold-400'
                   : 'bg-slate-400'
               }`}
             />
@@ -290,21 +290,21 @@ export default function RunwayAnalysis({ periodId, compact = false }: Props) {
           </div>
           <div className="space-y-3">
             <div className="flex items-center gap-2 text-sm">
-              <Droplet className="w-4 h-4 text-blue-500 flex-shrink-0" />
+              <Droplet className="w-4 h-4 text-mint-500 flex-shrink-0" />
               <div className="flex-1">
                 <div className="text-white/50 text-xs">Aset Likuid</div>
                 <div className="font-semibold text-white/80">{formatIdr(data.liquid_assets)}</div>
               </div>
             </div>
             <div className="flex items-center gap-2 text-sm">
-              <Wallet className="w-4 h-4 text-purple-500 flex-shrink-0" />
+              <Wallet className="w-4 h-4 text-coral-500 flex-shrink-0" />
               <div className="flex-1">
                 <div className="text-white/50 text-xs">Total Aset</div>
                 <div className="font-semibold text-white/80">{formatIdr(data.total_assets)}</div>
               </div>
             </div>
             <div className="flex items-center gap-2 text-sm">
-              <CalendarClock className="w-4 h-4 text-amber-500 flex-shrink-0" />
+              <CalendarClock className="w-4 h-4 text-gold-500 flex-shrink-0" />
               <div className="flex-1">
                 <div className="text-white/50 text-xs">Pengeluaran/Bulan (rata-rata 3 bln)</div>
                 <div className="font-semibold text-white/80">{formatIdr(data.monthly_expense)}</div>
@@ -359,7 +359,7 @@ export default function RunwayAnalysis({ periodId, compact = false }: Props) {
         {compact && (
           <a
             href="/runway"
-            className="flex items-center justify-center gap-1 text-xs text-blue-500 hover:text-blue-700 dark:text-blue-400"
+            className="flex items-center justify-center gap-1 text-xs text-mint-500 hover:text-mint-600 dark:text-mint-400"
           >
             <span>Lihat detail</span>
             <ArrowRight className="w-3 h-3" />

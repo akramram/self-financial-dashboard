@@ -365,7 +365,7 @@ export default function WhatIfPlanner() {
           </div>
         <div className="glass-card p-5">
           <p className="text-[11px] text-muted-foreground uppercase tracking-wide font-medium">Savings Rate</p>
-            <p className={`text-xl font-bold mt-1 ${projection.adjustedIncome > 0 && projection.monthlyNet / projection.adjustedIncome >= 0.2 ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}`}>
+            <p className={`text-xl font-bold mt-1 ${projection.adjustedIncome > 0 && projection.monthlyNet / projection.adjustedIncome >= 0.2 ? 'text-emerald-600 dark:text-emerald-400' : 'text-gold-600 dark:text-gold-400'}`}>
               {projection.adjustedIncome > 0 ? ((projection.monthlyNet / projection.adjustedIncome) * 100).toFixed(1) : '0'}%
             </p>
             <p className="text-[11px] mt-1 text-muted-foreground">

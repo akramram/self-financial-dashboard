@@ -209,7 +209,7 @@ export default function SpendingCalendar({ transactions, periods }: Props) {
     const ratio = total / maxDaily;
     if (ratio <= 0.25) return 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400';
     if (ratio <= 0.5) return 'bg-emerald-200 dark:bg-emerald-800/40 text-emerald-800 dark:text-emerald-300';
-    if (ratio <= 0.75) return 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400';
+    if (ratio <= 0.75) return 'bg-gold-500/10 dark:bg-gold-700/20/30 text-gold-700 dark:text-gold-400';
     return 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400';
   };
 
@@ -259,7 +259,7 @@ export default function SpendingCalendar({ transactions, periods }: Props) {
             <span>Low</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="inline-block w-3 h-3 rounded-sm bg-amber-100 dark:bg-amber-900/30" />
+            <span className="inline-block w-3 h-3 rounded-sm bg-gold-500/10 dark:bg-gold-700/20/30" />
             <span>Medium</span>
           </div>
           <div className="flex items-center gap-1.5">
@@ -306,12 +306,12 @@ export default function SpendingCalendar({ transactions, periods }: Props) {
                   aspect-square rounded-lg border transition-all hover:scale-105 hover:shadow-sm
                   flex flex-col items-center justify-center gap-0.5
                   ${heatClass}
-                  ${isToday ? 'ring-2 ring-blue-500 ring-offset-1 ring-offset-navy-950' : 'border-white/[0.06]'}
+                  ${isToday ? 'ring-2 ring-mint-500 ring-offset-1 ring-offset-navy-950' : 'border-white/[0.06]'}
                   ${count > 0 ? 'cursor-pointer' : 'cursor-default'}
                   ${isMonthBoundary ? 'ring-1 ring-white/10' : ''}
                 `}
               >
-                <span className={`text-xs font-medium ${isToday ? 'text-blue-400' : ''}`}>
+                <span className={`text-xs font-medium ${isToday ? 'text-mint-400' : ''}`}>
                   {date.getDate()}
                 </span>
                 {showMonthLabel && (
@@ -394,10 +394,10 @@ export default function SpendingCalendar({ transactions, periods }: Props) {
                     .map((tx) => {
                       const typeClass =
                         tx.type === 'cash'
-                          ? 'text-blue-600 dark:text-blue-400'
+                          ? 'text-mint-500 dark:text-mint-400'
                           : tx.type === 'credit_payment'
-                          ? 'text-amber-600 dark:text-amber-400'
-                          : 'text-purple-600 dark:text-purple-400';
+                          ? 'text-gold-600 dark:text-gold-400'
+                          : 'text-coral-500 dark:text-coral-400';
                       const typeLabel =
                         tx.type === 'cash' ? 'Cash' : tx.type === 'credit_payment' ? 'Credit Pay' : 'Credit';
                       return (

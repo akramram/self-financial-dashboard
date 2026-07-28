@@ -80,7 +80,7 @@ function generateInsights(data: WeeklySpendingResult): { icon: React.ReactNode; 
   if (overBudgetWeeks.length > 0) {
     const pctOver = Math.round(((overBudgetWeeks[0].total - weeklyBudget) / weeklyBudget) * 100);
     insights.push({
-      icon: <AlertTriangle className="w-4 h-4 text-amber-500" />,
+      icon: <AlertTriangle className="w-4 h-4 text-gold-500" />,
       text: `${overBudgetWeeks.length} of ${weeks.length} weeks exceeded your weekly budget (${formatIdr(weeklyBudget)}). The worst was ${overBudgetWeeks[0].label} at ${pctOver}% over.`,
       type: 'warn',
     });
@@ -90,7 +90,7 @@ function generateInsights(data: WeeklySpendingResult): { icon: React.ReactNode; 
   if (weeks.length >= 3 && weeks[0].total > weeks[1].total * 2) {
     const pct = Math.round((weeks[0].total / totalSpend) * 100);
     insights.push({
-      icon: <Zap className="w-4 h-4 text-orange-500" />,
+      icon: <Zap className="w-4 h-4 text-coral-500/50" />,
       text: `${pct}% of all spending happened in Week 1 — a "kickoff spike" pattern. Consider spreading early-month payments.`,
       type: 'info',
     });
@@ -145,7 +145,7 @@ function generateInsights(data: WeeklySpendingResult): { icon: React.ReactNode; 
     if (topCat) {
       const catPct = Math.round((topCat[1] / totalSpend) * 100);
       insights.push({
-        icon: <Wallet className="w-4 h-4 text-blue-500" />,
+        icon: <Wallet className="w-4 h-4 text-mint-500" />,
         text: `Your biggest spending category is "${topCat[0]}" at ${formatIdr(topCat[1])} (${catPct}% of total).`,
         type: 'info',
       });
@@ -439,10 +439,10 @@ export default function WeeklyTracker() {
 
       {/* Insights */}
       {insights.length > 0 && (
-        <div className="glass-card p-5 border-indigo-200 dark:border-indigo-800/50 bg-indigo-50/50 dark:bg-indigo-950/20">
+        <div className="glass-card p-5 border-mint-400/30 dark:border-mint-500/20/50 bg-mint-500/5/50 dark:bg-mint-500/10/20">
           
             <h3 className="text-sm font-medium flex items-center gap-2 text-white/80">
-              <Target className="w-4 h-4 text-indigo-500" />
+              <Target className="w-4 h-4 text-mint-500" />
               Weekly Insights
             </h3>
           
@@ -451,7 +451,7 @@ export default function WeeklyTracker() {
               {insights.map((ins, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm">
                   {ins.icon}
-                  <span className={ins.type === 'bad' ? 'text-red-700 dark:text-red-400' : ins.type === 'warn' ? 'text-amber-700 dark:text-amber-400' : 'text-white/60'}>
+                  <span className={ins.type === 'bad' ? 'text-red-700 dark:text-red-400' : ins.type === 'warn' ? 'text-gold-700 dark:text-gold-400' : 'text-white/60'}>
                     {ins.text}
                   </span>
                 </li>
@@ -497,7 +497,7 @@ export default function WeeklyTracker() {
                     onClick={() => setSelectedWeek(selectedWeek === w.weekNum ? null : w.weekNum)}
                     className={`w-full text-left p-3 rounded-lg border transition cursor-pointer ${
                       selectedWeek === w.weekNum
-                        ? 'border-indigo-400 dark:border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30'
+                        ? 'border-mint-400 dark:border-mint-500 bg-mint-500/5 dark:bg-mint-500/10'
                         : 'border-white/[0.06] hover:border-white/[0.15]'
                     }`}
                   >
@@ -547,7 +547,7 @@ export default function WeeklyTracker() {
                                   <div className="flex items-center gap-2">
                                     <div className="w-16 h-1.5 bg-white/[0.05] rounded-full">
                                       <div
-                                        className="h-full rounded-full bg-indigo-400"
+                                        className="h-full rounded-full bg-mint-400"
                                         style={{ width: `${catPct}%` }}
                                       />
                                     </div>

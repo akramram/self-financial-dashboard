@@ -110,9 +110,9 @@ const dimensionLabels: Record<keyof DnaDimensions, string> = {
 
 const dimensionColors: Record<keyof DnaDimensions, string> = {
   necessities: 'bg-slate-500',
-  lifestyle: 'bg-pink-500',
+  lifestyle: 'bg-coral-500',
   savingsDiscipline: 'bg-emerald-500',
-  creditUsage: 'bg-amber-500',
+  creditUsage: 'bg-gold-500/50',
   stability: 'bg-sky-500',
   growth: 'bg-gold-500',
 };
@@ -326,14 +326,14 @@ export default function SpendingDna() {
   const loyaltyColor = (score: number) => {
     if (score >= 80) return 'text-emerald-600 dark:text-emerald-400';
     if (score >= 60) return 'text-sky-600 dark:text-sky-400';
-    if (score >= 40) return 'text-amber-600 dark:text-amber-400';
+    if (score >= 40) return 'text-gold-600 dark:text-gold-400';
     return 'text-rose-600 dark:text-rose-400';
   };
 
   const loyaltyBg = (score: number) => {
     if (score >= 80) return 'bg-emerald-500';
     if (score >= 60) return 'bg-sky-500';
-    if (score >= 40) return 'bg-amber-500';
+    if (score >= 40) return 'bg-gold-500/50';
     return 'bg-rose-500';
   };
 
@@ -478,7 +478,7 @@ export default function SpendingDna() {
 
         <div className="glass-card p-5">
           <h3 className="flex items-center gap-2 text-white/80">
-              <Target className="w-5 h-5 text-pink-500" />
+              <Target className="w-5 h-5 text-coral-500" />
               Recurring vs Discretionary Split
             </h3>
           {compositionChartData ? (

@@ -241,7 +241,7 @@ export default function MonthlyReport({
                   reportSummary.savings_rate_pct >= 20
                     ? 'text-emerald-600 dark:text-emerald-400 print:text-emerald-700'
                     : reportSummary.savings_rate_pct >= 0
-                    ? 'text-amber-600 dark:text-amber-400 print:text-amber-700'
+                    ? 'text-gold-600 dark:text-gold-400 print:text-gold-700'
                     : 'text-red-600 dark:text-red-400 print:text-red-700'
                 }`}
               >
@@ -581,7 +581,7 @@ export default function MonthlyReport({
         {anomalies.length > 0 && (
           <div className="glass-card p-5 print:border print:border-gray-300 print:shadow-none">
             <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
-                <AlertTriangle className="w-4 h-4 text-amber-500" />
+                <AlertTriangle className="w-4 h-4 text-gold-500" />
                 Spending Anomalies
               </h3>
             <div className="space-y-3">
@@ -590,8 +590,8 @@ export default function MonthlyReport({
                     a.severity === 'high'
                       ? 'bg-red-100 text-red-700 border-red-300'
                       : a.severity === 'medium'
-                      ? 'bg-amber-100 text-amber-700 border-amber-300'
-                      : 'bg-blue-100 text-blue-700 border-blue-300';
+                      ? 'bg-gold-500/10 text-gold-700 border-gold-400/30'
+                      : 'bg-mint-500/10 text-mint-600 border-mint-400/30';
                   return (
                     <div
                       key={a.id}
@@ -610,8 +610,8 @@ export default function MonthlyReport({
                               a.severity === 'high'
                                 ? 'border-red-300 text-red-700'
                                 : a.severity === 'medium'
-                                ? 'border-amber-300 text-amber-700'
-                                : 'border-blue-300 text-blue-700'
+                                ? 'border-gold-400/30 text-gold-700'
+                                : 'border-mint-400/30 text-mint-600'
                             }`}
                           >
                             {a.severity}

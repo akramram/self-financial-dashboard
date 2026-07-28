@@ -91,25 +91,25 @@ function ScoreGauge({ score, grade, gradeColor }: { score: number; grade: string
   const bgColor = gradeColor === 'emerald' || gradeColor === 'green'
     ? 'bg-emerald-50 dark:bg-emerald-950/30'
     : gradeColor === 'yellow' || gradeColor === 'amber'
-      ? 'bg-amber-50 dark:bg-amber-950/30'
+      ? 'bg-gold-500/5 dark:bg-gold-700/10'
       : gradeColor === 'orange'
-        ? 'bg-orange-50 dark:bg-orange-950/30'
+        ? 'bg-coral-500/5 dark:bg-coral-700/10/30'
         : 'bg-red-50 dark:bg-red-950/30';
 
   const textColor = gradeColor === 'emerald' || gradeColor === 'green'
     ? 'text-emerald-700 dark:text-emerald-300'
     : gradeColor === 'yellow' || gradeColor === 'amber'
-      ? 'text-amber-700 dark:text-amber-300'
+      ? 'text-gold-700 dark:text-gold-300'
       : gradeColor === 'orange'
-        ? 'text-orange-700 dark:text-orange-300'
+        ? 'text-coral-600 dark:text-coral-300'
         : 'text-red-700 dark:text-red-300';
 
   const badgeBg = gradeColor === 'emerald' || gradeColor === 'green'
     ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200'
     : gradeColor === 'yellow' || gradeColor === 'amber'
-      ? 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200'
+      ? 'bg-gold-500/10 text-gold-700 dark:bg-gold-700/20 dark:text-gold-200'
       : gradeColor === 'orange'
-        ? 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200'
+        ? 'bg-coral-500/10 text-coral-600 dark:bg-coral-700/20 dark:text-coral-300'
         : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
 
   return (
@@ -157,9 +157,9 @@ function FactorIcon({ icon, score, maxScore }: { icon: string; score: number; ma
   const color = pct >= 80
     ? 'text-emerald-500'
     : pct >= 60
-      ? 'text-amber-500'
+      ? 'text-gold-500'
       : pct >= 40
-        ? 'text-orange-500'
+        ? 'text-coral-500/50'
         : 'text-red-500';
 
   const iconMap: Record<string, React.ReactNode> = {
@@ -178,9 +178,9 @@ function FactorCard({ factor }: { factor: HealthFactor }) {
   const barColor = pct >= 80
     ? 'bg-emerald-500'
     : pct >= 60
-      ? 'bg-amber-500'
+      ? 'bg-gold-500/50'
       : pct >= 40
-        ? 'bg-orange-500'
+        ? 'bg-coral-500/50'
         : 'bg-red-500';
 
   return (

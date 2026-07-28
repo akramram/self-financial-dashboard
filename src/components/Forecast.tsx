@@ -82,7 +82,7 @@ interface ApiResponse {
 function ConfidenceBadge({ level }: { level: string }) {
   const colors: Record<string, string> = {
     high: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
-    medium: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+    medium: 'bg-gold-500/10 text-gold-700 dark:bg-gold-700/20 dark:text-gold-400',
     low: 'bg-white/[0.08] text-white/60',
   };
   return (
@@ -94,8 +94,8 @@ function ConfidenceBadge({ level }: { level: string }) {
 
 function AlertIcon({ type }: { type: string }) {
   if (type === 'danger') return <span className="text-red-500 text-lg">⚠️</span>;
-  if (type === 'warning') return <span className="text-amber-500 text-lg">⚡</span>;
-  return <span className="text-blue-500 text-lg">ℹ️</span>;
+  if (type === 'warning') return <span className="text-gold-500 text-lg">⚡</span>;
+  return <span className="text-mint-500 text-lg">ℹ️</span>;
 }
 
 function ProgressBar({ value, max, color, projectedColor }: { value: number; max: number; color: string; projectedColor?: string }) {
@@ -266,15 +266,15 @@ export default function Forecast() {
 
   const statusColors: Record<string, string> = {
     safe: 'text-emerald-600 dark:text-emerald-400',
-    warning: 'text-amber-600 dark:text-amber-400',
-    danger: 'text-orange-600 dark:text-orange-400',
+    warning: 'text-gold-600 dark:text-gold-400',
+    danger: 'text-coral-500 dark:text-coral-400',
     critical: 'text-red-600 dark:text-red-400',
   };
 
   const barStatusColors: Record<string, string> = {
     safe: 'bg-emerald-500',
-    warning: 'bg-amber-500',
-    danger: 'bg-orange-500',
+    warning: 'bg-gold-500/50',
+    danger: 'bg-coral-500/50',
     critical: 'bg-red-500',
   };
 
@@ -304,8 +304,8 @@ export default function Forecast() {
               alert.type === 'danger'
                 ? 'bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800'
                 : alert.type === 'warning'
-                ? 'bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800'
-                : 'bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800'
+                ? 'bg-gold-500/5 dark:bg-gold-700/10 border border-gold-400/20 dark:border-gold-700/40'
+                : 'bg-mint-500/5 dark:bg-mint-700/10 border border-mint-400/20 dark:border-mint-700/40'
             }`}
           >
             <AlertIcon type={alert.type} />
@@ -328,7 +328,7 @@ export default function Forecast() {
               Day {f.daysElapsed} of ~{f.periodLength} · Avg {formatIdr(f.dailyAvg)}/day
             </p>
             {f.totalUnpaid > 0 && (
-              <p className="text-xs text-orange-500 mt-1">
+              <p className="text-xs text-coral-500/50 mt-1">
                 + {formatIdr(f.totalUnpaid)} unpaid
               </p>
             )}
@@ -507,13 +507,13 @@ export default function Forecast() {
                 </span>
               </div>
               {f.creditStatus.unpaidCredit > 0 && (
-                <div className="flex justify-between text-xs text-orange-500">
+                <div className="flex justify-between text-xs text-coral-500/50">
                   <span>Unpaid credit expenses</span>
                   <span>{formatIdr(f.creditStatus.unpaidCredit)}</span>
                 </div>
               )}
               {f.creditStatus.unpaidPayments > 0 && (
-                <div className="flex justify-between text-xs text-blue-500">
+                <div className="flex justify-between text-xs text-mint-500">
                   <span>Unscheduled credit payments</span>
                   <span>{formatIdr(f.creditStatus.unpaidPayments)}</span>
                 </div>

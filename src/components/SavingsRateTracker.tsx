@@ -337,7 +337,7 @@ export default function SavingsRateTracker() {
           label="Average Rate"
           value={`${data.avg_rate.toFixed(1)}%`}
           subtitle={`Median ${data.median_rate.toFixed(1)}% · ${avgBench.label}`}
-          color="text-indigo-600 dark:text-indigo-400"
+          color="text-mint-500 dark:text-mint-400"
         />
         <StatCard
           icon={<Trophy className="w-5 h-5" />}
@@ -358,7 +358,7 @@ export default function SavingsRateTracker() {
           label="Total Saved"
           value={formatIdrShort(data.total_saved)}
           subtitle={`across ${data.total_periods} periods`}
-          color="text-cyan-600 dark:text-cyan-400"
+          color="text-mint-500 dark:text-mint-400"
         />
       </div>
 
@@ -402,13 +402,13 @@ export default function SavingsRateTracker() {
         {/* Streak Card */}
         <div className="bg-white dark:bg-slate-800 rounded-xl p-5 shadow-sm border border-slate-200 dark:border-slate-700">
           <div className="flex items-center gap-2 mb-4">
-            <Flame className="w-5 h-5 text-orange-500" />
+            <Flame className="w-5 h-5 text-coral-500/50" />
             <h3 className="font-semibold">Positive Savings Streaks</h3>
           </div>
           <div className="space-y-3">
-            <div className="flex items-center justify-between p-3 rounded-lg bg-orange-50 dark:bg-orange-950/30">
+            <div className="flex items-center justify-between p-3 rounded-lg bg-coral-500/5 dark:bg-coral-700/10/30">
               <span className="text-sm font-medium">Current Streak</span>
-              <span className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+              <span className="text-2xl font-bold text-coral-500 dark:text-coral-400">
                 {data.consecutive_positive}
                 <span className="text-sm font-normal ml-1">periods</span>
               </span>
@@ -434,7 +434,7 @@ export default function SavingsRateTracker() {
         {/* Benchmark Distribution */}
         <div className="bg-white dark:bg-slate-800 rounded-xl p-5 shadow-sm border border-slate-200 dark:border-slate-700">
           <div className="flex items-center gap-2 mb-4">
-            <Award className="w-5 h-5 text-indigo-500" />
+            <Award className="w-5 h-5 text-mint-500" />
             <h3 className="font-semibold">Rate Distribution</h3>
           </div>
           <p className="text-xs text-slate-500 mb-3">How often your savings rate lands in each tier</p>
@@ -460,7 +460,7 @@ export default function SavingsRateTracker() {
       {/* === Milestones === */}
       <div className="bg-white dark:bg-slate-800 rounded-xl p-5 shadow-sm border border-slate-200 dark:border-slate-700">
         <div className="flex items-center gap-2 mb-4">
-          <Award className="w-5 h-5 text-amber-500" />
+          <Award className="w-5 h-5 text-gold-500" />
           <h3 className="font-semibold">Savings Milestones</h3>
           <span className="text-xs text-slate-500 ml-auto">Based on your best rate: {data.best_rate.toFixed(1)}%</span>
         </div>
@@ -470,12 +470,12 @@ export default function SavingsRateTracker() {
               key={m.label}
               className={`p-4 rounded-xl text-center transition ${
                 m.achieved
-                  ? 'bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-amber-950/40 dark:to-yellow-950/40 border-2 border-amber-300 dark:border-amber-700'
+                  ? 'bg-gradient-to-br from-gold-500/5 to-gold-500/5 dark:from-gold-700/10/40 dark:to-gold-700/5/40 border-2 border-gold-400/30 dark:border-gold-700'
                   : 'bg-slate-50 dark:bg-slate-700/50 border-2 border-transparent opacity-60'
               }`}
             >
               <div className={`text-3xl mb-1 ${m.achieved ? '' : 'grayscale'}`}>{m.icon}</div>
-              <div className={`text-sm font-bold ${m.achieved ? 'text-amber-700 dark:text-amber-400' : 'text-slate-500'}`}>
+              <div className={`text-sm font-bold ${m.achieved ? 'text-gold-700 dark:text-gold-400' : 'text-slate-500'}`}>
                 {m.label}
               </div>
               <div className="text-[10px] text-slate-400 mt-1 leading-tight">{m.desc}</div>

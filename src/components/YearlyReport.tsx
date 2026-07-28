@@ -295,8 +295,8 @@ export default function YearlyReport({ summaries, categories }: Props) {
               </div>
             <div className="glass-card p-5">
               <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30">
-                    <TrendingUp className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                  <div className="p-2 rounded-lg bg-mint-500/10 dark:bg-mint-700/20">
+                    <TrendingUp className="w-5 h-5 text-mint-500 dark:text-mint-400" />
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Avg Savings Rate</p>

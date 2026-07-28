@@ -437,7 +437,7 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
             <div className="space-y-3">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Savings Rate</span>
-                  <span className={`font-semibold ${savingsRate < 0 ? 'text-red-600 dark:text-red-400' : savingsRate < 20 ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
+                  <span className={`font-semibold ${savingsRate < 0 ? 'text-red-600 dark:text-red-400' : savingsRate < 20 ? 'text-gold-600 dark:text-gold-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
                     {savingsRate.toFixed(1)}%
                   </span>
                 </div>
@@ -446,14 +446,14 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
                   {/* Danger zone (0-10%) */}
                   <div className="absolute inset-0 bg-red-200 dark:bg-red-900/30" style={{ width: '10%' }} />
                   {/* Warning zone (10-20%) */}
-                  <div className="absolute inset-0 bg-amber-200 dark:bg-amber-900/30" style={{ left: '10%', width: '10%' }} />
+                  <div className="absolute inset-0 bg-gold-400/20 dark:bg-gold-700/20" style={{ left: '10%', width: '10%' }} />
                   {/* Current savings bar */}
                   <div
                     className={`absolute top-0 left-0 h-full rounded-full transition-all ${
                       savingsRate < 0
                         ? 'bg-red-500'
                         : savingsRate < 20
-                          ? 'bg-amber-500'
+                          ? 'bg-gold-500/50'
                           : 'bg-emerald-500'
                     }`}
                     style={{ width: `${Math.min(100, Math.max(0, savingsRate))}%` }}
@@ -464,7 +464,7 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
                 <div className="flex justify-between text-[10px] text-muted-foreground">
                   <span>0%</span>
                   <span className="text-red-500">Risky</span>
-                  <span className="text-amber-500">Caution</span>
+                  <span className="text-gold-500">Caution</span>
                   <span className="text-emerald-500" style={{ position: 'relative', left: '0%' }}>20% target</span>
                   <span>100%</span>
                 </div>
@@ -475,7 +475,7 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
                   </p>
                 )}
                 {savingsRate >= 0 && savingsRate < 20 && (
-                  <p className="text-xs text-amber-600 dark:text-amber-400 mt-2">
+                  <p className="text-xs text-gold-600 dark:text-gold-400 mt-2">
                     💡 Your savings rate is below the recommended 20%. Consider reducing spending in your top categories.
                   </p>
                 )}

@@ -290,7 +290,7 @@ export default function CreditCardTracker() {
     <div className="space-y-6">
       {/* Period Filter */}
       <div className="flex items-center gap-3">
-        <CreditCard className="w-5 h-5 text-amber-500" />
+        <CreditCard className="w-5 h-5 text-gold-500" />
         <span className="text-sm font-medium text-white/60">Period:</span>
         <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
           <SelectTrigger className="w-[180px]">
@@ -311,10 +311,10 @@ export default function CreditCardTracker() {
         <div className="glass-card p-5">
           
             <div className="flex items-center gap-2 mb-1">
-              <CreditCard className="w-4 h-4 text-amber-500" />
+              <CreditCard className="w-4 h-4 text-gold-500" />
               <span className="text-xs text-white/50">Outstanding Balance</span>
             </div>
-            <p className="text-xl font-bold text-amber-600 dark:text-amber-400">
+            <p className="text-xl font-bold text-gold-600 dark:text-gold-400">
               {formatIdr(outstandingBalance)}
             </p>
             <p className="text-xs text-white/40 mt-1">
@@ -361,10 +361,10 @@ export default function CreditCardTracker() {
         <div className="glass-card p-5">
           
             <div className="flex items-center gap-2 mb-1">
-              <Wallet className="w-4 h-4 text-blue-500" />
+              <Wallet className="w-4 h-4 text-mint-500" />
               <span className="text-xs text-white/50">Payment Coverage</span>
             </div>
-            <p className="text-xl font-bold text-blue-600 dark:text-blue-400">
+            <p className="text-xl font-bold text-mint-500 dark:text-mint-400">
               {paymentRatio.toFixed(0)}%
             </p>
             <div className="w-full bg-white/[0.08] rounded-full h-2 mt-2">
@@ -373,7 +373,7 @@ export default function CreditCardTracker() {
                   paymentRatio >= 100
                     ? 'bg-emerald-500'
                     : paymentRatio >= 70
-                      ? 'bg-amber-500'
+                      ? 'bg-gold-500/50'
                       : 'bg-red-500'
                 }`}
                 style={{ width: `${Math.min(100, paymentRatio)}%` }}
@@ -392,7 +392,7 @@ export default function CreditCardTracker() {
         <div className="glass-card p-5">
           
             <h3 className="text-base flex items-center gap-2 text-white/80">
-              <TrendingUp className="w-4 h-4 text-amber-500" />
+              <TrendingUp className="w-4 h-4 text-gold-500" />
               Credit Balance Trend
             </h3>
             <p className="text-white/50">
@@ -536,7 +536,7 @@ export default function CreditCardTracker() {
                     </TableCell>
                     <TableCell className="text-white/50">{tx.payment_method}</TableCell>
                     <TableCell>
-                      <Badge variant="outline" className="text-amber-600 dark:text-amber-400 border-amber-300 dark:border-amber-700 text-[10px]">
+                      <Badge variant="outline" className="text-gold-600 dark:text-gold-400 border-gold-400/30 dark:border-gold-700 text-[10px]">
                         Pending
                       </Badge>
                     </TableCell>
@@ -635,7 +635,7 @@ export default function CreditCardTracker() {
                     <TableCell className="text-right text-emerald-600 dark:text-emerald-400">
                       {formatIdr(b.payments)}
                     </TableCell>
-                    <TableCell className={`text-right font-semibold ${b.balance > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
+                    <TableCell className={`text-right font-semibold ${b.balance > 0 ? 'text-gold-600 dark:text-gold-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
                       {formatIdr(b.balance)}
                     </TableCell>
                     <TableCell>

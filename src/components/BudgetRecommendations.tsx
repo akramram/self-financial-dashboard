@@ -51,7 +51,7 @@ const CONFIDENCE_LABELS: Record<string, string> = {
 
 const CONFIDENCE_COLORS: Record<string, string> = {
   high: 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20',
-  medium: 'text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20',
+  medium: 'text-gold-600 dark:text-gold-400 bg-gold-500/5 dark:bg-gold-700/20',
   low: 'text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800',
 };
 
@@ -167,7 +167,7 @@ export default function BudgetRecommendations() {
         </div>
         <div className="glass-card p-5">
           
-            <p className="text-2xl font-bold text-amber-600 dark:text-amber-400">{summary.noLimit}</p>
+            <p className="text-2xl font-bold text-gold-600 dark:text-gold-400">{summary.noLimit}</p>
             <p className="text-xs text-muted-foreground">No Limit Set</p>
           
         </div>
@@ -185,7 +185,7 @@ export default function BudgetRecommendations() {
         </div>
         <div className="glass-card p-5">
           
-            <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">{summary.rising}</p>
+            <p className="text-2xl font-bold text-coral-500 dark:text-coral-400">{summary.rising}</p>
             <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
               <TrendingUp className="w-3 h-3" /> Rising
             </p>
@@ -201,15 +201,15 @@ export default function BudgetRecommendations() {
 
       {/* Apply All Button */}
       {needsUpdate > 0 && (
-        <div className="glass-card p-5 border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-900/10">
+        <div className="glass-card p-5 border-gold-400/20 dark:border-gold-700/40 bg-gold-500/5 dark:bg-gold-700/10">
           
             <div className="flex items-center gap-3">
-              <Lightbulb className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+              <Lightbulb className="w-5 h-5 text-gold-600 dark:text-gold-400" />
               <div>
-                <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
+                <p className="text-sm font-medium text-gold-700 dark:text-gold-300">
                   {needsUpdate} budget{needsUpdate > 1 ? 's' : ''} could be updated
                 </p>
-                <p className="text-xs text-amber-600 dark:text-amber-400">
+                <p className="text-xs text-gold-600 dark:text-gold-400">
                   Based on {stats[0]?.periodCount ?? 0} periods of historical data
                 </p>
               </div>
@@ -217,7 +217,7 @@ export default function BudgetRecommendations() {
             <Button
               onClick={applyAllRecommendations}
               disabled={applied}
-              className="bg-amber-600 hover:bg-amber-700 text-white"
+              className="bg-gold-600 hover:bg-gold-700 text-white"
               size="sm"
             >
               {applied ? (
@@ -271,7 +271,7 @@ export default function BudgetRecommendations() {
                         isOver
                           ? 'bg-red-50/50 dark:bg-red-900/10'
                           : isNew
-                            ? 'bg-amber-50/50 dark:bg-amber-900/10'
+                            ? 'bg-gold-500/5 dark:bg-gold-700/10'
                             : undefined
                       }
                     >
@@ -289,7 +289,7 @@ export default function BudgetRecommendations() {
                       </TableCell>
                       <TableCell className="text-right">
                         {stat.trend === 'rising' ? (
-                          <span className="inline-flex items-center gap-1 text-xs font-medium text-orange-600 dark:text-orange-400">
+                          <span className="inline-flex items-center gap-1 text-xs font-medium text-coral-500 dark:text-coral-400">
                             <TrendingUp className="w-3 h-3" />
                             +{stat.trendPct}%
                           </span>
@@ -313,7 +313,7 @@ export default function BudgetRecommendations() {
                               ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800'
                               : stat.volatility === 'high'
                                 ? 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800'
-                                : 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800'
+                                : 'bg-gold-500/5 dark:bg-gold-700/20 text-gold-700 dark:text-gold-300 border-gold-400/20 dark:border-gold-700/40'
                           }
                         >
                           {stat.volatility}
@@ -406,7 +406,7 @@ export default function BudgetRecommendations() {
                       ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300'
                       : stat.volatility === 'high'
                         ? 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300'
-                        : 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300'
+                        : 'bg-gold-500/5 dark:bg-gold-700/20 text-gold-700 dark:text-gold-300'
                   }
                 >
                   {stat.volatility}

@@ -107,7 +107,7 @@ function highlightMatch(text: string, matchIndices: number[]): React.ReactNode {
       const start = i;
       while (i < text.length && matchSet.has(i)) i++;
       parts.push(
-        <mark key={i} className="bg-amber-200 dark:bg-amber-700 rounded-sm px-0.5 text-inherit">
+        <mark key={i} className="bg-gold-400/20 dark:bg-gold-700 rounded-sm px-0.5 text-inherit">
           {text.slice(start, i)}
         </mark>
       );

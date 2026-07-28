@@ -83,10 +83,10 @@ function formatDateLabel(dateStr: string): string {
 function spendIntensity(total: number): string {
   if (total <= 0) return '';
   // Buckets: <200k, <500k, <1M, <2M, >=2M
-  if (total < 200000) return 'bg-amber-200 dark:bg-amber-900/50';
-  if (total < 500000) return 'bg-amber-300 dark:bg-amber-800/60';
-  if (total < 1000000) return 'bg-orange-300 dark:bg-orange-800/70';
-  if (total < 2000000) return 'bg-orange-400 dark:bg-orange-700/80';
+  if (total < 200000) return 'bg-gold-400/20 dark:bg-gold-700/30';
+  if (total < 500000) return 'bg-gold-400/30 dark:bg-gold-700/30';
+  if (total < 1000000) return 'bg-coral-400/30 dark:bg-coral-700/40';
+  if (total < 2000000) return 'bg-coral-400 dark:bg-coral-700/80';
   return 'bg-red-500 dark:bg-red-600/90';
 }
 
@@ -174,16 +174,16 @@ export default function SpendingStreaks() {
         {/* Current streak */}
         <div className={`rounded-xl border p-6 shadow-sm transition ${
           data.currentStreak > 0
-            ? 'bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-950/40 dark:to-amber-950/30 border-orange-200 dark:border-orange-800'
+            ? 'bg-gradient-to-br from-coral-500/5 to-gold-500/5 dark:from-coral-700/10/40 dark:to-gold-700/5/30 border-coral-400/20 dark:border-coral-700/40'
             : 'bg-white/[0.03] border-white/[0.06]'
         }`}>
           <div className="flex items-center justify-between">
             <p className="text-xs font-semibold uppercase tracking-wide text-white/50">
               Current Streak
             </p>
-            <Flame className={`w-5 h-5 ${data.currentStreak > 0 ? 'text-orange-500' : 'text-white/30'}`} />
+            <Flame className={`w-5 h-5 ${data.currentStreak > 0 ? 'text-coral-500/50' : 'text-white/30'}`} />
           </div>
-          <p className={`text-4xl font-bold mt-3 ${data.currentStreak > 0 ? 'text-orange-600 dark:text-orange-400' : 'text-white/40'}`}>
+          <p className={`text-4xl font-bold mt-3 ${data.currentStreak > 0 ? 'text-coral-500 dark:text-coral-400' : 'text-white/40'}`}>
             {data.currentStreak}
             <span className="text-lg font-medium ml-1">day{data.currentStreak === 1 ? '' : 's'}</span>
           </p>
@@ -256,7 +256,7 @@ export default function SpendingStreaks() {
         <div className="lg:col-span-2 glass-card p-6">
           <div className="flex items-center justify-between mb-1">
             <h2 className="text-lg font-semibold flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-amber-500" /> Last 5 Weeks
+              <Sparkles className="w-4 h-4 text-gold-500" /> Last 5 Weeks
             </h2>
           </div>
           <p className="text-xs text-white/50 mb-4">
@@ -293,10 +293,10 @@ export default function SpendingStreaks() {
               <span className="w-3 h-3 rounded-sm bg-emerald-400 dark:bg-emerald-600 inline-block" /> No spend
             </span>
             <span>Less</span>
-            <span className="w-3 h-3 rounded-sm bg-amber-200 dark:bg-amber-900/50 inline-block" />
-            <span className="w-3 h-3 rounded-sm bg-amber-300 dark:bg-amber-800/60 inline-block" />
-            <span className="w-3 h-3 rounded-sm bg-orange-300 dark:bg-orange-800/70 inline-block" />
-            <span className="w-3 h-3 rounded-sm bg-orange-400 dark:bg-orange-700/80 inline-block" />
+            <span className="w-3 h-3 rounded-sm bg-gold-400/20 dark:bg-gold-700/30 inline-block" />
+            <span className="w-3 h-3 rounded-sm bg-gold-400/30 dark:bg-gold-700/30 inline-block" />
+            <span className="w-3 h-3 rounded-sm bg-coral-400/30 dark:bg-coral-700/40 inline-block" />
+            <span className="w-3 h-3 rounded-sm bg-coral-400 dark:bg-coral-700/80 inline-block" />
             <span className="w-3 h-3 rounded-sm bg-red-500 dark:bg-red-600/90 inline-block" />
             <span>More</span>
           </div>
@@ -323,7 +323,7 @@ export default function SpendingStreaks() {
                   <div className="flex items-center gap-2">
                     <div className="flex-1 h-2.5 bg-white/[0.05] rounded-full overflow-hidden">
                       <div
-                        className={`h-full rounded-full ${intensityPct > 75 ? 'bg-red-400 dark:bg-red-500' : intensityPct > 50 ? 'bg-orange-400 dark:bg-orange-500' : 'bg-amber-400 dark:bg-amber-500'}`}
+                        className={`h-full rounded-full ${intensityPct > 75 ? 'bg-red-400 dark:bg-coral-600' : intensityPct > 50 ? 'bg-coral-400 dark:bg-coral-500' : 'bg-gold-400 dark:bg-gold-500/50'}`}
                         style={{ width: `${spendPct}%` }}
                       />
                     </div>
@@ -353,7 +353,7 @@ export default function SpendingStreaks() {
       <div className="glass-card p-6">
         <div className="flex items-center justify-between mb-1">
           <h2 className="text-lg font-semibold flex items-center gap-2">
-            <Trophy className="w-4 h-4 text-amber-500" /> Badges
+            <Trophy className="w-4 h-4 text-gold-500" /> Badges
           </h2>
           <Badge variant="secondary">
             {data.badges.filter((b) => b.unlocked).length} / {data.badges.length} unlocked
@@ -368,13 +368,13 @@ export default function SpendingStreaks() {
               key={b.id}
               className={`rounded-xl border p-4 transition ${
                 b.unlocked
-                  ? 'bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-amber-950/30 dark:to-yellow-950/20 border-amber-200 dark:border-amber-800'
+                  ? 'bg-gradient-to-br from-gold-500/5 to-gold-500/5 dark:from-gold-700/10/30 dark:to-gold-700/5/20 border-gold-400/20 dark:border-gold-700/40'
                   : 'bg-white/[0.03] border-white/[0.06] opacity-70'
               }`}
             >
               <div className="flex items-start justify-between mb-2">
                 <span className={`text-3xl ${b.unlocked ? '' : 'grayscale opacity-50'}`}>{b.icon}</span>
-                {b.unlocked && <span className="text-[10px] font-bold uppercase text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/40 px-1.5 py-0.5 rounded">Earned</span>}
+                {b.unlocked && <span className="text-[10px] font-bold uppercase text-gold-600 dark:text-gold-400 bg-gold-500/10 dark:bg-gold-700/20 px-1.5 py-0.5 rounded">Earned</span>}
               </div>
               <p className={`font-semibold text-sm ${b.unlocked ? 'text-white/80' : 'text-white/50'}`}>
                 {b.label}
@@ -383,7 +383,7 @@ export default function SpendingStreaks() {
               {!b.unlocked && b.progress && (
                 <div className="mt-2">
                   <div className="w-full bg-white/[0.08] rounded-full h-1.5">
-                    <div className="h-1.5 rounded-full bg-amber-400 dark:bg-amber-500 transition-all" style={{ width: `${Math.min(100, (b.progress.current / b.progress.target) * 100)}%` }} />
+                    <div className="h-1.5 rounded-full bg-gold-400 dark:bg-gold-500/50 transition-all" style={{ width: `${Math.min(100, (b.progress.current / b.progress.target) * 100)}%` }} />
                   </div>
                   <p className="text-[10px] text-white/40 mt-1">{b.progress.current} / {b.progress.target}</p>
                 </div>

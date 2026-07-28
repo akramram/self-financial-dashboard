@@ -384,12 +384,12 @@ export default function MerchantAnalysis({
 
       {/* New Merchants Alert */}
       {newMerchants.length > 0 && viewMode === 'period' && (
-        <div className="glass-card p-5 border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20">
-          <h3 className="text-sm font-semibold text-amber-800 dark:text-amber-300 flex items-center gap-2 text-white/80">
+        <div className="glass-card p-5 border-gold-400/20 dark:border-gold-700/40 bg-gold-500/5 dark:bg-gold-700/20">
+          <h3 className="text-sm font-semibold text-gold-700 dark:text-gold-300 flex items-center gap-2 text-white/80">
               <Sparkles className="w-4 h-4" />
               New Merchants This Period
             </h3>
-            <p className="text-xs text-amber-600 dark:text-amber-400 text-white/50">
+            <p className="text-xs text-gold-600 dark:text-gold-400 text-white/50">
               {newMerchants.length} merchant{newMerchants.length !== 1 ? 's' : ''} appearing for the first time
             </p>
           <div className="flex flex-wrap gap-2">
@@ -397,10 +397,10 @@ export default function MerchantAnalysis({
                 <Badge
                   key={m.title}
                   variant="outline"
-                  className="text-xs bg-white dark:bg-slate-800 border-amber-300 dark:border-amber-700"
+                  className="text-xs bg-white dark:bg-slate-800 border-gold-400/30 dark:border-gold-700"
                 >
                   {m.title}
-                  <span className="ml-1.5 text-amber-600 dark:text-amber-400 font-mono">
+                  <span className="ml-1.5 text-gold-600 dark:text-gold-400 font-mono">
                     {formatIdr(m.totalPaid)}
                   </span>
                 </Badge>
@@ -579,7 +579,7 @@ export default function MerchantAnalysis({
                       <div className="flex items-center gap-2">
                         <div className="flex-1 bg-slate-200 dark:bg-slate-700 rounded-full h-1.5">
                           <div
-                            className="bg-blue-500 dark:bg-blue-400 h-1.5 rounded-full transition-all"
+                            className="bg-mint-500/30 dark:bg-mint-400 h-1.5 rounded-full transition-all"
                             style={{ width: `${barWidth}%` }}
                           />
                         </div>

@@ -317,8 +317,8 @@ export default function BudgetReport({ summaries, categories }: Props) {
         <div className="glass-card p-5">
           
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-amber-500/10">
-                <AlertTriangle className="w-5 h-5 text-amber-400" />
+              <div className="p-2 rounded-lg bg-gold-500/10">
+                <AlertTriangle className="w-5 h-5 text-gold-400" />
               </div>
               <div>
                 <p className="text-xs text-white/40">Alerts</p>
@@ -329,7 +329,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
                     </Badge>
                   )}
                   {nearLimitCount > 0 && (
-                    <Badge variant="secondary" className="text-[10px] px-1.5 py-0 bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
+                    <Badge variant="secondary" className="text-[10px] px-1.5 py-0 bg-gold-500/10 text-gold-700 dark:bg-gold-700/20 dark:text-gold-300">
                       {nearLimitCount} Near
                     </Badge>
                   )}
@@ -408,12 +408,12 @@ export default function BudgetReport({ summaries, categories }: Props) {
                       <TableCell className="text-right">
                         {hasLimit ? (
                           <div className="flex items-center justify-end gap-2">
-                            <span className={`text-xs font-semibold ${isOver ? 'text-red-600 dark:text-red-400' : isNear ? 'text-amber-600 dark:text-amber-400' : 'text-slate-600 dark:text-slate-300'}`}>
+                            <span className={`text-xs font-semibold ${isOver ? 'text-red-600 dark:text-red-400' : isNear ? 'text-gold-600 dark:text-gold-400' : 'text-slate-600 dark:text-slate-300'}`}>
                               {row.pct.toFixed(0)}%
                             </span>
                             <div className="w-16 bg-slate-200 dark:bg-slate-700 rounded-full h-1.5">
                               <div
-                                className={`h-1.5 rounded-full transition-all ${isOver ? 'bg-red-500' : isNear ? 'bg-amber-500' : 'bg-emerald-500'}`}
+                                className={`h-1.5 rounded-full transition-all ${isOver ? 'bg-red-500' : isNear ? 'bg-gold-500/50' : 'bg-emerald-500'}`}
                                 style={{ width: `${Math.min(100, row.pct)}%` }}
                               />
                             </div>
@@ -426,7 +426,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
                         {isOver ? (
                           <Badge variant="destructive" className="text-[10px]">Over</Badge>
                         ) : isNear ? (
-                          <Badge variant="secondary" className="text-[10px] bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">Near Limit</Badge>
+                          <Badge variant="secondary" className="text-[10px] bg-gold-500/10 text-gold-700 dark:bg-gold-700/20 dark:text-gold-300">Near Limit</Badge>
                         ) : (
                           <Badge variant="secondary" className="text-[10px] bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">On Track</Badge>
                         )}

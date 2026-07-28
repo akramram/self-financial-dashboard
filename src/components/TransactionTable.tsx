@@ -588,16 +588,16 @@ export default function TransactionTable({ transactions, showMonth = true, perio
 
                 const typeColorClass =
                   row.type === 'cash'
-                    ? 'text-blue-400'
+                    ? 'text-mint-400'
                     : row.type === 'credit_payment'
-                    ? 'text-amber-400'
-                    : 'text-purple-400';
+                    ? 'text-gold-400'
+                    : 'text-coral-400';
                 const typeBgClass =
                   row.type === 'cash'
-                    ? 'bg-blue-500/10'
+                    ? 'bg-mint-500/30/10'
                     : row.type === 'credit_payment'
-                    ? 'bg-amber-500/10'
-                    : 'bg-purple-500/10';
+                    ? 'bg-gold-500/10'
+                    : 'bg-coral-500/10';
                 const typeLabel =
                   row.type === 'cash' ? 'Cash' : row.type === 'credit_payment' ? 'Credit Pay' : 'Credit';
 
@@ -629,7 +629,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                     <TableCell className="py-2.5">
                       <span className="text-white/80">{row.title}</span>
                       {row.notes && (
-                        <StickyNote className="inline ml-1.5 align-middle w-3 h-3 text-amber-400 shrink-0" title={row.notes} />
+                        <StickyNote className="inline ml-1.5 align-middle w-3 h-3 text-gold-400 shrink-0" title={row.notes} />
                       )}
                     </TableCell>
                     <TableCell className="py-2.5">

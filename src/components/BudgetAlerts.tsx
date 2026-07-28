@@ -146,7 +146,7 @@ export default function BudgetAlerts({ summaries, categories, activeMonth, trans
               </Badge>
             )}
             {approachingCount > 0 && (
-              <Badge variant="outline" className="ml-1 border-amber-400 text-amber-600 dark:text-amber-400">
+              <Badge variant="outline" className="ml-1 border-gold-400 text-gold-600 dark:text-gold-400">
                 {approachingCount} approaching
               </Badge>
             )}
@@ -170,14 +170,14 @@ export default function BudgetAlerts({ summaries, categories, activeMonth, trans
               const barColor = alert.isOver
                 ? 'bg-red-500'
                 : alert.pct >= 90
-                  ? 'bg-orange-500'
-                  : 'bg-amber-500';
+                  ? 'bg-coral-500/50'
+                  : 'bg-gold-500';
               const bgColor = alert.isOver
                 ? 'bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800'
-                : 'bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800';
+                : 'bg-gold-500/5 dark:bg-gold-700/10/30 border-gold-400/20 dark:border-gold-700/40';
               const textColor = alert.isOver
                 ? 'text-red-700 dark:text-red-300'
-                : 'text-amber-700 dark:text-amber-300';
+                : 'text-gold-700 dark:text-gold-300';
 
               return (
                 <div
@@ -207,7 +207,7 @@ export default function BudgetAlerts({ summaries, categories, activeMonth, trans
                         Over budget
                       </Badge>
                     ) : (
-                      <Badge variant="outline" className="text-xs h-5 border-amber-400 text-amber-600 dark:text-amber-400">
+                      <Badge variant="outline" className="text-xs h-5 border-gold-400 text-gold-600 dark:text-gold-400">
                         Approaching limit
                       </Badge>
                     )}

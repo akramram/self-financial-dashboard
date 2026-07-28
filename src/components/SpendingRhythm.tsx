@@ -91,7 +91,7 @@ function fmtDateRange(start: string | null, end: string | null): string {
 
 function toneClasses(tone: 'good' | 'neutral' | 'warn'): string {
   if (tone === 'good') return 'border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/30';
-  if (tone === 'warn') return 'border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30';
+  if (tone === 'warn') return 'border-gold-400/20 dark:border-gold-700/40 bg-gold-500/5 dark:bg-gold-700/10';
   return 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50';
 }
 
@@ -410,7 +410,7 @@ export default function SpendingRhythm() {
               className={`rounded-lg border p-4 ${
                 bucket.label === 'Late Night' ? 'border-navy-300 dark:border-navy-700 bg-navy-500/5 dark:bg-navy-500/10'
                 : bucket.label === 'Morning' ? 'border-gold-400/30 bg-gold-500/5 dark:bg-gold-500/10'
-                : bucket.label === 'Afternoon' ? 'border-orange-200 dark:border-orange-800 bg-orange-50 dark:bg-orange-950/30'
+                : bucket.label === 'Afternoon' ? 'border-coral-400/20 dark:border-coral-700/40 bg-coral-500/5 dark:bg-coral-700/10/30'
                 : 'border-gold-400/30 bg-gold-500/5 dark:bg-gold-500/10'
               }`}
             >
@@ -426,7 +426,7 @@ export default function SpendingRhythm() {
                   className={`h-full rounded-full ${
                     bucket.label === 'Late Night' ? 'bg-navy-400'
                     : bucket.label === 'Morning' ? 'bg-gold-400'
-                    : bucket.label === 'Afternoon' ? 'bg-orange-400'
+                    : bucket.label === 'Afternoon' ? 'bg-coral-400'
                     : 'bg-gold-400'
                   }`}
                   style={{ width: `${bucket.pctOfTx}%` }}

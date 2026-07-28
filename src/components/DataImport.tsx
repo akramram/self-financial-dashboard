@@ -670,7 +670,7 @@ export default function DataImport() {
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-sm">
                   {fileName.endsWith('.json') ? (
-                    <FileJson className="w-4 h-4 text-amber-500" />
+                    <FileJson className="w-4 h-4 text-gold-500" />
                   ) : (
                     <FileSpreadsheet className="w-4 h-4 text-emerald-500" />
                   )}
@@ -836,8 +836,8 @@ export default function DataImport() {
                   <p className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">{result.imported}</p>
                   <p className="text-xs text-slate-500 mt-1">Imported</p>
                 </div>
-                <div className="bg-amber-50 dark:bg-amber-950/30 rounded-xl p-4 border border-amber-200 dark:border-amber-800">
-                  <p className="text-3xl font-bold text-amber-600 dark:text-amber-400">{result.skipped}</p>
+                <div className="bg-gold-500/5 dark:bg-gold-700/10 rounded-xl p-4 border border-gold-400/20 dark:border-gold-700/40">
+                  <p className="text-3xl font-bold text-gold-600 dark:text-gold-400">{result.skipped}</p>
                   <p className="text-xs text-slate-500 mt-1">Skipped</p>
                 </div>
                 <div className="bg-red-50 dark:bg-red-950/30 rounded-xl p-4 border border-red-200 dark:border-red-800">

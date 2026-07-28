@@ -76,7 +76,7 @@ export default function CategoryBudgets({ summaries, categories, activeMonth, on
               : isOver
                 ? 'text-red-600 dark:text-red-400'
                 : pct > 80
-                  ? 'text-amber-600 dark:text-amber-400'
+                  ? 'text-gold-600 dark:text-gold-400'
                   : 'text-emerald-600 dark:text-emerald-400';
 
             return (

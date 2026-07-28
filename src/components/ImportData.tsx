@@ -236,7 +236,7 @@ export default function ImportData() {
             <div className="text-sm font-medium">Import Result</div>
             <div className="text-sm text-muted-foreground">
               <span className="text-emerald-600 font-medium">{result.imported}</span> imported,{' '}
-              <span className="text-amber-600 font-medium">{result.skipped}</span> skipped,{' '}
+              <span className="text-gold-600 font-medium">{result.skipped}</span> skipped,{' '}
               <span className="text-red-600 font-medium">{result.errors}</span> errors
             </div>
           </div>

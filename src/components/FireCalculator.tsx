@@ -204,7 +204,7 @@ export default function FireCalculator() {
                 step={0.5}
                 value={inf}
                 onChange={(e) => setInf(parseFloat(e.target.value))}
-                className="w-full accent-amber-600"
+                className="w-full accent-gold-600"
               />
               <div className="flex justify-between text-[10px] text-white/40">
                 <span>0%</span>
@@ -237,7 +237,7 @@ export default function FireCalculator() {
             <p className="text-2xl font-bold">{formatIdr(currentNetworth)}</p>
             <div className="w-full bg-white/[0.08] rounded-full h-2 mt-2">
               <div
-                className={`h-2 rounded-full transition-all ${progressPct >= 100 ? 'bg-emerald-500' : 'bg-blue-500'}`}
+                className={`h-2 rounded-full transition-all ${progressPct >= 100 ? 'bg-emerald-500' : 'bg-mint-500/30'}`}
                 style={{ width: `${Math.min(100, progressPct)}%` }}
               />
             </div>
@@ -311,7 +311,7 @@ export default function FireCalculator() {
                           className={`w-full rounded-t transition-all ${
                             isPastFi
                               ? 'bg-emerald-500/80 dark:bg-emerald-400/80'
-                              : 'bg-blue-500/60 dark:bg-blue-400/60'
+                              : 'bg-mint-500/30 dark:bg-mint-400/60'
                           }`}
                           style={{ height: `${barHeight}%` }}
                         />
@@ -352,7 +352,7 @@ export default function FireCalculator() {
             {/* Legend */}
             <div className="flex items-center gap-4 mt-4 text-xs text-white/50">
               <div className="flex items-center gap-1.5">
-                <div className="w-3 h-3 rounded bg-blue-500/60" />
+                <div className="w-3 h-3 rounded bg-mint-500/30" />
                 <span>Accumulation phase</span>
               </div>
               <div className="flex items-center gap-1.5">
@@ -396,7 +396,7 @@ export default function FireCalculator() {
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-white/60">Savings Rate</span>
-                <span className={`text-sm font-semibold ${savingsRate >= 20 ? 'text-emerald-600' : savingsRate >= 0 ? 'text-amber-600' : 'text-red-600'}`}>
+                <span className={`text-sm font-semibold ${savingsRate >= 20 ? 'text-emerald-600' : savingsRate >= 0 ? 'text-gold-600' : 'text-red-600'}`}>
                   {savingsRate}%
                   {savingsRate >= 50 && <Badge className="ml-1.5 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 text-[10px]">Super Saver</Badge>}
                 </span>
@@ -432,8 +432,8 @@ export default function FireCalculator() {
                 <span className="font-mono">{(((1 + params.expectedReturn) / (1 + params.inflation) - 1) * 100).toFixed(2)}%</span>
               </div>
               {!isFi && monthlyContributionNeeded > 0 && monthlySavings <= 0 && (
-                <div className="mt-3 p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
-                  <p className="text-xs text-amber-800 dark:text-amber-300 font-medium">
+                <div className="mt-3 p-3 rounded-lg bg-gold-500/5 dark:bg-gold-700/20 border border-gold-400/20 dark:border-gold-700/40">
+                  <p className="text-xs text-gold-700 dark:text-gold-300 font-medium">
                     To reach FI in 10 years, you'd need to save {formatIdr(monthlyContributionNeeded)} per month.
                   </p>
                 </div>
@@ -444,9 +444,9 @@ export default function FireCalculator() {
 
       {/* Tips Section */}
       {!isFi && (
-        <div className="glass-card p-5 border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-900/10">
+        <div className="glass-card p-5 border-mint-400/20 dark:border-mint-700/40 bg-mint-500/5/50 dark:bg-mint-700/10">
           <div className="flex items-start gap-3">
-              <Flame className="w-5 h-5 text-orange-500 mt-0.5 shrink-0" />
+              <Flame className="w-5 h-5 text-coral-500/50 mt-0.5 shrink-0" />
               <div>
                 <h3 className="font-semibold text-sm mb-2">Ways to reach FI faster:</h3>
                 <ul className="text-xs text-white/60 space-y-1 list-disc list-inside">

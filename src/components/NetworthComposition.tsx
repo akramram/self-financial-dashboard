@@ -173,7 +173,7 @@ export default function NetworthComposition({ data }: Props) {
         <div className="lg:col-span-3 glass-card p-6">
           <h2 className="text-lg font-semibold mb-2">Portfolio Allocation</h2>
           <p className="text-xs text-white/60 mb-4">
-            {latest.month} · Total: <span className="font-semibold text-violet-600 dark:text-violet-400">{formatIdr(latest.total)}</span>
+            {latest.month} · Total: <span className="font-semibold text-gold-500 dark:text-gold-400">{formatIdr(latest.total)}</span>
           </p>
           {donutData ? (
             <div className="relative h-72">

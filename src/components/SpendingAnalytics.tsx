@@ -346,7 +346,7 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
       {/* ─── Velocity / KPI Row ─────────────────────────────────── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="glass-card p-4">
-          <Zap className="w-4 h-4 text-indigo-400 mb-1.5" />
+          <Zap className="w-4 h-4 text-mint-400 mb-1.5" />
           <span className="text-[10px] font-medium text-white/40 uppercase tracking-wider">Avg Daily</span>
           <div className="text-xl font-bold text-white mt-1">{formatIdr(velocity.current_avg_daily)}</div>
           <div className={`text-xs mt-1 ${velocityUp ? 'text-red-400' : 'text-emerald-400'}`}>
@@ -362,14 +362,14 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
         </div>
 
         <div className="glass-card p-4">
-          <Clock className="w-4 h-4 text-amber-400 mb-1.5" />
+          <Clock className="w-4 h-4 text-gold-400 mb-1.5" />
           <span className="text-[10px] font-medium text-white/40 uppercase tracking-wider">Cumulative</span>
           <div className="text-xl font-bold text-white mt-1">{formatIdr(velocity.cumulative_spend)}</div>
           <div className="text-xs text-white/30 mt-1">Over {velocity.days_tracked} tracked days</div>
         </div>
 
         <div className="glass-card p-4">
-          <Hash className="w-4 h-4 text-blue-400 mb-1.5" />
+          <Hash className="w-4 h-4 text-mint-400 mb-1.5" />
           <span className="text-[10px] font-medium text-white/40 uppercase tracking-wider">Transactions</span>
           <div className="text-xl font-bold text-white mt-1">{stats.count}</div>
           <div className="text-xs text-white/30 mt-1">
@@ -476,13 +476,13 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
           </TableHeader>
           <TableBody>
             <TableRow><TableCell className="text-white/60">Total Paid Spending</TableCell><TableCell className="text-right font-semibold text-white/90">{formatIdr(stats.paid_amount)}</TableCell></TableRow>
-            <TableRow><TableCell className="text-white/60">Unpaid Total</TableCell><TableCell className="text-right font-semibold text-amber-400">{formatIdr(stats.unpaid_amount)}</TableCell></TableRow>
+            <TableRow><TableCell className="text-white/60">Unpaid Total</TableCell><TableCell className="text-right font-semibold text-gold-400">{formatIdr(stats.unpaid_amount)}</TableCell></TableRow>
             <TableRow><TableCell className="text-white/60">Average Transaction (paid)</TableCell><TableCell className="text-right text-white/80">{formatIdr(stats.avg_amount)}</TableCell></TableRow>
             <TableRow><TableCell className="text-white/60">Median Transaction (paid)</TableCell><TableCell className="text-right text-white/80">{formatIdr(stats.median_amount)}</TableCell></TableRow>
             <TableRow><TableCell className="text-white/60">Largest Transaction</TableCell><TableCell className="text-right"><span className="font-semibold text-white/90">{formatIdr(stats.max_amount)}</span>{stats.largest_title && <span className="text-xs text-white/30 ml-2">{stats.largest_title}</span>}</TableCell></TableRow>
             <TableRow><TableCell className="text-white/60">Smallest Transaction</TableCell><TableCell className="text-right"><span className="font-semibold text-white/90">{formatIdr(stats.min_amount)}</span>{stats.smallest_title && <span className="text-xs text-white/30 ml-2">{stats.smallest_title}</span>}</TableCell></TableRow>
             <TableRow><TableCell className="text-white/60">Total Transactions</TableCell><TableCell className="text-right text-white/80">{stats.count}</TableCell></TableRow>
-            <TableRow><TableCell className="text-white/60">Paid / Unpaid</TableCell><TableCell className="text-right"><span className="text-emerald-400">{stats.paid_count}</span><span className="text-white/30 mx-1">/</span><span className="text-amber-400">{stats.unpaid_count}</span></TableCell></TableRow>
+            <TableRow><TableCell className="text-white/60">Paid / Unpaid</TableCell><TableCell className="text-right"><span className="text-emerald-400">{stats.paid_count}</span><span className="text-white/30 mx-1">/</span><span className="text-gold-400">{stats.unpaid_count}</span></TableCell></TableRow>
           </TableBody>
         </Table>
       </div>

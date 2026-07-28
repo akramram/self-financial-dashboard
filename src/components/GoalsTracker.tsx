@@ -336,7 +336,7 @@ export default function GoalsTracker({ networth }: Props) {
 
         <div className="glass-card p-5">
           <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400">
+              <div className="p-2 rounded-lg bg-gold-500/10 dark:bg-gold-700/20/30 text-gold-600 dark:text-gold-400">
                 <Clock className="w-5 h-5" />
               </div>
               <div>
@@ -499,7 +499,7 @@ export default function GoalsTracker({ networth }: Props) {
                       ) : isOnTrack ? (
                         <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
                       ) : (
-                        <Clock className="w-3.5 h-3.5 text-amber-500" />
+                        <Clock className="w-3.5 h-3.5 text-gold-500" />
                       )}
                       <span className={isOverdue ? 'text-red-600 dark:text-red-400 font-medium' : 'text-muted-foreground'}>
                         {isOverdue
@@ -560,7 +560,7 @@ export default function GoalsTracker({ networth }: Props) {
                     <div className="flex items-center gap-1">
                       <button
                         onClick={() => handleToggleComplete(goal)}
-                        className="p-1.5 rounded-md hover:bg-amber-50 dark:hover:bg-amber-900/20 text-amber-500 transition"
+                        className="p-1.5 rounded-md hover:bg-gold-500/5 dark:hover:bg-gold-700/30/20 text-gold-500 transition"
                         title="Reopen goal"
                       >
                         <Circle className="w-4 h-4" />
@@ -598,7 +598,7 @@ export default function GoalsTracker({ networth }: Props) {
               </div>
               <div>
                 <p className="text-xs text-muted-foreground mb-1">Surplus / Deficit</p>
-                <p className={`text-lg font-bold ${latestNetworth.total >= totalTarget ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}`}>
+                <p className={`text-lg font-bold ${latestNetworth.total >= totalTarget ? 'text-emerald-600 dark:text-emerald-400' : 'text-gold-600 dark:text-gold-400'}`}>
                   {latestNetworth.total >= totalTarget ? '+' : ''}{formatIdr(latestNetworth.total - totalTarget)}
                 </p>
               </div>
