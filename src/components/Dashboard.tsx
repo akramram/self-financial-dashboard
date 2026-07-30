@@ -22,6 +22,7 @@ import { useSortState } from '../hooks/useSortState';
 import SortableHeader from './SortableHeader';
 import EditTransactionDialog from './EditTransactionDialog';
 import MonthKickoffModal from './MonthKickoffModal';
+import { toast } from 'sonner';
 
 import SpendingPulse from './SpendingPulse';
 import CategoryBudgets from './CategoryBudgets';
@@ -69,6 +70,8 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
   const activePeriod = useMemo(() => { const { month, year } = getActivePeriod(); return `${month} ${year}`; }, []);
 
   // ── State ─────────────────────────────────────────────────────
+  // Local transaction state (mirrors props, updated optimistically on mutations)
+  const [localTransactions, setLocalTransactions] = useState<Transaction[]>(transactions);
   const [filterPeriodId, setFilterPeriodId] = useState<number | null>(null);
   const [filterAllTime, setFilterAllTime] = useState(true);
   const [txPage, setTxPage] = useState(1); const txPerPage = 10;
@@ -98,9 +101,9 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
   const filteredNetworth = useMemo(() => isAllTime ? networth : networth.filter(n => n.period_id === filterPeriodId), [filterPeriodId, networth, isAllTime]);
   const filteredTransactions = useMemo(() => {
     if (!activeSummary) return [];
-    if (isAllTime) return transactions.filter(t => t.period_id === activeSummary.period_id);
-    return transactions.filter(t => t.period_id === filterPeriodId);
-  }, [filterPeriodId, transactions, activeSummary, isAllTime]);
+    if (isAllTime) return localTransactions.filter(t => t.period_id === activeSummary.period_id);
+    return localTransactions.filter(t => t.period_id === filterPeriodId);
+  }, [filterPeriodId, localTransactions, activeSummary, isAllTime]);
 
   const categoryMap = useMemo(() => { const map: Record<string, Category> = {}; categories.forEach(c => { map[c.name] = c; }); return map; }, [categories]);
 
@@ -140,7 +143,21 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
   // ── Edit handlers ────────────────────────────────────────────
   const startEdit = (row: Transaction) => { setEditingId(row.id); setEditForm({ ...row }); };
   const cancelEdit = () => { setEditingId(null); setEditForm({}); };
-  const saveEdit = async () => { if (!editForm.id) return; const original = transactions.find(t => t.id === editForm.id); if (!original) return; await updateTransactionApi(editForm.id, { ...original, ...(editForm as Transaction) }); setEditingId(null); setEditForm({}); window.location.reload(); };
+  const saveEdit = async () => {
+    if (!editForm.id) return;
+    const original = transactions.find(t => t.id === editForm.id);
+    if (!original) return;
+    const updates = { ...original, ...(editForm as Transaction) };
+    try {
+      await updateTransactionApi(editForm.id, updates);
+      setLocalTransactions(prev => prev.map(t => t.id === editForm.id ? updates : t));
+      setEditingId(null);
+      setEditForm({});
+      toast.success('Transaction updated');
+    } catch {
+      toast.error('Failed to update transaction');
+    }
+  };
   const handleChange = (field: keyof Transaction, value: string | number | boolean) => setEditForm(prev => ({ ...prev, [field]: value }));
   const openCategoryDialog = (cat: string) => { setSelectedCategory(cat); setDialogOpen(true); };
 
@@ -341,7 +358,17 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
                     return (
                       <TableRow key={row.id} className="border-slate-200 dark:border-white/[0.03] hover:bg-slate-100 dark:bg-white/[0.03]">
                         <TableCell>
-                          <Button size="sm" variant="ghost" onClick={async () => { await toggleTransactionDoneApi(row.id, !row.done); window.location.reload(); }} className="h-7 text-xs font-semibold px-2 py-0" style={{ backgroundColor: row.done ? 'rgba(52,211,153,0.12)' : 'rgba(239,68,68,0.12)', color: row.done ? '#34d399' : '#ef4444' }}>
+                          <Button size="sm" variant="ghost" onClick={async () => {
+                            const newDone = !row.done;
+                            setLocalTransactions(prev => prev.map(t => t.id === row.id ? { ...t, done: newDone ? 1 : 0 } as Transaction : t));
+                            try {
+                              await toggleTransactionDoneApi(row.id, newDone);
+                              toast.success(newDone ? 'Marked as paid' : 'Marked as unpaid');
+                            } catch {
+                              setLocalTransactions(prev => prev.map(t => t.id === row.id ? { ...t, done: newDone ? 0 : 1 } as Transaction : t));
+                              toast.error('Failed to update payment status');
+                            }
+                          }} className="h-7 text-xs font-semibold px-2 py-0" style={{ backgroundColor: row.done ? 'rgba(52,211,153,0.12)' : 'rgba(239,68,68,0.12)', color: row.done ? '#34d399' : '#ef4444' }}>
                             {row.done ? 'Paid' : 'Unpaid'}
                           </Button>
                         </TableCell>
@@ -353,7 +380,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
                         <TableCell>
                           <div className="flex gap-2">
                             <Button variant="ghost" size="sm" className="h-7 text-xs text-slate-600 dark:text-white/50 hover:text-slate-800 dark:text-white/80" onClick={() => startEdit(row)}>Edit</Button>
-                            <Button variant="ghost" size="sm" className="h-7 text-xs text-red-400 hover:text-red-300" onClick={async () => { const confirmed = await confirmAction({ title: 'Delete Transaction', description: `Delete "${row.title}" (${formatIdr(row.amount)})?`, confirmLabel: 'Delete', variant: 'destructive' }); if (!confirmed) return; await deleteTransactionApi(row.id); window.location.reload(); }}>Delete</Button>
+                            <Button variant="ghost" size="sm" className="h-7 text-xs text-red-400 hover:text-red-300" onClick={async () => { const confirmed = await confirmAction({ title: 'Delete Transaction', description: `Delete "${row.title}" (${formatIdr(row.amount)})?`, confirmLabel: 'Delete', variant: 'destructive' }); if (!confirmed) return; try { await deleteTransactionApi(row.id); setLocalTransactions(prev => prev.filter(t => t.id !== row.id)); toast.success(`"${row.title}" deleted`); } catch { toast.error('Failed to delete transaction'); } }}>Delete</Button>
                           </div>
                         </TableCell>
                       </TableRow>
