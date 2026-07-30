@@ -46,6 +46,9 @@ function parseCreatedTime(tx: Transaction): Date {
 export default function TransactionTable({ transactions, showMonth = true, periods = [] }: Props) {
   const { confirm: confirmAction } = useConfirm();
 
+  // ── Local transaction state (mirrors props, updated optimistically) ──
+  const [localTx, setLocalTx] = useState<Transaction[]>(transactions);
+
   const periodIdToMonth = useMemo(() => {
     const map = new Map<number, string>();
     periods.forEach((p) => map.set(p.period_id, p.month));
@@ -123,10 +126,10 @@ export default function TransactionTable({ transactions, showMonth = true, perio
   }, [page, filterType, filterPeriodId, search, dateFrom, dateTo, amountMin, amountMax]);
 
   const sorted = useMemo(() => {
-    return sortData(transactions, getCellValue, (data) =>
+    return sortData(localTx, getCellValue, (data) =>
       [...data].sort((a, b) => parseCreatedTime(b).getTime() - parseCreatedTime(a).getTime())
     );
-  }, [transactions, sortData, getCellValue]);
+  }, [localTx, sortData, getCellValue]);
 
   let filtered = sorted;
   if (filterType !== 'all') filtered = filtered.filter((t) => t.type === filterType);
@@ -204,10 +207,16 @@ export default function TransactionTable({ transactions, showMonth = true, perio
     if (!editingId) return;
     const { id, ...updates } = editForm as any;
     if (updates.period_id) updates.period_id = Number(updates.period_id);
-    await updateTransactionApi(editingId, updates);
-    setEditingId(null);
-    setEditForm({});
-    window.location.reload();
+    try {
+      await updateTransactionApi(editingId, updates);
+      // Optimistic update
+      setLocalTx(prev => prev.map(t => t.id === editingId ? { ...t, ...updates } as Transaction : t));
+      setEditingId(null);
+      setEditForm({});
+      toast.success('Transaction updated');
+    } catch {
+      toast.error('Failed to update transaction');
+    }
   };
 
   const handleBulkDelete = async () => {
@@ -219,17 +228,27 @@ export default function TransactionTable({ transactions, showMonth = true, perio
       variant: 'destructive',
     });
     if (!confirmed) return;
-    await deleteTransactionsBulkApi(Array.from(selected));
-    setSelected(new Set());
-    window.location.reload();
+    try {
+      await deleteTransactionsBulkApi(Array.from(selected));
+      setLocalTx(prev => prev.filter(t => !selected.has(t.id)));
+      setSelected(new Set());
+      toast.success(`${selected.size} transactions deleted`);
+    } catch {
+      toast.error('Failed to delete transactions');
+    }
   };
 
   const handleBulkCategory = async () => {
     if (selected.size === 0 || !bulkCategory) return;
-    await updateTransactionsBulkApi(Array.from(selected), { category: bulkCategory });
-    setSelected(new Set());
-    setBulkCategory('');
-    window.location.reload();
+    try {
+      await updateTransactionsBulkApi(Array.from(selected), { category: bulkCategory });
+      setLocalTx(prev => prev.map(t => selected.has(t.id) ? { ...t, category: bulkCategory } : t));
+      setSelected(new Set());
+      setBulkCategory('');
+      toast.success(`${selected.size} transactions categorized as "${bulkCategory}"`);
+    } catch {
+      toast.error('Failed to update categories');
+    }
   };
 
   // ── Render ─────────────────────────────────────────────────────
@@ -613,8 +632,16 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                     <TableCell className="py-2.5">
                       <button
                         onClick={async () => {
-                          await toggleTransactionDoneApi(row.id, !row.done);
-                          window.location.reload();
+                          const newDone = !row.done;
+                          setLocalTx(prev => prev.map(t => t.id === row.id ? { ...t, done: newDone ? 1 : 0 } as Transaction : t));
+                          try {
+                            await toggleTransactionDoneApi(row.id, newDone);
+                            toast.success(newDone ? 'Marked as paid' : 'Marked as unpaid');
+                          } catch {
+                            // Revert on failure
+                            setLocalTx(prev => prev.map(t => t.id === row.id ? { ...t, done: newDone ? 0 : 1 } as Transaction : t));
+                            toast.error('Failed to update payment status');
+                          }
                         }}
                         className={`h-6 text-[10px] font-semibold px-2 rounded-md transition-colors ${
                           row.done
@@ -665,8 +692,13 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                               variant: 'destructive',
                             });
                             if (!confirmed) return;
-                            await deleteTransactionApi(row.id);
-                            window.location.reload();
+                            try {
+                              await deleteTransactionApi(row.id);
+                              setLocalTx(prev => prev.filter(t => t.id !== row.id));
+                              toast.success(`"${row.title}" deleted`);
+                            } catch {
+                              toast.error('Failed to delete transaction');
+                            }
                           }}
                           className="h-7 text-xs text-slate-500 dark:text-white/30 hover:text-red-400 hover:bg-red-500/10"
                         >

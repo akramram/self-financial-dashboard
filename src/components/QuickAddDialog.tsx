@@ -24,6 +24,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Plus, Loader2, Sparkles, X } from 'lucide-react';
+import { toast } from 'sonner';
 
 const TYPE_OPTIONS = [
   { value: 'cash', label: 'Cash' },
@@ -151,8 +152,8 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded }: QuickAdd
       setTimeout(() => {
         resetForm();
         onOpenChange(false);
+        toast.success('Transaction added');
         if (onAdded) onAdded();
-        else window.location.reload();
       }, 600);
     } catch {
       setErrorMsg('Koneksi gagal. Coba lagi.');
