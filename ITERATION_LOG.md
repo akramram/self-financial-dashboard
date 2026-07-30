@@ -1,5 +1,54 @@
 # Iteration Log
 
+## Sesi Cron — 30 Juli 2026: Optimistic State Updates + Toast Notifications (Issue #130)
+
+### Ringkasan
+Menghilangkan `window.location.reload()` dari semua React mutation handler (edit, delete, toggle-paid, bulk actions) dan menggantinya dengan optimistic state update + sonner toast notification. Ini adalah **P0 UX issue** dari Impeccable Design Critique — setiap mutasi memicu white flash penuh, kehilangan scroll position, dan tidak ada feedback jika API gagal.
+
+### Issue
+[#130 — Replace window.location.reload() with optimistic state updates + toast notifications](https://github.com/akramram/self-financial-dashboard/issues/130)
+
+### Branch
+`feat/optimistic-updates-toast-notifications` (merged to main, deleted)
+
+### PR
+[#131 — feat(#130): Replace window.location.reload() with optimistic updates + toast notifications](https://github.com/akramram/self-financial-dashboard/pull/131)
+
+### Apa yang berubah
+**3 file diubah** (84 insertions, 24 deletions):
+
+- **`src/components/Dashboard.tsx`** — Ditambah local state `localTransactions` yang mirror SSR prop. Edit, toggle-paid, dan delete handler sekarang update local state secara optimistic + tampilkan sonner toast. Toggle-paid punya rollback otomatis jika API gagal. Hanya kickoff modal yang tetap reload (legit — membuat period baru dari server).
+- **`src/components/TransactionTable.tsx`** — Ditambah local state `localTx`. Semua 5 handler (save edit, bulk delete, bulk category, toggle-paid inline, delete inline) diganti dari `window.location.reload()` ke optimistic update + toast.
+- **`src/components/QuickAddDialog.tsx`** — Hapus fallback `window.location.reload()`, tambah `toast.success('Transaction added')`.
+
+### Pola yang dipakai
+```
+1. Optimistic update: setLocalTx(prev => prev.map/filter(...))
+2. API call: await someApi(...)
+3. Success: toast.success('...')
+4. Failure: toast.error('...') + optional revert
+```
+
+### Sisa `window.location.reload()` (3, semua legitimate non-React context)
+- `Layout.astro` — Service worker update handler
+- `dataStore.ts` — `resetToDefault()` localStorage reset
+- `Dashboard.tsx` — Kickoff modal `onSuccess` (buat period baru dari server)
+
+### Test results
+✅ 147/147 tests pass. Duration: ~1.4s.
+- Tidak ada test yang dimodifikasi (semua behavior existing tidak berubah)
+
+### Build status
+✅ `npm run build` sukses, 0 errors.
+✅ PM2 restart online, HTTP 200 untuk `/login`.
+✅ CSS HTTP 200 (bukan 404 stale).
+✅ Tidak ada runtime errors di PM2 logs.
+
+### Catatan
+- Perubahan backward compatible: tidak ada perubahan API, skema DB, atau komponen lain.
+- `sonner` sudah terinstall (v2.0.7) dan Toaster sudah mounted di Layout.astro — hanya perlu import `toast` di komponen.
+- Toggle-paid punya rollback otomatis: jika API gagal, state dikembalikan ke semula dan toast error tampil.
+
 ## Baseline (Pre-Iteration)
 **Date:** 2025-04-28
 **Branch:** main
