@@ -96,11 +96,11 @@ export default function GoalTrajectory() {
   if (summary.totalGoals === 0) {
     return (
       <div className="glass-card p-5">
-        <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
-            <Target className="w-4 h-4 text-indigo-500" />
+        <h3 className="text-base font-semibold flex items-center gap-2 text-slate-800 dark:text-white/80">
+            <Target className="w-4 h-4 text-mint-500" />
             Proyeksi Trajectory Goal
           </h3>
-          <p className="text-xs text-white/50">
+          <p className="text-xs text-slate-600 dark:text-white/50">
             Estimasi pencapaian goal berbasis kecepatan tabungan historis
           </p>
         <Info className="w-5 h-5 mx-auto mb-2 opacity-50" />
@@ -111,11 +111,11 @@ export default function GoalTrajectory() {
 
   return (
     <div className="glass-card p-5">
-      <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
-          <Target className="w-4 h-4 text-indigo-500" />
+      <h3 className="text-base font-semibold flex items-center gap-2 text-slate-800 dark:text-white/80">
+          <Target className="w-4 h-4 text-mint-500" />
           Proyeksi Trajectory Goal
         </h3>
-        <p className="text-xs text-white/50">
+        <p className="text-xs text-slate-600 dark:text-white/50">
           Estimasi pencapaian goal berbasis kecepatan tabungan {Math.max(2, Math.min(6, data.trend.length))} periode terakhir
         </p>
         {/* Summary chips */}
@@ -131,7 +131,7 @@ export default function GoalTrajectory() {
             </Badge>
           )}
           {summary.atRisk > 0 && (
-            <Badge variant="outline" className="text-amber-600 dark:text-amber-400 border-amber-300 dark:border-amber-700">
+            <Badge variant="outline" className="text-gold-600 dark:text-gold-400 border-gold-400/30 dark:border-gold-700">
               <AlertTriangle className="w-3 h-3 mr-1" /> {summary.atRisk} Berisiko
             </Badge>
           )}
@@ -142,7 +142,7 @@ export default function GoalTrajectory() {
           )}
         </div>
       {!data.has_sufficient_data && (
-          <div className="rounded-md border border-amber-200 dark:border-amber-800/60 bg-amber-50 dark:bg-amber-900/20 px-3 py-2 text-xs text-amber-700 dark:text-amber-300 flex items-start gap-2">
+          <div className="rounded-md border border-gold-400/20 dark:border-gold-700/40/60 bg-gold-500/5 dark:bg-gold-700/20 px-3 py-2 text-xs text-gold-700 dark:text-gold-300 flex items-start gap-2">
             <Info className="w-3.5 h-3.5 mt-0.5 shrink-0" />
             <span>
               Data networth belum cukup (butuh minimal 2 entri). Proyeksi tidak dapat dihitung —
@@ -152,9 +152,9 @@ export default function GoalTrajectory() {
         )}
 
         {data.has_sufficient_data && (
-          <div className="rounded-md border border-white/[0.06] px-3 py-2 flex items-center justify-between gap-3">
+          <div className="rounded-md border border-slate-200 dark:border-white/[0.06] px-3 py-2 flex items-center justify-between gap-3">
             <div className="flex items-center gap-2 min-w-0">
-              <Gauge className="w-4 h-4 text-indigo-500 shrink-0" />
+              <Gauge className="w-4 h-4 text-mint-500 shrink-0" />
               <div className="text-xs text-muted-foreground truncate">
                 Rata-rata tabungan
               </div>
@@ -243,7 +243,7 @@ function GoalTrajectoryRowCard({ goal, hasData }: { goal: GoalTrajectoryRow; has
       : `${(paceRatio * 100).toFixed(0)}% dari kebutuhan`;
 
   return (
-    <div className="rounded-lg border border-white/[0.06] p-3">
+    <div className="rounded-lg border border-slate-200 dark:border-white/[0.06] p-3">
       <div className="flex items-center justify-between gap-2 mb-2">
         <div className="flex items-center gap-2 min-w-0">
           <span
@@ -277,7 +277,7 @@ function GoalTrajectoryRowCard({ goal, hasData }: { goal: GoalTrajectoryRow; has
         </div>
         <Progress
           value={progressPct}
-          className="h-1.5 bg-white/[0.08]"
+          className="h-1.5 bg-slate-200/60 dark:bg-white/[0.08]"
           indicatorStyle={{ backgroundColor: goal.color }}
         />
       </div>
@@ -285,12 +285,12 @@ function GoalTrajectoryRowCard({ goal, hasData }: { goal: GoalTrajectoryRow; has
       {/* Key metrics grid */}
       <div className="grid grid-cols-2 gap-x-3 gap-y-2 text-xs">
         <Metric
-          icon={<CalendarClock className="w-3.5 h-3.5 text-white/40" />}
+          icon={<CalendarClock className="w-3.5 h-3.5 text-slate-500 dark:text-white/40" />}
           label="Target tanggal"
           value={formatDate(goal.target_date)}
         />
         <Metric
-          icon={<TrendingUp className="w-3.5 h-3.5 text-indigo-400" />}
+          icon={<TrendingUp className="w-3.5 h-3.5 text-mint-400" />}
           label="Proyeksi selesai"
           value={hasData ? formatDate(goal.projected_date) : '—'}
           valueClassName={
@@ -299,22 +299,22 @@ function GoalTrajectoryRowCard({ goal, hasData }: { goal: GoalTrajectoryRow; has
               : goal.status === 'ahead' || goal.status === 'on_track'
                 ? 'text-emerald-600 dark:text-emerald-400'
                 : goal.status === 'at_risk' || goal.status === 'behind'
-                  ? 'text-amber-600 dark:text-amber-400'
+                  ? 'text-gold-600 dark:text-gold-400'
                   : ''
           }
         />
         <Metric
-          icon={<Minus className="w-3.5 h-3.5 text-white/40" />}
+          icon={<Minus className="w-3.5 h-3.5 text-slate-500 dark:text-white/40" />}
           label="Selisih waktu"
           value={hasData ? formatDelta(goal.days_delta) : '—'}
         />
         <Metric
-          icon={<Gauge className="w-3.5 h-3.5 text-white/40" />}
+          icon={<Gauge className="w-3.5 h-3.5 text-slate-500 dark:text-white/40" />}
           label="Pace vs kebutuhan"
           value={hasData ? paceLabel : '—'}
           valueClassName={
             hasData && paceRatio !== null && paceRatio < 1
-              ? 'text-amber-600 dark:text-amber-400'
+              ? 'text-gold-600 dark:text-gold-400'
               : hasData && paceRatio !== null && paceRatio >= 1
                 ? 'text-emerald-600 dark:text-emerald-400'
                 : ''
@@ -324,7 +324,7 @@ function GoalTrajectoryRowCard({ goal, hasData }: { goal: GoalTrajectoryRow; has
 
       {/* Recommendation */}
       {hasData && goal.projected_gap_idr > 0 && (
-        <div className="mt-2 text-xs text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/20 rounded px-2 py-1.5">
+        <div className="mt-2 text-xs text-gold-700 dark:text-gold-300 bg-gold-500/5 dark:bg-gold-700/20 rounded px-2 py-1.5">
           Kurang <strong>{formatIdr(goal.projected_gap_idr)}</strong> di tanggal target.
           Tingkatkan tabungan ke <strong>{formatIdr(goal.required_monthly)}/bln</strong> untuk tepat waktu.
         </div>
@@ -335,7 +335,7 @@ function GoalTrajectoryRowCard({ goal, hasData }: { goal: GoalTrajectoryRow; has
         </div>
       )}
       {!hasData && (
-        <div className="mt-2 text-xs text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/20 rounded px-2 py-1.5">
+        <div className="mt-2 text-xs text-gold-700 dark:text-gold-300 bg-gold-500/5 dark:bg-gold-700/20 rounded px-2 py-1.5">
           Proyeksi belum tersedia. Butuh minimal 2 entri networth.
         </div>
       )}

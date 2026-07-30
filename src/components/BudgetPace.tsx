@@ -53,10 +53,10 @@ interface BudgetPaceResult {
 
 const STATUS_CONFIG = {
   on_track: { label: 'On Track', color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-500', icon: CheckCircle2 },
-  warning: { label: 'Warning', color: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-500', icon: AlertTriangle },
+  warning: { label: 'Warning', color: 'text-gold-600 dark:text-gold-400', bg: 'bg-gold-500/50', icon: AlertTriangle },
   over_pace: { label: 'Over Pace', color: 'text-red-600 dark:text-red-400', bg: 'bg-red-500', icon: TrendingUp },
   critical: { label: 'Critical', color: 'text-red-700 dark:text-red-500', bg: 'bg-red-700', icon: AlertTriangle },
-  under_budget: { label: 'Under Budget', color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-500', icon: TrendingDown },
+  under_budget: { label: 'Under Budget', color: 'text-mint-500 dark:text-mint-400', bg: 'bg-mint-500/30', icon: TrendingDown },
   no_limit: { label: 'No Limit', color: 'text-slate-500', bg: 'bg-slate-400', icon: Minus },
 } as const;
 
@@ -74,7 +74,7 @@ function PaceBar({ spent, expected, limit }: { spent: number; expected: number; 
       {/* Actual spending bar */}
       <div
         className={`absolute top-0 left-0 h-full transition-all duration-500 ${
-          spentPct > 100 ? 'bg-red-500' : spentPct > expectedPct + 5 ? 'bg-amber-500' : 'bg-emerald-500'
+          spentPct > 100 ? 'bg-red-500' : spentPct > expectedPct + 5 ? 'bg-gold-500/50' : 'bg-emerald-500'
         }`}
         style={{ width: `${spentPct}%` }}
       />
@@ -122,7 +122,7 @@ export default function BudgetPace() {
     return (
       <div className="glass-card p-5">
         
-          <h3 className="flex items-center gap-2 text-white/80">
+          <h3 className="flex items-center gap-2 text-slate-800 dark:text-white/80">
             <Gauge className="h-5 w-5" />
             Budget Pace Tracker
           </h3>
@@ -130,7 +130,7 @@ export default function BudgetPace() {
         
           <p>No budget limits set.</p>
           <p className="text-sm mt-2">
-            Set category budget limits in <a href="/settings" className="underline text-blue-500">Settings</a> to track your spending pace.
+            Set category budget limits in <a href="/settings" className="underline text-mint-500">Settings</a> to track your spending pace.
           </p>
         
       </div>
@@ -145,7 +145,7 @@ export default function BudgetPace() {
       {/* Overall Summary Card */}
       <div className="glass-card p-5">
         
-          <h3 className="flex items-center justify-between flex-wrap gap-2 text-white/80">
+          <h3 className="flex items-center justify-between flex-wrap gap-2 text-slate-800 dark:text-white/80">
             <span className="flex items-center gap-2">
               <Gauge className="h-5 w-5" />
               Budget Pace Tracker
@@ -200,7 +200,7 @@ export default function BudgetPace() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div className="rounded-lg border p-3 text-center">
               <p className="text-xs text-slate-400 mb-1">Pace vs Expected</p>
-              <p className={`text-lg font-bold ${data.total_pace_pct > 5 ? 'text-red-500' : data.total_pace_pct < -5 ? 'text-emerald-500' : 'text-amber-500'}`}>
+              <p className={`text-lg font-bold ${data.total_pace_pct > 5 ? 'text-red-500' : data.total_pace_pct < -5 ? 'text-emerald-500' : 'text-gold-500'}`}>
                 {data.total_pace_pct >= 0 ? '+' : ''}{data.total_pace_pct.toFixed(1)}%
               </p>
             </div>
@@ -230,7 +230,7 @@ export default function BudgetPace() {
       {/* Per-Category Breakdown */}
       <div className="glass-card p-5">
         
-          <h3 className="text-sm text-white/80">Category Pace Breakdown</h3>
+          <h3 className="text-sm text-slate-800 dark:text-white/80">Category Pace Breakdown</h3>
         
         
           {sortedCategories.map((cat) => {

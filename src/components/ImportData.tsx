@@ -168,7 +168,7 @@ export default function ImportData() {
 
   return (
     <div className="glass-card p-5">
-      <h3 className="text-white/80">Import Data</h3>
+      <h3 className="text-slate-800 dark:text-white/80">Import Data</h3>
       <div className="space-y-2">
           <Label htmlFor="import-file">File (JSON or CSV)</Label>
           <Input id="import-file" type="file" accept=".json,.csv" onChange={handleFileChange} />
@@ -232,11 +232,11 @@ export default function ImportData() {
         )}
 
         {result && (
-          <div className="rounded-lg bg-white/[0.03] p-3 space-y-1">
+          <div className="rounded-lg bg-slate-100 dark:bg-white/[0.03] p-3 space-y-1">
             <div className="text-sm font-medium">Import Result</div>
             <div className="text-sm text-muted-foreground">
               <span className="text-emerald-600 font-medium">{result.imported}</span> imported,{' '}
-              <span className="text-amber-600 font-medium">{result.skipped}</span> skipped,{' '}
+              <span className="text-gold-600 font-medium">{result.skipped}</span> skipped,{' '}
               <span className="text-red-600 font-medium">{result.errors}</span> errors
             </div>
           </div>

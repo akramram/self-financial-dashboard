@@ -36,24 +36,24 @@ const { title = 'Financial Dashboard', balance, alerts = 0 } = Astro.props;
       })();
     </script>
   </head>
-  <body class="bg-navy-950 text-slate-100 min-h-screen">
+  <body class="bg-background text-foreground min-h-screen dark:bg-navy-950 dark:text-slate-100">
 
     <!-- Desktop Sidebar -->
     <FintechSidebar balance={balance} alerts={alerts} client:load />
 
     <!-- Mobile Top Bar -->
-    <div class="lg:hidden fixed top-0 left-0 right-0 h-14 flex items-center justify-between px-4 z-40 bg-navy-950/95 backdrop-blur-xl border-b border-white/[0.05]">
+    <div class="lg:hidden fixed top-0 left-0 right-0 h-14 flex items-center justify-between px-4 z-40 bg-background/95 dark:bg-navy-950/95 backdrop-blur-xl border-b border-border dark:border-white/[0.05]">
       <a href="/" class="w-8 h-8 rounded-lg flex items-center justify-center no-underline" style="background:linear-gradient(135deg, #34d399, #0ea5e9)">
-        <span class="text-white font-bold text-xs">FD</span>
+        <span class="text-slate-900 dark:text-white font-bold text-xs">FD</span>
       </a>
-      <h1 class="text-sm font-bold text-white">{title}</h1>
+      <h1 class="text-sm font-bold text-foreground dark:text-white">{title}</h1>
       <div class="flex items-center gap-1.5">
         <!-- Settings (mobile) -->
-        <a href="/settings" class="p-1.5 rounded-lg text-white/40 hover:text-white/80 hover:bg-white/10 transition" aria-label="Settings">
+        <a href="/settings" class="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted dark:text-white/40 dark:hover:text-slate-800 dark:text-white/80 dark:hover:bg-slate-200/50 dark:bg-white/10 transition" aria-label="Settings">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
         </a>
         <!-- Dark mode toggle (mobile) -->
-        <button onclick="(function(){var h=document.documentElement;var d=h.classList.toggle('dark');localStorage.setItem('theme',d?'dark':'light')})()" class="p-1.5 rounded-lg bg-white/[0.05] text-white/60 hover:text-white hover:bg-white/10 transition text-sm" aria-label="Toggle theme">
+        <button onclick="(function(){var h=document.documentElement;var d=h.classList.toggle('dark');localStorage.setItem('theme',d?'dark':'light')})()" class="p-1.5 rounded-lg bg-muted dark:bg-white/[0.05] text-muted-foreground dark:text-white/60 dark:hover:text-slate-900 dark:text-white hover:bg-accent dark:hover:bg-slate-200/50 dark:bg-white/10 transition text-sm" aria-label="Toggle theme">
           <span class="dark:hidden">🌙</span>
           <span class="hidden dark:inline">☀️</span>
         </button>
@@ -66,21 +66,21 @@ const { title = 'Financial Dashboard', balance, alerts = 0 } = Astro.props;
     <div class="lg:hidden h-14"></div>
 
     <!-- Desktop Top Bar -->
-    <div class="hidden lg:flex items-center justify-between h-16 px-6 border-b border-white/[0.05] ml-[240px] transition-all duration-300" id="desktop-topbar">
+    <div class="hidden lg:flex items-center justify-between h-16 px-6 border-b border-border dark:border-white/[0.05] ml-[240px] transition-all duration-300" id="desktop-topbar">
       <div>
-        <h1 class="text-lg font-bold text-white">{title}</h1>
-        <p class="text-xs text-white/30">Financial Dashboard</p>
+        <h1 class="text-xl font-bold text-foreground dark:text-white">{title}</h1>
+        <p class="text-xs text-muted-foreground dark:text-white/40">Financial Dashboard</p>
       </div>
       <div class="flex items-center gap-3">
         <!-- Dark mode toggle (desktop) -->
-        <button onclick="(function(){var h=document.documentElement;var d=h.classList.toggle('dark');localStorage.setItem('theme',d?'dark':'light')})()" class="p-2 rounded-xl bg-white/[0.05] text-white/60 hover:text-white hover:bg-white/10 transition" aria-label="Toggle theme">
+        <button onclick="(function(){var h=document.documentElement;var d=h.classList.toggle('dark');localStorage.setItem('theme',d?'dark':'light')})()" class="p-2 rounded-xl bg-muted dark:bg-white/[0.05] text-muted-foreground dark:text-white/60 dark:hover:text-slate-900 dark:text-white hover:bg-accent dark:hover:bg-slate-200/50 dark:bg-white/10 transition" aria-label="Toggle theme">
           <span class="dark:hidden">🌙</span>
           <span class="hidden dark:inline">☀️</span>
         </button>
         <!-- Auth -->
         <span id="roleBadgeDesktop" class="hidden text-xs font-medium px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"></span>
         <button id="logoutBtnDesktop" class="hidden p-2 rounded-lg bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-sm font-medium hover:bg-red-200 dark:hover:bg-red-900/50 transition" aria-label="Logout">⏻</button>
-        <a href="/add" id="quickAddBtn" class="viewer-hide flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all hover:scale-105 no-underline" style="background:linear-gradient(135deg, #34d399, #0ea5e9)">
+        <a href="/add" id="quickAddBtn" class="viewer-hide flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-slate-900 dark:text-white transition-all hover:scale-105 no-underline" style="background:linear-gradient(135deg, #34d399, #0ea5e9)">
           + Add
         </a>
       </div>
@@ -94,7 +94,7 @@ const { title = 'Financial Dashboard', balance, alerts = 0 } = Astro.props;
     <!-- Mobile Bottom Tabs -->
     <FintechBottomTabs client:load />
 
-    <footer class="text-center text-xs text-white/20 pb-8 hidden lg:block">
+    <footer class="text-center text-xs text-muted-foreground dark:text-white/30 pb-8 hidden lg:block">
       Financial Dashboard · Built with Astro & React
     </footer>
 

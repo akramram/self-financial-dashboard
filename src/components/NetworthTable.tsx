@@ -70,7 +70,7 @@ export default function NetworthTable({ networth }: Props) {
                 )}
               </TableCell>
               <TableCell>
-                <Button variant="ghost" size="sm" className="h-7 text-xs text-blue-500 hover:text-blue-700" asChild>
+                <Button variant="ghost" size="sm" className="h-7 text-xs text-mint-500 hover:text-mint-600" asChild>
                   <a href={`/networth/edit?month=${encodeURIComponent(row.month)}`}>Edit</a>
                 </Button>
               </TableCell>

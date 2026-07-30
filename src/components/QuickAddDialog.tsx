@@ -243,7 +243,7 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded }: QuickAdd
                     setCategory('');
                     setCategoryUserTouched(true);
                   }}
-                  className="inline-flex items-center gap-1 text-[11px] font-medium text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 transition"
+                  className="inline-flex items-center gap-1 text-[11px] font-medium text-mint-500 dark:text-mint-400 hover:text-mint-600 dark:hover:text-mint-300 transition"
                   title="Suggested based on your history — click to clear"
                 >
                   <Sparkles className="w-3 h-3" />
@@ -270,7 +270,7 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded }: QuickAdd
               placeholder={isAutoFilled && !categoryUserTouched ? 'Auto-suggested' : 'Auto from title or pick existing'}
               list="qa-category-list"
               autoComplete="off"
-              className={isAutoFilled && !categoryUserTouched ? 'border-violet-300 dark:border-violet-700 bg-violet-50/40 dark:bg-violet-950/20' : ''}
+              className={isAutoFilled && !categoryUserTouched ? 'border-mint-400/30 dark:border-mint-500/20 bg-mint-500/5/40 dark:bg-mint-500/10/20' : ''}
             />
             <datalist id="qa-category-list">
               {categories.map((c) => (
@@ -298,7 +298,7 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded }: QuickAdd
             </Badge>
           )}
           {status === 'duplicate' && (
-            <Badge variant="outline" className="w-full justify-start px-3 py-2 rounded-lg bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800">
+            <Badge variant="outline" className="w-full justify-start px-3 py-2 rounded-lg bg-gold-500/5 dark:bg-gold-700/20 text-gold-700 dark:text-gold-300 border-gold-400/20 dark:border-gold-700/40">
               Possible duplicate detected — similar entry in last 24h.
             </Badge>
           )}

@@ -172,8 +172,8 @@ export default function NetworthComposition({ data }: Props) {
         {/* Donut chart */}
         <div className="lg:col-span-3 glass-card p-6">
           <h2 className="text-lg font-semibold mb-2">Portfolio Allocation</h2>
-          <p className="text-xs text-white/60 mb-4">
-            {latest.month} · Total: <span className="font-semibold text-violet-600 dark:text-violet-400">{formatIdr(latest.total)}</span>
+          <p className="text-xs text-slate-600 dark:text-white/60 mb-4">
+            {latest.month} · Total: <span className="font-semibold text-gold-500 dark:text-gold-400">{formatIdr(latest.total)}</span>
           </p>
           {donutData ? (
             <div className="relative h-72">
@@ -192,7 +192,7 @@ export default function NetworthComposition({ data }: Props) {
               {metrics.map((m) => (
                 <div
                   key={m.key}
-                  className="p-3 rounded-lg border border-white/[0.06] hover:bg-white/[0.04] transition"
+                  className="p-3 rounded-lg border border-slate-200 dark:border-white/[0.06] hover:bg-slate-100 dark:bg-white/[0.04] transition"
                 >
                   <div className="flex items-center gap-2 mb-2">
                     <span

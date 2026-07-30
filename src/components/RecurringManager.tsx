@@ -175,7 +175,7 @@ export default function RecurringManager() {
   return (
     <div className="glass-card p-5">
       
-        <h3 className="text-white/80">Recurring Transactions</h3>
+        <h3 className="text-slate-800 dark:text-white/80">Recurring Transactions</h3>
         <Button size="sm" onClick={() => setIsAdding((v) => !v)}>
           {isAdding ? 'Cancel' : '+ Add Recurring'}
         </Button>
@@ -258,7 +258,7 @@ export default function RecurringManager() {
                   value={addForm.end_date}
                   onChange={(e) => setAddForm((p) => ({ ...p, end_date: e.target.value }))}
                 />
-                <p className="text-xs text-white/40">Stop auto-adding after this month (e.g., last installment)</p>
+                <p className="text-xs text-slate-500 dark:text-white/40">Stop auto-adding after this month (e.g., last installment)</p>
               </div>
               <div className="space-y-1.5">
                 <Label>Tgl Transaksi</Label>
@@ -269,7 +269,7 @@ export default function RecurringManager() {
                   value={addForm.created_at}
                   onChange={(e) => setAddForm((p) => ({ ...p, created_at: e.target.value }))}
                 />
-                <p className="text-xs text-white/40">Tanggal transaksi muncul tiap bulan (1-28, default: hari ini)</p>
+                <p className="text-xs text-slate-500 dark:text-white/40">Tanggal transaksi muncul tiap bulan (1-28, default: hari ini)</p>
               </div>
             </div>
             <div className="flex justify-end">
@@ -409,22 +409,22 @@ export default function RecurringManager() {
                       <TableCell className="text-xs">
                         {item.type === 'cash' ? 'Cash' : item.type === 'credit_expense' ? 'Credit' : 'Credit Pay'}
                       </TableCell>
-                      <TableCell className="text-xs text-white/40">
+                      <TableCell className="text-xs text-slate-500 dark:text-white/40">
                         {item.end_date || '—'}
                       </TableCell>
-                      <TableCell className="text-xs text-white/40">
+                      <TableCell className="text-xs text-slate-500 dark:text-white/40">
                         {item.created_at || '—'}
                       </TableCell>
                       <TableCell>
                         {item.done ? (
                           <span className="text-xs text-emerald-600 font-medium">Paid</span>
                         ) : (
-                          <span className="text-xs text-white/40">—</span>
+                          <span className="text-xs text-slate-500 dark:text-white/40">—</span>
                         )}
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-2">
-                          <Button variant="ghost" size="sm" className="h-7 text-xs text-blue-500 hover:text-blue-700" onClick={() => startEdit(item)}>
+                          <Button variant="ghost" size="sm" className="h-7 text-xs text-mint-500 hover:text-mint-600" onClick={() => startEdit(item)}>
                             Edit
                           </Button>
                           <Button variant="ghost" size="sm" className="h-7 text-xs text-red-500 hover:text-red-700" onClick={() => handleDelete(item.id)}>

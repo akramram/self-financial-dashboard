@@ -271,7 +271,7 @@ export default function PortfolioTracker() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-mint-500/40" />
       </div>
     );
   }
@@ -340,7 +340,7 @@ export default function PortfolioTracker() {
       {donutData && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="glass-card p-5 lg:col-span-1">
-            <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
+            <h3 className="text-base font-semibold flex items-center gap-2 text-slate-800 dark:text-white/80">
                 <PieChart className="w-4 h-4 text-slate-500" />
                 Allocation by Type
               </h3>
@@ -350,7 +350,7 @@ export default function PortfolioTracker() {
             </div>
 
           <div className="glass-card p-5 lg:col-span-2">
-            <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
+            <h3 className="text-base font-semibold flex items-center gap-2 text-slate-800 dark:text-white/80">
                 <Wallet className="w-4 h-4 text-slate-500" />
                 Breakdown by Type
               </h3>
@@ -415,11 +415,11 @@ export default function PortfolioTracker() {
       {/* Investments Table */}
       <div className="glass-card p-5">
         <div className="flex justify-between items-center">
-            <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
+            <h3 className="text-base font-semibold flex items-center gap-2 text-slate-800 dark:text-white/80">
               <Wallet className="w-4 h-4 text-slate-500" />
               Holdings ({investments.length})
             </h3>
-            <Button size="sm" onClick={openAdd} className="bg-emerald-600 hover:bg-emerald-700 text-white">
+            <Button size="sm" onClick={openAdd} className="bg-emerald-600 hover:bg-emerald-700 text-slate-900 dark:text-white">
               <Plus className="w-4 h-4 mr-1" />
               Add Holding
             </Button>
@@ -429,7 +429,7 @@ export default function PortfolioTracker() {
               <Wallet className="w-10 h-10 mx-auto mb-3 opacity-30" />
               <p className="text-sm font-medium">No investments tracked yet</p>
               <p className="text-xs mt-1">Add your first holding to start tracking your portfolio.</p>
-              <Button size="sm" onClick={openAdd} className="mt-4 bg-emerald-600 hover:bg-emerald-700 text-white">
+              <Button size="sm" onClick={openAdd} className="mt-4 bg-emerald-600 hover:bg-emerald-700 text-slate-900 dark:text-white">
                 <Plus className="w-4 h-4 mr-1" />
                 Add First Holding
               </Button>
@@ -640,7 +640,7 @@ export default function PortfolioTracker() {
             <Button
               onClick={handleSave}
               disabled={saving || !form.name}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              className="bg-emerald-600 hover:bg-emerald-700 text-slate-900 dark:text-white"
             >
               {saving ? 'Saving...' : editingId ? 'Save Changes' : 'Add Holding'}
             </Button>

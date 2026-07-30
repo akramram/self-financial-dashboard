@@ -119,7 +119,7 @@ export default function CategorySettings() {
   return (
     <div className="glass-card p-5">
       
-        <h3 className="text-white/80">Categories</h3>
+        <h3 className="text-slate-800 dark:text-white/80">Categories</h3>
         <Button size="sm" onClick={() => setIsAdding((v) => !v)}>
           {isAdding ? 'Cancel' : '+ Add Category'}
         </Button>
@@ -167,7 +167,7 @@ export default function CategorySettings() {
                         key={c}
                         type="button"
                         onClick={() => setAddForm((p) => ({ ...p, color: c }))}
-                        className="h-5 w-5 rounded-full border border-white/[0.06]"
+                        className="h-5 w-5 rounded-full border border-slate-200 dark:border-white/[0.06]"
                         style={{ backgroundColor: c }}
                       />
                     ))}
@@ -247,7 +247,7 @@ export default function CategorySettings() {
                     <TableRow key={cat.id}>
                       <TableCell>
                         <div
-                          className="h-5 w-5 rounded-full border border-white/[0.06]"
+                          className="h-5 w-5 rounded-full border border-slate-200 dark:border-white/[0.06]"
                           style={{ backgroundColor: cat.color }}
                         />
                       </TableCell>
@@ -257,7 +257,7 @@ export default function CategorySettings() {
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-2">
-                          <Button variant="ghost" size="sm" className="h-7 text-xs text-blue-500 hover:text-blue-700" onClick={() => startEdit(cat)}>
+                          <Button variant="ghost" size="sm" className="h-7 text-xs text-mint-500 hover:text-mint-600" onClick={() => startEdit(cat)}>
                             Edit
                           </Button>
                           <Button variant="ghost" size="sm" className="h-7 text-xs text-red-500 hover:text-red-700" onClick={() => handleDelete(cat.id)}>

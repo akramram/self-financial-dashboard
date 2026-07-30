@@ -242,17 +242,17 @@ export default function TransactionTable({ transactions, showMonth = true, perio
         <div className="flex flex-col sm:flex-row gap-3">
           {/* Search */}
           <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 pointer-events-none" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 dark:text-white/30 pointer-events-none" />
             <Input
               placeholder="Search title, category, notes..."
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              className="pl-9 bg-white/[0.04] border-white/[0.08] text-white/80 placeholder:text-white/25 focus-visible:ring-emerald-500/30"
+              className="pl-9 bg-slate-100 dark:bg-white/[0.04] border-slate-300 dark:border-white/[0.08] text-slate-800 dark:text-white/80 placeholder:text-slate-400 dark:text-white/25 focus-visible:ring-emerald-500/30"
             />
             {search && (
               <button
                 onClick={() => { setSearch(''); setPage(1); }}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-white/30 hover:text-slate-600 dark:text-white/60"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -261,10 +261,10 @@ export default function TransactionTable({ transactions, showMonth = true, perio
 
           {/* Type filter */}
           <Select value={filterType} onValueChange={(v) => { setFilterType(v); setPage(1); }}>
-            <SelectTrigger className="w-[150px] bg-white/[0.04] border-white/[0.08] text-white/70">
+            <SelectTrigger className="w-[150px] bg-slate-100 dark:bg-white/[0.04] border-slate-300 dark:border-white/[0.08] text-slate-700 dark:text-white/70">
               <SelectValue placeholder="All Types" />
             </SelectTrigger>
-            <SelectContent className="bg-navy-800 border-white/[0.08]">
+            <SelectContent className="bg-slate-100 dark:bg-navy-800 border-slate-300 dark:border-white/[0.08]">
               <SelectItem value="all">All Types</SelectItem>
               <SelectItem value="cash">💵 Cash</SelectItem>
               <SelectItem value="credit_expense">💳 Credit Expense</SelectItem>
@@ -274,10 +274,10 @@ export default function TransactionTable({ transactions, showMonth = true, perio
 
           {/* Period filter */}
           <Select value={filterPeriodId} onValueChange={(v) => { setFilterPeriodId(v); setPage(1); }}>
-            <SelectTrigger className="w-[180px] bg-white/[0.04] border-white/[0.08] text-white/70">
+            <SelectTrigger className="w-[180px] bg-slate-100 dark:bg-white/[0.04] border-slate-300 dark:border-white/[0.08] text-slate-700 dark:text-white/70">
               <SelectValue placeholder="All Periods" />
             </SelectTrigger>
-            <SelectContent className="bg-navy-800 border-white/[0.08] max-h-[300px]">
+            <SelectContent className="bg-slate-100 dark:bg-navy-800 border-slate-300 dark:border-white/[0.08] max-h-[300px]">
               <SelectItem value="all">All Periods</SelectItem>
               {monthOptions.map((p) => (
                 <SelectItem key={p.period_id} value={p.period_id.toString()}>{p.month}</SelectItem>
@@ -317,7 +317,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
               document.body.removeChild(a);
               URL.revokeObjectURL(url);
             }}
-            className="gap-1.5 text-white/50 hover:text-white/80 hover:bg-white/[0.06] h-9"
+            className="gap-1.5 text-slate-600 dark:text-white/50 hover:text-slate-800 dark:text-white/80 hover:bg-slate-200/60 dark:bg-white/[0.06] h-9"
           >
             <Download className="w-3.5 h-3.5" />
             Export
@@ -329,7 +329,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
               size="sm"
               variant="ghost"
               onClick={clearFilters}
-              className="gap-1.5 text-white/50 hover:text-white/80 hover:bg-white/[0.06] h-9"
+              className="gap-1.5 text-slate-600 dark:text-white/50 hover:text-slate-800 dark:text-white/80 hover:bg-slate-200/60 dark:bg-white/[0.06] h-9"
             >
               <X className="w-3.5 h-3.5" />
               Clear ({activeFilterCount})
@@ -346,7 +346,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
             className={`gap-1.5 text-xs h-7 transition-colors ${
               advancedOpen || hasAdvancedFilters
                 ? 'text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/15'
-                : 'text-white/40 hover:text-white/60 hover:bg-white/[0.04]'
+                : 'text-slate-500 dark:text-white/40 hover:text-slate-600 dark:text-white/60 hover:bg-slate-100 dark:bg-white/[0.04]'
             }`}
           >
             <SlidersHorizontal className="w-3 h-3" />
@@ -360,25 +360,25 @@ export default function TransactionTable({ transactions, showMonth = true, perio
           {hasAdvancedFilters && !advancedOpen && (
             <div className="flex items-center gap-2 flex-wrap">
               {dateFrom && (
-                <Badge variant="outline" className="text-[10px] py-0 h-5 gap-1 border-white/[0.08] text-white/50">
+                <Badge variant="outline" className="text-[10px] py-0 h-5 gap-1 border-slate-300 dark:border-white/[0.08] text-slate-600 dark:text-white/50">
                   From: {dateFrom}
                   <button onClick={() => setDateFrom('')}><X className="w-2.5 h-2.5" /></button>
                 </Badge>
               )}
               {dateTo && (
-                <Badge variant="outline" className="text-[10px] py-0 h-5 gap-1 border-white/[0.08] text-white/50">
+                <Badge variant="outline" className="text-[10px] py-0 h-5 gap-1 border-slate-300 dark:border-white/[0.08] text-slate-600 dark:text-white/50">
                   To: {dateTo}
                   <button onClick={() => setDateTo('')}><X className="w-2.5 h-2.5" /></button>
                 </Badge>
               )}
               {amountMin && (
-                <Badge variant="outline" className="text-[10px] py-0 h-5 gap-1 border-white/[0.08] text-white/50">
+                <Badge variant="outline" className="text-[10px] py-0 h-5 gap-1 border-slate-300 dark:border-white/[0.08] text-slate-600 dark:text-white/50">
                   ≥ {formatIdr(parseFloat(amountMin))}
                   <button onClick={() => setAmountMin('')}><X className="w-2.5 h-2.5" /></button>
                 </Badge>
               )}
               {amountMax && (
-                <Badge variant="outline" className="text-[10px] py-0 h-5 gap-1 border-white/[0.08] text-white/50">
+                <Badge variant="outline" className="text-[10px] py-0 h-5 gap-1 border-slate-300 dark:border-white/[0.08] text-slate-600 dark:text-white/50">
                   ≤ {formatIdr(parseFloat(amountMax))}
                   <button onClick={() => setAmountMax('')}><X className="w-2.5 h-2.5" /></button>
                 </Badge>
@@ -401,7 +401,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                 <div className="flex flex-col sm:flex-row gap-4">
                   {/* Date range */}
                   <div className="flex-1">
-                    <label className="text-[10px] font-medium text-white/30 uppercase tracking-wider mb-2 block">
+                    <label className="text-[10px] font-medium text-slate-500 dark:text-white/30 uppercase tracking-wider mb-2 block">
                       Date Range
                     </label>
                     <div className="flex items-center gap-2">
@@ -409,43 +409,43 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                         type="date"
                         value={dateFrom}
                         onChange={(e) => { setDateFrom(e.target.value); setPage(1); }}
-                        className="flex-1 bg-white/[0.04] border-white/[0.08] text-white/70 text-xs h-8"
+                        className="flex-1 bg-slate-100 dark:bg-white/[0.04] border-slate-300 dark:border-white/[0.08] text-slate-700 dark:text-white/70 text-xs h-8"
                       />
-                      <span className="text-white/20 text-xs">→</span>
+                      <span className="text-slate-400 dark:text-white/20 text-xs">→</span>
                       <Input
                         type="date"
                         value={dateTo}
                         onChange={(e) => { setDateTo(e.target.value); setPage(1); }}
-                        className="flex-1 bg-white/[0.04] border-white/[0.08] text-white/70 text-xs h-8"
+                        className="flex-1 bg-slate-100 dark:bg-white/[0.04] border-slate-300 dark:border-white/[0.08] text-slate-700 dark:text-white/70 text-xs h-8"
                       />
                     </div>
                   </div>
 
                   {/* Amount range */}
                   <div className="flex-1">
-                    <label className="text-[10px] font-medium text-white/30 uppercase tracking-wider mb-2 block">
+                    <label className="text-[10px] font-medium text-slate-500 dark:text-white/30 uppercase tracking-wider mb-2 block">
                       Amount Range
                     </label>
                     <div className="flex items-center gap-2">
                       <div className="relative flex-1">
-                        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-white/20 text-xs">Rp</span>
+                        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white/20 text-xs">Rp</span>
                         <Input
                           type="number"
                           placeholder="Min"
                           value={amountMin}
                           onChange={(e) => { setAmountMin(e.target.value); setPage(1); }}
-                          className="pl-8 bg-white/[0.04] border-white/[0.08] text-white/70 text-xs h-8"
+                          className="pl-8 bg-slate-100 dark:bg-white/[0.04] border-slate-300 dark:border-white/[0.08] text-slate-700 dark:text-white/70 text-xs h-8"
                         />
                       </div>
-                      <span className="text-white/20 text-xs">→</span>
+                      <span className="text-slate-400 dark:text-white/20 text-xs">→</span>
                       <div className="relative flex-1">
-                        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-white/20 text-xs">Rp</span>
+                        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white/20 text-xs">Rp</span>
                         <Input
                           type="number"
                           placeholder="Max"
                           value={amountMax}
                           onChange={(e) => { setAmountMax(e.target.value); setPage(1); }}
-                          className="pl-8 bg-white/[0.04] border-white/[0.08] text-white/70 text-xs h-8"
+                          className="pl-8 bg-slate-100 dark:bg-white/[0.04] border-slate-300 dark:border-white/[0.08] text-slate-700 dark:text-white/70 text-xs h-8"
                         />
                       </div>
                     </div>
@@ -453,8 +453,8 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                 </div>
 
                 {/* Quick presets */}
-                <div className="flex items-center gap-2 mt-3 pt-3 border-t border-white/[0.05]">
-                  <span className="text-[10px] font-medium text-white/25 uppercase tracking-wider">Presets:</span>
+                <div className="flex items-center gap-2 mt-3 pt-3 border-t border-slate-200 dark:border-white/[0.05]">
+                  <span className="text-[10px] font-medium text-slate-400 dark:text-white/25 uppercase tracking-wider">Presets:</span>
                   {[
                     { label: 'This Month', dateFrom: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().slice(0, 10), dateTo: '' },
                     { label: 'Last Month', dateFrom: new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).toISOString().slice(0, 10), dateTo: new Date(new Date().getFullYear(), new Date().getMonth(), 0).toISOString().slice(0, 10) },
@@ -466,7 +466,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                       size="sm"
                       variant="ghost"
                       onClick={() => { setDateFrom(preset.dateFrom); setDateTo(preset.dateTo); setPage(1); }}
-                      className="h-6 text-[10px] px-2 text-white/40 hover:text-white/70 hover:bg-white/[0.06]"
+                      className="h-6 text-[10px] px-2 text-slate-500 dark:text-white/40 hover:text-slate-700 dark:text-white/70 hover:bg-slate-200/60 dark:bg-white/[0.06]"
                     >
                       {preset.label}
                     </Button>
@@ -475,7 +475,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                     size="sm"
                     variant="ghost"
                     onClick={() => { setDateFrom(''); setDateTo(''); setAmountMin(''); setAmountMax(''); setPage(1); }}
-                    className="h-6 text-[10px] px-2 text-white/25 hover:text-white/50 ml-auto"
+                    className="h-6 text-[10px] px-2 text-slate-400 dark:text-white/25 hover:text-slate-600 dark:text-white/50 ml-auto"
                   >
                     Clear
                   </Button>
@@ -488,10 +488,10 @@ export default function TransactionTable({ transactions, showMonth = true, perio
 
       {/* ─── Summary Bar ────────────────────────────────────────── */}
       <div className="flex items-center justify-between mb-4">
-        <p className="text-xs text-white/30">
-          <span className="text-white/60 font-semibold">{filtered.length.toLocaleString()}</span> transaction{filtered.length !== 1 ? 's' : ''}
+        <p className="text-xs text-slate-500 dark:text-white/30">
+          <span className="text-slate-600 dark:text-white/60 font-semibold">{filtered.length.toLocaleString()}</span> transaction{filtered.length !== 1 ? 's' : ''}
           {filtered.length !== transactions.length && (
-            <span className="text-white/20"> / {transactions.length.toLocaleString()} total</span>
+            <span className="text-slate-400 dark:text-white/20"> / {transactions.length.toLocaleString()} total</span>
           )}
         </p>
       </div>
@@ -509,23 +509,23 @@ export default function TransactionTable({ transactions, showMonth = true, perio
             <div className="flex items-center gap-3 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
               <span className="text-xs font-semibold text-emerald-400">{selected.size} selected</span>
               <Select value={bulkCategory} onValueChange={setBulkCategory}>
-                <SelectTrigger className="w-[180px] h-8 text-xs bg-white/[0.04] border-white/[0.08] text-white/60">
+                <SelectTrigger className="w-[180px] h-8 text-xs bg-slate-100 dark:bg-white/[0.04] border-slate-300 dark:border-white/[0.08] text-slate-600 dark:text-white/60">
                   <SelectValue placeholder="Change category..." />
                 </SelectTrigger>
-                <SelectContent className="bg-navy-800 border-white/[0.08]">
+                <SelectContent className="bg-slate-100 dark:bg-navy-800 border-slate-300 dark:border-white/[0.08]">
                   {categories.map((c) => (
                     <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
               <Button size="sm" variant="outline" onClick={handleBulkCategory} disabled={!bulkCategory}
-                className="h-8 text-xs border-white/[0.08] text-white/60 hover:bg-white/[0.06] hover:text-white"
+                className="h-8 text-xs border-slate-300 dark:border-white/[0.08] text-slate-600 dark:text-white/60 hover:bg-slate-200/60 dark:bg-white/[0.06] hover:text-slate-900 dark:text-white"
               >
                 Apply
               </Button>
               <div className="flex-1" />
               <Button size="sm" variant="ghost" onClick={() => setSelected(new Set())}
-                className="h-8 text-xs text-white/40 hover:text-white/70"
+                className="h-8 text-xs text-slate-500 dark:text-white/40 hover:text-slate-700 dark:text-white/70"
               >
                 Deselect
               </Button>
@@ -543,10 +543,10 @@ export default function TransactionTable({ transactions, showMonth = true, perio
       </AnimatePresence>
 
       {/* ─── Table ───────────────────────────────────────────────── */}
-      <div className="overflow-x-auto rounded-xl border border-white/[0.06]">
+      <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-white/[0.06]">
         <Table>
           <TableHeader>
-            <TableRow className="bg-white/[0.02] border-white/[0.06] hover:bg-white/[0.02]">
+            <TableRow className="bg-slate-100 dark:bg-white/[0.02] border-slate-200 dark:border-white/[0.06] hover:bg-slate-100 dark:bg-white/[0.02]">
               <TableHead className="w-10 py-3">
                 <Checkbox
                   checked={selected.size === pageRows.length && pageRows.length > 0}
@@ -554,20 +554,20 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                   aria-label="Select all"
                 />
               </TableHead>
-              <SortableHeader sortKey="paid" currentDirection={isSorted('paid')} onSort={toggleSort} className="text-white/40">Paid</SortableHeader>
-              {showMonth && <SortableHeader sortKey="month" currentDirection={isSorted('month')} onSort={toggleSort} className="text-white/40">Month</SortableHeader>}
-              <SortableHeader sortKey="title" currentDirection={isSorted('title')} onSort={toggleSort} className="text-white/40">Title</SortableHeader>
-              <SortableHeader sortKey="category" currentDirection={isSorted('category')} onSort={toggleSort} className="text-white/40">Category</SortableHeader>
-              <SortableHeader sortKey="date" currentDirection={isSorted('date')} onSort={toggleSort} className="text-white/40">Date</SortableHeader>
-              <SortableHeader sortKey="amount" currentDirection={isSorted('amount')} onSort={toggleSort} className="text-right text-white/40">Amount</SortableHeader>
-              <SortableHeader sortKey="type" currentDirection={isSorted('type')} onSort={toggleSort} className="text-white/40">Type</SortableHeader>
-              <TableHead className="text-white/40"></TableHead>
+              <SortableHeader sortKey="paid" currentDirection={isSorted('paid')} onSort={toggleSort} className="text-slate-500 dark:text-white/40">Paid</SortableHeader>
+              {showMonth && <SortableHeader sortKey="month" currentDirection={isSorted('month')} onSort={toggleSort} className="text-slate-500 dark:text-white/40">Month</SortableHeader>}
+              <SortableHeader sortKey="title" currentDirection={isSorted('title')} onSort={toggleSort} className="text-slate-500 dark:text-white/40">Title</SortableHeader>
+              <SortableHeader sortKey="category" currentDirection={isSorted('category')} onSort={toggleSort} className="text-slate-500 dark:text-white/40">Category</SortableHeader>
+              <SortableHeader sortKey="date" currentDirection={isSorted('date')} onSort={toggleSort} className="text-slate-500 dark:text-white/40">Date</SortableHeader>
+              <SortableHeader sortKey="amount" currentDirection={isSorted('amount')} onSort={toggleSort} className="text-right text-slate-500 dark:text-white/40">Amount</SortableHeader>
+              <SortableHeader sortKey="type" currentDirection={isSorted('type')} onSort={toggleSort} className="text-slate-500 dark:text-white/40">Type</SortableHeader>
+              <TableHead className="text-slate-500 dark:text-white/40"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {pageRows.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={showMonth ? 9 : 8} className="text-center py-12 text-white/25 text-sm">
+                <TableCell colSpan={showMonth ? 9 : 8} className="text-center py-12 text-slate-400 dark:text-white/25 text-sm">
                   <Filter className="w-8 h-8 mx-auto mb-3 opacity-30" />
                   No transactions found
                   {activeFilterCount > 0 && (
@@ -588,21 +588,21 @@ export default function TransactionTable({ transactions, showMonth = true, perio
 
                 const typeColorClass =
                   row.type === 'cash'
-                    ? 'text-blue-400'
+                    ? 'text-mint-400'
                     : row.type === 'credit_payment'
-                    ? 'text-amber-400'
-                    : 'text-purple-400';
+                    ? 'text-gold-400'
+                    : 'text-coral-400';
                 const typeBgClass =
                   row.type === 'cash'
-                    ? 'bg-blue-500/10'
+                    ? 'bg-mint-500/30/10'
                     : row.type === 'credit_payment'
-                    ? 'bg-amber-500/10'
-                    : 'bg-purple-500/10';
+                    ? 'bg-gold-500/10'
+                    : 'bg-coral-500/10';
                 const typeLabel =
                   row.type === 'cash' ? 'Cash' : row.type === 'credit_payment' ? 'Credit Pay' : 'Credit';
 
                 return (
-                  <TableRow key={row.id} className="border-white/[0.04] hover:bg-white/[0.02] transition-colors">
+                  <TableRow key={row.id} className="border-slate-200 dark:border-white/[0.04] hover:bg-slate-100 dark:bg-white/[0.02] transition-colors">
                     <TableCell className="py-2.5">
                       <Checkbox
                         checked={selected.has(row.id)}
@@ -625,20 +625,20 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                         {row.done ? 'Paid' : 'Unpaid'}
                       </button>
                     </TableCell>
-                    {showMonth && <TableCell className="py-2.5 text-white/60 text-sm">{periodIdToMonth.get(row.period_id) || ''}</TableCell>}
+                    {showMonth && <TableCell className="py-2.5 text-slate-600 dark:text-white/60 text-sm">{periodIdToMonth.get(row.period_id) || ''}</TableCell>}
                     <TableCell className="py-2.5">
-                      <span className="text-white/80">{row.title}</span>
+                      <span className="text-slate-800 dark:text-white/80">{row.title}</span>
                       {row.notes && (
-                        <StickyNote className="inline ml-1.5 align-middle w-3 h-3 text-amber-400 shrink-0" title={row.notes} />
+                        <StickyNote className="inline ml-1.5 align-middle w-3 h-3 text-gold-400 shrink-0" title={row.notes} />
                       )}
                     </TableCell>
                     <TableCell className="py-2.5">
-                      <Badge variant="secondary" className="text-[10px] bg-white/[0.06] text-white/60 border-white/[0.06] font-normal">
+                      <Badge variant="secondary" className="text-[10px] bg-slate-200/60 dark:bg-white/[0.06] text-slate-600 dark:text-white/60 border-slate-200 dark:border-white/[0.06] font-normal">
                         {row.category}
                       </Badge>
                     </TableCell>
-                    <TableCell className="py-2.5 text-white/40 text-xs whitespace-nowrap">{dateStr}</TableCell>
-                    <TableCell className="py-2.5 font-semibold text-right text-white/80 tabular-nums whitespace-nowrap">{formatIdr(row.amount)}</TableCell>
+                    <TableCell className="py-2.5 text-slate-500 dark:text-white/40 text-xs whitespace-nowrap">{dateStr}</TableCell>
+                    <TableCell className="py-2.5 font-semibold text-right text-slate-800 dark:text-white/80 tabular-nums whitespace-nowrap">{formatIdr(row.amount)}</TableCell>
                     <TableCell className="py-2.5">
                       <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase ${typeColorClass} ${typeBgClass}`}>
                         {typeLabel}
@@ -650,7 +650,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                           size="sm"
                           variant="ghost"
                           onClick={() => { setEditingId(row.id); setEditForm({ ...row }); }}
-                          className="h-7 text-xs text-white/50 hover:text-white hover:bg-white/[0.06]"
+                          className="h-7 text-xs text-slate-600 dark:text-white/50 hover:text-slate-900 dark:text-white hover:bg-slate-200/60 dark:bg-white/[0.06]"
                         >
                           Edit
                         </Button>
@@ -668,7 +668,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                             await deleteTransactionApi(row.id);
                             window.location.reload();
                           }}
-                          className="h-7 text-xs text-white/30 hover:text-red-400 hover:bg-red-500/10"
+                          className="h-7 text-xs text-slate-500 dark:text-white/30 hover:text-red-400 hover:bg-red-500/10"
                         >
                           Delete
                         </Button>
@@ -684,7 +684,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
 
       {/* ─── Pagination ─────────────────────────────────────────── */}
       <div className="flex items-center justify-between mt-4">
-        <p className="text-xs text-white/30">
+        <p className="text-xs text-slate-500 dark:text-white/30">
           {filtered.length > 0
             ? `Showing ${(safePage - 1) * rowsPerPage + 1}–${Math.min(safePage * rowsPerPage, filtered.length)} of ${filtered.length}`
             : 'No results'}
@@ -695,7 +695,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
             variant="outline"
             onClick={() => setPage(1)}
             disabled={safePage <= 1}
-            className="h-7 text-xs border-white/[0.08] text-white/40 hover:bg-white/[0.06] disabled:opacity-20"
+            className="h-7 text-xs border-slate-300 dark:border-white/[0.08] text-slate-500 dark:text-white/40 hover:bg-slate-200/60 dark:bg-white/[0.06] disabled:opacity-20"
           >
             First
           </Button>
@@ -704,19 +704,19 @@ export default function TransactionTable({ transactions, showMonth = true, perio
             variant="outline"
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={safePage <= 1}
-            className="h-7 text-xs border-white/[0.08] text-white/40 hover:bg-white/[0.06] disabled:opacity-20"
+            className="h-7 text-xs border-slate-300 dark:border-white/[0.08] text-slate-500 dark:text-white/40 hover:bg-slate-200/60 dark:bg-white/[0.06] disabled:opacity-20"
           >
             Prev
           </Button>
-          <span className="text-xs text-white/40 min-w-[5rem] text-center tabular-nums">
-            {safePage} <span className="text-white/15">/</span> {totalPages}
+          <span className="text-xs text-slate-500 dark:text-white/40 min-w-[5rem] text-center tabular-nums">
+            {safePage} <span className="text-slate-300 dark:text-white/15">/</span> {totalPages}
           </span>
           <Button
             size="sm"
             variant="outline"
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={safePage >= totalPages}
-            className="h-7 text-xs border-white/[0.08] text-white/40 hover:bg-white/[0.06] disabled:opacity-20"
+            className="h-7 text-xs border-slate-300 dark:border-white/[0.08] text-slate-500 dark:text-white/40 hover:bg-slate-200/60 dark:bg-white/[0.06] disabled:opacity-20"
           >
             Next
           </Button>
@@ -725,7 +725,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
             variant="outline"
             onClick={() => setPage(totalPages)}
             disabled={safePage >= totalPages}
-            className="h-7 text-xs border-white/[0.08] text-white/40 hover:bg-white/[0.06] disabled:opacity-20"
+            className="h-7 text-xs border-slate-300 dark:border-white/[0.08] text-slate-500 dark:text-white/40 hover:bg-slate-200/60 dark:bg-white/[0.06] disabled:opacity-20"
           >
             Last
           </Button>

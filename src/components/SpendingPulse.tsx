@@ -117,11 +117,11 @@ export default function SpendingPulse({ summaries, activeMonth }: Props) {
       badge: 'Under Pace',
     },
     'on-track': {
-      color: 'text-amber-600 dark:text-amber-400',
-      bg: 'bg-amber-50 dark:bg-amber-900/20',
-      border: 'border-amber-200 dark:border-amber-800',
-      bar: 'bg-amber-500',
-      track: 'bg-amber-100 dark:bg-amber-800/50',
+      color: 'text-gold-600 dark:text-gold-400',
+      bg: 'bg-gold-500/5 dark:bg-gold-700/20/20',
+      border: 'border-gold-400/20 dark:border-gold-700/40',
+      bar: 'bg-gold-500/50',
+      track: 'bg-gold-500/10 dark:bg-gold-700/20/50',
       icon: <Activity className="w-5 h-5" />,
       label: 'Spending on pace with the period',
       badge: 'On Track',
@@ -179,7 +179,7 @@ export default function SpendingPulse({ summaries, activeMonth }: Props) {
 
           {/* Key metrics */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 pt-1">
-            <div className="bg-white/60 dark:bg-slate-800/60 rounded-lg p-2.5">
+            <div className="bg-slate-200 dark:bg-white/60 dark:bg-slate-800/60 rounded-lg p-2.5">
               <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 mb-1">
                 <Clock className="w-3.5 h-3.5" />
                 Time Elapsed
@@ -189,7 +189,7 @@ export default function SpendingPulse({ summaries, activeMonth }: Props) {
               </p>
               <p className="text-xs text-slate-500">{pulse.pctTimeElapsed.toFixed(0)}% through period</p>
             </div>
-            <div className="bg-white/60 dark:bg-slate-800/60 rounded-lg p-2.5">
+            <div className="bg-slate-200 dark:bg-white/60 dark:bg-slate-800/60 rounded-lg p-2.5">
               <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 mb-1">
                 <Activity className="w-3.5 h-3.5" />
                 Spend vs Expected
@@ -202,31 +202,31 @@ export default function SpendingPulse({ summaries, activeMonth }: Props) {
               </p>
             </div>
             {(pulse.cash > 0 || pulse.credit > 0) && (
-              <div className="bg-white/60 dark:bg-slate-800/60 rounded-lg p-2.5">
+              <div className="bg-slate-200 dark:bg-white/60 dark:bg-slate-800/60 rounded-lg p-2.5">
                 <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 mb-1">
                   <CreditCard className="w-3.5 h-3.5" />
                   Cash vs Credit
                 </div>
                 <div className="flex items-baseline gap-2 mb-1">
-                  <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">
+                  <span className="text-sm font-semibold text-mint-500 dark:text-mint-400">
                     {formatIdr(pulse.cash)}
                   </span>
                   <span className="text-slate-400 dark:text-slate-500">/</span>
-                  <span className="text-sm font-semibold text-amber-600 dark:text-amber-400">
+                  <span className="text-sm font-semibold text-gold-600 dark:text-gold-400">
                     {formatIdr(pulse.credit)}
                   </span>
                 </div>
                 <div className="flex gap-0.5 text-[10px] text-slate-500 mb-1">
-                  <span className="text-blue-500">● Cash</span>
-                  <span className="text-amber-500 ml-1">● Credit</span>
+                  <span className="text-mint-500">● Cash</span>
+                  <span className="text-gold-500 ml-1">● Credit</span>
                 </div>
                 <div className="flex-1 bg-slate-200 dark:bg-slate-700 rounded-full h-1.5 overflow-hidden flex">
                   <div
-                    className="bg-blue-500 h-1.5 rounded-l-full transition-all"
+                    className="bg-mint-500/30 h-1.5 rounded-l-full transition-all"
                     style={{ width: `${(pulse.cash / Math.max(1, pulse.cash + pulse.credit)) * 100}%` }}
                   />
                   <div
-                    className="bg-amber-500 h-1.5 rounded-r-full transition-all"
+                    className="bg-gold-500/50 h-1.5 rounded-r-full transition-all"
                     style={{ width: `${(pulse.credit / Math.max(1, pulse.cash + pulse.credit)) * 100}%` }}
                   />
                 </div>
@@ -297,7 +297,7 @@ export default function SpendingPulse({ summaries, activeMonth }: Props) {
           <span className="w-16 text-slate-500 dark:text-slate-400 shrink-0">Time</span>
           <div className="flex-1 bg-slate-200 dark:bg-slate-700 rounded-full h-1.5">
             <div
-              className="bg-blue-400 dark:bg-blue-500 h-1.5 rounded-full transition-all"
+              className="bg-mint-400 dark:bg-mint-500/30 h-1.5 rounded-full transition-all"
               style={{ width: `${pulse.pctTimeElapsed}%` }}
             />
           </div>
@@ -323,7 +323,7 @@ export default function SpendingPulse({ summaries, activeMonth }: Props) {
                 (pulse.actualSpend / pulse.income) * 100 < 50
                   ? 'bg-emerald-500'
                   : (pulse.actualSpend / pulse.income) * 100 <= 80
-                    ? 'bg-amber-500'
+                    ? 'bg-gold-500/50'
                     : 'bg-red-500'
               }`}
               style={{ width: `${Math.min(100, (pulse.actualSpend / pulse.income) * 100)}%` }}
@@ -333,7 +333,7 @@ export default function SpendingPulse({ summaries, activeMonth }: Props) {
             (pulse.actualSpend / pulse.income) * 100 < 50
               ? 'text-emerald-600 dark:text-emerald-400'
               : (pulse.actualSpend / pulse.income) * 100 <= 80
-                ? 'text-amber-600 dark:text-amber-400'
+                ? 'text-gold-600 dark:text-gold-400'
                 : 'text-red-600 dark:text-red-400'
           }`}>
             {((pulse.actualSpend / pulse.income) * 100).toFixed(0)}%

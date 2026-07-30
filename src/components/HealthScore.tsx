@@ -91,29 +91,29 @@ function ScoreGauge({ score, grade, gradeColor }: { score: number; grade: string
   const bgColor = gradeColor === 'emerald' || gradeColor === 'green'
     ? 'bg-emerald-50 dark:bg-emerald-950/30'
     : gradeColor === 'yellow' || gradeColor === 'amber'
-      ? 'bg-amber-50 dark:bg-amber-950/30'
+      ? 'bg-gold-500/5 dark:bg-gold-700/10'
       : gradeColor === 'orange'
-        ? 'bg-orange-50 dark:bg-orange-950/30'
+        ? 'bg-coral-500/5 dark:bg-coral-700/10/30'
         : 'bg-red-50 dark:bg-red-950/30';
 
   const textColor = gradeColor === 'emerald' || gradeColor === 'green'
     ? 'text-emerald-700 dark:text-emerald-300'
     : gradeColor === 'yellow' || gradeColor === 'amber'
-      ? 'text-amber-700 dark:text-amber-300'
+      ? 'text-gold-700 dark:text-gold-300'
       : gradeColor === 'orange'
-        ? 'text-orange-700 dark:text-orange-300'
+        ? 'text-coral-600 dark:text-coral-300'
         : 'text-red-700 dark:text-red-300';
 
   const badgeBg = gradeColor === 'emerald' || gradeColor === 'green'
     ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200'
     : gradeColor === 'yellow' || gradeColor === 'amber'
-      ? 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200'
+      ? 'bg-gold-500/10 text-gold-700 dark:bg-gold-700/20 dark:text-gold-200'
       : gradeColor === 'orange'
-        ? 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200'
+        ? 'bg-coral-500/10 text-coral-600 dark:bg-coral-700/20 dark:text-coral-300'
         : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
 
   return (
-    <div className={`flex flex-col items-center justify-center p-8 rounded-2xl ${bgColor} border border-white/[0.06]`}>
+    <div className={`flex flex-col items-center justify-center p-8 rounded-2xl ${bgColor} border border-slate-200 dark:border-white/[0.06]`}>
       <div className="relative">
         <svg height={radius * 2} width={radius * 2} className="-rotate-90">
           {/* Background circle */}
@@ -121,7 +121,7 @@ function ScoreGauge({ score, grade, gradeColor }: { score: number; grade: string
             stroke="currentColor"
             fill="transparent"
             strokeWidth={stroke}
-            className="text-white/15"
+            className="text-slate-300 dark:text-white/15"
             r={normalizedRadius}
             cx={radius}
             cy={radius}
@@ -141,13 +141,13 @@ function ScoreGauge({ score, grade, gradeColor }: { score: number; grade: string
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center rotate-0">
           <span className={`text-4xl font-bold ${textColor}`}>{score}</span>
-          <span className="text-xs text-white/50">/ 100</span>
+          <span className="text-xs text-slate-600 dark:text-white/50">/ 100</span>
         </div>
       </div>
       <div className="mt-4 flex items-center gap-2">
         <Badge className={`${badgeBg} text-lg px-3 py-1`}>{grade}</Badge>
       </div>
-      <p className="mt-2 text-sm text-white/60">Financial Health Score</p>
+      <p className="mt-2 text-sm text-slate-600 dark:text-white/60">Financial Health Score</p>
     </div>
   );
 }
@@ -157,9 +157,9 @@ function FactorIcon({ icon, score, maxScore }: { icon: string; score: number; ma
   const color = pct >= 80
     ? 'text-emerald-500'
     : pct >= 60
-      ? 'text-amber-500'
+      ? 'text-gold-500'
       : pct >= 40
-        ? 'text-orange-500'
+        ? 'text-coral-500/50'
         : 'text-red-500';
 
   const iconMap: Record<string, React.ReactNode> = {
@@ -178,9 +178,9 @@ function FactorCard({ factor }: { factor: HealthFactor }) {
   const barColor = pct >= 80
     ? 'bg-emerald-500'
     : pct >= 60
-      ? 'bg-amber-500'
+      ? 'bg-gold-500/50'
       : pct >= 40
-        ? 'bg-orange-500'
+        ? 'bg-coral-500/50'
         : 'bg-red-500';
 
   return (
@@ -188,23 +188,23 @@ function FactorCard({ factor }: { factor: HealthFactor }) {
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <FactorIcon icon={factor.icon} score={factor.score} maxScore={factor.maxScore} />
-          <span className="font-medium text-sm text-white/70">{factor.name}</span>
+          <span className="font-medium text-sm text-slate-700 dark:text-white/70">{factor.name}</span>
         </div>
         <div className="text-right">
-          <span className="text-sm font-bold text-white/80">{factor.score}</span>
-          <span className="text-xs text-white/40">/{factor.maxScore}</span>
+          <span className="text-sm font-bold text-slate-800 dark:text-white/80">{factor.score}</span>
+          <span className="text-xs text-slate-500 dark:text-white/40">/{factor.maxScore}</span>
         </div>
       </div>
-      <div className="w-full bg-white/[0.05] rounded-full h-2 mb-2">
+      <div className="w-full bg-slate-100 dark:bg-white/[0.05] rounded-full h-2 mb-2">
         <div
           className={`${barColor} h-2 rounded-full transition-all duration-700`}
           style={{ width: `${pct}%` }}
         />
       </div>
       <div className="flex justify-between items-center">
-        <span className="text-xs text-white/50">{factor.label}</span>
+        <span className="text-xs text-slate-600 dark:text-white/50">{factor.label}</span>
       </div>
-      <p className="text-xs text-white/50 mt-1">{factor.detail}</p>
+      <p className="text-xs text-slate-600 dark:text-white/50 mt-1">{factor.detail}</p>
     </div>
   );
 }
@@ -285,8 +285,8 @@ export default function HealthScore({ summaries, categories }: Props) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500" />
-        <span className="ml-3 text-white/50">Calculating health score...</span>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-mint-500/40" />
+        <span className="ml-3 text-slate-600 dark:text-white/50">Calculating health score...</span>
       </div>
     );
   }
@@ -295,9 +295,9 @@ export default function HealthScore({ summaries, categories }: Props) {
     return (
       <div className="glass-card p-5">
         
-          <Heart className="mx-auto h-12 w-12 text-white/30 mb-4" />
-          <p className="text-white/50">Not enough data to calculate health score.</p>
-          <p className="text-sm text-white/40 mt-1">Add transactions and income data to get started.</p>
+          <Heart className="mx-auto h-12 w-12 text-slate-500 dark:text-white/30 mb-4" />
+          <p className="text-slate-600 dark:text-white/50">Not enough data to calculate health score.</p>
+          <p className="text-sm text-slate-500 dark:text-white/40 mt-1">Add transactions and income data to get started.</p>
         
       </div>
     );
@@ -307,7 +307,7 @@ export default function HealthScore({ summaries, categories }: Props) {
     <div className="space-y-6">
       {/* Month selector */}
       <div className="flex items-center gap-3">
-        <label className="text-sm font-medium text-white/60">Period:</label>
+        <label className="text-sm font-medium text-slate-600 dark:text-white/60">Period:</label>
         <Select value={selectedMonth} onValueChange={setSelectedMonth}>
           <SelectTrigger className="w-[180px]">
             <SelectValue />
@@ -319,7 +319,7 @@ export default function HealthScore({ summaries, categories }: Props) {
             ))}
           </SelectContent>
         </Select>
-        <span className="text-xs text-white/40 ml-2">
+        <span className="text-xs text-slate-500 dark:text-white/40 ml-2">
           {healthData.month}
         </span>
       </div>
@@ -352,8 +352,8 @@ export default function HealthScore({ summaries, categories }: Props) {
                 </>
               ) : (
                 <>
-                  <Minus className="text-white/50" />
-                  <span className="text-sm font-medium text-white/60">
+                  <Minus className="text-slate-600 dark:text-white/50" />
+                  <span className="text-sm font-medium text-slate-600 dark:text-white/60">
                     No change from last month
                   </span>
                 </>
@@ -365,14 +365,14 @@ export default function HealthScore({ summaries, categories }: Props) {
         {/* History Chart */}
         <div className="lg:col-span-2 glass-card p-6">
           <div className="flex items-center gap-2 mb-4">
-            <Trophy className="h-5 w-5 text-indigo-500" />
-            <h3 className="text-lg font-semibold text-white/70">Score History</h3>
+            <Trophy className="h-5 w-5 text-mint-500" />
+            <h3 className="text-lg font-semibold text-slate-700 dark:text-white/70">Score History</h3>
           </div>
           <div className="h-[220px]">
             {trendChart && healthData.history.length > 1 ? (
               <Line data={trendChart} options={trendOptions} />
             ) : (
-              <div className="flex items-center justify-center h-full text-white/40 text-sm">
+              <div className="flex items-center justify-center h-full text-slate-500 dark:text-white/40 text-sm">
                 Need at least 2 months of data for trend chart
               </div>
             )}
@@ -383,9 +383,9 @@ export default function HealthScore({ summaries, categories }: Props) {
       {/* Factor Breakdown */}
       <div>
         <div className="flex items-center gap-2 mb-4">
-          <Activity className="h-5 w-5 text-indigo-500" />
-          <h3 className="text-lg font-semibold text-white/70">Factor Breakdown</h3>
-          <span className="text-xs text-white/40">Each factor contributes 0-20 points</span>
+          <Activity className="h-5 w-5 text-mint-500" />
+          <h3 className="text-lg font-semibold text-slate-700 dark:text-white/70">Factor Breakdown</h3>
+          <span className="text-xs text-slate-500 dark:text-white/40">Each factor contributes 0-20 points</span>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {healthData.factors.map((factor) => (
@@ -396,18 +396,18 @@ export default function HealthScore({ summaries, categories }: Props) {
 
       {/* Improvement Tips */}
       {healthData.tips.length > 0 && (
-        <div className="glass-card p-5 border-indigo-200 dark:border-indigo-900 bg-indigo-50/50 dark:bg-indigo-950/20">
+        <div className="glass-card p-5 border-mint-400/30 dark:border-mint-500/20 bg-mint-500/5 dark:bg-mint-500/10">
           
-            <h3 className="flex items-center gap-2 text-base text-white/80">
-              <Lightbulb className="h-5 w-5 text-indigo-500" />
+            <h3 className="flex items-center gap-2 text-base text-slate-800 dark:text-white/80">
+              <Lightbulb className="h-5 w-5 text-mint-500" />
               Improvement Tips
             </h3>
           
           
             <ul className="space-y-2">
               {healthData.tips.map((tip, i) => (
-                <li key={i} className="flex items-start gap-2 text-sm text-white/60">
-                  <span className="text-indigo-400 mt-0.5">•</span>
+                <li key={i} className="flex items-start gap-2 text-sm text-slate-600 dark:text-white/60">
+                  <span className="text-mint-400 mt-0.5">•</span>
                   <span>{tip}</span>
                 </li>
               ))}
@@ -419,28 +419,28 @@ export default function HealthScore({ summaries, categories }: Props) {
       {/* How it works */}
       <div className="glass-card p-5">
         
-          <h3 className="text-base text-white/80">How is the score calculated?</h3>
+          <h3 className="text-base text-slate-800 dark:text-white/80">How is the score calculated?</h3>
         
         
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-white/60">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-600 dark:text-white/60">
             <div>
-              <h4 className="font-medium text-white/70 mb-1">🎯 Savings Rate (0-20)</h4>
+              <h4 className="font-medium text-slate-700 dark:text-white/70 mb-1">🎯 Savings Rate (0-20)</h4>
               <p>Higher savings rates = better score. 30%+ savings earns full points.</p>
             </div>
             <div>
-              <h4 className="font-medium text-white/70 mb-1">🎯 Budget Adherence (0-20)</h4>
+              <h4 className="font-medium text-slate-700 dark:text-white/70 mb-1">🎯 Budget Adherence (0-20)</h4>
               <p>Based on how many categories stay within their monthly limits.</p>
             </div>
             <div>
-              <h4 className="font-medium text-white/70 mb-1">📈 Networth Growth (0-20)</h4>
+              <h4 className="font-medium text-slate-700 dark:text-white/70 mb-1">📈 Networth Growth (0-20)</h4>
               <p>Measures month-over-month networth change. 5%+ growth = full points.</p>
             </div>
             <div>
-              <h4 className="font-medium text-white/70 mb-1">💰 Spending Control (0-20)</h4>
+              <h4 className="font-medium text-slate-700 dark:text-white/70 mb-1">💰 Spending Control (0-20)</h4>
               <p>Reward for spending well below income. Under 50% = full points.</p>
             </div>
             <div className="md:col-span-2">
-              <h4 className="font-medium text-white/70 mb-1">🔄 Consistency (0-20)</h4>
+              <h4 className="font-medium text-slate-700 dark:text-white/70 mb-1">🔄 Consistency (0-20)</h4>
               <p>Measures stability of savings rate over 3 months. Low variance = high score.</p>
             </div>
           </div>

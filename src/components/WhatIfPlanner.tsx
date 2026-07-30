@@ -365,7 +365,7 @@ export default function WhatIfPlanner() {
           </div>
         <div className="glass-card p-5">
           <p className="text-[11px] text-muted-foreground uppercase tracking-wide font-medium">Savings Rate</p>
-            <p className={`text-xl font-bold mt-1 ${projection.adjustedIncome > 0 && projection.monthlyNet / projection.adjustedIncome >= 0.2 ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}`}>
+            <p className={`text-xl font-bold mt-1 ${projection.adjustedIncome > 0 && projection.monthlyNet / projection.adjustedIncome >= 0.2 ? 'text-emerald-600 dark:text-emerald-400' : 'text-gold-600 dark:text-gold-400'}`}>
               {projection.adjustedIncome > 0 ? ((projection.monthlyNet / projection.adjustedIncome) * 100).toFixed(1) : '0'}%
             </p>
             <p className="text-[11px] mt-1 text-muted-foreground">
@@ -387,8 +387,8 @@ export default function WhatIfPlanner() {
       <div className="glass-card p-5">
         <div className="flex items-center justify-between flex-wrap gap-2">
             <div>
-              <h3 className="text-lg text-white/80">Net Worth Projection</h3>
-              <p className="text-xs text-white/50">
+              <h3 className="text-lg text-slate-800 dark:text-white/80">Net Worth Projection</h3>
+              <p className="text-xs text-slate-600 dark:text-white/50">
                 Baseline trend vs your what-if scenario over {projectionMonths} months
               </p>
             </div>
@@ -413,8 +413,8 @@ export default function WhatIfPlanner() {
 
       {/* ─── Cashflow Comparison ───────────────────────────────────────────── */}
       <div className="glass-card p-5">
-        <h3 className="text-lg text-white/80">Monthly Cashflow: Baseline vs Scenario</h3>
-          <p className="text-xs text-white/50">
+        <h3 className="text-lg text-slate-800 dark:text-white/80">Monthly Cashflow: Baseline vs Scenario</h3>
+          <p className="text-xs text-slate-600 dark:text-white/50">
             How income, spending, and savings change with your adjustments
           </p>
         <div style={{ height: 240 }}>
@@ -426,10 +426,10 @@ export default function WhatIfPlanner() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Income Control */}
         <div className="glass-card p-5">
-          <h3 className="text-base flex items-center gap-2 text-white/80">
+          <h3 className="text-base flex items-center gap-2 text-slate-800 dark:text-white/80">
               💰 Income Adjustment
             </h3>
-            <p className="text-xs text-white/50">
+            <p className="text-xs text-slate-600 dark:text-white/50">
               Simulate a raise, bonus, or income loss
             </p>
           <div>
@@ -472,10 +472,10 @@ export default function WhatIfPlanner() {
         <div className="glass-card p-5">
           <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-base flex items-center gap-2 text-white/80">
+                <h3 className="text-base flex items-center gap-2 text-slate-800 dark:text-white/80">
                   🎯 One-Time Events
                 </h3>
-                <p className="text-xs text-white/50">
+                <p className="text-xs text-slate-600 dark:text-white/50">
                   Bonuses, large purchases, or unexpected costs
                 </p>
               </div>
@@ -534,10 +534,10 @@ export default function WhatIfPlanner() {
       <div className="glass-card p-5">
         <div className="flex items-center justify-between flex-wrap gap-2">
             <div>
-              <h3 className="text-base flex items-center gap-2 text-white/80">
+              <h3 className="text-base flex items-center gap-2 text-slate-800 dark:text-white/80">
                 🛒 Category Spending Adjustments
               </h3>
-              <p className="text-xs text-white/50">
+              <p className="text-xs text-slate-600 dark:text-white/50">
                 Drag sliders to simulate cutting or increasing spending per category
               </p>
             </div>
@@ -587,7 +587,7 @@ export default function WhatIfPlanner() {
 
       {/* ─── Reset & Insight Bar ───────────────────────────────────────────── */}
       {(incomeChangePct !== 0 || Object.keys(categoryAdjustments).length > 0 || oneTimeEvents.length > 0) && (
-        <div className={`glass-card p-5 border-l-4 ${projection.networthDifference >= 0 ? 'border-l-emerald-500' : 'border-l-amber-500'}`}>
+        <div className="glass-card p-5">
           <div className="flex-1 min-w-0">
               <p className="text-sm font-medium">
                 {projection.networthDifference >= 0 ? '✅' : '⚠️'}{' '}

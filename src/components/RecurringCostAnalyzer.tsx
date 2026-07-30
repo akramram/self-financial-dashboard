@@ -158,7 +158,7 @@ export default function RecurringCostAnalyzer() {
             No active recurring transactions found.
           </p>
           <p className="text-xs text-slate-400 mt-1">
-            Add recurring transactions on the <a href="/recurring" className="text-blue-500 hover:underline">Recurring page</a> to see your subscription cost analysis.
+            Add recurring transactions on the <a href="/recurring" className="text-mint-500 hover:underline">Recurring page</a> to see your subscription cost analysis.
           </p>
         </div>
     );
@@ -170,16 +170,16 @@ export default function RecurringCostAnalyzer() {
     <div className="space-y-6">
       {/* ─── Summary Cards ──────────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="glass-card p-5 border-l-4 border-l-blue-500">
+        <div className="glass-card p-5">
           <div className="flex items-center justify-between mb-1">
               <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Monthly Cost</span>
-              <DollarSign className="w-4 h-4 text-blue-500" />
+              <DollarSign className="w-4 h-4 text-mint-500" />
             </div>
             <p className="text-xl font-bold text-slate-800 dark:text-slate-100">{formatIdr(monthlyTotal)}</p>
             <p className="text-[11px] text-slate-400 mt-0.5">per salary period</p>
           </div>
 
-        <div className="glass-card p-5 border-l-4 border-l-emerald-500">
+        <div className="glass-card p-5">
           <div className="flex items-center justify-between mb-1">
               <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Annual Cost</span>
               <Calendar className="w-4 h-4 text-emerald-500" />
@@ -188,10 +188,10 @@ export default function RecurringCostAnalyzer() {
             <p className="text-[11px] text-slate-400 mt-0.5">projected per year</p>
           </div>
 
-        <div className="glass-card p-5 border-l-4 border-l-amber-500">
+        <div className="glass-card p-5">
           <div className="flex items-center justify-between mb-1">
               <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Active Items</span>
-              <RefreshCw className="w-4 h-4 text-amber-500" />
+              <RefreshCw className="w-4 h-4 text-gold-500" />
             </div>
             <p className="text-xl font-bold text-slate-800 dark:text-slate-100">{activeCount}</p>
             <p className="text-[11px] text-slate-400 mt-0.5">
@@ -199,10 +199,10 @@ export default function RecurringCostAnalyzer() {
             </p>
           </div>
 
-        <div className="glass-card p-5 border-l-4 border-l-violet-500">
+        <div className="glass-card p-5">
           <div className="flex items-center justify-between mb-1">
               <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Avg / Item</span>
-              <PieChart className="w-4 h-4 text-violet-500" />
+              <PieChart className="w-4 h-4 text-gold-500" />
             </div>
             <p className="text-xl font-bold text-slate-800 dark:text-slate-100">{formatIdr(avgPerItem)}</p>
             <p className="text-[11px] text-slate-400 mt-0.5">monthly average</p>
@@ -213,7 +213,7 @@ export default function RecurringCostAnalyzer() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Donut chart */}
         <div className="glass-card p-5">
-          <h3 className="text-sm flex items-center gap-2 text-white/80">
+          <h3 className="text-sm flex items-center gap-2 text-slate-800 dark:text-white/80">
               <PieChart className="w-4 h-4 text-slate-500" />
               Category Breakdown
             </h3>
@@ -226,8 +226,8 @@ export default function RecurringCostAnalyzer() {
 
         {/* Insights */}
         <div className="glass-card p-5">
-          <h3 className="text-sm flex items-center gap-2 text-white/80">
-              <Lightbulb className="w-4 h-4 text-amber-500" />
+          <h3 className="text-sm flex items-center gap-2 text-slate-800 dark:text-white/80">
+              <Lightbulb className="w-4 h-4 text-gold-500" />
               Cost Insights
             </h3>
           {largestItem && (
@@ -246,9 +246,9 @@ export default function RecurringCostAnalyzer() {
               </div>
             )}
 
-            <div className="rounded-lg bg-blue-50 dark:bg-blue-900/20 p-3 border border-blue-200 dark:border-blue-800">
+            <div className="rounded-lg bg-mint-500/5 dark:bg-mint-700/20 p-3 border border-mint-400/20 dark:border-mint-700/40">
               <div className="flex items-center gap-2 mb-1">
-                <Clock className="w-3.5 h-3.5 text-blue-500" />
+                <Clock className="w-3.5 h-3.5 text-mint-500" />
                 <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">Time Equivalence</span>
               </div>
               <p className="text-sm text-slate-600 dark:text-slate-300">
@@ -281,7 +281,7 @@ export default function RecurringCostAnalyzer() {
 
       {/* ─── Category Bars ──────────────────────────────────────────────────── */}
       <div className="glass-card p-5">
-        <h3 className="text-sm text-white/80">Category Cost Breakdown</h3>
+        <h3 className="text-sm text-slate-800 dark:text-white/80">Category Cost Breakdown</h3>
         <div className="space-y-3">
             {categoryEntries.map(([cat, amt], i) => {
               const pct = ((amt / monthlyTotal) * 100);
@@ -309,14 +309,14 @@ export default function RecurringCostAnalyzer() {
       {/* ─── Items Table ─────────────────────────────────────────────────────── */}
       <div className="glass-card p-5">
         <div className="flex items-center justify-between">
-            <h3 className="text-sm flex items-center gap-2 text-white/80">
+            <h3 className="text-sm flex items-center gap-2 text-slate-800 dark:text-white/80">
               Recurring Items
               <Badge variant="secondary" className="text-xs">{displayItems.length}</Badge>
             </h3>
             {data.pausedItems.length > 0 && (
               <button
                 onClick={() => setShowPaused(!showPaused)}
-                className="text-xs text-blue-500 hover:text-blue-700 font-medium flex items-center gap-1"
+                className="text-xs text-mint-500 hover:text-mint-600 font-medium flex items-center gap-1"
               >
                 {showPaused ? 'Show active only' : `Show paused (${data.pausedItems.length})`}
                 <ArrowRight className="w-3 h-3" />
@@ -357,7 +357,7 @@ export default function RecurringCostAnalyzer() {
                     </TableCell>
                     <TableCell className="text-xs text-slate-500 dark:text-slate-400">
                       {item.isTemporary ? (
-                        <span className="text-amber-600 dark:text-amber-400">{formatEndDate(item.end_date)}</span>
+                        <span className="text-gold-600 dark:text-gold-400">{formatEndDate(item.end_date)}</span>
                       ) : (
                         formatEndDate(item.end_date)
                       )}

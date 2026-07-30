@@ -37,7 +37,7 @@ interface DeltaProps {
 
 function DeltaBadge({ current, previous, isPct, inverse }: DeltaProps) {
   if (previous === 0 && current === 0) {
-    return <span className="text-xs text-white/40 flex items-center gap-1"><Minus className="w-3 h-3" /> 0%</span>;
+    return <span className="text-xs text-slate-500 dark:text-white/40 flex items-center gap-1"><Minus className="w-3 h-3" /> 0%</span>;
   }
   if (previous === 0) {
     return <span className="text-xs text-emerald-600 dark:text-emerald-400 flex items-center gap-1"><ArrowUpRight className="w-3 h-3" /> New</span>;
@@ -59,7 +59,7 @@ function DeltaBadge({ current, previous, isPct, inverse }: DeltaProps) {
 
 function DeltaValue({ current, previous, isPct, inverse }: DeltaProps) {
   if (previous === 0 && current === 0) {
-    return <span className="text-xs text-white/40">—</span>;
+    return <span className="text-xs text-slate-500 dark:text-white/40">—</span>;
   }
   if (previous === 0) {
     return <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">New</span>;
@@ -260,7 +260,7 @@ export default function MonthComparison({ transactions, networth, summaries, cat
 
       {/* Cash vs Credit Breakdown */}
       <div className="glass-card p-5">
-        <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
+        <h3 className="text-base font-semibold flex items-center gap-2 text-slate-800 dark:text-white/80">
             <CreditCard className="w-4 h-4 text-slate-500" />
             Cash vs Credit Breakdown
           </h3>
@@ -315,7 +315,7 @@ export default function MonthComparison({ transactions, networth, summaries, cat
 
       {/* Category Comparison Table */}
       <div className="glass-card p-5">
-        <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
+        <h3 className="text-base font-semibold flex items-center gap-2 text-slate-800 dark:text-white/80">
             <TrendingDown className="w-4 h-4 text-slate-500" />
             Category Comparison
           </h3>
@@ -396,13 +396,13 @@ export default function MonthComparison({ transactions, networth, summaries, cat
       {/* Top Transactions */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="glass-card p-5">
-          <h3 className="text-base font-semibold text-white/80">Top Transactions — {leftMonth}</h3>
+          <h3 className="text-base font-semibold text-slate-800 dark:text-white/80">Top Transactions — {leftMonth}</h3>
           <div className="space-y-2">
               {[...leftTxs]
                 .sort((a, b) => b.amount - a.amount)
                 .slice(0, 5)
                 .map((tx) => (
-                  <div key={tx.id} className="flex justify-between items-center p-2 rounded-lg bg-white/[0.03]">
+                  <div key={tx.id} className="flex justify-between items-center p-2 rounded-lg bg-slate-100 dark:bg-white/[0.03]">
                     <div className="min-w-0">
                       <p className="text-sm font-medium truncate">{tx.title}</p>
                       <p className="text-xs text-muted-foreground">{tx.category}</p>
@@ -411,18 +411,18 @@ export default function MonthComparison({ transactions, networth, summaries, cat
                   </div>
                 ))}
               {leftTxs.length === 0 && (
-                <p className="text-sm text-white/30 text-center py-4">No transactions</p>
+                <p className="text-sm text-slate-500 dark:text-white/30 text-center py-4">No transactions</p>
               )}
             </div>
           </div>
         <div className="glass-card p-5">
-          <h3 className="text-base font-semibold text-white/80">Top Transactions — {rightMonth}</h3>
+          <h3 className="text-base font-semibold text-slate-800 dark:text-white/80">Top Transactions — {rightMonth}</h3>
           <div className="space-y-2">
               {[...rightTxs]
                 .sort((a, b) => b.amount - a.amount)
                 .slice(0, 5)
                 .map((tx) => (
-                  <div key={tx.id} className="flex justify-between items-center p-2 rounded-lg bg-white/[0.03]">
+                  <div key={tx.id} className="flex justify-between items-center p-2 rounded-lg bg-slate-100 dark:bg-white/[0.03]">
                     <div className="min-w-0">
                       <p className="text-sm font-medium truncate">{tx.title}</p>
                       <p className="text-xs text-muted-foreground">{tx.category}</p>
@@ -431,7 +431,7 @@ export default function MonthComparison({ transactions, networth, summaries, cat
                   </div>
                 ))}
               {rightTxs.length === 0 && (
-                <p className="text-sm text-white/30 text-center py-4">No transactions</p>
+                <p className="text-sm text-slate-500 dark:text-white/30 text-center py-4">No transactions</p>
               )}
             </div>
           </div>

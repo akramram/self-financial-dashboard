@@ -98,7 +98,7 @@ function heatColor(amount: number, rowMax: number, categoryColor?: string): stri
   // Intensity scales from 0.12 (faint) to 0.85 (strong)
   const alpha = 0.12 + ratio * 0.73;
 
-  // Parse category color if provided, otherwise default to indigo
+  // Parse category color if provided, otherwise default to mint
   if (categoryColor) {
     const hex = categoryColor.replace('#', '');
     if (hex.length === 6) {
@@ -108,8 +108,8 @@ function heatColor(amount: number, rowMax: number, categoryColor?: string): stri
       return `rgba(${r}, ${g}, ${b}, ${alpha})`;
     }
   }
-  // Default indigo
-  return `rgba(99, 102, 241, ${alpha})`;
+  // Default mint
+  return `rgba(16, 185, 129, ${alpha})`;
 }
 
 /** Text color: dark text on light backgrounds, white text when intensity is high */
@@ -117,7 +117,7 @@ function textColor(amount: number, rowMax: number): string {
   if (amount <= 0 || rowMax <= 0) return '';
   const ratio = amount / rowMax;
   return ratio > 0.55
-    ? 'text-white font-medium'
+    ? 'text-slate-900 dark:text-white font-medium'
     : 'text-slate-700 dark:text-slate-200';
 }
 
@@ -268,9 +268,9 @@ export default function CategoryMatrix({}: Props) {
   return (
     <div className="space-y-4">
       {/* Info Banner */}
-      <div className="glass-card p-5 border-blue-200 dark:border-blue-900 bg-blue-50/50 dark:bg-blue-950/20">
+      <div className="glass-card p-5 border-mint-400/30 dark:border-mint-500/20 bg-mint-500/5 dark:bg-mint-500/10">
         <div className="flex items-start gap-3">
-            <Info className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
+            <Info className="w-5 h-5 text-mint-500 mt-0.5 flex-shrink-0" />
             <div className="text-sm text-slate-600 dark:text-slate-300">
               <strong className="text-slate-800 dark:text-slate-100">How to read this:</strong>{' '}
               Each cell shows spending in a category (row) for a salary period (column).{' '}
@@ -284,8 +284,8 @@ export default function CategoryMatrix({}: Props) {
 
       {/* Matrix Table */}
       <div className="glass-card p-5">
-        <h3 className="flex items-center gap-2 text-base text-white/80">
-            <Grid3x3 className="w-4 h-4 text-indigo-500" />
+        <h3 className="flex items-center gap-2 text-base text-slate-800 dark:text-white/80">
+            <Grid3x3 className="w-4 h-4 text-mint-500" />
             Category × Period Spending Matrix
           </h3>
         <div className="overflow-x-auto">
@@ -386,7 +386,7 @@ export default function CategoryMatrix({}: Props) {
       {/* Summary Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="glass-card p-5">
-          <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 text-white/80">
+          <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 text-slate-800 dark:text-white/80">
               Most Consistent Categories
             </h3>
           <div className="space-y-2">
@@ -416,7 +416,7 @@ export default function CategoryMatrix({}: Props) {
           </div>
 
         <div className="glass-card p-5">
-          <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 text-white/80">
+          <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 text-slate-800 dark:text-white/80">
               Fastest Rising Categories
             </h3>
           <div className="space-y-2">
@@ -445,7 +445,7 @@ export default function CategoryMatrix({}: Props) {
           </div>
 
         <div className="glass-card p-5">
-          <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 text-white/80">
+          <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 text-slate-800 dark:text-white/80">
               Declining Categories
             </h3>
           <div className="space-y-2">

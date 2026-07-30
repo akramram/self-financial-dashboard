@@ -544,11 +544,11 @@ export default function DataImport() {
       {/* Step 1: Select import type and source */}
       {step === 'select' && (
         <div className="glass-card p-5">
-          <h3 className="flex items-center gap-2 text-white/80">
+          <h3 className="flex items-center gap-2 text-slate-800 dark:text-white/80">
               <Upload className="w-5 h-5" />
               Import Data
             </h3>
-            <p className="text-white/50">
+            <p className="text-slate-600 dark:text-white/50">
               Import transactions, net worth, or income data from CSV or JSON files.
             </p>
           {/* Import type */}
@@ -592,7 +592,7 @@ export default function DataImport() {
             {/* File upload or paste */}
             {method === 'upload' ? (
               <div className="space-y-4">
-                <div className="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl p-8 text-center hover:border-indigo-400 dark:hover:border-indigo-500 transition-colors">
+                <div className="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl p-8 text-center hover:border-mint-400 dark:hover:border-mint-500 transition-colors">
                   <input
                     ref={fileInputRef}
                     type="file"
@@ -651,7 +651,7 @@ export default function DataImport() {
             )}
 
             {/* Info card */}
-            <div className="glass-card p-5 bg-indigo-50/50 dark:bg-indigo-950/20 border-indigo-200 dark:border-indigo-900">
+            <div className="glass-card p-5 bg-mint-500/5 dark:bg-mint-500/10 border-mint-400/30 dark:border-mint-500/20">
               <p className="font-medium mb-1">📋 Import Format</p>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
                   For <strong>transactions</strong>, required fields are: {requiredFields.map((f) => fieldMap[f]).join(', ')}.
@@ -670,7 +670,7 @@ export default function DataImport() {
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-sm">
                   {fileName.endsWith('.json') ? (
-                    <FileJson className="w-4 h-4 text-amber-500" />
+                    <FileJson className="w-4 h-4 text-gold-500" />
                   ) : (
                     <FileSpreadsheet className="w-4 h-4 text-emerald-500" />
                   )}
@@ -687,8 +687,8 @@ export default function DataImport() {
 
           {/* Column Mapping */}
           <div className="glass-card p-5">
-            <h3 className="text-base text-white/80">Map Columns</h3>
-              <p className="text-white/50">
+            <h3 className="text-base text-slate-800 dark:text-white/80">Map Columns</h3>
+              <p className="text-slate-600 dark:text-white/50">
                 Match CSV columns to {importType} fields. Required fields are marked with *.
               </p>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
@@ -720,7 +720,7 @@ export default function DataImport() {
 
           {/* Preview Table */}
           <div className="glass-card p-5">
-            <h3 className="text-base flex items-center justify-between text-white/80">
+            <h3 className="text-base flex items-center justify-between text-slate-800 dark:text-white/80">
                 <span>Preview</span>
                 <div className="flex items-center gap-2 text-sm font-normal">
                   <Badge variant={validCount === previewRows.length ? 'default' : 'destructive'}>
@@ -764,7 +764,7 @@ export default function DataImport() {
                           ) : (
                             <div className="relative group">
                               <XCircle className="w-4 h-4 text-red-500" />
-                              <div className="absolute bottom-full right-0 mb-1 hidden group-hover:block bg-slate-800 text-white text-xs rounded px-2 py-1 whitespace-nowrap z-10">
+                              <div className="absolute bottom-full right-0 mb-1 hidden group-hover:block bg-slate-800 text-slate-900 dark:text-white text-xs rounded px-2 py-1 whitespace-nowrap z-10">
                                 {row.errors.join(', ')}
                               </div>
                             </div>
@@ -803,7 +803,7 @@ export default function DataImport() {
             >
               {importing ? (
                 <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-slate-300 dark:border-white" />
                   Importing...
                 </>
               ) : (
@@ -820,7 +820,7 @@ export default function DataImport() {
       {/* Step 3: Result */}
       {step === 'result' && (
         <div className="glass-card p-5">
-          <h3 className="flex items-center gap-2 text-white/80">
+          <h3 className="flex items-center gap-2 text-slate-800 dark:text-white/80">
               {resultError ? (
                 <XCircle className="w-6 h-6 text-red-500" />
               ) : (
@@ -836,8 +836,8 @@ export default function DataImport() {
                   <p className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">{result.imported}</p>
                   <p className="text-xs text-slate-500 mt-1">Imported</p>
                 </div>
-                <div className="bg-amber-50 dark:bg-amber-950/30 rounded-xl p-4 border border-amber-200 dark:border-amber-800">
-                  <p className="text-3xl font-bold text-amber-600 dark:text-amber-400">{result.skipped}</p>
+                <div className="bg-gold-500/5 dark:bg-gold-700/10 rounded-xl p-4 border border-gold-400/20 dark:border-gold-700/40">
+                  <p className="text-3xl font-bold text-gold-600 dark:text-gold-400">{result.skipped}</p>
                   <p className="text-xs text-slate-500 mt-1">Skipped</p>
                 </div>
                 <div className="bg-red-50 dark:bg-red-950/30 rounded-xl p-4 border border-red-200 dark:border-red-800">

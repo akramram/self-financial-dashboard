@@ -66,9 +66,9 @@ const STATUS_CONFIG: Record<RunwayData['status'], {
   caution: {
     label: 'Hati-hati',
     color: '#f59e0b',
-    bgColor: 'bg-amber-50 dark:bg-amber-950/30',
-    borderColor: 'border-amber-200 dark:border-amber-800',
-    textColor: 'text-amber-700 dark:text-amber-300',
+    bgColor: 'bg-gold-500/5 dark:bg-gold-700/10',
+    borderColor: 'border-gold-400/20 dark:border-gold-700/40',
+    textColor: 'text-gold-700 dark:text-gold-300',
     gaugeColor: '#f59e0b',
     icon: <AlertTriangle className="w-5 h-5" />,
   },
@@ -84,9 +84,9 @@ const STATUS_CONFIG: Record<RunwayData['status'], {
   strong: {
     label: 'Sangat Sehat',
     color: '#06b6d4',
-    bgColor: 'bg-cyan-50 dark:bg-cyan-950/30',
-    borderColor: 'border-cyan-200 dark:border-cyan-800',
-    textColor: 'text-cyan-700 dark:text-cyan-300',
+    bgColor: 'bg-mint-500/5 dark:bg-mint-700/10/30',
+    borderColor: 'border-mint-200 dark:border-mint-800',
+    textColor: 'text-mint-600 dark:text-mint-300',
     gaugeColor: '#06b6d4',
     icon: <ShieldCheck className="w-5 h-5" />,
   },
@@ -130,10 +130,10 @@ function RunwayGauge({ months, target, color }: { months: number; target: number
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-3xl font-bold text-white/80">
+        <span className="text-3xl font-bold text-slate-800 dark:text-white/80">
           {months.toFixed(1)}
         </span>
-        <span className="text-xs text-white/50 mt-0.5">bulan</span>
+        <span className="text-xs text-slate-600 dark:text-white/50 mt-0.5">bulan</span>
       </div>
     </div>
   );
@@ -149,11 +149,11 @@ function LiquidityBar({ breakdown }: { breakdown: AssetBreakdown[] }) {
 
   return (
     <div>
-      <div className="flex h-3 rounded-full overflow-hidden bg-white/[0.05]">
+      <div className="flex h-3 rounded-full overflow-hidden bg-slate-100 dark:bg-white/[0.05]">
         {sorted.map((b, i) => {
           const widthPct = (b.value / total) * 100;
           const hue = b.liquidityPct >= 0.9 ? 'bg-emerald-400'
-            : b.liquidityPct >= 0.5 ? 'bg-amber-400'
+            : b.liquidityPct >= 0.5 ? 'bg-gold-400'
             : 'bg-slate-400';
           return (
             <div
@@ -171,13 +171,13 @@ function LiquidityBar({ breakdown }: { breakdown: AssetBreakdown[] }) {
             <span
               className={`inline-block w-2 h-2 rounded-full ${
                 b.liquidityPct >= 0.9 ? 'bg-emerald-400'
-                  : b.liquidityPct >= 0.5 ? 'bg-amber-400'
+                  : b.liquidityPct >= 0.5 ? 'bg-gold-400'
                   : 'bg-slate-400'
               }`}
             />
-            <span className="text-white/60">{b.name}</span>
-            <span className="text-white/40">·</span>
-            <span className="font-medium text-white/70">{Math.round(b.liquidityPct * 100)}%</span>
+            <span className="text-slate-600 dark:text-white/60">{b.name}</span>
+            <span className="text-slate-500 dark:text-white/40">·</span>
+            <span className="font-medium text-slate-700 dark:text-white/70">{Math.round(b.liquidityPct * 100)}%</span>
           </div>
         ))}
       </div>
@@ -224,11 +224,11 @@ export default function RunwayAnalysis({ periodId, compact = false }: Props) {
 
   if (loading) {
     return (
-      <div className="glass-card p-5 border-white/[0.06] shadow-none">
+      <div className="glass-card p-5 border-slate-200 dark:border-white/[0.06] shadow-none">
         
           <div className="animate-pulse space-y-3">
-            <div className="h-5 w-32 bg-white/[0.08] rounded" />
-            <div className="h-40 w-40 mx-auto bg-white/[0.08] rounded-full" />
+            <div className="h-5 w-32 bg-slate-200/60 dark:bg-white/[0.08] rounded" />
+            <div className="h-40 w-40 mx-auto bg-slate-200/60 dark:bg-white/[0.08] rounded-full" />
           </div>
         
       </div>
@@ -237,9 +237,9 @@ export default function RunwayAnalysis({ periodId, compact = false }: Props) {
 
   if (error || !data) {
     return (
-      <div className="glass-card p-5 border-white/[0.06] shadow-none">
+      <div className="glass-card p-5 border-slate-200 dark:border-white/[0.06] shadow-none">
         
-          <div className="flex items-center gap-2 text-white/50 text-sm">
+          <div className="flex items-center gap-2 text-slate-600 dark:text-white/50 text-sm">
             <AlertTriangle className="w-4 h-4" />
             <span>Gagal memuat data runway. Coba lagi nanti.</span>
           </div>
@@ -251,9 +251,9 @@ export default function RunwayAnalysis({ periodId, compact = false }: Props) {
   // No data available
   if (data.total_assets === 0) {
     return (
-      <div className="glass-card p-5 border-white/[0.06] shadow-none">
+      <div className="glass-card p-5 border-slate-200 dark:border-white/[0.06] shadow-none">
         
-          <div className="flex items-center gap-2 text-white/50 text-sm">
+          <div className="flex items-center gap-2 text-slate-600 dark:text-white/50 text-sm">
             <Droplet className="w-4 h-4" />
             <span>Belum ada data networth. Tambahkan data networth untuk menghitung runway.</span>
           </div>
@@ -271,8 +271,8 @@ export default function RunwayAnalysis({ periodId, compact = false }: Props) {
               {config.icon}
             </div>
             <div>
-              <h3 className="text-base text-white/80">Emergency Fund Runway</h3>
-              <p className="text-xs text-white/50">
+              <h3 className="text-base text-slate-800 dark:text-white/80">Emergency Fund Runway</h3>
+              <p className="text-xs text-slate-600 dark:text-white/50">
                 {data.month ? `Periode ${data.month}` : 'Periode terbaru'}
               </p>
             </div>
@@ -290,31 +290,31 @@ export default function RunwayAnalysis({ periodId, compact = false }: Props) {
           </div>
           <div className="space-y-3">
             <div className="flex items-center gap-2 text-sm">
-              <Droplet className="w-4 h-4 text-blue-500 flex-shrink-0" />
+              <Droplet className="w-4 h-4 text-mint-500 flex-shrink-0" />
               <div className="flex-1">
-                <div className="text-white/50 text-xs">Aset Likuid</div>
-                <div className="font-semibold text-white/80">{formatIdr(data.liquid_assets)}</div>
+                <div className="text-slate-600 dark:text-white/50 text-xs">Aset Likuid</div>
+                <div className="font-semibold text-slate-800 dark:text-white/80">{formatIdr(data.liquid_assets)}</div>
               </div>
             </div>
             <div className="flex items-center gap-2 text-sm">
-              <Wallet className="w-4 h-4 text-purple-500 flex-shrink-0" />
+              <Wallet className="w-4 h-4 text-coral-500 flex-shrink-0" />
               <div className="flex-1">
-                <div className="text-white/50 text-xs">Total Aset</div>
-                <div className="font-semibold text-white/80">{formatIdr(data.total_assets)}</div>
+                <div className="text-slate-600 dark:text-white/50 text-xs">Total Aset</div>
+                <div className="font-semibold text-slate-800 dark:text-white/80">{formatIdr(data.total_assets)}</div>
               </div>
             </div>
             <div className="flex items-center gap-2 text-sm">
-              <CalendarClock className="w-4 h-4 text-amber-500 flex-shrink-0" />
+              <CalendarClock className="w-4 h-4 text-gold-500 flex-shrink-0" />
               <div className="flex-1">
-                <div className="text-white/50 text-xs">Pengeluaran/Bulan (rata-rata 3 bln)</div>
-                <div className="font-semibold text-white/80">{formatIdr(data.monthly_expense)}</div>
+                <div className="text-slate-600 dark:text-white/50 text-xs">Pengeluaran/Bulan (rata-rata 3 bln)</div>
+                <div className="font-semibold text-slate-800 dark:text-white/80">{formatIdr(data.monthly_expense)}</div>
               </div>
             </div>
             <div className="flex items-center gap-2 text-sm">
               <ShieldCheck className="w-4 h-4 text-emerald-500 flex-shrink-0" />
               <div className="flex-1">
-                <div className="text-white/50 text-xs">Cakupan Biaya Tetap</div>
-                <div className="font-semibold text-white/80">{data.fixed_coverage_months.toFixed(1)} bulan</div>
+                <div className="text-slate-600 dark:text-white/50 text-xs">Cakupan Biaya Tetap</div>
+                <div className="font-semibold text-slate-800 dark:text-white/80">{data.fixed_coverage_months.toFixed(1)} bulan</div>
               </div>
             </div>
           </div>
@@ -323,7 +323,7 @@ export default function RunwayAnalysis({ periodId, compact = false }: Props) {
         {/* Liquidity breakdown bar */}
         {data.asset_breakdown.length > 0 && (
           <div>
-            <div className="text-xs text-white/50 mb-2">Likuiditas Aset</div>
+            <div className="text-xs text-slate-600 dark:text-white/50 mb-2">Likuiditas Aset</div>
             <LiquidityBar breakdown={data.asset_breakdown} />
           </div>
         )}
@@ -332,10 +332,10 @@ export default function RunwayAnalysis({ periodId, compact = false }: Props) {
         {!compact && trendSparkData.length >= 2 && (
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-xs text-white/50">Tren Runway</div>
+              <div className="text-xs text-slate-600 dark:text-white/50">Tren Runway</div>
               <div className="flex items-center gap-1">
-                <TrendingUp className="w-3 h-3 text-white/40" />
-                <span className="text-xs text-white/40">{data.history.length} bulan terakhir</span>
+                <TrendingUp className="w-3 h-3 text-slate-500 dark:text-white/40" />
+                <span className="text-xs text-slate-500 dark:text-white/40">{data.history.length} bulan terakhir</span>
               </div>
             </div>
             <Sparkline data={trendSparkData} width={120} height={36} color={config.gaugeColor} />
@@ -350,7 +350,7 @@ export default function RunwayAnalysis({ periodId, compact = false }: Props) {
               <span className={`text-xs font-medium ${config.textColor}`}>Rekomendasi</span>
             </div>
             {data.tips.map((tip, i) => (
-              <p key={i} className="text-xs text-white/60 leading-relaxed">{tip}</p>
+              <p key={i} className="text-xs text-slate-600 dark:text-white/60 leading-relaxed">{tip}</p>
             ))}
           </div>
         )}
@@ -359,7 +359,7 @@ export default function RunwayAnalysis({ periodId, compact = false }: Props) {
         {compact && (
           <a
             href="/runway"
-            className="flex items-center justify-center gap-1 text-xs text-blue-500 hover:text-blue-700 dark:text-blue-400"
+            className="flex items-center justify-center gap-1 text-xs text-mint-500 hover:text-mint-600 dark:text-mint-400"
           >
             <span>Lihat detail</span>
             <ArrowRight className="w-3 h-3" />

@@ -309,7 +309,7 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
   if (loading && !data) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-white/30">Loading analytics...</div>
+        <div className="text-slate-500 dark:text-white/30">Loading analytics...</div>
       </div>
     );
   }
@@ -317,7 +317,7 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
   if (!data || !stats || !velocity) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-white/30">No data available for this period.</div>
+        <div className="text-slate-500 dark:text-white/30">No data available for this period.</div>
       </div>
     );
   }
@@ -328,7 +328,7 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
     <div className="space-y-6">
       {/* Month Selector */}
       <div className="flex items-center gap-3">
-        <label className="text-sm font-medium text-white/60">Period:</label>
+        <label className="text-sm font-medium text-slate-600 dark:text-white/60">Period:</label>
         <Select value={selectedMonth} onValueChange={setSelectedMonth}>
           <SelectTrigger className="w-[200px]">
             <SelectValue />
@@ -346,9 +346,9 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
       {/* ─── Velocity / KPI Row ─────────────────────────────────── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="glass-card p-4">
-          <Zap className="w-4 h-4 text-indigo-400 mb-1.5" />
-          <span className="text-[10px] font-medium text-white/40 uppercase tracking-wider">Avg Daily</span>
-          <div className="text-xl font-bold text-white mt-1">{formatIdr(velocity.current_avg_daily)}</div>
+          <Zap className="w-4 h-4 text-mint-400 mb-1.5" />
+          <span className="text-[10px] font-medium text-slate-500 dark:text-white/40 uppercase tracking-wider">Avg Daily</span>
+          <div className="text-xl font-bold text-slate-900 dark:text-white mt-1">{formatIdr(velocity.current_avg_daily)}</div>
           <div className={`text-xs mt-1 ${velocityUp ? 'text-red-400' : 'text-emerald-400'}`}>
             {velocityUp ? '↑' : '↓'} {Math.abs(velocity.velocity_vs_history).toFixed(0)}% vs avg
           </div>
@@ -356,23 +356,23 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
 
         <div className="glass-card p-4">
           <Target className="w-4 h-4 text-emerald-400 mb-1.5" />
-          <span className="text-[10px] font-medium text-white/40 uppercase tracking-wider">Projected</span>
-          <div className="text-xl font-bold text-white mt-1">{formatIdr(velocity.projected_monthly)}</div>
-          <div className="text-xs text-white/30 mt-1">Based on {velocity.days_with_spending} spending days</div>
+          <span className="text-[10px] font-medium text-slate-500 dark:text-white/40 uppercase tracking-wider">Projected</span>
+          <div className="text-xl font-bold text-slate-900 dark:text-white mt-1">{formatIdr(velocity.projected_monthly)}</div>
+          <div className="text-xs text-slate-500 dark:text-white/30 mt-1">Based on {velocity.days_with_spending} spending days</div>
         </div>
 
         <div className="glass-card p-4">
-          <Clock className="w-4 h-4 text-amber-400 mb-1.5" />
-          <span className="text-[10px] font-medium text-white/40 uppercase tracking-wider">Cumulative</span>
-          <div className="text-xl font-bold text-white mt-1">{formatIdr(velocity.cumulative_spend)}</div>
-          <div className="text-xs text-white/30 mt-1">Over {velocity.days_tracked} tracked days</div>
+          <Clock className="w-4 h-4 text-gold-400 mb-1.5" />
+          <span className="text-[10px] font-medium text-slate-500 dark:text-white/40 uppercase tracking-wider">Cumulative</span>
+          <div className="text-xl font-bold text-slate-900 dark:text-white mt-1">{formatIdr(velocity.cumulative_spend)}</div>
+          <div className="text-xs text-slate-500 dark:text-white/30 mt-1">Over {velocity.days_tracked} tracked days</div>
         </div>
 
         <div className="glass-card p-4">
-          <Hash className="w-4 h-4 text-blue-400 mb-1.5" />
-          <span className="text-[10px] font-medium text-white/40 uppercase tracking-wider">Transactions</span>
-          <div className="text-xl font-bold text-white mt-1">{stats.count}</div>
-          <div className="text-xs text-white/30 mt-1">
+          <Hash className="w-4 h-4 text-mint-400 mb-1.5" />
+          <span className="text-[10px] font-medium text-slate-500 dark:text-white/40 uppercase tracking-wider">Transactions</span>
+          <div className="text-xl font-bold text-slate-900 dark:text-white mt-1">{stats.count}</div>
+          <div className="text-xs text-slate-500 dark:text-white/30 mt-1">
             {stats.paid_count} paid · {stats.unpaid_count} unpaid
           </div>
         </div>
@@ -381,11 +381,11 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
       {/* ─── Daily Spending Trend ─────────────────────────────── */}
       {daily.length > 0 && (
         <div className="glass-card p-5">
-          <h3 className="flex items-center gap-2 text-base font-semibold text-white/80">
-            <Activity className="w-4 h-4 text-white/40" />
+          <h3 className="flex items-center gap-2 text-base font-semibold text-slate-800 dark:text-white/80">
+            <Activity className="w-4 h-4 text-slate-500 dark:text-white/40" />
             Daily Spending Trend
           </h3>
-          <p className="text-xs text-white/30 mb-3">Daily paid spending vs historical average (dashed line)</p>
+          <p className="text-xs text-slate-500 dark:text-white/30 mb-3">Daily paid spending vs historical average (dashed line)</p>
           <div className="h-[280px]">
             <Line data={dailyChartData} options={{
               responsive: true, maintainAspectRatio: false,
@@ -400,11 +400,11 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
       {/* ─── Two-column: Day of Week + Top Categories ────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="glass-card p-5">
-          <h3 className="flex items-center gap-2 text-base font-semibold text-white/80">
-            <BarChart3 className="w-4 h-4 text-white/40" />
+          <h3 className="flex items-center gap-2 text-base font-semibold text-slate-800 dark:text-white/80">
+            <BarChart3 className="w-4 h-4 text-slate-500 dark:text-white/40" />
             Spending by Day of Week
           </h3>
-          <p className="text-xs text-white/30 mb-3">All-time totals. Weekends in purple, weekdays in green.</p>
+          <p className="text-xs text-slate-500 dark:text-white/30 mb-3">All-time totals. Weekends in purple, weekdays in green.</p>
           <div className="h-[250px]">
             <Bar data={dowChartData} options={{
               responsive: true, maintainAspectRatio: false,
@@ -415,11 +415,11 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
         </div>
 
         <div className="glass-card p-5">
-          <h3 className="flex items-center gap-2 text-base font-semibold text-white/80">
-            <PieChart className="w-4 h-4 text-white/40" />
+          <h3 className="flex items-center gap-2 text-base font-semibold text-slate-800 dark:text-white/80">
+            <PieChart className="w-4 h-4 text-slate-500 dark:text-white/40" />
             Category Breakdown
           </h3>
-          <p className="text-xs text-white/30 mb-3">Click a category below to drill down into transactions.</p>
+          <p className="text-xs text-slate-500 dark:text-white/30 mb-3">Click a category below to drill down into transactions.</p>
           {topCategories.length > 0 ? (
             <>
               <div className="h-[200px] mx-auto" style={{ maxWidth: 200 }}>
@@ -435,15 +435,15 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
                   return (
                     <div
                       key={cat.name}
-                      className="flex items-center justify-between text-sm cursor-pointer hover:bg-white/[0.04] rounded px-2 py-1 -mx-2 transition"
+                      className="flex items-center justify-between text-sm cursor-pointer hover:bg-slate-100 dark:bg-white/[0.04] rounded px-2 py-1 -mx-2 transition"
                       onClick={() => openCategoryDrillDown(cat.name)}
                     >
                       <div className="flex items-center gap-2">
                         <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: cat.color }} />
-                        <span className="text-white/70">{cat.name}</span>
+                        <span className="text-slate-700 dark:text-white/70">{cat.name}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="font-medium text-white/90">{formatIdr(cat.amount)}</span>
+                        <span className="font-medium text-slate-800 dark:text-white/90">{formatIdr(cat.amount)}</span>
                         {prevPct !== null && (
                           <Badge variant="secondary" className={`text-[10px] px-1.5 py-0 ${prevPct > 0 ? 'bg-red-500/10 text-red-300' : 'bg-emerald-500/10 text-emerald-300'}`}>
                             {prevPct > 0 ? '↑' : '↓'}{Math.abs(prevPct).toFixed(0)}%
@@ -456,52 +456,52 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
               </div>
             </>
           ) : (
-            <div className="text-sm text-white/30 h-[200px] flex items-center justify-center">No spending data for this period</div>
+            <div className="text-sm text-slate-500 dark:text-white/30 h-[200px] flex items-center justify-center">No spending data for this period</div>
           )}
         </div>
       </div>
 
       {/* ─── Transaction Statistics Table ───────────────────── */}
       <div className="glass-card p-5">
-        <h3 className="flex items-center gap-2 text-base font-semibold text-white/80 mb-3">
-          <Hash className="w-4 h-4 text-white/40" />
+        <h3 className="flex items-center gap-2 text-base font-semibold text-slate-800 dark:text-white/80 mb-3">
+          <Hash className="w-4 h-4 text-slate-500 dark:text-white/40" />
           Transaction Statistics
         </h3>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="text-white/40">Metric</TableHead>
-              <TableHead className="text-right text-white/40">Value</TableHead>
+              <TableHead className="text-slate-500 dark:text-white/40">Metric</TableHead>
+              <TableHead className="text-right text-slate-500 dark:text-white/40">Value</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow><TableCell className="text-white/60">Total Paid Spending</TableCell><TableCell className="text-right font-semibold text-white/90">{formatIdr(stats.paid_amount)}</TableCell></TableRow>
-            <TableRow><TableCell className="text-white/60">Unpaid Total</TableCell><TableCell className="text-right font-semibold text-amber-400">{formatIdr(stats.unpaid_amount)}</TableCell></TableRow>
-            <TableRow><TableCell className="text-white/60">Average Transaction (paid)</TableCell><TableCell className="text-right text-white/80">{formatIdr(stats.avg_amount)}</TableCell></TableRow>
-            <TableRow><TableCell className="text-white/60">Median Transaction (paid)</TableCell><TableCell className="text-right text-white/80">{formatIdr(stats.median_amount)}</TableCell></TableRow>
-            <TableRow><TableCell className="text-white/60">Largest Transaction</TableCell><TableCell className="text-right"><span className="font-semibold text-white/90">{formatIdr(stats.max_amount)}</span>{stats.largest_title && <span className="text-xs text-white/30 ml-2">{stats.largest_title}</span>}</TableCell></TableRow>
-            <TableRow><TableCell className="text-white/60">Smallest Transaction</TableCell><TableCell className="text-right"><span className="font-semibold text-white/90">{formatIdr(stats.min_amount)}</span>{stats.smallest_title && <span className="text-xs text-white/30 ml-2">{stats.smallest_title}</span>}</TableCell></TableRow>
-            <TableRow><TableCell className="text-white/60">Total Transactions</TableCell><TableCell className="text-right text-white/80">{stats.count}</TableCell></TableRow>
-            <TableRow><TableCell className="text-white/60">Paid / Unpaid</TableCell><TableCell className="text-right"><span className="text-emerald-400">{stats.paid_count}</span><span className="text-white/30 mx-1">/</span><span className="text-amber-400">{stats.unpaid_count}</span></TableCell></TableRow>
+            <TableRow><TableCell className="text-slate-600 dark:text-white/60">Total Paid Spending</TableCell><TableCell className="text-right font-semibold text-slate-800 dark:text-white/90">{formatIdr(stats.paid_amount)}</TableCell></TableRow>
+            <TableRow><TableCell className="text-slate-600 dark:text-white/60">Unpaid Total</TableCell><TableCell className="text-right font-semibold text-gold-400">{formatIdr(stats.unpaid_amount)}</TableCell></TableRow>
+            <TableRow><TableCell className="text-slate-600 dark:text-white/60">Average Transaction (paid)</TableCell><TableCell className="text-right text-slate-800 dark:text-white/80">{formatIdr(stats.avg_amount)}</TableCell></TableRow>
+            <TableRow><TableCell className="text-slate-600 dark:text-white/60">Median Transaction (paid)</TableCell><TableCell className="text-right text-slate-800 dark:text-white/80">{formatIdr(stats.median_amount)}</TableCell></TableRow>
+            <TableRow><TableCell className="text-slate-600 dark:text-white/60">Largest Transaction</TableCell><TableCell className="text-right"><span className="font-semibold text-slate-800 dark:text-white/90">{formatIdr(stats.max_amount)}</span>{stats.largest_title && <span className="text-xs text-slate-500 dark:text-white/30 ml-2">{stats.largest_title}</span>}</TableCell></TableRow>
+            <TableRow><TableCell className="text-slate-600 dark:text-white/60">Smallest Transaction</TableCell><TableCell className="text-right"><span className="font-semibold text-slate-800 dark:text-white/90">{formatIdr(stats.min_amount)}</span>{stats.smallest_title && <span className="text-xs text-slate-500 dark:text-white/30 ml-2">{stats.smallest_title}</span>}</TableCell></TableRow>
+            <TableRow><TableCell className="text-slate-600 dark:text-white/60">Total Transactions</TableCell><TableCell className="text-right text-slate-800 dark:text-white/80">{stats.count}</TableCell></TableRow>
+            <TableRow><TableCell className="text-slate-600 dark:text-white/60">Paid / Unpaid</TableCell><TableCell className="text-right"><span className="text-emerald-400">{stats.paid_count}</span><span className="text-slate-500 dark:text-white/30 mx-1">/</span><span className="text-gold-400">{stats.unpaid_count}</span></TableCell></TableRow>
           </TableBody>
         </Table>
       </div>
 
       {/* ─── Spending Velocity Insight ───────────────────────── */}
       <div className="glass-card p-5">
-        <h3 className="flex items-center gap-2 text-base font-semibold text-white/80 mb-3">
-          <Zap className="w-4 h-4 text-white/40" />
+        <h3 className="flex items-center gap-2 text-base font-semibold text-slate-800 dark:text-white/80 mb-3">
+          <Zap className="w-4 h-4 text-slate-500 dark:text-white/40" />
           Spending Velocity
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="text-center"><div className="text-sm text-white/40 mb-1">Current Avg / Day</div><div className="text-lg font-bold text-white">{formatIdr(velocity.current_avg_daily)}</div></div>
-          <div className="text-center"><div className="text-sm text-white/40 mb-1">Historical Avg / Day</div><div className="text-lg font-bold text-white">{formatIdr(velocity.historical_avg_daily)}</div></div>
+          <div className="text-center"><div className="text-sm text-slate-500 dark:text-white/40 mb-1">Current Avg / Day</div><div className="text-lg font-bold text-slate-900 dark:text-white">{formatIdr(velocity.current_avg_daily)}</div></div>
+          <div className="text-center"><div className="text-sm text-slate-500 dark:text-white/40 mb-1">Historical Avg / Day</div><div className="text-lg font-bold text-slate-900 dark:text-white">{formatIdr(velocity.historical_avg_daily)}</div></div>
           <div className="text-center">
-            <div className="text-sm text-white/40 mb-1">vs Historical</div>
+            <div className="text-sm text-slate-500 dark:text-white/40 mb-1">vs Historical</div>
             <div className={`text-lg font-bold ${velocityUp ? 'text-red-400' : 'text-emerald-400'}`}>{velocityUp ? '+' : ''}{velocity.velocity_vs_history.toFixed(1)}%</div>
             <div className="flex items-center justify-center gap-1 mt-1">
               {velocityUp ? <TrendingUp className="w-4 h-4 text-red-400" /> : <TrendingDown className="w-4 h-4 text-emerald-400" />}
-              <span className="text-xs text-white/40">{Math.abs(velocity.velocity_vs_history) > 20 ? (velocityUp ? 'Spending significantly higher than usual' : 'Great — spending well below average') : Math.abs(velocity.velocity_vs_history) > 5 ? (velocityUp ? 'Slightly above your typical pace' : 'Slightly below your typical pace') : 'On track with your historical average'}</span>
+              <span className="text-xs text-slate-500 dark:text-white/40">{Math.abs(velocity.velocity_vs_history) > 20 ? (velocityUp ? 'Spending significantly higher than usual' : 'Great — spending well below average') : Math.abs(velocity.velocity_vs_history) > 5 ? (velocityUp ? 'Slightly above your typical pace' : 'Slightly below your typical pace') : 'On track with your historical average'}</span>
             </div>
           </div>
         </div>
@@ -510,11 +510,11 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
       {/* ─── Top Merchants ───────────────────────────────────── */}
       {topMerchants.length > 0 && (
         <div className="glass-card p-5">
-          <h3 className="flex items-center gap-2 text-base font-semibold text-white/80">
-            <Hash className="w-4 h-4 text-white/40" />
+          <h3 className="flex items-center gap-2 text-base font-semibold text-slate-800 dark:text-white/80">
+            <Hash className="w-4 h-4 text-slate-500 dark:text-white/40" />
             Top Merchants
           </h3>
-          <p className="text-xs text-white/30 mb-3">Where your money went this period — grouped by transaction title.</p>
+          <p className="text-xs text-slate-500 dark:text-white/30 mb-3">Where your money went this period — grouped by transaction title.</p>
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
             {merchantChartData && (
               <div className="lg:col-span-3 h-[320px]">
@@ -527,13 +527,13 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
             )}
             <div className="lg:col-span-2">
               <Table>
-                <TableHeader><TableRow><TableHead className="text-xs text-white/40">Merchant</TableHead><TableHead className="text-xs text-right text-white/40">Spent</TableHead><TableHead className="text-xs text-right text-white/40">#</TableHead></TableRow></TableHeader>
+                <TableHeader><TableRow><TableHead className="text-xs text-slate-500 dark:text-white/40">Merchant</TableHead><TableHead className="text-xs text-right text-slate-500 dark:text-white/40">Spent</TableHead><TableHead className="text-xs text-right text-slate-500 dark:text-white/40">#</TableHead></TableRow></TableHeader>
                 <TableBody>
                   {topMerchants.map((m) => (
                     <TableRow key={m.title}>
-                      <TableCell className="text-xs py-1.5"><div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: categoryMap[m.category]?.color || '#64748b' }} /><span className="truncate max-w-[140px] text-white/80" title={m.title}>{m.title}</span></div></TableCell>
-                      <TableCell className="text-xs text-right font-medium py-1.5 text-white/90">{formatIdr(m.paid_amount)}</TableCell>
-                      <TableCell className="text-xs text-right text-white/30 py-1.5">{m.tx_count}x</TableCell>
+                      <TableCell className="text-xs py-1.5"><div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: categoryMap[m.category]?.color || '#64748b' }} /><span className="truncate max-w-[140px] text-slate-800 dark:text-white/80" title={m.title}>{m.title}</span></div></TableCell>
+                      <TableCell className="text-xs text-right font-medium py-1.5 text-slate-800 dark:text-white/90">{formatIdr(m.paid_amount)}</TableCell>
+                      <TableCell className="text-xs text-right text-slate-500 dark:text-white/30 py-1.5">{m.tx_count}x</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -545,26 +545,26 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
 
       {/* ─── Category Drill-down Dialog ─────────────────────── */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-auto bg-navy-800 border-white/[0.08]">
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-auto bg-slate-100 dark:bg-navy-800 border-slate-300 dark:border-white/[0.08]">
           <DialogHeader>
-            <DialogTitle className="text-white">Category: {selectedCategory}</DialogTitle>
-            <DialogDescription className="text-white/40">Transactions for {selectedCategory} in {selectedMonth}</DialogDescription>
+            <DialogTitle className="text-slate-900 dark:text-white">Category: {selectedCategory}</DialogTitle>
+            <DialogDescription className="text-slate-500 dark:text-white/40">Transactions for {selectedCategory} in {selectedMonth}</DialogDescription>
           </DialogHeader>
           {categoryTxs.length > 0 ? (
             <Table>
-              <TableHeader><TableRow><TableHead className="text-white/50">Title</TableHead><TableHead className="text-white/50">Type</TableHead><TableHead className="text-right text-white/50">Amount</TableHead></TableRow></TableHeader>
+              <TableHeader><TableRow><TableHead className="text-slate-600 dark:text-white/50">Title</TableHead><TableHead className="text-slate-600 dark:text-white/50">Type</TableHead><TableHead className="text-right text-slate-600 dark:text-white/50">Amount</TableHead></TableRow></TableHeader>
               <TableBody>
                 {categoryTxs.map((tx) => (
                   <TableRow key={tx.id}>
-                    <TableCell className="flex items-center gap-2"><span className={tx.done ? 'text-white/80' : 'text-white/40'}>{tx.title}</span>{!tx.done && <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-white/[0.1] text-white/50">Unpaid</Badge>}</TableCell>
+                    <TableCell className="flex items-center gap-2"><span className={tx.done ? 'text-slate-800 dark:text-white/80' : 'text-slate-500 dark:text-white/40'}>{tx.title}</span>{!tx.done && <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-slate-300 dark:border-white/[0.1] text-slate-600 dark:text-white/50">Unpaid</Badge>}</TableCell>
                     <TableCell><Badge variant="secondary" className="text-[10px]">{tx.type === 'cash' ? 'Cash' : tx.type === 'credit_payment' ? 'Credit Pay' : 'Credit'}</Badge></TableCell>
-                    <TableCell className="text-right font-medium text-white/90">{formatIdr(tx.amount)}</TableCell>
+                    <TableCell className="text-right font-medium text-slate-800 dark:text-white/90">{formatIdr(tx.amount)}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           ) : (
-            <p className="text-sm text-white/30">No transactions found for this category.</p>
+            <p className="text-sm text-slate-500 dark:text-white/30">No transactions found for this category.</p>
           )}
         </DialogContent>
       </Dialog>

@@ -257,7 +257,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
     <div className="space-y-6">
       {/* Month Filter */}
       <div className="flex items-center gap-3">
-        <label className="text-sm font-medium text-white/60">Period:</label>
+        <label className="text-sm font-medium text-slate-600 dark:text-white/60">Period:</label>
         <Select value={filterMonth} onValueChange={setFilterMonth}>
           <SelectTrigger className="w-[180px]">
             <SelectValue />
@@ -276,11 +276,11 @@ export default function BudgetReport({ summaries, categories }: Props) {
         <div className="glass-card p-5">
           
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-white/[0.06]">
-                <Wallet className="w-5 h-5 text-white/40" />
+              <div className="p-2 rounded-lg bg-slate-200/60 dark:bg-white/[0.06]">
+                <Wallet className="w-5 h-5 text-slate-500 dark:text-white/40" />
               </div>
               <div>
-                <p className="text-xs text-white/40">Total Budget</p>
+                <p className="text-xs text-slate-500 dark:text-white/40">Total Budget</p>
                 <p className="text-lg font-semibold">{formatIdr(totalBudget)}</p>
               </div>
             </div>
@@ -293,7 +293,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
                 <TrendingDown className="w-5 h-5 text-red-400" />
               </div>
               <div>
-                <p className="text-xs text-white/40">Total Spent</p>
+                <p className="text-xs text-slate-500 dark:text-white/40">Total Spent</p>
                 <p className="text-lg font-semibold">{formatIdr(totalSpent)}</p>
               </div>
             </div>
@@ -306,7 +306,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
                 <PiggyBank className={`w-5 h-5 ${totalRemaining >= 0 ? 'text-emerald-400' : 'text-red-400'}`} />
               </div>
               <div>
-                <p className="text-xs text-white/40">Remaining</p>
+                <p className="text-xs text-slate-500 dark:text-white/40">Remaining</p>
                 <p className={`text-lg font-semibold ${totalRemaining >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                   {formatIdr(totalRemaining)}
                 </p>
@@ -317,11 +317,11 @@ export default function BudgetReport({ summaries, categories }: Props) {
         <div className="glass-card p-5">
           
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-amber-500/10">
-                <AlertTriangle className="w-5 h-5 text-amber-400" />
+              <div className="p-2 rounded-lg bg-gold-500/10">
+                <AlertTriangle className="w-5 h-5 text-gold-400" />
               </div>
               <div>
-                <p className="text-xs text-white/40">Alerts</p>
+                <p className="text-xs text-slate-500 dark:text-white/40">Alerts</p>
                 <div className="flex gap-2 mt-0.5">
                   {overspentCount > 0 && (
                     <Badge variant="destructive" className="text-[10px] px-1.5 py-0">
@@ -329,7 +329,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
                     </Badge>
                   )}
                   {nearLimitCount > 0 && (
-                    <Badge variant="secondary" className="text-[10px] px-1.5 py-0 bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
+                    <Badge variant="secondary" className="text-[10px] px-1.5 py-0 bg-gold-500/10 text-gold-700 dark:bg-gold-700/20 dark:text-gold-300">
                       {nearLimitCount} Near
                     </Badge>
                   )}
@@ -347,7 +347,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
       {chartCategories.length > 0 && (
         <div className="glass-card p-5">
           
-            <h3 className="text-base font-semibold text-white/80">Budget vs Actual</h3>
+            <h3 className="text-base font-semibold text-slate-800 dark:text-white/80">Budget vs Actual</h3>
           
           
             <div className="relative h-80">
@@ -360,7 +360,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
       {/* Category Budget Table */}
       <div className="glass-card p-5">
         
-          <h3 className="text-base font-semibold text-white/80">Category Breakdown</h3>
+          <h3 className="text-base font-semibold text-slate-800 dark:text-white/80">Category Breakdown</h3>
         
         
           <div className="rounded-xl border overflow-hidden">
@@ -384,7 +384,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
                   return (
                     <TableRow
                       key={row.name}
-                      className="cursor-pointer hover:bg-white/[0.04] transition"
+                      className="cursor-pointer hover:bg-slate-100 dark:bg-white/[0.04] transition"
                       onClick={() => openCategoryDialog(row.name)}
                     >
                       <TableCell>
@@ -408,12 +408,12 @@ export default function BudgetReport({ summaries, categories }: Props) {
                       <TableCell className="text-right">
                         {hasLimit ? (
                           <div className="flex items-center justify-end gap-2">
-                            <span className={`text-xs font-semibold ${isOver ? 'text-red-600 dark:text-red-400' : isNear ? 'text-amber-600 dark:text-amber-400' : 'text-slate-600 dark:text-slate-300'}`}>
+                            <span className={`text-xs font-semibold ${isOver ? 'text-red-600 dark:text-red-400' : isNear ? 'text-gold-600 dark:text-gold-400' : 'text-slate-600 dark:text-slate-300'}`}>
                               {row.pct.toFixed(0)}%
                             </span>
                             <div className="w-16 bg-slate-200 dark:bg-slate-700 rounded-full h-1.5">
                               <div
-                                className={`h-1.5 rounded-full transition-all ${isOver ? 'bg-red-500' : isNear ? 'bg-amber-500' : 'bg-emerald-500'}`}
+                                className={`h-1.5 rounded-full transition-all ${isOver ? 'bg-red-500' : isNear ? 'bg-gold-500/50' : 'bg-emerald-500'}`}
                                 style={{ width: `${Math.min(100, row.pct)}%` }}
                               />
                             </div>
@@ -426,7 +426,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
                         {isOver ? (
                           <Badge variant="destructive" className="text-[10px]">Over</Badge>
                         ) : isNear ? (
-                          <Badge variant="secondary" className="text-[10px] bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">Near Limit</Badge>
+                          <Badge variant="secondary" className="text-[10px] bg-gold-500/10 text-gold-700 dark:bg-gold-700/20 dark:text-gold-300">Near Limit</Badge>
                         ) : (
                           <Badge variant="secondary" className="text-[10px] bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">On Track</Badge>
                         )}
@@ -481,10 +481,10 @@ export default function BudgetReport({ summaries, categories }: Props) {
                     const isOverBudget = overBudgetPeriods.has(tx.period_id);
                     const typeClass =
                       tx.type === 'cash'
-                        ? 'text-blue-600 dark:text-blue-400'
+                        ? 'text-mint-600 dark:text-mint-400'
                         : tx.type === 'credit_payment'
-                        ? 'text-amber-600 dark:text-amber-400'
-                        : 'text-purple-600 dark:text-purple-400';
+                        ? 'text-gold-600 dark:text-gold-400'
+                        : 'text-coral-500 dark:text-coral-400';
                     const typeLabel =
                       tx.type === 'cash' ? 'Cash' : tx.type === 'credit_payment' ? 'Credit Pay' : 'Credit';
                     const dateObj = tx.created_time ? new Date(tx.created_time) : new Date(tx.date);
@@ -494,7 +494,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
                     return (
                       <TableRow
                         key={tx.id}
-                        className={isOverBudget ? 'border-l-2 border-l-red-500 bg-red-50/60 dark:bg-red-950/30' : ''}
+                        className={isOverBudget ? 'bg-red-50/60 dark:bg-red-950/30' : ''}
                       >
                         <TableCell className="font-medium">{tx.title}</TableCell>
                         <TableCell className="text-muted-foreground text-xs">{dateStr}</TableCell>

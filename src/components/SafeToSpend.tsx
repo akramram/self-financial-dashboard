@@ -37,10 +37,10 @@ const STATUS_CONFIG = {
     description: 'Masih ada ruang untuk pengeluaran hari ini',
   },
   tight: {
-    accent: 'bg-amber-500',
-    text: 'text-amber-600 dark:text-amber-400',
-    bg: 'bg-amber-50 dark:bg-amber-900/20',
-    border: 'border-amber-200 dark:border-amber-800',
+    accent: 'bg-gold-500/50',
+    text: 'text-gold-600 dark:text-gold-400',
+    bg: 'bg-gold-500/5 dark:bg-gold-700/20',
+    border: 'border-gold-400/20 dark:border-gold-700/40',
     icon: <Minus className="w-4 h-4" />,
     label: 'Hemat',
     description: 'Pengeluaran hari ini melebihi batas aman',
@@ -196,8 +196,8 @@ export default function SafeToSpend({ periodId }: Props) {
                 data.remaining_budget < 0
                   ? 'bg-red-500'
                   : data.time_elapsed_pct > 80
-                    ? 'bg-amber-500'
-                    : 'bg-blue-400 dark:bg-blue-500'
+                    ? 'bg-gold-500/50'
+                    : 'bg-mint-400 dark:bg-mint-500/30'
               }`}
               style={{ width: `${Math.min(100, data.time_elapsed_pct)}%` }}
             />
