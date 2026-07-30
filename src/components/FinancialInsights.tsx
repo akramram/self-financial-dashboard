@@ -175,7 +175,7 @@ export default function FinancialInsights({ transactions, networth, summaries, c
   return (
     <div className="glass-card p-5">
       
-        <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
+        <h3 className="text-base font-semibold flex items-center gap-2 text-slate-800 dark:text-white/80">
           <Wallet className="w-4 h-4 text-slate-500" />
           Insights
         </h3>

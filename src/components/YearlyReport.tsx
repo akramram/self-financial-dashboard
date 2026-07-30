@@ -234,7 +234,7 @@ export default function YearlyReport({ summaries, categories }: Props) {
     <div className="space-y-6">
       {/* Year Selector */}
       <div className="flex items-center gap-3">
-        <label className="text-sm font-medium text-white/60">Year:</label>
+        <label className="text-sm font-medium text-slate-600 dark:text-white/60">Year:</label>
         <Select value={String(selectedYear)} onValueChange={(v) => setSelectedYear(Number(v))}>
           <SelectTrigger className="w-[140px]">
             <SelectValue />
@@ -311,8 +311,8 @@ export default function YearlyReport({ summaries, categories }: Props) {
 
           {/* Monthly Trend Chart */}
           <div className="glass-card p-5">
-            <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
-                <CalendarDays className="w-4 h-4 text-white/50" />
+            <h3 className="text-base font-semibold flex items-center gap-2 text-slate-800 dark:text-white/80">
+                <CalendarDays className="w-4 h-4 text-slate-600 dark:text-white/50" />
                 Monthly Breakdown — {selectedYear}
               </h3>
             <div className="relative h-80">
@@ -323,7 +323,7 @@ export default function YearlyReport({ summaries, categories }: Props) {
           {/* Category + Highlights Row */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="glass-card p-5">
-              <h3 className="text-base font-semibold text-white/80">Top Spending Categories</h3>
+              <h3 className="text-base font-semibold text-slate-800 dark:text-white/80">Top Spending Categories</h3>
               <div className="relative h-72">
                   <Doughnut data={doughnutData} options={doughnutOptions} />
                 </div>
@@ -331,12 +331,12 @@ export default function YearlyReport({ summaries, categories }: Props) {
 
             <div className="space-y-6">
               <div className="glass-card p-5">
-                <h3 className="text-base font-semibold text-white/80">Top Spending Months</h3>
+                <h3 className="text-base font-semibold text-slate-800 dark:text-white/80">Top Spending Months</h3>
                 <div className="space-y-2">
                     {topSpendingMonths.map((m, i) => (
-                      <div key={m.month} className="flex justify-between items-center p-2 rounded-lg bg-slate-50 bg-white/[0.06]">
+                      <div key={m.month} className="flex justify-between items-center p-2 rounded-lg bg-slate-50 bg-slate-200/60 dark:bg-white/[0.06]">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs font-semibold text-white/40 w-4">#{i + 1}</span>
+                          <span className="text-xs font-semibold text-slate-500 dark:text-white/40 w-4">#{i + 1}</span>
                           <span className="text-sm font-medium">{m.month}</span>
                         </div>
                         <span className="text-sm font-semibold">{formatIdr(m.outcome.total)}</span>
@@ -349,12 +349,12 @@ export default function YearlyReport({ summaries, categories }: Props) {
                 </div>
 
               <div className="glass-card p-5">
-                <h3 className="text-base font-semibold text-white/80">Top Savings Months</h3>
+                <h3 className="text-base font-semibold text-slate-800 dark:text-white/80">Top Savings Months</h3>
                 <div className="space-y-2">
                     {topSavingsMonths.map((m, i) => (
-                      <div key={m.month} className="flex justify-between items-center p-2 rounded-lg bg-slate-50 bg-white/[0.06]">
+                      <div key={m.month} className="flex justify-between items-center p-2 rounded-lg bg-slate-50 bg-slate-200/60 dark:bg-white/[0.06]">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs font-semibold text-white/40 w-4">#{i + 1}</span>
+                          <span className="text-xs font-semibold text-slate-500 dark:text-white/40 w-4">#{i + 1}</span>
                           <span className="text-sm font-medium">{m.month}</span>
                         </div>
                         <span className={`text-sm font-semibold ${m.savings >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
@@ -372,23 +372,23 @@ export default function YearlyReport({ summaries, categories }: Props) {
 
           {/* Spending Composition */}
           <div className="glass-card p-5">
-            <h3 className="text-base font-semibold text-white/80">Spending Composition</h3>
+            <h3 className="text-base font-semibold text-slate-800 dark:text-white/80">Spending Composition</h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="p-4 rounded-lg border bg-white/[0.03]">
+                <div className="p-4 rounded-lg border bg-slate-100 dark:bg-white/[0.03]">
                   <p className="text-xs text-muted-foreground mb-1">Cash Expenses</p>
                   <p className="text-xl font-semibold">{formatIdr(totals.cash)}</p>
                   <p className="text-xs text-muted-foreground mt-1">
                     {totals.spending > 0 ? ((totals.cash / totals.spending) * 100).toFixed(1) : 0}% of total
                   </p>
                 </div>
-                <div className="p-4 rounded-lg border bg-white/[0.03]">
+                <div className="p-4 rounded-lg border bg-slate-100 dark:bg-white/[0.03]">
                   <p className="text-xs text-muted-foreground mb-1">Credit Payments</p>
                   <p className="text-xl font-semibold">{formatIdr(totals.credit)}</p>
                   <p className="text-xs text-muted-foreground mt-1">
                     {totals.spending > 0 ? ((totals.credit / totals.spending) * 100).toFixed(1) : 0}% of total
                   </p>
                 </div>
-                <div className="p-4 rounded-lg border bg-white/[0.03]">
+                <div className="p-4 rounded-lg border bg-slate-100 dark:bg-white/[0.03]">
                   <p className="text-xs text-muted-foreground mb-1">Monthly Average</p>
                   <p className="text-xl font-semibold">{formatIdr(totals.spending / yearSummaries.length)}</p>
                   <p className="text-xs text-muted-foreground mt-1">
@@ -401,7 +401,7 @@ export default function YearlyReport({ summaries, categories }: Props) {
           {/* Year-over-Year Table */}
           {allYearsStats.length > 1 && (
             <div className="glass-card p-5">
-              <h3 className="text-base font-semibold text-white/80">Year-over-Year Comparison</h3>
+              <h3 className="text-base font-semibold text-slate-800 dark:text-white/80">Year-over-Year Comparison</h3>
               <div className="rounded-xl border overflow-hidden">
                   <Table>
                     <TableHeader>
@@ -422,7 +422,7 @@ export default function YearlyReport({ summaries, categories }: Props) {
                         const savingsPct = prev && prev.savings !== 0 ? (savingsChange / Math.abs(prev.savings)) * 100 : null;
                         const isUp = savingsChange > 0;
                         return (
-                          <TableRow key={row.year} className={row.year === selectedYear ? 'bg-white/[0.03]' : undefined}>
+                          <TableRow key={row.year} className={row.year === selectedYear ? 'bg-slate-100 dark:bg-white/[0.03]' : undefined}>
                             <TableCell className="font-medium">{row.year}</TableCell>
                             <TableCell className="text-right">{row.months}</TableCell>
                             <TableCell className="text-right">{formatIdr(row.income)}</TableCell>

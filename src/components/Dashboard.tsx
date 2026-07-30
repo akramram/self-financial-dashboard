@@ -152,9 +152,9 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
         <section>
           {/* Period filter pill */}
           <div className="flex items-center justify-between mb-3">
-            <p className="text-xs uppercase tracking-wider text-white/40">Pulse</p>
+            <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/40">Pulse</p>
             <Select value={filterPeriodId?.toString() ?? "all"} onValueChange={v => { setFilterAllTime(v === "all"); setFilterPeriodId(v === "all" ? null : parseInt(v)); setTxPage(1); }}>
-              <SelectTrigger className="w-[150px] h-8 text-xs bg-white/[0.05] border-white/[0.08] text-white/60">
+              <SelectTrigger className="w-[150px] h-8 text-xs bg-slate-100 dark:bg-white/[0.05] border-slate-300 dark:border-white/[0.08] text-slate-600 dark:text-white/60">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -168,8 +168,8 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
           {glance && (
             <GlassCard variant="hero" className="p-6 mb-4">
               <div className="relative">
-                <p className="text-sm font-medium text-white/40 mb-1">Available Balance</p>
-                <AnimatedCounter value={glance.balance} formatFn={formatIdr} className="text-4xl font-bold text-white tracking-tight" />
+                <p className="text-sm font-medium text-slate-500 dark:text-white/40 mb-1">Available Balance</p>
+                <AnimatedCounter value={glance.balance} formatFn={formatIdr} className="text-4xl font-bold text-slate-900 dark:text-white tracking-tight" />
                 <div className="flex items-center gap-3 mt-3">
                   {glance.prevBalance !== 0 && (
                     <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold" style={{ backgroundColor: 'rgba(52,211,153,0.12)', color: '#34d399' }}>
@@ -177,7 +177,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
                       {glance.balance >= glance.prevBalance ? '+' : ''}{formatIdr(glance.balance - glance.prevBalance)}
                     </span>
                   )}
-                  <span className="text-xs text-white/40">vs last period</span>
+                  <span className="text-xs text-slate-500 dark:text-white/40">vs last period</span>
                 </div>
               </div>
             </GlassCard>
@@ -195,7 +195,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
 
         {/* ═══════════ SECTION 2: FLOW — "Ke mana duit?" ═══════════ */}
         <section>
-          <p className="text-xs uppercase tracking-wider text-white/40 mb-3">Flow</p>
+          <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/40 mb-3">Flow</p>
 
           {/* Spending Pulse + Safe to Spend merged */}
           <GlassCard className="mb-4">
@@ -205,33 +205,33 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
           {/* Category Budgets + Credit Snapshot side-by-side */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
             <GlassCard>
-              <h3 className="text-sm font-semibold text-white/80 mb-3">Top Categories</h3>
+              <h3 className="text-sm font-semibold text-slate-800 dark:text-white/80 mb-3">Top Categories</h3>
               <CategoryBudgets summaries={summaries} categories={categories} activeMonth={activeSummary?.month} onCategoryClick={openCategoryDialog} />
             </GlassCard>
 
             <GlassCard>
-              <h3 className="text-sm font-semibold text-white/80 mb-3">Credit Snapshot</h3>
+              <h3 className="text-sm font-semibold text-slate-800 dark:text-white/80 mb-3">Credit Snapshot</h3>
               {activeSummary && (
                 <div className="space-y-3">
                   <div>
                     <div className="flex justify-between text-sm mb-1">
-                      <span className="text-white/50">Credit Payment (Prior Month)</span>
+                      <span className="text-slate-600 dark:text-white/50">Credit Payment (Prior Month)</span>
                       <span className="font-semibold text-gold-400">{formatIdr(activeSummary.outcome.credit_payment ?? 0)}</span>
                     </div>
-                    <div className="w-full bg-white/[0.06] rounded-full h-2">
+                    <div className="w-full bg-slate-200/60 dark:bg-white/[0.06] rounded-full h-2">
                       <div className="bg-gold-500 h-2 rounded-full transition-all" style={{ width: `${activeSummary.outcome.total > 0 ? Math.round(((activeSummary.outcome.credit_payment ?? 0) / activeSummary.outcome.total) * 100) : 0}%` }} />
                     </div>
                   </div>
                   <div>
                     <div className="flex justify-between text-sm mb-1">
-                      <span className="text-white/50">Current Month Credit Expenses</span>
+                      <span className="text-slate-600 dark:text-white/50">Current Month Credit Expenses</span>
                       <span className="font-semibold text-coral-400">{formatIdr(activeSummary.outcome.credit_expenses ?? 0)}</span>
                     </div>
-                    <div className="w-full bg-white/[0.06] rounded-full h-2">
+                    <div className="w-full bg-slate-200/60 dark:bg-white/[0.06] rounded-full h-2">
                       <div className="bg-coral-500 h-2 rounded-full transition-all" style={{ width: `${activeSummary.outcome.total > 0 ? Math.round(((activeSummary.outcome.credit_expenses ?? 0) / activeSummary.outcome.total) * 100) : 0}%` }} />
                     </div>
                   </div>
-                  <p className="text-xs text-white/40">Credit expenses this month will be paid next month.</p>
+                  <p className="text-xs text-slate-500 dark:text-white/40">Credit expenses this month will be paid next month.</p>
                 </div>
               )}
             </GlassCard>
@@ -241,10 +241,10 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
         {/* ═══════════ SECTION 3: ACT — "Apa yang harus dilakukan?" ═══════════ */}
         <section>
           <div className="flex items-center justify-between mb-3">
-            <p className="text-xs uppercase tracking-wider text-white/40">Act</p>
+            <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/40">Act</p>
             {/* Alert bell */}
-            <button onClick={() => setShowAlerts(!showAlerts)} className="relative p-2 rounded-xl hover:bg-white/10 transition">
-              <Bell className="w-5 h-5 text-white/40" strokeWidth={1.8} />
+            <button onClick={() => setShowAlerts(!showAlerts)} className="relative p-2 rounded-xl hover:bg-slate-200/50 dark:bg-white/10 transition">
+              <Bell className="w-5 h-5 text-slate-500 dark:text-white/40" strokeWidth={1.8} />
               {/* Red dot if kickoff is ready (as a nudge) */}
               {kickoffBanner?.show && <span className="absolute top-0.5 right-0.5 w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#ef4444' }} />}
             </button>
@@ -254,8 +254,8 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
           {showAlerts && (
             <GlassCard className="mb-4">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-semibold text-white/80">Alerts</h3>
-                <button onClick={() => setShowAlerts(false)} className="text-white/30 hover:text-white/60"><X className="w-4 h-4" /></button>
+                <h3 className="text-sm font-semibold text-slate-800 dark:text-white/80">Alerts</h3>
+                <button onClick={() => setShowAlerts(false)} className="text-slate-500 dark:text-white/30 hover:text-slate-600 dark:text-white/60"><X className="w-4 h-4" /></button>
               </div>
               <AlertsPanel month={activeSummary?.month} summaries={summaries} categories={categories} transactions={transactions} recurringTitles={recurringTitles} />
             </GlassCard>
@@ -263,11 +263,11 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
 
           {/* Quick Actions */}
           <div className="flex flex-wrap gap-3 mb-4">
-            <a href="/add" className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:scale-105 no-underline" style={{ background: 'linear-gradient(135deg, #34d399, #0ea5e9)' }}>
+            <a href="/add" className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-900 dark:text-white transition-all hover:scale-105 no-underline" style={{ background: 'linear-gradient(135deg, #34d399, #0ea5e9)' }}>
               <Plus className="w-4 h-4" /> Add Transaction
             </a>
             {kickoffBanner?.show && (
-              <Button onClick={() => setKickoffOpen(true)} variant="secondary" size="sm" className="bg-white/[0.08] text-white/80 hover:bg-white/[0.15] border-white/[0.1] h-auto py-2.5 px-4 rounded-xl">
+              <Button onClick={() => setKickoffOpen(true)} variant="secondary" size="sm" className="bg-slate-200/60 dark:bg-white/[0.08] text-slate-800 dark:text-white/80 hover:bg-slate-300/50 dark:bg-white/[0.15] border-slate-300 dark:border-white/[0.1] h-auto py-2.5 px-4 rounded-xl">
                 💰 Start {kickoffBanner.nextMonth} ({kickoffBanner.recurringCount} recurring)
               </Button>
             )}
@@ -278,12 +278,12 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
 
         {/* ═══════════ SECTION 4: INSIGHTS — "Pahami lebih dalam" ═══════════ */}
         <section>
-          <p className="text-xs uppercase tracking-wider text-white/40 mb-3">Insights</p>
+          <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/40 mb-3">Insights</p>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
             {/* Net Worth mini chart */}
             <GlassCard className="lg:col-span-2">
-              <h3 className="text-sm font-semibold text-white/80 mb-2">Net Worth Trend</h3>
+              <h3 className="text-sm font-semibold text-slate-800 dark:text-white/80 mb-2">Net Worth Trend</h3>
               <div className="h-48">
                 <NetworthChart data={filteredNetworth} />
               </div>
@@ -291,17 +291,17 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
 
             {/* Runway snapshot */}
             <GlassCard>
-              <h3 className="text-sm font-semibold text-white/80 mb-3">Runway</h3>
+              <h3 className="text-sm font-semibold text-slate-800 dark:text-white/80 mb-3">Runway</h3>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: 'rgba(52,211,153,0.12)' }}>
                   <Shield className="w-5 h-5" style={{ color: '#34d399' }} strokeWidth={1.8} />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-white">8.2</p>
-                  <p className="text-xs text-white/40">months of emergency fund</p>
+                  <p className="text-2xl font-bold text-slate-900 dark:text-white">8.2</p>
+                  <p className="text-xs text-slate-500 dark:text-white/40">months of emergency fund</p>
                 </div>
               </div>
-              <p className="text-xs text-white/40 mt-3">Based on average monthly burn rate</p>
+              <p className="text-xs text-slate-500 dark:text-white/40 mt-3">Based on average monthly burn rate</p>
             </GlassCard>
           </div>
 
@@ -314,15 +314,15 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
         {/* ═══════════ SECTION 5: FEED — Recent transactions ═══════════ */}
         <section>
           <div className="flex items-center justify-between mb-3">
-            <p className="text-xs uppercase tracking-wider text-white/40">Feed</p>
-            <a href="/transactions" className="text-xs text-white/40 hover:text-white/70 no-underline">View all →</a>
+            <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/40">Feed</p>
+            <a href="/transactions" className="text-xs text-slate-500 dark:text-white/40 hover:text-slate-700 dark:text-white/70 no-underline">View all →</a>
           </div>
 
           <GlassCard className="p-0 overflow-hidden">
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow className="border-white/[0.05]">
+                  <TableRow className="border-slate-200 dark:border-white/[0.05]">
                     <SortableHeader sortKey="paid" currentDirection={isSorted('paid')} onSort={toggleSort}>Paid</SortableHeader>
                     <SortableHeader sortKey="title" currentDirection={isSorted('title')} onSort={toggleSort}>Title</SortableHeader>
                     <SortableHeader sortKey="category" currentDirection={isSorted('category')} onSort={toggleSort}>Category</SortableHeader>
@@ -339,20 +339,20 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
                     const typeClass = row.type === 'cash' ? 'text-mint-400' : row.type === 'credit_payment' ? 'text-gold-400' : 'text-coral-400';
                     const typeLabel = row.type === 'cash' ? 'Cash' : row.type === 'credit_payment' ? 'Credit Pay' : 'Credit';
                     return (
-                      <TableRow key={row.id} className="border-white/[0.03] hover:bg-white/[0.03]">
+                      <TableRow key={row.id} className="border-slate-200 dark:border-white/[0.03] hover:bg-slate-100 dark:bg-white/[0.03]">
                         <TableCell>
                           <Button size="sm" variant="ghost" onClick={async () => { await toggleTransactionDoneApi(row.id, !row.done); window.location.reload(); }} className="h-7 text-xs font-semibold px-2 py-0" style={{ backgroundColor: row.done ? 'rgba(52,211,153,0.12)' : 'rgba(239,68,68,0.12)', color: row.done ? '#34d399' : '#ef4444' }}>
                             {row.done ? 'Paid' : 'Unpaid'}
                           </Button>
                         </TableCell>
-                        <TableCell className="text-white/80">{row.title}</TableCell>
+                        <TableCell className="text-slate-800 dark:text-white/80">{row.title}</TableCell>
                         <TableCell><Badge variant="secondary" style={{ backgroundColor: categoryMap[row.category]?.color || undefined, color: categoryMap[row.category]?.color ? '#fff' : undefined }}>{row.category}</Badge></TableCell>
-                        <TableCell className="text-white/40 text-xs">{dateStr}</TableCell>
-                        <TableCell className="font-medium text-right text-white/90">{formatIdr(row.amount)}</TableCell>
+                        <TableCell className="text-slate-500 dark:text-white/40 text-xs">{dateStr}</TableCell>
+                        <TableCell className="font-medium text-right text-slate-800 dark:text-white/90">{formatIdr(row.amount)}</TableCell>
                         <TableCell className={`${typeClass} text-xs font-semibold uppercase`}>{typeLabel}</TableCell>
                         <TableCell>
                           <div className="flex gap-2">
-                            <Button variant="ghost" size="sm" className="h-7 text-xs text-white/50 hover:text-white/80" onClick={() => startEdit(row)}>Edit</Button>
+                            <Button variant="ghost" size="sm" className="h-7 text-xs text-slate-600 dark:text-white/50 hover:text-slate-800 dark:text-white/80" onClick={() => startEdit(row)}>Edit</Button>
                             <Button variant="ghost" size="sm" className="h-7 text-xs text-red-400 hover:text-red-300" onClick={async () => { const confirmed = await confirmAction({ title: 'Delete Transaction', description: `Delete "${row.title}" (${formatIdr(row.amount)})?`, confirmLabel: 'Delete', variant: 'destructive' }); if (!confirmed) return; await deleteTransactionApi(row.id); window.location.reload(); }}>Delete</Button>
                           </div>
                         </TableCell>
@@ -366,12 +366,12 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
             <EditTransactionDialog open={editingId !== null} transaction={editForm} onChange={handleChange} onSave={saveEdit} onCancel={cancelEdit} periods={summaries.map(s => ({ period_id: s.period_id, month: s.month }))} categories={categories.map(c => c.name)} />
 
             {sortedTransactions.length > txPerPage && (
-              <div className="flex items-center justify-between px-5 py-3 border-t border-white/[0.05]">
-                <p className="text-xs text-white/30">Showing {(txPage - 1) * txPerPage + 1}–{Math.min(txPage * txPerPage, sortedTransactions.length)} of {sortedTransactions.length}</p>
+              <div className="flex items-center justify-between px-5 py-3 border-t border-slate-200 dark:border-white/[0.05]">
+                <p className="text-xs text-slate-500 dark:text-white/30">Showing {(txPage - 1) * txPerPage + 1}–{Math.min(txPage * txPerPage, sortedTransactions.length)} of {sortedTransactions.length}</p>
                 <div className="flex items-center gap-2">
-                  <Button variant="outline" size="sm" onClick={() => goToPage(txPage - 1)} disabled={txPage <= 1} className="h-7 text-xs bg-white/[0.05] border-white/[0.08] text-white/60">Previous</Button>
-                  <span className="text-xs text-white/30 min-w-[3rem] text-center">{txPage} / {totalTxPages}</span>
-                  <Button variant="outline" size="sm" onClick={() => goToPage(txPage + 1)} disabled={txPage >= totalTxPages} className="h-7 text-xs bg-white/[0.05] border-white/[0.08] text-white/60">Next</Button>
+                  <Button variant="outline" size="sm" onClick={() => goToPage(txPage - 1)} disabled={txPage <= 1} className="h-7 text-xs bg-slate-100 dark:bg-white/[0.05] border-slate-300 dark:border-white/[0.08] text-slate-600 dark:text-white/60">Previous</Button>
+                  <span className="text-xs text-slate-500 dark:text-white/30 min-w-[3rem] text-center">{txPage} / {totalTxPages}</span>
+                  <Button variant="outline" size="sm" onClick={() => goToPage(txPage + 1)} disabled={txPage >= totalTxPages} className="h-7 text-xs bg-slate-100 dark:bg-white/[0.05] border-slate-300 dark:border-white/[0.08] text-slate-600 dark:text-white/60">Next</Button>
                 </div>
               </div>
             )}
@@ -380,38 +380,38 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
 
         {/* ═══════════ CHARTS — lower section ═══════════ */}
         <section>
-          <p className="text-xs uppercase tracking-wider text-white/40 mb-3">Charts</p>
-          <div className="glass-card p-5 bg-white/[0.02] border-white/[0.06] mb-4">
-            <h3 className="text-base font-semibold text-white/80 text-white/80">Cash Outcome vs Credit Payment</h3><OutcomeChart data={filteredSummaries} /></div>
-          <div className="glass-card p-5 bg-white/[0.02] border-white/[0.06] mb-4">
-            <h3 className="text-base font-semibold text-white/80 text-white/80">Savings Rate Trend</h3><SavingsRateChart data={filteredSummaries} /></div>
-          <div className="glass-card p-5 bg-white/[0.02] border-white/[0.06] mb-4">
-            <h3 className="text-base font-semibold text-white/80 text-white/80">Category Spending Trend</h3><CategoryTrendChart data={filteredSummaries} categories={categories} /></div>
+          <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/40 mb-3">Charts</p>
+          <div className="glass-card p-5 bg-slate-100 dark:bg-white/[0.02] border-slate-200 dark:border-white/[0.06] mb-4">
+            <h3 className="text-base font-semibold text-slate-800 dark:text-white/80 text-slate-800 dark:text-white/80">Cash Outcome vs Credit Payment</h3><OutcomeChart data={filteredSummaries} /></div>
+          <div className="glass-card p-5 bg-slate-100 dark:bg-white/[0.02] border-slate-200 dark:border-white/[0.06] mb-4">
+            <h3 className="text-base font-semibold text-slate-800 dark:text-white/80 text-slate-800 dark:text-white/80">Savings Rate Trend</h3><SavingsRateChart data={filteredSummaries} /></div>
+          <div className="glass-card p-5 bg-slate-100 dark:bg-white/[0.02] border-slate-200 dark:border-white/[0.06] mb-4">
+            <h3 className="text-base font-semibold text-slate-800 dark:text-white/80 text-slate-800 dark:text-white/80">Category Spending Trend</h3><CategoryTrendChart data={filteredSummaries} categories={categories} /></div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-            <div className="glass-card p-5 bg-white/[0.02] border-white/[0.06]"><h3 className="text-base font-semibold text-white/80 text-white/80">Networth Trend</h3><NetworthChart data={filteredNetworth} /></div>
-            <div className="glass-card p-5 bg-white/[0.02] border-white/[0.06]"><h3 className="text-base font-semibold text-white/80 text-white/80">{isAllTime ? 'Latest Month Categories' : `${activeSummary?.month ?? ''} Categories`}</h3>{activeSummary?.category_totals && Object.keys(activeSummary.category_totals).length > 0 ? <CategoryChart data={activeSummary.category_totals} categories={categories} onCategoryClick={openCategoryDialog} /> : <p className="text-white/30 text-sm">No category data available.</p>}</div>
+            <div className="glass-card p-5 bg-slate-100 dark:bg-white/[0.02] border-slate-200 dark:border-white/[0.06]"><h3 className="text-base font-semibold text-slate-800 dark:text-white/80 text-slate-800 dark:text-white/80">Networth Trend</h3><NetworthChart data={filteredNetworth} /></div>
+            <div className="glass-card p-5 bg-slate-100 dark:bg-white/[0.02] border-slate-200 dark:border-white/[0.06]"><h3 className="text-base font-semibold text-slate-800 dark:text-white/80 text-slate-800 dark:text-white/80">{isAllTime ? 'Latest Month Categories' : `${activeSummary?.month ?? ''} Categories`}</h3>{activeSummary?.category_totals && Object.keys(activeSummary.category_totals).length > 0 ? <CategoryChart data={activeSummary.category_totals} categories={categories} onCategoryClick={openCategoryDialog} /> : <p className="text-slate-500 dark:text-white/30 text-sm">No category data available.</p>}</div>
           </div>
           <PeriodVsAverage summaries={filteredSummaries} categories={categories} activePeriodId={filterPeriodId} />
         </section>
 
         {/* ═══════════ Category Drill-Down Dialog ═══════════ */}
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto bg-navy-800 border-white/[0.08]">
+          <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto bg-slate-100 dark:bg-navy-800 border-slate-300 dark:border-white/[0.08]">
             <DialogHeader>
-              <DialogTitle className="text-white">{selectedCategory} — {activeSummary?.month}</DialogTitle>
-              <DialogDescription className="text-white/40">
+              <DialogTitle className="text-slate-900 dark:text-white">{selectedCategory} — {activeSummary?.month}</DialogTitle>
+              <DialogDescription className="text-slate-500 dark:text-white/40">
                 {(() => { const catTxs = transactions.filter(t => t.category === selectedCategory && t.period_id === activeSummary?.period_id); const total = catTxs.reduce((sum, t) => sum + t.amount, 0); return `${catTxs.length} transaction${catTxs.length !== 1 ? 's' : ''} • Total: ${formatIdr(total)}`; })()}
               </DialogDescription>
             </DialogHeader>
             <div className="mb-4">
-              <h4 className="text-sm font-semibold text-white/70 mb-2">Outcome by Category</h4>
+              <h4 className="text-sm font-semibold text-slate-700 dark:text-white/70 mb-2">Outcome by Category</h4>
               <OutcomeBarChart data={activeSummary?.category_totals || {}} categories={categories} highlightCategory={selectedCategory} summaries={summaries} />
             </div>
             <div>
-              {(() => { const catTxs = transactions.filter(t => t.category === selectedCategory && t.period_id === activeSummary?.period_id).sort((a, b) => parseCreatedTime(b).getTime() - parseCreatedTime(a).getTime()); if (catTxs.length === 0) return <p className="text-sm text-white/30">No transactions found.</p>; return (
+              {(() => { const catTxs = transactions.filter(t => t.category === selectedCategory && t.period_id === activeSummary?.period_id).sort((a, b) => parseCreatedTime(b).getTime() - parseCreatedTime(a).getTime()); if (catTxs.length === 0) return <p className="text-sm text-slate-500 dark:text-white/30">No transactions found.</p>; return (
                 <Table>
-                  <TableHeader><TableRow className="border-white/[0.05]"><TableHead className="text-white/50">Title</TableHead><TableHead className="text-white/50">Date</TableHead><TableHead className="text-right text-white/50">Amount</TableHead><TableHead className="text-white/50">Type</TableHead></TableRow></TableHeader>
-                  <TableBody>{catTxs.map(t => { const d = parseCreatedTime(t); const dateStr = isNaN(d.getTime()) ? t.date : d.toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' }); const typeLabel = t.type === 'cash' ? 'Cash' : t.type === 'credit_payment' ? 'Credit Pay' : 'Credit'; return (<TableRow key={t.id} className="border-white/[0.03]"><TableCell className="font-medium text-white/80">{t.title}</TableCell><TableCell className="text-white/40 text-xs">{dateStr}</TableCell><TableCell className="text-right font-medium text-white/90">{formatIdr(t.amount)}</TableCell><TableCell className="text-xs font-semibold uppercase"><Badge variant="outline" className="border-white/[0.1]">{typeLabel}</Badge></TableCell></TableRow>); })}</TableBody>
+                  <TableHeader><TableRow className="border-slate-200 dark:border-white/[0.05]"><TableHead className="text-slate-600 dark:text-white/50">Title</TableHead><TableHead className="text-slate-600 dark:text-white/50">Date</TableHead><TableHead className="text-right text-slate-600 dark:text-white/50">Amount</TableHead><TableHead className="text-slate-600 dark:text-white/50">Type</TableHead></TableRow></TableHeader>
+                  <TableBody>{catTxs.map(t => { const d = parseCreatedTime(t); const dateStr = isNaN(d.getTime()) ? t.date : d.toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' }); const typeLabel = t.type === 'cash' ? 'Cash' : t.type === 'credit_payment' ? 'Credit Pay' : 'Credit'; return (<TableRow key={t.id} className="border-slate-200 dark:border-white/[0.03]"><TableCell className="font-medium text-slate-800 dark:text-white/80">{t.title}</TableCell><TableCell className="text-slate-500 dark:text-white/40 text-xs">{dateStr}</TableCell><TableCell className="text-right font-medium text-slate-800 dark:text-white/90">{formatIdr(t.amount)}</TableCell><TableCell className="text-xs font-semibold uppercase"><Badge variant="outline" className="border-slate-300 dark:border-white/[0.1]">{typeLabel}</Badge></TableCell></TableRow>); })}</TableBody>
                 </Table>
               ); })()}
             </div>

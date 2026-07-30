@@ -41,7 +41,7 @@ export default function CollapsibleSection({
                 <ChevronDown className="w-4 h-4" />
               )}
             </span>
-            <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
+            <h3 className="text-base font-semibold flex items-center gap-2 text-slate-800 dark:text-white/80">
               {icon}
               {title}
               {badge && <span className="ml-1">{badge}</span>}

@@ -172,7 +172,7 @@ export default function RecurringBreakdown() {
   if (loading && !data) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-white/30 animate-pulse">Loading breakdown...</div>
+        <div className="text-slate-500 dark:text-white/30 animate-pulse">Loading breakdown...</div>
       </div>
     );
   }
@@ -188,7 +188,7 @@ export default function RecurringBreakdown() {
   if (!data || data.periods.length === 0) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-white/30">No transaction data available.</div>
+        <div className="text-slate-500 dark:text-white/30">No transaction data available.</div>
       </div>
     );
   }
@@ -202,7 +202,7 @@ export default function RecurringBreakdown() {
             <ArrowRightLeft className="w-5 h-5 text-mint-500" />
             Recurring vs Discretionary
           </h2>
-          <p className="text-sm text-white/40">
+          <p className="text-sm text-slate-500 dark:text-white/40">
             See how much of your spending is locked into recurring costs vs flexible
           </p>
         </div>
@@ -228,13 +228,13 @@ export default function RecurringBreakdown() {
       {currentPeriod && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="glass-card p-5">
-            <h3 className="text-sm font-medium text-white/40 text-white/80">
+            <h3 className="text-sm font-medium text-slate-500 dark:text-white/40 text-slate-800 dark:text-white/80">
                 Flexibility Score
               </h3>
             <div className="text-2xl font-bold">
                 {currentPeriod.discretionary_pct}%
               </div>
-              <p className="text-xs text-white/30 mt-1">
+              <p className="text-xs text-slate-500 dark:text-white/30 mt-1">
                 of spending is flexible
               </p>
               {trendDirection && (
@@ -263,37 +263,37 @@ export default function RecurringBreakdown() {
             </div>
 
           <div className="glass-card p-5">
-            <h3 className="text-sm font-medium text-white/40 text-white/80">
+            <h3 className="text-sm font-medium text-slate-500 dark:text-white/40 text-slate-800 dark:text-white/80">
                 Recurring
               </h3>
             <div className="text-2xl font-bold text-mint-600 dark:text-mint-400">
                 {formatIdr(currentPeriod.recurring)}
               </div>
-              <p className="text-xs text-white/30 mt-1">
+              <p className="text-xs text-slate-500 dark:text-white/30 mt-1">
                 {currentPeriod.recurring_count} transactions · {currentPeriod.recurring_pct}%
               </p>
             </div>
 
           <div className="glass-card p-5">
-            <h3 className="text-sm font-medium text-white/40 text-white/80">
+            <h3 className="text-sm font-medium text-slate-500 dark:text-white/40 text-slate-800 dark:text-white/80">
                 Discretionary
               </h3>
             <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
                 {formatIdr(currentPeriod.discretionary)}
               </div>
-              <p className="text-xs text-white/30 mt-1">
+              <p className="text-xs text-slate-500 dark:text-white/30 mt-1">
                 {currentPeriod.discretionary_count} transactions · {currentPeriod.discretionary_pct}%
               </p>
             </div>
 
           <div className="glass-card p-5">
-            <h3 className="text-sm font-medium text-white/40 text-white/80">
+            <h3 className="text-sm font-medium text-slate-500 dark:text-white/40 text-slate-800 dark:text-white/80">
                 Total Spending
               </h3>
             <div className="text-2xl font-bold">
                 {formatIdr(currentPeriod.total)}
               </div>
-              <p className="text-xs text-white/30 mt-1">
+              <p className="text-xs text-slate-500 dark:text-white/30 mt-1">
                 {currentPeriod.month}
               </p>
             </div>
@@ -304,11 +304,11 @@ export default function RecurringBreakdown() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Donut Chart */}
         <div className="glass-card p-5">
-          <h3 className="text-base flex items-center gap-2 text-white/80">
+          <h3 className="text-base flex items-center gap-2 text-slate-800 dark:text-white/80">
               <Repeat className="w-4 h-4 text-mint-500" />
               Current Breakdown
             </h3>
-            <p className="text-white/50">
+            <p className="text-slate-600 dark:text-white/50">
               {currentPeriod?.month || 'Latest period'}
             </p>
           {donutData ? (
@@ -343,13 +343,13 @@ export default function RecurringBreakdown() {
                 />
                 {currentPeriod && currentPeriod.total > 0 && (
                   <div className="text-center -mt-[140px] relative z-10 pointer-events-none">
-                    <div className="text-xs text-white/30">Total</div>
+                    <div className="text-xs text-slate-500 dark:text-white/30">Total</div>
                     <div className="text-lg font-bold">{formatIdr(currentPeriod.total)}</div>
                   </div>
                 )}
               </div>
             ) : (
-              <div className="flex items-center justify-center h-48 text-white/30">
+              <div className="flex items-center justify-center h-48 text-slate-500 dark:text-white/30">
                 No spending data for this period
               </div>
             )}
@@ -357,11 +357,11 @@ export default function RecurringBreakdown() {
 
         {/* Trend Line */}
         <div className="glass-card p-5">
-          <h3 className="text-base flex items-center gap-2 text-white/80">
+          <h3 className="text-base flex items-center gap-2 text-slate-800 dark:text-white/80">
               <Zap className="w-4 h-4 text-gold-500" />
               Trend Over Time
             </h3>
-            <p className="text-white/50">
+            <p className="text-slate-600 dark:text-white/50">
               How the recurring/discretionary mix has shifted
             </p>
           {trendData ? (
@@ -425,7 +425,7 @@ export default function RecurringBreakdown() {
               />
               </div>
               ) : (
-              <div className="flex items-center justify-center h-48 text-white/30">
+              <div className="flex items-center justify-center h-48 text-slate-500 dark:text-white/30">
                 Need at least 2 periods of data
               </div>
             )}
@@ -435,11 +435,11 @@ export default function RecurringBreakdown() {
       {/* Top Recurring Expenses Table */}
       {data.topRecurring.length > 0 && (
         <div className="glass-card p-5">
-          <h3 className="text-base flex items-center gap-2 text-white/80">
+          <h3 className="text-base flex items-center gap-2 text-slate-800 dark:text-white/80">
               <Repeat className="w-4 h-4 text-mint-500" />
               Top Recurring Expenses (All Time)
             </h3>
-            <p className="text-white/50">
+            <p className="text-slate-600 dark:text-white/50">
               Highest total spending on recurring items across all periods
             </p>
           <Table>
@@ -454,7 +454,7 @@ export default function RecurringBreakdown() {
               <TableBody>
                 {data.topRecurring.map((item, i) => (
                   <TableRow key={item.title}>
-                    <TableCell className="text-xs text-white/30 font-mono">
+                    <TableCell className="text-xs text-slate-500 dark:text-white/30 font-mono">
                       {i + 1}
                     </TableCell>
                     <TableCell className="font-medium">{item.title}</TableCell>
@@ -476,11 +476,11 @@ export default function RecurringBreakdown() {
       {/* No recurring data notice */}
       {data.topRecurring.length === 0 && (
         <div className="glass-card p-5">
-          <Repeat className="w-12 h-12 mx-auto text-white/10 mb-3" />
-            <p className="text-white/40 font-medium">
+          <Repeat className="w-12 h-12 mx-auto text-slate-300 dark:text-white/10 mb-3" />
+            <p className="text-slate-500 dark:text-white/40 font-medium">
               No recurring transactions found
             </p>
-            <p className="text-sm text-white/30 mt-1">
+            <p className="text-sm text-slate-500 dark:text-white/30 mt-1">
               Add recurring templates in{' '}
               <a href="/recurring" className="text-mint-500 hover:underline">
                 Settings → Recurring

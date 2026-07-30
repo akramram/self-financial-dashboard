@@ -179,7 +179,7 @@ export default function SpendingPulse({ summaries, activeMonth }: Props) {
 
           {/* Key metrics */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 pt-1">
-            <div className="bg-white/60 dark:bg-slate-800/60 rounded-lg p-2.5">
+            <div className="bg-slate-200 dark:bg-white/60 dark:bg-slate-800/60 rounded-lg p-2.5">
               <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 mb-1">
                 <Clock className="w-3.5 h-3.5" />
                 Time Elapsed
@@ -189,7 +189,7 @@ export default function SpendingPulse({ summaries, activeMonth }: Props) {
               </p>
               <p className="text-xs text-slate-500">{pulse.pctTimeElapsed.toFixed(0)}% through period</p>
             </div>
-            <div className="bg-white/60 dark:bg-slate-800/60 rounded-lg p-2.5">
+            <div className="bg-slate-200 dark:bg-white/60 dark:bg-slate-800/60 rounded-lg p-2.5">
               <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 mb-1">
                 <Activity className="w-3.5 h-3.5" />
                 Spend vs Expected
@@ -202,7 +202,7 @@ export default function SpendingPulse({ summaries, activeMonth }: Props) {
               </p>
             </div>
             {(pulse.cash > 0 || pulse.credit > 0) && (
-              <div className="bg-white/60 dark:bg-slate-800/60 rounded-lg p-2.5">
+              <div className="bg-slate-200 dark:bg-white/60 dark:bg-slate-800/60 rounded-lg p-2.5">
                 <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 mb-1">
                   <CreditCard className="w-3.5 h-3.5" />
                   Cash vs Credit

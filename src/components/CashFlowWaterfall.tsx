@@ -350,7 +350,7 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
           {/* Waterfall Chart */}
           {chartData && items.length > 1 && (
             <div className="glass-card p-5">
-              <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
+              <h3 className="text-base font-semibold flex items-center gap-2 text-slate-800 dark:text-white/80">
                   <ArrowDown className="w-4 h-4 text-slate-500" />
                   Cash Flow Waterfall — {selectedMonth}
                 </h3>
@@ -366,7 +366,7 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
 
           {/* Detailed Breakdown Table */}
           <div className="glass-card p-5">
-            <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
+            <h3 className="text-base font-semibold flex items-center gap-2 text-slate-800 dark:text-white/80">
                 <TrendingDown className="w-4 h-4 text-slate-500" />
                 Detailed Breakdown
               </h3>
@@ -430,7 +430,7 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
 
           {/* Savings Rate Bar */}
           <div className="glass-card p-5">
-            <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
+            <h3 className="text-base font-semibold flex items-center gap-2 text-slate-800 dark:text-white/80">
                 <PiggyBank className="w-4 h-4 text-slate-500" />
                 Savings Rate Indicator
               </h3>

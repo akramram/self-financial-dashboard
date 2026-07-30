@@ -217,7 +217,7 @@ export default function BudgetRecommendations() {
             <Button
               onClick={applyAllRecommendations}
               disabled={applied}
-              className="bg-gold-600 hover:bg-gold-700 text-white"
+              className="bg-gold-600 hover:bg-gold-700 text-slate-900 dark:text-white"
               size="sm"
             >
               {applied ? (
@@ -235,11 +235,11 @@ export default function BudgetRecommendations() {
       {/* Recommendations Table */}
       <div className="glass-card p-5">
         
-          <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
+          <h3 className="text-base font-semibold flex items-center gap-2 text-slate-800 dark:text-white/80">
             <Target className="w-4 h-4 text-slate-500" />
             Budget Recommendations
           </h3>
-          <p className="text-white/50">
+          <p className="text-slate-600 dark:text-white/50">
             Data-driven budget limits based on your historical spending patterns.
             Click any row to see details.
           </p>
@@ -367,7 +367,7 @@ export default function BudgetRecommendations() {
         {stats.slice(0, 6).map((stat) => (
           <div className="glass-card p-5" key={stat.category}>
             
-              <h3 className="text-sm font-semibold flex items-center justify-between text-white/80">
+              <h3 className="text-sm font-semibold flex items-center justify-between text-slate-800 dark:text-white/80">
                 <span>{stat.category}</span>
                 <Badge
                   variant="outline"

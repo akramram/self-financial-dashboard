@@ -195,7 +195,7 @@ export default function SavingsRateTracker() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="text-white/30">Loading savings rate data…</div>
+        <div className="text-slate-500 dark:text-white/30">Loading savings rate data…</div>
       </div>
     );
   }
@@ -211,9 +211,9 @@ export default function SavingsRateTracker() {
   if (!data || data.periods.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
-        <PiggyBank className="w-12 h-12 text-white/15 mb-4" />
-        <h3 className="text-lg font-semibold text-white/40">No savings data yet</h3>
-        <p className="text-sm text-white/30 mt-2 max-w-md">
+        <PiggyBank className="w-12 h-12 text-slate-300 dark:text-white/15 mb-4" />
+        <h3 className="text-lg font-semibold text-slate-500 dark:text-white/40">No savings data yet</h3>
+        <p className="text-sm text-slate-500 dark:text-white/30 mt-2 max-w-md">
           You need income records and spending transactions to compute your savings rate.
           Try running month kickoff or adding income via the settings page.
         </p>
@@ -279,33 +279,33 @@ export default function SavingsRateTracker() {
   return (
     <div className="space-y-6">
       {/* === Hero — Current Savings Rate === */}
-      <div className="rounded-2xl p-6 text-white shadow-lg"
+      <div className="rounded-2xl p-6 text-slate-900 dark:text-white shadow-lg"
         style={{ background: `linear-gradient(135deg, ${currentBench.color}, ${currentBench.color}dd)` }}>
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <p className="text-white/80 text-sm font-medium uppercase tracking-wide">
+            <p className="text-slate-800 dark:text-white/80 text-sm font-medium uppercase tracking-wide">
               Current Period · {current.month}
             </p>
             <div className="flex items-baseline gap-3 mt-1">
               <span className="text-5xl font-bold">{current.savings_rate.toFixed(1)}%</span>
-              <span className="text-xl text-white/70">savings rate</span>
+              <span className="text-xl text-slate-700 dark:text-white/70">savings rate</span>
             </div>
-            <p className="text-white/90 text-sm mt-2">{currentBench.desc}</p>
+            <p className="text-slate-800 dark:text-white/90 text-sm mt-2">{currentBench.desc}</p>
             <div className="mt-3 flex flex-wrap gap-2 text-xs">
-              <span className="px-2 py-1 rounded-lg bg-white/20 backdrop-blur">
+              <span className="px-2 py-1 rounded-lg bg-slate-300/50 dark:bg-white/20 backdrop-blur">
                 Saved: {formatIdr(current.savings)}
               </span>
-              <span className="px-2 py-1 rounded-lg bg-white/20 backdrop-blur">
+              <span className="px-2 py-1 rounded-lg bg-slate-300/50 dark:bg-white/20 backdrop-blur">
                 Income: {formatIdr(current.income)}
               </span>
-              <span className="px-2 py-1 rounded-lg bg-white/20 backdrop-blur">
+              <span className="px-2 py-1 rounded-lg bg-slate-300/50 dark:bg-white/20 backdrop-blur">
                 Spending: {formatIdr(current.outcome)}
               </span>
             </div>
           </div>
           <div className="text-center">
             <div className="text-6xl mb-1">{getBenchmarkIcon(currentBench.label)}</div>
-            <span className="px-3 py-1 rounded-full bg-white/20 backdrop-blur text-sm font-semibold">
+            <span className="px-3 py-1 rounded-full bg-slate-300/50 dark:bg-white/20 backdrop-blur text-sm font-semibold">
               {currentBench.label}
             </span>
           </div>
@@ -363,14 +363,14 @@ export default function SavingsRateTracker() {
       </div>
 
       {/* === Chart === */}
-      <div className="bg-white/[0.02] backdrop-blur-sm rounded-xl p-5 border border-white/[0.06]">
+      <div className="bg-slate-100 dark:bg-white/[0.02] backdrop-blur-sm rounded-xl p-5 border border-slate-200 dark:border-white/[0.06]">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold">Savings Rate Over Time</h3>
-          <div className="flex gap-1 p-1 rounded-lg bg-white/[0.06]">
+          <div className="flex gap-1 p-1 rounded-lg bg-slate-200/60 dark:bg-white/[0.06]">
             <button
               onClick={() => setChartView('rate')}
               className={`px-3 py-1 text-xs rounded-md transition ${
-                chartView === 'rate' ? 'bg-white/[0.08] shadow-sm font-semibold text-white' : 'text-white/40'
+                chartView === 'rate' ? 'bg-slate-200/60 dark:bg-white/[0.08] shadow-sm font-semibold text-slate-900 dark:text-white' : 'text-slate-500 dark:text-white/40'
               }`}
             >
               Rate %
@@ -378,7 +378,7 @@ export default function SavingsRateTracker() {
             <button
               onClick={() => setChartView('amount')}
               className={`px-3 py-1 text-xs rounded-md transition ${
-                chartView === 'amount' ? 'bg-white/[0.08] shadow-sm font-semibold text-white' : 'text-white/40'
+                chartView === 'amount' ? 'bg-slate-200/60 dark:bg-white/[0.08] shadow-sm font-semibold text-slate-900 dark:text-white' : 'text-slate-500 dark:text-white/40'
               }`}
             >
               Amounts
@@ -390,7 +390,7 @@ export default function SavingsRateTracker() {
           {chartView === 'amount' && amountChartData && <Bar data={amountChartData} options={amountChartOptions} />}
         </div>
         {hoveredIdx !== null && data.periods[hoveredIdx] && (
-          <div className="mt-3 p-3 rounded-lg bg-white/[0.04] text-sm">
+          <div className="mt-3 p-3 rounded-lg bg-slate-100 dark:bg-white/[0.04] text-sm">
             <strong>{data.periods[hoveredIdx].month}</strong>: {data.periods[hoveredIdx].savings_rate.toFixed(1)}% rate ·
             Saved {formatIdr(data.periods[hoveredIdx].savings)} of {formatIdr(data.periods[hoveredIdx].income)}
           </div>
@@ -520,7 +520,7 @@ export default function SavingsRateTracker() {
                     </td>
                     <td className="px-4 py-2">
                       <span
-                        className="px-2 py-0.5 rounded-full text-xs font-medium text-white"
+                        className="px-2 py-0.5 rounded-full text-xs font-medium text-slate-900 dark:text-white"
                         style={{ backgroundColor: bench.color }}
                       >
                         {bench.label}
@@ -555,13 +555,13 @@ function StatCard({ icon, label, value, subtitle, color }: {
   color: string;
 }) {
   return (
-    <div className="bg-white/[0.02] backdrop-blur-sm rounded-xl p-4 border border-white/[0.06]">
+    <div className="bg-slate-100 dark:bg-white/[0.02] backdrop-blur-sm rounded-xl p-4 border border-slate-200 dark:border-white/[0.06]">
       <div className={`flex items-center gap-2 mb-2 ${color}`}>
         {icon}
-        <span className="text-xs font-medium uppercase tracking-wide text-white/40">{label}</span>
+        <span className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-white/40">{label}</span>
       </div>
-      <div className="text-2xl font-bold text-white">{value}</div>
-      <div className="text-xs text-white/30 mt-1">{subtitle}</div>
+      <div className="text-2xl font-bold text-slate-900 dark:text-white">{value}</div>
+      <div className="text-xs text-slate-500 dark:text-white/30 mt-1">{subtitle}</div>
     </div>
   );
 }

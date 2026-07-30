@@ -117,7 +117,7 @@ function textColor(amount: number, rowMax: number): string {
   if (amount <= 0 || rowMax <= 0) return '';
   const ratio = amount / rowMax;
   return ratio > 0.55
-    ? 'text-white font-medium'
+    ? 'text-slate-900 dark:text-white font-medium'
     : 'text-slate-700 dark:text-slate-200';
 }
 
@@ -284,7 +284,7 @@ export default function CategoryMatrix({}: Props) {
 
       {/* Matrix Table */}
       <div className="glass-card p-5">
-        <h3 className="flex items-center gap-2 text-base text-white/80">
+        <h3 className="flex items-center gap-2 text-base text-slate-800 dark:text-white/80">
             <Grid3x3 className="w-4 h-4 text-mint-500" />
             Category × Period Spending Matrix
           </h3>
@@ -386,7 +386,7 @@ export default function CategoryMatrix({}: Props) {
       {/* Summary Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="glass-card p-5">
-          <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 text-white/80">
+          <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 text-slate-800 dark:text-white/80">
               Most Consistent Categories
             </h3>
           <div className="space-y-2">
@@ -416,7 +416,7 @@ export default function CategoryMatrix({}: Props) {
           </div>
 
         <div className="glass-card p-5">
-          <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 text-white/80">
+          <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 text-slate-800 dark:text-white/80">
               Fastest Rising Categories
             </h3>
           <div className="space-y-2">
@@ -445,7 +445,7 @@ export default function CategoryMatrix({}: Props) {
           </div>
 
         <div className="glass-card p-5">
-          <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 text-white/80">
+          <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 text-slate-800 dark:text-white/80">
               Declining Categories
             </h3>
           <div className="space-y-2">

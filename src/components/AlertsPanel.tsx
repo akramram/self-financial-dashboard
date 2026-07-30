@@ -274,7 +274,7 @@ export default function AlertsPanel({
     <div className={`glass-card p-5 ${cardBorderClass}`}>
       
         <div className="flex items-center justify-between">
-          <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
+          <h3 className="text-base font-semibold flex items-center gap-2 text-slate-800 dark:text-white/80">
             <AlertTriangle className="w-4 h-4 text-gold-500" />
             Alerts
             <div className="flex items-center gap-1.5 ml-1">

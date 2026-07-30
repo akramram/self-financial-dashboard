@@ -544,11 +544,11 @@ export default function DataImport() {
       {/* Step 1: Select import type and source */}
       {step === 'select' && (
         <div className="glass-card p-5">
-          <h3 className="flex items-center gap-2 text-white/80">
+          <h3 className="flex items-center gap-2 text-slate-800 dark:text-white/80">
               <Upload className="w-5 h-5" />
               Import Data
             </h3>
-            <p className="text-white/50">
+            <p className="text-slate-600 dark:text-white/50">
               Import transactions, net worth, or income data from CSV or JSON files.
             </p>
           {/* Import type */}
@@ -687,8 +687,8 @@ export default function DataImport() {
 
           {/* Column Mapping */}
           <div className="glass-card p-5">
-            <h3 className="text-base text-white/80">Map Columns</h3>
-              <p className="text-white/50">
+            <h3 className="text-base text-slate-800 dark:text-white/80">Map Columns</h3>
+              <p className="text-slate-600 dark:text-white/50">
                 Match CSV columns to {importType} fields. Required fields are marked with *.
               </p>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
@@ -720,7 +720,7 @@ export default function DataImport() {
 
           {/* Preview Table */}
           <div className="glass-card p-5">
-            <h3 className="text-base flex items-center justify-between text-white/80">
+            <h3 className="text-base flex items-center justify-between text-slate-800 dark:text-white/80">
                 <span>Preview</span>
                 <div className="flex items-center gap-2 text-sm font-normal">
                   <Badge variant={validCount === previewRows.length ? 'default' : 'destructive'}>
@@ -764,7 +764,7 @@ export default function DataImport() {
                           ) : (
                             <div className="relative group">
                               <XCircle className="w-4 h-4 text-red-500" />
-                              <div className="absolute bottom-full right-0 mb-1 hidden group-hover:block bg-slate-800 text-white text-xs rounded px-2 py-1 whitespace-nowrap z-10">
+                              <div className="absolute bottom-full right-0 mb-1 hidden group-hover:block bg-slate-800 text-slate-900 dark:text-white text-xs rounded px-2 py-1 whitespace-nowrap z-10">
                                 {row.errors.join(', ')}
                               </div>
                             </div>
@@ -803,7 +803,7 @@ export default function DataImport() {
             >
               {importing ? (
                 <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-slate-300 dark:border-white" />
                   Importing...
                 </>
               ) : (
@@ -820,7 +820,7 @@ export default function DataImport() {
       {/* Step 3: Result */}
       {step === 'result' && (
         <div className="glass-card p-5">
-          <h3 className="flex items-center gap-2 text-white/80">
+          <h3 className="flex items-center gap-2 text-slate-800 dark:text-white/80">
               {resultError ? (
                 <XCircle className="w-6 h-6 text-red-500" />
               ) : (

@@ -83,7 +83,7 @@ function ConfidenceBadge({ level }: { level: string }) {
   const colors: Record<string, string> = {
     high: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
     medium: 'bg-gold-500/10 text-gold-700 dark:bg-gold-700/20 dark:text-gold-400',
-    low: 'bg-white/[0.08] text-white/60',
+    low: 'bg-slate-200/60 dark:bg-white/[0.08] text-slate-600 dark:text-white/60',
   };
   return (
     <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${colors[level] || colors.low}`}>
@@ -102,7 +102,7 @@ function ProgressBar({ value, max, color, projectedColor }: { value: number; max
   const pct = Math.min(100, (value / max) * 100);
   const projPct = projectedColor ? Math.min(100, (value * 1.3 / max) * 100) : 0; // rough projection marker
   return (
-    <div className="w-full bg-white/[0.08] rounded-full h-3 overflow-hidden relative">
+    <div className="w-full bg-slate-200/60 dark:bg-white/[0.08] rounded-full h-3 overflow-hidden relative">
       <div
         className="h-full rounded-full transition-all duration-500"
         style={{ width: `${pct}%`, backgroundColor: color }}
@@ -145,7 +145,7 @@ export default function Forecast() {
     return (
       <div className="flex items-center justify-center py-20">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-mint-500/40"></div>
-        <span className="ml-3 text-white/50">Loading forecast...</span>
+        <span className="ml-3 text-slate-600 dark:text-white/50">Loading forecast...</span>
       </div>
     );
   }
@@ -154,7 +154,7 @@ export default function Forecast() {
     return (
       <div className="glass-card p-5">
         
-          <p className="text-white/50">No transaction data available for forecasting. Add some transactions first!</p>
+          <p className="text-slate-600 dark:text-white/50">No transaction data available for forecasting. Add some transactions first!</p>
         
       </div>
     );
@@ -282,7 +282,7 @@ export default function Forecast() {
     <div className="space-y-6">
       {/* Month selector */}
       <div className="flex items-center gap-4">
-        <h2 className="text-sm font-medium text-white/50">Forecast for:</h2>
+        <h2 className="text-sm font-medium text-slate-600 dark:text-white/50">Forecast for:</h2>
         <Select value={selectedMonth} onValueChange={handleMonthChange}>
           <SelectTrigger className="w-[200px]">
             <SelectValue />
@@ -309,7 +309,7 @@ export default function Forecast() {
             }`}
           >
             <AlertIcon type={alert.type} />
-            <span className={alert.type === 'danger' ? 'text-red-700 dark:text-red-300 font-medium' : 'text-white/70'}>
+            <span className={alert.type === 'danger' ? 'text-red-700 dark:text-red-300 font-medium' : 'text-slate-700 dark:text-white/70'}>
               {alert.message}
             </span>
           </div>
@@ -320,11 +320,11 @@ export default function Forecast() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="glass-card p-5">
           
-            <p className="text-white/50">Current Spending</p>
+            <p className="text-slate-600 dark:text-white/50">Current Spending</p>
           
           
             <div className="text-2xl font-bold">{formatIdr(f.totalSpent)}</div>
-            <p className="text-xs text-white/50 mt-1">
+            <p className="text-xs text-slate-600 dark:text-white/50 mt-1">
               Day {f.daysElapsed} of ~{f.periodLength} · Avg {formatIdr(f.dailyAvg)}/day
             </p>
             {f.totalUnpaid > 0 && (
@@ -337,14 +337,14 @@ export default function Forecast() {
 
         <div className="glass-card p-5">
           
-            <p className="text-white/50">Projected Total</p>
+            <p className="text-slate-600 dark:text-white/50">Projected Total</p>
           
           
             <div className="flex items-center gap-2">
               <div className="text-2xl font-bold">{formatIdr(f.projectedTotal)}</div>
               <ConfidenceBadge level={f.projectionConfidence} />
             </div>
-            <p className="text-xs text-white/50 mt-1">
+            <p className="text-xs text-slate-600 dark:text-white/50 mt-1">
               {f.daysRemaining} days remaining
             </p>
           
@@ -352,13 +352,13 @@ export default function Forecast() {
 
         <div className="glass-card p-5">
           
-            <p className="text-white/50">Spending Velocity</p>
+            <p className="text-slate-600 dark:text-white/50">Spending Velocity</p>
           
           
             <div className={`text-2xl font-bold ${f.velocityVsHistory > 20 ? 'text-red-600 dark:text-red-400' : f.velocityVsHistory < -20 ? 'text-emerald-600 dark:text-emerald-400' : ''}`}>
               {f.velocityVsHistory > 0 ? '+' : ''}{Math.round(f.velocityVsHistory)}%
             </div>
-            <p className="text-xs text-white/50 mt-1">
+            <p className="text-xs text-slate-600 dark:text-white/50 mt-1">
               vs {f.daysElapsed}-day historical average
             </p>
           
@@ -366,13 +366,13 @@ export default function Forecast() {
 
         <div className="glass-card p-5">
           
-            <p className="text-white/50">Credit Outstanding</p>
+            <p className="text-slate-600 dark:text-white/50">Credit Outstanding</p>
           
           
             <div className={`text-2xl font-bold ${f.creditStatus.outstanding > 0 ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
               {formatIdr(f.creditStatus.outstanding)}
             </div>
-            <p className="text-xs text-white/50 mt-1">
+            <p className="text-xs text-slate-600 dark:text-white/50 mt-1">
               {formatIdr(f.creditStatus.creditExpenses)} spent · {formatIdr(f.creditStatus.creditPayments)} paid
             </p>
           
@@ -382,8 +382,8 @@ export default function Forecast() {
       {/* Trajectory chart */}
       <div className="glass-card p-5">
         
-          <h3 className="text-lg text-white/80">Spending Trajectory</h3>
-          <p className="text-white/50">
+          <h3 className="text-lg text-slate-800 dark:text-white/80">Spending Trajectory</h3>
+          <p className="text-slate-600 dark:text-white/50">
             Actual cumulative spending vs projected end-of-month total
           </p>
         
@@ -402,7 +402,7 @@ export default function Forecast() {
               },
             }} />
           </div>
-          <div className="flex items-center justify-center gap-6 mt-3 text-xs text-white/50">
+          <div className="flex items-center justify-center gap-6 mt-3 text-xs text-slate-600 dark:text-white/50">
             <span className="flex items-center gap-2">
               <span className="w-4 h-0.5 bg-mint-500 inline-block"></span> Actual
             </span>
@@ -418,14 +418,14 @@ export default function Forecast() {
         {/* Budget burn rate */}
         <div className="glass-card p-5">
           
-            <h3 className="text-lg text-white/80">Budget Burn Rate</h3>
-            <p className="text-white/50">
+            <h3 className="text-lg text-slate-800 dark:text-white/80">Budget Burn Rate</h3>
+            <p className="text-slate-600 dark:text-white/50">
               Category spending vs budget limits (with projection)
             </p>
           
           
             {f.budgetStatus.length === 0 ? (
-              <p className="text-sm text-white/50 py-4 text-center">
+              <p className="text-sm text-slate-600 dark:text-white/50 py-4 text-center">
                 No category budgets set. Configure limits in Settings to see burn rates.
               </p>
             ) : (
@@ -449,7 +449,7 @@ export default function Forecast() {
                       max={bs.limit}
                       color={bs.status === 'safe' ? '#10b981' : bs.status === 'warning' ? '#f59e0b' : bs.status === 'danger' ? '#f97316' : '#ef4444'}
                     />
-                    <div className="flex justify-between text-xs text-white/50">
+                    <div className="flex justify-between text-xs text-slate-600 dark:text-white/50">
                       <span>{formatIdr(bs.spent)} of {formatIdr(bs.limit)}</span>
                       <span className={statusColors[bs.status]}>
                         Proj: {formatIdr(bs.projected)}
@@ -465,8 +465,8 @@ export default function Forecast() {
         {/* Credit utilization */}
         <div className="glass-card p-5">
           
-            <h3 className="text-lg text-white/80">Credit Utilization</h3>
-            <p className="text-white/50">
+            <h3 className="text-lg text-slate-800 dark:text-white/80">Credit Utilization</h3>
+            <p className="text-slate-600 dark:text-white/50">
               Credit card expenses vs payments this period
             </p>
           
@@ -493,15 +493,15 @@ export default function Forecast() {
             </div>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-white/50">Credit Expenses (paid)</span>
+                <span className="text-slate-600 dark:text-white/50">Credit Expenses (paid)</span>
                 <span className="font-medium">{formatIdr(f.creditStatus.creditExpenses)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-white/50">Credit Payments (paid)</span>
+                <span className="text-slate-600 dark:text-white/50">Credit Payments (paid)</span>
                 <span className="font-medium text-emerald-600 dark:text-emerald-400">{formatIdr(f.creditStatus.creditPayments)}</span>
               </div>
               <div className="flex justify-between border-t pt-2">
-                <span className="text-white/50">Outstanding Balance</span>
+                <span className="text-slate-600 dark:text-white/50">Outstanding Balance</span>
                 <span className={`font-bold ${f.creditStatus.outstanding > 0 ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
                   {formatIdr(f.creditStatus.outstanding)}
                 </span>
@@ -526,8 +526,8 @@ export default function Forecast() {
       {/* Historical comparison chart */}
       <div className="glass-card p-5">
         
-          <h3 className="text-lg text-white/80">Historical Monthly Spending</h3>
-          <p className="text-white/50">
+          <h3 className="text-lg text-slate-800 dark:text-white/80">Historical Monthly Spending</h3>
+          <p className="text-slate-600 dark:text-white/50">
             Total spending per month compared to daily average × 30 (normalized projection)
           </p>
         
@@ -547,35 +547,35 @@ export default function Forecast() {
       {/* Velocity breakdown table */}
       <div className="glass-card p-5">
         
-          <h3 className="text-lg text-white/80">Spending Velocity Breakdown</h3>
-          <p className="text-white/50">
+          <h3 className="text-lg text-slate-800 dark:text-white/80">Spending Velocity Breakdown</h3>
+          <p className="text-slate-600 dark:text-white/50">
             Detailed velocity metrics comparing current period to historical patterns
           </p>
         
         
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div className="p-4 rounded-xl bg-white/[0.03]">
-              <div className="text-xs text-white/50 mb-1">Current Avg/Day</div>
+            <div className="p-4 rounded-xl bg-slate-100 dark:bg-white/[0.03]">
+              <div className="text-xs text-slate-600 dark:text-white/50 mb-1">Current Avg/Day</div>
               <div className="text-lg font-bold">{formatIdr(f.velocity.current_avg_daily)}</div>
             </div>
-            <div className="p-4 rounded-xl bg-white/[0.03]">
-              <div className="text-xs text-white/50 mb-1">Historical Avg/Day</div>
+            <div className="p-4 rounded-xl bg-slate-100 dark:bg-white/[0.03]">
+              <div className="text-xs text-slate-600 dark:text-white/50 mb-1">Historical Avg/Day</div>
               <div className="text-lg font-bold">{formatIdr(f.velocity.historical_avg_daily)}</div>
             </div>
-            <div className="p-4 rounded-xl bg-white/[0.03]">
-              <div className="text-xs text-white/50 mb-1">Days with Spending</div>
-              <div className="text-lg font-bold">{f.velocity.days_with_spending} <span className="text-sm font-normal text-white/40">of {f.velocity.days_tracked}</span></div>
+            <div className="p-4 rounded-xl bg-slate-100 dark:bg-white/[0.03]">
+              <div className="text-xs text-slate-600 dark:text-white/50 mb-1">Days with Spending</div>
+              <div className="text-lg font-bold">{f.velocity.days_with_spending} <span className="text-sm font-normal text-slate-500 dark:text-white/40">of {f.velocity.days_tracked}</span></div>
             </div>
-            <div className="p-4 rounded-xl bg-white/[0.03]">
-              <div className="text-xs text-white/50 mb-1">Cumulative Spend</div>
+            <div className="p-4 rounded-xl bg-slate-100 dark:bg-white/[0.03]">
+              <div className="text-xs text-slate-600 dark:text-white/50 mb-1">Cumulative Spend</div>
               <div className="text-lg font-bold">{formatIdr(f.velocity.cumulative_spend)}</div>
             </div>
-            <div className="p-4 rounded-xl bg-white/[0.03]">
-              <div className="text-xs text-white/50 mb-1">Projected Monthly</div>
+            <div className="p-4 rounded-xl bg-slate-100 dark:bg-white/[0.03]">
+              <div className="text-xs text-slate-600 dark:text-white/50 mb-1">Projected Monthly</div>
               <div className="text-lg font-bold">{formatIdr(f.velocity.projected_monthly)}</div>
             </div>
-            <div className="p-4 rounded-xl bg-white/[0.03]">
-              <div className="text-xs text-white/50 mb-1">Velocity vs History</div>
+            <div className="p-4 rounded-xl bg-slate-100 dark:bg-white/[0.03]">
+              <div className="text-xs text-slate-600 dark:text-white/50 mb-1">Velocity vs History</div>
               <div className={`text-lg font-bold ${f.velocity.velocity_vs_history > 0 ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
                 {f.velocity.velocity_vs_history > 0 ? '+' : ''}{Math.round(f.velocity.velocity_vs_history)}%
               </div>

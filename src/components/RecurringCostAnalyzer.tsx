@@ -213,7 +213,7 @@ export default function RecurringCostAnalyzer() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Donut chart */}
         <div className="glass-card p-5">
-          <h3 className="text-sm flex items-center gap-2 text-white/80">
+          <h3 className="text-sm flex items-center gap-2 text-slate-800 dark:text-white/80">
               <PieChart className="w-4 h-4 text-slate-500" />
               Category Breakdown
             </h3>
@@ -226,7 +226,7 @@ export default function RecurringCostAnalyzer() {
 
         {/* Insights */}
         <div className="glass-card p-5">
-          <h3 className="text-sm flex items-center gap-2 text-white/80">
+          <h3 className="text-sm flex items-center gap-2 text-slate-800 dark:text-white/80">
               <Lightbulb className="w-4 h-4 text-gold-500" />
               Cost Insights
             </h3>
@@ -281,7 +281,7 @@ export default function RecurringCostAnalyzer() {
 
       {/* ─── Category Bars ──────────────────────────────────────────────────── */}
       <div className="glass-card p-5">
-        <h3 className="text-sm text-white/80">Category Cost Breakdown</h3>
+        <h3 className="text-sm text-slate-800 dark:text-white/80">Category Cost Breakdown</h3>
         <div className="space-y-3">
             {categoryEntries.map(([cat, amt], i) => {
               const pct = ((amt / monthlyTotal) * 100);
@@ -309,7 +309,7 @@ export default function RecurringCostAnalyzer() {
       {/* ─── Items Table ─────────────────────────────────────────────────────── */}
       <div className="glass-card p-5">
         <div className="flex items-center justify-between">
-            <h3 className="text-sm flex items-center gap-2 text-white/80">
+            <h3 className="text-sm flex items-center gap-2 text-slate-800 dark:text-white/80">
               Recurring Items
               <Badge variant="secondary" className="text-xs">{displayItems.length}</Badge>
             </h3>

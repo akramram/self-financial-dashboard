@@ -335,21 +335,21 @@ export default function MerchantAnalysis({
       {/* Stats Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
         <div className="glass-card p-5">
-          <h3 className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5 text-white/80">
+          <h3 className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5 text-slate-800 dark:text-white/80">
               <Store className="w-3.5 h-3.5" />
               Merchants
             </h3>
           <p className="text-2xl font-bold">{stats.totalMerchants}</p>
           </div>
         <div className="glass-card p-5">
-          <h3 className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5 text-white/80">
+          <h3 className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5 text-slate-800 dark:text-white/80">
               <Hash className="w-3.5 h-3.5" />
               Transactions
             </h3>
           <p className="text-2xl font-bold">{stats.totalTransactions}</p>
           </div>
         <div className="glass-card p-5">
-          <h3 className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5 text-white/80">
+          <h3 className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5 text-slate-800 dark:text-white/80">
               <BarChart3 className="w-3.5 h-3.5" />
               Total Spent
             </h3>
@@ -358,7 +358,7 @@ export default function MerchantAnalysis({
             </p>
           </div>
         <div className="glass-card p-5">
-          <h3 className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5 text-white/80">
+          <h3 className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5 text-slate-800 dark:text-white/80">
               <TrendingUp className="w-3.5 h-3.5" />
               Avg / Merchant
             </h3>
@@ -367,7 +367,7 @@ export default function MerchantAnalysis({
             </p>
           </div>
         <div className="glass-card p-5">
-          <h3 className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5 text-white/80">
+          <h3 className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5 text-slate-800 dark:text-white/80">
               <Sparkles className="w-3.5 h-3.5" />
               Top Merchant
             </h3>
@@ -385,11 +385,11 @@ export default function MerchantAnalysis({
       {/* New Merchants Alert */}
       {newMerchants.length > 0 && viewMode === 'period' && (
         <div className="glass-card p-5 border-gold-400/20 dark:border-gold-700/40 bg-gold-500/5 dark:bg-gold-700/20">
-          <h3 className="text-sm font-semibold text-gold-700 dark:text-gold-300 flex items-center gap-2 text-white/80">
+          <h3 className="text-sm font-semibold text-gold-700 dark:text-gold-300 flex items-center gap-2 text-slate-800 dark:text-white/80">
               <Sparkles className="w-4 h-4" />
               New Merchants This Period
             </h3>
-            <p className="text-xs text-gold-600 dark:text-gold-400 text-white/50">
+            <p className="text-xs text-gold-600 dark:text-gold-400 text-slate-600 dark:text-white/50">
               {newMerchants.length} merchant{newMerchants.length !== 1 ? 's' : ''} appearing for the first time
             </p>
           <div className="flex flex-wrap gap-2">
@@ -418,13 +418,13 @@ export default function MerchantAnalysis({
       <div className="glass-card p-5">
         <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
+              <h3 className="text-base font-semibold flex items-center gap-2 text-slate-800 dark:text-white/80">
                 <Store className="w-4 h-4 text-slate-500" />
                 {viewMode === 'period'
                   ? `Merchants — ${selectedPeriodLabel}`
                   : 'All-Time Merchant Summary'}
               </h3>
-              <p className="text-xs mt-0.5 text-white/50">
+              <p className="text-xs mt-0.5 text-slate-600 dark:text-white/50">
                 {sortedMerchants.length} merchant{sortedMerchants.length !== 1 ? 's' : ''}
                 {selectedCategory !== 'all' && ` in "${selectedCategory}"`}
               </p>
@@ -551,11 +551,11 @@ export default function MerchantAnalysis({
       {/* All-Time: Most Frequent Merchants */}
       {viewMode === 'all' && frequentMerchants.length > 0 && (
         <div className="glass-card p-5">
-          <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
+          <h3 className="text-base font-semibold flex items-center gap-2 text-slate-800 dark:text-white/80">
               <Clock className="w-4 h-4 text-slate-500" />
               Most Frequent Merchants
             </h3>
-            <p className="text-xs text-white/50">
+            <p className="text-xs text-slate-600 dark:text-white/50">
               Top 10 merchants by transaction count across all periods
             </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

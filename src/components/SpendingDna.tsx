@@ -369,7 +369,7 @@ export default function SpendingDna() {
   return (
     <div className="space-y-6">
       {/* ── Personality Type Hero ──────────────────────────────────────── */}
-      <div className="glass-card p-5 border-white/[0.08] bg-gradient-to-br dark:from-navy-800/40 dark:to-navy-900/20">
+      <div className="glass-card p-5 border-slate-300 dark:border-white/[0.08] bg-gradient-to-br dark:from-navy-800/40 dark:to-navy-900/20">
         <div className="flex flex-col md:flex-row items-center gap-6">
             <div className="text-7xl">{data.personality.emoji}</div>
             <div className="flex-1 text-center md:text-left">
@@ -403,7 +403,7 @@ export default function SpendingDna() {
       {/* ── Radar Chart + Dimension Breakdown ────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="glass-card p-5">
-          <h3 className="flex items-center gap-2 text-white/80">
+          <h3 className="flex items-center gap-2 text-slate-800 dark:text-white/80">
               <Brain className="w-5 h-5 text-gold-500" />
               Behavioral Radar
             </h3>
@@ -413,7 +413,7 @@ export default function SpendingDna() {
           </div>
 
         <div className="glass-card p-5">
-          <h3 className="flex items-center gap-2 text-white/80">
+          <h3 className="flex items-center gap-2 text-slate-800 dark:text-white/80">
               <BarChart3 className="w-5 h-5 text-slate-500" />
               Dimension Breakdown
             </h3>
@@ -441,7 +441,7 @@ export default function SpendingDna() {
 
       {/* ── Key Insights ──────────────────────────────────────────────── */}
       <div className="glass-card p-5">
-        <h3 className="flex items-center gap-2 text-white/80">
+        <h3 className="flex items-center gap-2 text-slate-800 dark:text-white/80">
             <Zap className="w-5 h-5 text-gold-500" />
             Key Insights
           </h3>
@@ -461,7 +461,7 @@ export default function SpendingDna() {
       {/* ── DNA Timeline Charts ──────────────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="glass-card p-5">
-          <h3 className="flex items-center gap-2 text-white/80">
+          <h3 className="flex items-center gap-2 text-slate-800 dark:text-white/80">
               <TrendingUp className="w-5 h-5 text-emerald-500" />
               Savings Rate Over Time
             </h3>
@@ -477,7 +477,7 @@ export default function SpendingDna() {
           </div>
 
         <div className="glass-card p-5">
-          <h3 className="flex items-center gap-2 text-white/80">
+          <h3 className="flex items-center gap-2 text-slate-800 dark:text-white/80">
               <Target className="w-5 h-5 text-coral-500" />
               Recurring vs Discretionary Split
             </h3>
@@ -495,7 +495,7 @@ export default function SpendingDna() {
 
       {/* ── Timeline Sparkline Cards ─────────────────────────────────── */}
       <div className="glass-card p-5">
-        <h3 className="flex items-center gap-2 text-white/80">
+        <h3 className="flex items-center gap-2 text-slate-800 dark:text-white/80">
             <Heart className="w-5 h-5 text-rose-500" />
             Monthly DNA Timeline
           </h3>
@@ -534,7 +534,7 @@ export default function SpendingDna() {
 
       {/* ── Category Loyalty Scores ──────────────────────────────────── */}
       <div className="glass-card p-5">
-        <h3 className="flex items-center gap-2 text-white/80">
+        <h3 className="flex items-center gap-2 text-slate-800 dark:text-white/80">
             <Shield className="w-5 h-5 text-sky-500" />
             Category Loyalty Scores
           </h3>

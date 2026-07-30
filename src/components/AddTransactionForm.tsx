@@ -142,7 +142,7 @@ export default function AddTransactionForm() {
   return (
     <div className="glass-card p-5">
       
-        <h3 className="text-white/80">Add Transaction</h3>
+        <h3 className="text-slate-800 dark:text-white/80">Add Transaction</h3>
       
       
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -207,7 +207,7 @@ export default function AddTransactionForm() {
                 </button>
               )}
               {suggestionLoading && (
-                <span className="inline-flex items-center gap-1 text-[11px] text-white/40">
+                <span className="inline-flex items-center gap-1 text-[11px] text-slate-500 dark:text-white/40">
                   <Loader2 className="w-3 h-3 animate-spin" />
                   Matching…
                 </span>
@@ -229,7 +229,7 @@ export default function AddTransactionForm() {
                 <option key={c.id} value={c.name} />
               ))}
             </datalist>
-            <p className="text-xs text-white/50">
+            <p className="text-xs text-slate-600 dark:text-white/50">
               {isAutoFilled && !categoryUserTouched
                 ? 'Category auto-suggested from your history — override anytime'
                 : 'Pick an existing category or type a new one'}
@@ -267,7 +267,7 @@ export default function AddTransactionForm() {
               checked={done}
               onCheckedChange={(v) => setDone(!!v)}
             />
-            <Label htmlFor="done" className="text-sm text-white/60">Paid / Done</Label>
+            <Label htmlFor="done" className="text-sm text-slate-600 dark:text-white/60">Paid / Done</Label>
           </div>
 
           <div className="space-y-1.5">

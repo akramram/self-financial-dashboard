@@ -113,7 +113,7 @@ export default function IncomeSettings() {
   return (
     <div className="glass-card p-5">
       
-        <h3 className="text-white/80">Monthly Income</h3>
+        <h3 className="text-slate-800 dark:text-white/80">Monthly Income</h3>
       
       
         {/* Add Form */}

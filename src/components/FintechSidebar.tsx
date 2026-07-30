@@ -73,21 +73,20 @@ export default function FintechSidebar({ balance, alerts = 0 }: Props) {
       className={`
         w-full flex items-center rounded-xl transition-all duration-150 no-underline
         ${collapsed ? 'justify-center px-0 py-3' : 'px-3 py-2.5 gap-3'}
+        ${isActive(item.path) ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-white/40 hover:text-slate-700 dark:hover:text-white/70 hover:bg-slate-100 dark:hover:bg-white/5'}
       `}
       style={
         isActive(item.path)
           ? {
               background: 'rgba(52, 211, 153, 0.12)',
-              color: '#fff',
               boxShadow: '0 0 20px rgba(52, 211, 153, 0.08)',
             }
-          : { color: 'rgba(255,255,255,0.4)' }
+          : undefined
       }
     >
       {React.createElement(item.icon, {
-        className: 'w-5 h-5 shrink-0',
+        className: `w-5 h-5 shrink-0 ${isActive(item.path) ? 'text-mint-500' : ''}`,
         strokeWidth: 1.8,
-        style: { color: isActive(item.path) ? '#34d399' : undefined },
       })}
       {!collapsed && <span className="text-sm font-medium">{item.label}</span>}
       {!collapsed && isActive(item.path) && (
@@ -103,24 +102,20 @@ export default function FintechSidebar({ balance, alerts = 0 }: Props) {
         id="fintech-sidebar"
         className={`
           hidden lg:flex flex-col h-screen fixed left-0 top-0 z-50 transition-all duration-300 ease-out
+          glass-nav
           ${collapsed ? 'w-[72px]' : 'w-[240px]'}
         `}
-        style={{
-          background: 'rgba(6, 10, 24, 0.85)',
-          backdropFilter: 'blur(20px)',
-          borderRight: '1px solid rgba(255,255,255,0.06)',
-        }}
       >
         {/* Logo */}
-        <div className="flex items-center h-16 px-4 shrink-0" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+        <div className="flex items-center h-16 px-4 shrink-0 border-b border-slate-200 dark:border-white/[0.05]">
           <a href="/" className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 no-underline"
             style={{ background: 'linear-gradient(135deg, #34d399, #0ea5e9)' }}>
-            <span className="text-white font-bold text-sm">FD</span>
+            <span className="text-slate-900 dark:text-white font-bold text-sm">FD</span>
           </a>
-          {!collapsed && <span className="ml-3 font-semibold text-white text-base">FinDash</span>}
+          {!collapsed && <span className="ml-3 font-semibold text-slate-900 dark:text-white text-base">FinDash</span>}
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="ml-auto p-1.5 rounded-lg hover:bg-white/10 transition-colors text-white/50"
+            className="ml-auto p-1.5 rounded-lg hover:bg-slate-200/50 dark:bg-white/10 transition-colors text-slate-600 dark:text-white/50"
             aria-label="Toggle sidebar"
           >
             {collapsed ? <Menu className="w-4 h-4" /> : <X className="w-4 h-4" />}
@@ -129,9 +124,9 @@ export default function FintechSidebar({ balance, alerts = 0 }: Props) {
 
         {/* Balance snippet */}
         {balance && (
-          <div className={`px-4 py-4 shrink-0 ${collapsed ? 'hidden' : ''}`} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-            <p className="text-xs text-white/40 uppercase tracking-wider mb-1">Balance</p>
-            <p className="text-lg font-bold text-white tabular-nums">{balance}</p>
+          <div className={`px-4 py-4 shrink-0 border-b border-slate-200 dark:border-white/[0.05] ${collapsed ? 'hidden' : ''}`}>
+            <p className="text-xs text-slate-500 dark:text-white/40 uppercase tracking-wider mb-1">Balance</p>
+            <p className="text-lg font-bold text-slate-900 dark:text-white tabular-nums">{balance}</p>
           </div>
         )}
 
@@ -140,27 +135,27 @@ export default function FintechSidebar({ balance, alerts = 0 }: Props) {
           {PRIMARY.map((item) => (
             <NavButton key={item.path} item={item} isPrimary />
           ))}
-          <div className={`my-2 border-t ${collapsed ? 'mx-2' : 'mx-3'}`} style={{ borderColor: 'rgba(255,255,255,0.05)' }} />
+          <div className={`my-2 border-t border-slate-200 dark:border-white/[0.05] ${collapsed ? 'mx-2' : 'mx-3'}`} />
           {SECONDARY.map((item) => (
             <NavButton key={item.path} item={item} isPrimary={false} />
           ))}
 
           {!collapsed && (
-            <p className="px-3 pt-4 pb-1 text-[10px] font-semibold uppercase tracking-wider text-white/20">Analytics</p>
+            <p className="px-3 pt-4 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-white/20">Analytics</p>
           )}
           {ANALYTICS.map((item) => (
             <NavButton key={item.path} item={item} isPrimary={false} />
           ))}
 
           {!collapsed && (
-            <p className="px-3 pt-4 pb-1 text-[10px] font-semibold uppercase tracking-wider text-white/20">Planning</p>
+            <p className="px-3 pt-4 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-white/20">Planning</p>
           )}
           {PLANNING.map((item) => (
             <NavButton key={item.path} item={item} isPrimary={false} />
           ))}
 
           {!collapsed && (
-            <p className="px-3 pt-4 pb-1 text-[10px] font-semibold uppercase tracking-wider text-white/20">Reports</p>
+            <p className="px-3 pt-4 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-white/20">Reports</p>
           )}
           {REPORTS.map((item) => (
             <NavButton key={item.path} item={item} isPrimary={false} />
@@ -171,23 +166,22 @@ export default function FintechSidebar({ balance, alerts = 0 }: Props) {
         <div className={`px-3 pt-2 pb-3 shrink-0 ${collapsed ? 'flex justify-center' : ''}`}>
           <a
             href="/"
-            className={`relative flex items-center rounded-xl transition-colors hover:bg-white/5 no-underline ${collapsed ? 'p-2 justify-center' : 'px-3 py-2 gap-3'}`}
+            className={`relative flex items-center rounded-xl transition-colors hover:bg-slate-100 dark:bg-white/5 no-underline ${collapsed ? 'p-2 justify-center' : 'px-3 py-2 gap-3'}`}
           >
             <Bell
-              className="w-5 h-5"
+              className={`w-5 h-5 ${alerts > 0 ? 'text-mint-500' : 'text-slate-400 dark:text-white/30'}`}
               strokeWidth={1.8}
-              style={{ color: alerts > 0 ? '#34d399' : 'rgba(255,255,255,0.3)' }}
             />
             {alerts > 0 && (
               <span
-                className="absolute -top-0.5 -right-0.5 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
+                className="absolute -top-0.5 -right-0.5 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-slate-900 dark:text-white"
                 style={{ backgroundColor: '#ef4444' }}
               >
                 {alerts}
               </span>
             )}
             {!collapsed && (
-              <span className="text-sm" style={{ color: alerts > 0 ? '#fff' : 'rgba(255,255,255,0.4)' }}>
+              <span className={`text-sm ${alerts > 0 ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-white/40'}`}>
                 {alerts > 0 ? `${alerts} alert${alerts !== 1 ? 's' : ''}` : 'No alerts'}
               </span>
             )}

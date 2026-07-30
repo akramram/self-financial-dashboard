@@ -257,7 +257,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
     <div className="space-y-6">
       {/* Month Filter */}
       <div className="flex items-center gap-3">
-        <label className="text-sm font-medium text-white/60">Period:</label>
+        <label className="text-sm font-medium text-slate-600 dark:text-white/60">Period:</label>
         <Select value={filterMonth} onValueChange={setFilterMonth}>
           <SelectTrigger className="w-[180px]">
             <SelectValue />
@@ -276,11 +276,11 @@ export default function BudgetReport({ summaries, categories }: Props) {
         <div className="glass-card p-5">
           
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-white/[0.06]">
-                <Wallet className="w-5 h-5 text-white/40" />
+              <div className="p-2 rounded-lg bg-slate-200/60 dark:bg-white/[0.06]">
+                <Wallet className="w-5 h-5 text-slate-500 dark:text-white/40" />
               </div>
               <div>
-                <p className="text-xs text-white/40">Total Budget</p>
+                <p className="text-xs text-slate-500 dark:text-white/40">Total Budget</p>
                 <p className="text-lg font-semibold">{formatIdr(totalBudget)}</p>
               </div>
             </div>
@@ -293,7 +293,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
                 <TrendingDown className="w-5 h-5 text-red-400" />
               </div>
               <div>
-                <p className="text-xs text-white/40">Total Spent</p>
+                <p className="text-xs text-slate-500 dark:text-white/40">Total Spent</p>
                 <p className="text-lg font-semibold">{formatIdr(totalSpent)}</p>
               </div>
             </div>
@@ -306,7 +306,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
                 <PiggyBank className={`w-5 h-5 ${totalRemaining >= 0 ? 'text-emerald-400' : 'text-red-400'}`} />
               </div>
               <div>
-                <p className="text-xs text-white/40">Remaining</p>
+                <p className="text-xs text-slate-500 dark:text-white/40">Remaining</p>
                 <p className={`text-lg font-semibold ${totalRemaining >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                   {formatIdr(totalRemaining)}
                 </p>
@@ -321,7 +321,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
                 <AlertTriangle className="w-5 h-5 text-gold-400" />
               </div>
               <div>
-                <p className="text-xs text-white/40">Alerts</p>
+                <p className="text-xs text-slate-500 dark:text-white/40">Alerts</p>
                 <div className="flex gap-2 mt-0.5">
                   {overspentCount > 0 && (
                     <Badge variant="destructive" className="text-[10px] px-1.5 py-0">
@@ -347,7 +347,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
       {chartCategories.length > 0 && (
         <div className="glass-card p-5">
           
-            <h3 className="text-base font-semibold text-white/80">Budget vs Actual</h3>
+            <h3 className="text-base font-semibold text-slate-800 dark:text-white/80">Budget vs Actual</h3>
           
           
             <div className="relative h-80">
@@ -360,7 +360,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
       {/* Category Budget Table */}
       <div className="glass-card p-5">
         
-          <h3 className="text-base font-semibold text-white/80">Category Breakdown</h3>
+          <h3 className="text-base font-semibold text-slate-800 dark:text-white/80">Category Breakdown</h3>
         
         
           <div className="rounded-xl border overflow-hidden">
@@ -384,7 +384,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
                   return (
                     <TableRow
                       key={row.name}
-                      className="cursor-pointer hover:bg-white/[0.04] transition"
+                      className="cursor-pointer hover:bg-slate-100 dark:bg-white/[0.04] transition"
                       onClick={() => openCategoryDialog(row.name)}
                     >
                       <TableCell>

@@ -33,8 +33,8 @@ export default function StatCard({
     <div
       className={cn(
         'relative p-4 rounded-2xl transition-all duration-300',
-        'bg-white/[0.03] backdrop-blur-sm',
-        'border border-white/[0.06]',
+        'bg-slate-100 dark:bg-white/[0.03] backdrop-blur-sm',
+        'border border-slate-200 dark:border-white/[0.06]',
         onClick && 'cursor-pointer hover:scale-[1.02] hover:shadow-lg',
         'group',
         className,
@@ -56,11 +56,11 @@ export default function StatCard({
             <span style={{ color }} className="shrink-0">
               {icon}
             </span>
-            <p className="text-xs font-medium text-white/40">{label}</p>
+            <p className="text-xs font-medium text-slate-500 dark:text-white/40">{label}</p>
           </div>
 
           {/* Value */}
-          <div className="text-lg font-bold text-white mb-1.5 truncate">
+          <div className="text-lg font-bold text-slate-900 dark:text-white mb-1.5 truncate">
             {valueComponent ?? value}
           </div>
 

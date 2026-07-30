@@ -122,7 +122,7 @@ export default function BudgetPace() {
     return (
       <div className="glass-card p-5">
         
-          <h3 className="flex items-center gap-2 text-white/80">
+          <h3 className="flex items-center gap-2 text-slate-800 dark:text-white/80">
             <Gauge className="h-5 w-5" />
             Budget Pace Tracker
           </h3>
@@ -145,7 +145,7 @@ export default function BudgetPace() {
       {/* Overall Summary Card */}
       <div className="glass-card p-5">
         
-          <h3 className="flex items-center justify-between flex-wrap gap-2 text-white/80">
+          <h3 className="flex items-center justify-between flex-wrap gap-2 text-slate-800 dark:text-white/80">
             <span className="flex items-center gap-2">
               <Gauge className="h-5 w-5" />
               Budget Pace Tracker
@@ -230,7 +230,7 @@ export default function BudgetPace() {
       {/* Per-Category Breakdown */}
       <div className="glass-card p-5">
         
-          <h3 className="text-sm text-white/80">Category Pace Breakdown</h3>
+          <h3 className="text-sm text-slate-800 dark:text-white/80">Category Pace Breakdown</h3>
         
         
           {sortedCategories.map((cat) => {

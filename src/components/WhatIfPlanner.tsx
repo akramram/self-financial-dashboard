@@ -387,8 +387,8 @@ export default function WhatIfPlanner() {
       <div className="glass-card p-5">
         <div className="flex items-center justify-between flex-wrap gap-2">
             <div>
-              <h3 className="text-lg text-white/80">Net Worth Projection</h3>
-              <p className="text-xs text-white/50">
+              <h3 className="text-lg text-slate-800 dark:text-white/80">Net Worth Projection</h3>
+              <p className="text-xs text-slate-600 dark:text-white/50">
                 Baseline trend vs your what-if scenario over {projectionMonths} months
               </p>
             </div>
@@ -413,8 +413,8 @@ export default function WhatIfPlanner() {
 
       {/* ─── Cashflow Comparison ───────────────────────────────────────────── */}
       <div className="glass-card p-5">
-        <h3 className="text-lg text-white/80">Monthly Cashflow: Baseline vs Scenario</h3>
-          <p className="text-xs text-white/50">
+        <h3 className="text-lg text-slate-800 dark:text-white/80">Monthly Cashflow: Baseline vs Scenario</h3>
+          <p className="text-xs text-slate-600 dark:text-white/50">
             How income, spending, and savings change with your adjustments
           </p>
         <div style={{ height: 240 }}>
@@ -426,10 +426,10 @@ export default function WhatIfPlanner() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Income Control */}
         <div className="glass-card p-5">
-          <h3 className="text-base flex items-center gap-2 text-white/80">
+          <h3 className="text-base flex items-center gap-2 text-slate-800 dark:text-white/80">
               💰 Income Adjustment
             </h3>
-            <p className="text-xs text-white/50">
+            <p className="text-xs text-slate-600 dark:text-white/50">
               Simulate a raise, bonus, or income loss
             </p>
           <div>
@@ -472,10 +472,10 @@ export default function WhatIfPlanner() {
         <div className="glass-card p-5">
           <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-base flex items-center gap-2 text-white/80">
+                <h3 className="text-base flex items-center gap-2 text-slate-800 dark:text-white/80">
                   🎯 One-Time Events
                 </h3>
-                <p className="text-xs text-white/50">
+                <p className="text-xs text-slate-600 dark:text-white/50">
                   Bonuses, large purchases, or unexpected costs
                 </p>
               </div>
@@ -534,10 +534,10 @@ export default function WhatIfPlanner() {
       <div className="glass-card p-5">
         <div className="flex items-center justify-between flex-wrap gap-2">
             <div>
-              <h3 className="text-base flex items-center gap-2 text-white/80">
+              <h3 className="text-base flex items-center gap-2 text-slate-800 dark:text-white/80">
                 🛒 Category Spending Adjustments
               </h3>
-              <p className="text-xs text-white/50">
+              <p className="text-xs text-slate-600 dark:text-white/50">
                 Drag sliders to simulate cutting or increasing spending per category
               </p>
             </div>

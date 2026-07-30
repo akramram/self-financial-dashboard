@@ -91,7 +91,7 @@ export default function AddNetworthForm() {
   return (
     <div className="glass-card p-5">
       
-        <h3 className="text-white/80">Add / Update Networth</h3>
+        <h3 className="text-slate-800 dark:text-white/80">Add / Update Networth</h3>
       
       
         <form onSubmit={handleSubmit} className="space-y-4">

@@ -137,7 +137,7 @@ export default function BudgetAlerts({ summaries, categories, activeMonth, trans
     <div className="glass-card p-5">
       
         <div className="flex items-center justify-between">
-          <h3 className="flex items-center gap-2 text-base text-white/80">
+          <h3 className="flex items-center gap-2 text-base text-slate-800 dark:text-white/80">
             <AlertTriangle className="h-5 w-5 text-red-500 dark:text-red-400" />
             Budget Alerts
             {overCount > 0 && (
@@ -189,7 +189,7 @@ export default function BudgetAlerts({ summaries, categories, activeMonth, trans
                       summaries.find((s) => s.month === activeMonth)?.period_id ?? 0,
                       alert.category
                     )}
-                    className="absolute top-2 right-2 p-0.5 rounded hover:bg-black/10 dark:hover:bg-white/10 transition"
+                    className="absolute top-2 right-2 p-0.5 rounded hover:bg-black/10 dark:hover:bg-slate-200/50 dark:bg-white/10 transition"
                     aria-label={`Dismiss ${alert.category} alert`}
                   >
                     <X className="h-3.5 w-3.5 opacity-50" />

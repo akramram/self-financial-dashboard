@@ -93,7 +93,7 @@ export default function AnomalyAlerts({ month }: Props) {
     <div className="glass-card p-5 border-gold-400/20 dark:border-gold-700/40">
       
         <div className="flex items-center justify-between">
-          <h3 className="text-base font-semibold flex items-center gap-2 text-white/80">
+          <h3 className="text-base font-semibold flex items-center gap-2 text-slate-800 dark:text-white/80">
             <AlertTriangle className="w-4 h-4 text-gold-500" />
             Spending Anomalies Detected
           </h3>
@@ -103,7 +103,7 @@ export default function AnomalyAlerts({ month }: Props) {
                 onClick={() => toggleFilter('high')}
                 className={`text-[10px] px-1.5 py-0 rounded-full font-medium transition cursor-pointer border ${
                   severityFilter === 'high'
-                    ? 'bg-red-600 text-white border-red-600 ring-2 ring-red-300'
+                    ? 'bg-red-600 text-slate-900 dark:text-white border-red-600 ring-2 ring-red-300'
                     : 'bg-red-100 text-red-700 border-red-200 hover:bg-red-200 dark:bg-red-900/40 dark:text-red-300 dark:border-red-800 dark:hover:bg-red-900/60'
                 }`}
               >
@@ -115,7 +115,7 @@ export default function AnomalyAlerts({ month }: Props) {
                 onClick={() => toggleFilter('medium')}
                 className={`text-[10px] px-1.5 py-0 rounded-full font-medium transition cursor-pointer border ${
                   severityFilter === 'medium'
-                    ? 'bg-gold-600 text-white border-gold-600 ring-2 ring-gold-400/30'
+                    ? 'bg-gold-600 text-slate-900 dark:text-white border-gold-600 ring-2 ring-gold-400/30'
                     : 'bg-gold-500/10 text-gold-700 border-gold-400/20 hover:bg-gold-400/20 dark:bg-gold-700/20/40 dark:text-gold-300 dark:border-gold-700/40 dark:hover:bg-gold-700/30/60'
                 }`}
               >
@@ -127,7 +127,7 @@ export default function AnomalyAlerts({ month }: Props) {
                 onClick={() => toggleFilter('low')}
                 className={`text-[10px] px-1.5 py-0 rounded-full font-medium transition cursor-pointer border ${
                   severityFilter === 'low'
-                    ? 'bg-mint-600 text-white border-mint-600 ring-2 ring-mint-400/30'
+                    ? 'bg-mint-600 text-slate-900 dark:text-white border-mint-600 ring-2 ring-mint-400/30'
                     : 'bg-mint-500/10 text-mint-600 border-mint-400/20 hover:bg-mint-400/20 dark:bg-mint-700/20 dark:text-mint-300 dark:border-mint-700/40 dark:hover:bg-mint-700/30/60'
                 }`}
               >

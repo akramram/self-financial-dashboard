@@ -316,7 +316,7 @@ export default function WeeklyTracker() {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {[1, 2, 3, 4, 5, 6].map((i) => (
-          <div key={i} className="h-40 rounded-xl bg-white/[0.08] animate-pulse" />
+          <div key={i} className="h-40 rounded-xl bg-slate-200/60 dark:bg-white/[0.08] animate-pulse" />
         ))}
       </div>
     );
@@ -325,9 +325,9 @@ export default function WeeklyTracker() {
   if (!weeklyData || weeklyData.weeks.length === 0) {
     return (
       <div className="text-center py-16">
-        <CalendarDays className="w-12 h-12 mx-auto mb-4 text-white/30" />
-        <p className="text-white/50">No spending data for this period.</p>
-        <p className="text-sm text-white/40 mt-1">Add transactions to see your weekly breakdown.</p>
+        <CalendarDays className="w-12 h-12 mx-auto mb-4 text-slate-500 dark:text-white/30" />
+        <p className="text-slate-600 dark:text-white/50">No spending data for this period.</p>
+        <p className="text-sm text-slate-500 dark:text-white/40 mt-1">Add transactions to see your weekly breakdown.</p>
       </div>
     );
   }
@@ -375,7 +375,7 @@ export default function WeeklyTracker() {
     <div className="space-y-6">
       {/* Period Selector */}
       <div className="flex items-center gap-3">
-        <label className="text-sm font-medium text-white/60">Period:</label>
+        <label className="text-sm font-medium text-slate-600 dark:text-white/60">Period:</label>
         <Select
           value={selectedPeriodId}
           onValueChange={setSelectedPeriodId}
@@ -400,13 +400,13 @@ export default function WeeklyTracker() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="glass-card p-5">
           
-            <p className="text-xs text-white/50 font-medium">Income</p>
+            <p className="text-xs text-slate-600 dark:text-white/50 font-medium">Income</p>
             <p className="text-lg font-bold">{formatIdr(weeklyData.income)}</p>
           
         </div>
         <div className="glass-card p-5">
           
-            <p className="text-xs text-white/50 font-medium">Total Spent</p>
+            <p className="text-xs text-slate-600 dark:text-white/50 font-medium">Total Spent</p>
             <p className="text-lg font-bold">{formatIdr(weeklyData.totalSpend)}</p>
             {weeklyData.income > 0 && (
               <p className={`text-xs mt-1 ${weeklyData.totalSpend <= weeklyData.income ? 'text-emerald-600' : 'text-red-500'}`}>
@@ -419,20 +419,20 @@ export default function WeeklyTracker() {
         </div>
         <div className="glass-card p-5">
           
-            <p className="text-xs text-white/50 font-medium">Weekly Budget</p>
+            <p className="text-xs text-slate-600 dark:text-white/50 font-medium">Weekly Budget</p>
             <p className="text-lg font-bold">{formatIdr(weeklyData.weeklyBudget)}</p>
-            <p className="text-xs text-white/40 mt-1">{weeklyData.weeks.length} weeks in period</p>
+            <p className="text-xs text-slate-500 dark:text-white/40 mt-1">{weeklyData.weeks.length} weeks in period</p>
           
         </div>
         <div className="glass-card p-5">
           
-            <p className="text-xs text-white/50 font-medium">Avg Daily Spend</p>
+            <p className="text-xs text-slate-600 dark:text-white/50 font-medium">Avg Daily Spend</p>
             <p className="text-lg font-bold">
               {formatIdr(
                 weeklyData.weeks.reduce((s, w) => s + w.avgDaily, 0) / weeklyData.weeks.length
               )}
             </p>
-            <p className="text-xs text-white/40 mt-1">{weeklyData.totalTxCount} transactions</p>
+            <p className="text-xs text-slate-500 dark:text-white/40 mt-1">{weeklyData.totalTxCount} transactions</p>
           
         </div>
       </div>
@@ -441,7 +441,7 @@ export default function WeeklyTracker() {
       {insights.length > 0 && (
         <div className="glass-card p-5 border-mint-400/30 dark:border-mint-500/20/50 bg-mint-500/5/50 dark:bg-mint-500/10/20">
           
-            <h3 className="text-sm font-medium flex items-center gap-2 text-white/80">
+            <h3 className="text-sm font-medium flex items-center gap-2 text-slate-800 dark:text-white/80">
               <Target className="w-4 h-4 text-mint-500" />
               Weekly Insights
             </h3>
@@ -451,7 +451,7 @@ export default function WeeklyTracker() {
               {insights.map((ins, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm">
                   {ins.icon}
-                  <span className={ins.type === 'bad' ? 'text-red-700 dark:text-red-400' : ins.type === 'warn' ? 'text-gold-700 dark:text-gold-400' : 'text-white/60'}>
+                  <span className={ins.type === 'bad' ? 'text-red-700 dark:text-red-400' : ins.type === 'warn' ? 'text-gold-700 dark:text-gold-400' : 'text-slate-600 dark:text-white/60'}>
                     {ins.text}
                   </span>
                 </li>
@@ -464,8 +464,8 @@ export default function WeeklyTracker() {
       {/* Main Chart: Weekly Spending vs Budget */}
       <div className="glass-card p-5">
         
-          <h3 className="text-base text-white/80">Weekly Spending vs Budget</h3>
-          <p className="text-white/50">Each bar represents total spending for that week. The dashed line is your weekly budget target.</p>
+          <h3 className="text-base text-slate-800 dark:text-white/80">Weekly Spending vs Budget</h3>
+          <p className="text-slate-600 dark:text-white/50">Each bar represents total spending for that week. The dashed line is your weekly budget target.</p>
         
         
           <div style={{ height: 300 }}>
@@ -479,8 +479,8 @@ export default function WeeklyTracker() {
         {/* Weekly Breakdown Cards */}
         <div className="glass-card p-5">
           
-            <h3 className="text-base text-white/80">Week-by-Week Breakdown</h3>
-            <p className="text-white/50">Click a week to see its category breakdown.</p>
+            <h3 className="text-base text-slate-800 dark:text-white/80">Week-by-Week Breakdown</h3>
+            <p className="text-slate-600 dark:text-white/50">Click a week to see its category breakdown.</p>
           
           
             <div className="space-y-3">
@@ -498,7 +498,7 @@ export default function WeeklyTracker() {
                     className={`w-full text-left p-3 rounded-lg border transition cursor-pointer ${
                       selectedWeek === w.weekNum
                         ? 'border-mint-400 dark:border-mint-500 bg-mint-500/5 dark:bg-mint-500/10'
-                        : 'border-white/[0.06] hover:border-white/[0.15]'
+                        : 'border-slate-200 dark:border-white/[0.06] hover:border-slate-300 dark:border-white/[0.15]'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-1">
@@ -508,7 +508,7 @@ export default function WeeklyTracker() {
                           style={{ backgroundColor: WEEK_BORDERS[idx % WEEK_BORDERS.length] }}
                         />
                         <span className="text-sm font-medium">{w.label}</span>
-                        <span className="text-xs text-white/40">({w.txCount} txs)</span>
+                        <span className="text-xs text-slate-500 dark:text-white/40">({w.txCount} txs)</span>
                       </div>
                       <div className="flex items-center gap-2">
                         {isOver ? (
@@ -520,7 +520,7 @@ export default function WeeklyTracker() {
                       </div>
                     </div>
                     {/* Budget progress bar */}
-                    <div className="w-full h-1.5 bg-white/[0.05] rounded-full mt-1">
+                    <div className="w-full h-1.5 bg-slate-100 dark:bg-white/[0.05] rounded-full mt-1">
                       <div
                         className={`h-full rounded-full transition-all ${
                           isOver ? 'bg-red-400' : 'bg-emerald-400'
@@ -528,14 +528,14 @@ export default function WeeklyTracker() {
                         style={{ width: `${budgetBarWidth}%` }}
                       />
                     </div>
-                    <p className="text-xs text-white/40 mt-1">
+                    <p className="text-xs text-slate-500 dark:text-white/40 mt-1">
                       Avg daily: {formatIdr(w.avgDaily)} &middot; Budget: {formatIdr(weeklyData.weeklyBudget)}
                     </p>
 
                     {/* Expanded category breakdown */}
                     {selectedWeek === w.weekNum && (
-                      <div className="mt-3 pt-3 border-t border-white/[0.06]">
-                        <p className="text-xs font-medium text-white/50 mb-2">Category breakdown:</p>
+                      <div className="mt-3 pt-3 border-t border-slate-200 dark:border-white/[0.06]">
+                        <p className="text-xs font-medium text-slate-600 dark:text-white/50 mb-2">Category breakdown:</p>
                         <div className="space-y-1.5">
                           {Object.entries(w.categoryTotals)
                             .sort(([, a], [, b]) => b - a)
@@ -543,9 +543,9 @@ export default function WeeklyTracker() {
                               const catPct = w.total > 0 ? (amount / w.total) * 100 : 0;
                               return (
                                 <div key={cat} className="flex items-center justify-between">
-                                  <span className="text-xs text-white/60">{cat}</span>
+                                  <span className="text-xs text-slate-600 dark:text-white/60">{cat}</span>
                                   <div className="flex items-center gap-2">
-                                    <div className="w-16 h-1.5 bg-white/[0.05] rounded-full">
+                                    <div className="w-16 h-1.5 bg-slate-100 dark:bg-white/[0.05] rounded-full">
                                       <div
                                         className="h-full rounded-full bg-mint-400"
                                         style={{ width: `${catPct}%` }}
@@ -569,15 +569,15 @@ export default function WeeklyTracker() {
         {/* Average Daily Spend Trend */}
         <div className="glass-card p-5">
           
-            <h3 className="text-base text-white/80">Average Daily Spend Trend</h3>
-            <p className="text-white/50">How your daily spending pace shifts across the period.</p>
+            <h3 className="text-base text-slate-800 dark:text-white/80">Average Daily Spend Trend</h3>
+            <p className="text-slate-600 dark:text-white/50">How your daily spending pace shifts across the period.</p>
           
           
             <div style={{ height: 300 }}>
               <Line data={trendData} options={lineOptions} />
             </div>
             <div className="mt-4">
-              <p className="text-xs text-white/50 font-medium mb-2">Week-over-Week Change</p>
+              <p className="text-xs text-slate-600 dark:text-white/50 font-medium mb-2">Week-over-Week Change</p>
               {weeklyData.weeks.slice(1).map((w, idx) => {
                 const prev = weeklyData.weeks[idx];
                 if (!prev) return null;
@@ -585,8 +585,8 @@ export default function WeeklyTracker() {
                 const changePct = prev.avgDaily > 0 ? ((change / prev.avgDaily) * 100).toFixed(0) : '—';
                 return (
                   <div key={w.weekNum} className="flex items-center gap-2 text-xs mb-1">
-                    <span className="text-white/40">W{prev.weekNum} → W{w.weekNum}</span>
-                    <ArrowRight className="w-3 h-3 text-white/30" />
+                    <span className="text-slate-500 dark:text-white/40">W{prev.weekNum} → W{w.weekNum}</span>
+                    <ArrowRight className="w-3 h-3 text-slate-500 dark:text-white/30" />
                     {change >= 0 ? (
                       <TrendingUp className="w-3 h-3 text-red-500" />
                     ) : (
@@ -608,8 +608,8 @@ export default function WeeklyTracker() {
         {/* Category Distribution Donut */}
         <div className="glass-card p-5">
           
-            <h3 className="text-base text-white/80">Category Distribution</h3>
-            <p className="text-white/50">Where your money goes across the whole period.</p>
+            <h3 className="text-base text-slate-800 dark:text-white/80">Category Distribution</h3>
+            <p className="text-slate-600 dark:text-white/50">Where your money goes across the whole period.</p>
           
           
             <div className="max-w-[250px] mx-auto" style={{ height: 250 }}>
@@ -639,8 +639,8 @@ export default function WeeklyTracker() {
         {/* Full Category × Week Table */}
         <div className="glass-card p-5 lg:col-span-2">
           
-            <h3 className="text-base text-white/80">Category × Week Matrix</h3>
-            <p className="text-white/50">Spending per category across each week of the period.</p>
+            <h3 className="text-base text-slate-800 dark:text-white/80">Category × Week Matrix</h3>
+            <p className="text-slate-600 dark:text-white/50">Spending per category across each week of the period.</p>
           
           
             <div className="overflow-x-auto">
@@ -664,7 +664,7 @@ export default function WeeklyTracker() {
                           const val = w.categoryTotals[cat] || 0;
                           return (
                             <TableCell key={w.weekNum} className="text-xs text-right">
-                              {val > 0 ? formatIdr(val) : <span className="text-white/30">—</span>}
+                              {val > 0 ? formatIdr(val) : <span className="text-slate-500 dark:text-white/30">—</span>}
                             </TableCell>
                           );
                         })}

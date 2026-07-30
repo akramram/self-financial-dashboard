@@ -408,7 +408,7 @@ export default function SpendingRhythm() {
             <div
               key={bucket.label}
               className={`rounded-lg border p-4 ${
-                bucket.label === 'Late Night' ? 'border-navy-300 dark:border-navy-700 bg-navy-500/5 dark:bg-navy-500/10'
+                bucket.label === 'Late Night' ? 'border-slate-300 dark:border-navy-300 dark:border-navy-700 bg-slate-100 dark:bg-navy-500/5 dark:bg-navy-500/10'
                 : bucket.label === 'Morning' ? 'border-gold-400/30 bg-gold-500/5 dark:bg-gold-500/10'
                 : bucket.label === 'Afternoon' ? 'border-coral-400/20 dark:border-coral-700/40 bg-coral-500/5 dark:bg-coral-700/10/30'
                 : 'border-gold-400/30 bg-gold-500/5 dark:bg-gold-500/10'
@@ -424,7 +424,7 @@ export default function SpendingRhythm() {
               <div className="mt-2 h-1.5 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
                 <div
                   className={`h-full rounded-full ${
-                    bucket.label === 'Late Night' ? 'bg-navy-400'
+                    bucket.label === 'Late Night' ? 'bg-slate-300 dark:bg-navy-400'
                     : bucket.label === 'Morning' ? 'bg-gold-400'
                     : bucket.label === 'Afternoon' ? 'bg-coral-400'
                     : 'bg-gold-400'
