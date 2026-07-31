@@ -5,7 +5,7 @@ import { formatIdr } from '../lib/utils';
 import { useSortState } from '../hooks/useSortState';
 import SortableHeader from './SortableHeader';
 import EditTransactionDialog from './EditTransactionDialog';
-import { StickyNote, Search, SlidersHorizontal, Download, X, Filter, ChevronDown } from 'lucide-react';
+import { StickyNote, Search, SlidersHorizontal, Download, X, Filter, ChevronDown, FileJson, FileSpreadsheet } from 'lucide-react';
 import { useConfirm } from './ConfirmDialog';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'motion/react';
@@ -28,11 +28,40 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface Props {
   transactions: Transaction[];
   showMonth?: boolean;
   periods?: { period_id: number; month: string }[];
+}
+
+/** Escape a CSV field: wrap in quotes if it contains comma, quote, or newline */
+function escapeCsvField(value: string): string {
+  if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+    return `"${value.replace(/"/g, '""')}"`;
+  }
+  return value;
+}
+
+function transactionsToCsv(data: { date: string; description: string; amount: number; type: string; category: string; paid: boolean; notes: string; period: string }[]): string {
+  const headers = ['Date', 'Description', 'Amount', 'Type', 'Category', 'Period', 'Paid', 'Notes'];
+  const rows = data.map((t) => [
+    escapeCsvField(t.date),
+    escapeCsvField(t.description),
+    String(t.amount),
+    escapeCsvField(t.type),
+    escapeCsvField(t.category),
+    escapeCsvField(t.period),
+    t.paid ? 'Yes' : 'No',
+    escapeCsvField(t.notes),
+  ].join(','));
+  return [headers.join(','), ...rows].join('\n');
 }
 
 function parseCreatedTime(tx: Transaction): Date {
@@ -307,40 +336,86 @@ export default function TransactionTable({ transactions, showMonth = true, perio
           {/* Spacer */}
           <div className="flex-1" />
 
-          {/* Export button */}
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => {
-              const exportData = filtered.map((t) => ({
-                date: t.date,
-                description: t.title,
-                amount: t.amount,
-                type: t.type,
-                category: t.category,
-                paid: t.done,
-                notes: t.notes || '',
-                period: periodIdToMonth.get(t.period_id) || '',
-              }));
-              if (exportData.length === 0) {
-                toast.info('No transactions found');
-                return;
-              }
-              const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-              const url = URL.createObjectURL(blob);
-              const a = document.createElement('a');
-              a.href = url;
-              a.download = filterPeriodId !== 'all' ? `transactions-${filterPeriodId}.json` : 'transactions-all.json';
-              document.body.appendChild(a);
-              a.click();
-              document.body.removeChild(a);
-              URL.revokeObjectURL(url);
-            }}
-            className="gap-1.5 text-slate-600 dark:text-white/50 hover:text-slate-800 dark:text-white/80 hover:bg-slate-200/60 dark:bg-white/[0.06] h-9"
-          >
-            <Download className="w-3.5 h-3.5" />
-            Export
-          </Button>
+          {/* Export dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="gap-1.5 text-slate-600 dark:text-white/50 hover:text-slate-800 dark:text-white/80 hover:bg-slate-200/60 dark:bg-white/[0.06] h-9"
+              >
+                <Download className="w-3.5 h-3.5" />
+                Export
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={() => {
+                  const exportData = filtered.map((t) => ({
+                    date: t.date,
+                    description: t.title,
+                    amount: t.amount,
+                    type: t.type,
+                    category: t.category,
+                    paid: t.done,
+                    notes: t.notes || '',
+                    period: periodIdToMonth.get(t.period_id) || '',
+                  }));
+                  if (exportData.length === 0) {
+                    toast.info('No transactions found');
+                    return;
+                  }
+                  const csv = transactionsToCsv(exportData);
+                  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = filterPeriodId !== 'all' ? `transactions-${filterPeriodId}.csv` : 'transactions-all.csv';
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                  URL.revokeObjectURL(url);
+                  toast.success(`Exported ${exportData.length} transactions as CSV`);
+                }}
+                className="gap-2 cursor-pointer"
+              >
+                <FileSpreadsheet className="w-4 h-4" />
+                Export as CSV
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  const exportData = filtered.map((t) => ({
+                    date: t.date,
+                    description: t.title,
+                    amount: t.amount,
+                    type: t.type,
+                    category: t.category,
+                    paid: t.done,
+                    notes: t.notes || '',
+                    period: periodIdToMonth.get(t.period_id) || '',
+                  }));
+                  if (exportData.length === 0) {
+                    toast.info('No transactions found');
+                    return;
+                  }
+                  const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = filterPeriodId !== 'all' ? `transactions-${filterPeriodId}.json` : 'transactions-all.json';
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                  URL.revokeObjectURL(url);
+                  toast.success(`Exported ${exportData.length} transactions as JSON`);
+                }}
+                className="gap-2 cursor-pointer"
+              >
+                <FileJson className="w-4 h-4" />
+                Export as JSON
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           {/* Active filter count badge */}
           {activeFilterCount > 0 && (
