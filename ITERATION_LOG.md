@@ -1,5 +1,49 @@
 # Iteration Log
 
+## Sesi Cron — 31 Juli 2026: CSV Export untuk TransactionTable (Issue #132)
+
+### Ringkasan
+TransactionTable sudah punya fitur export JSON, tapi untuk finance dashboard user lebih sering butuh export ke CSV untuk dibuka di spreadsheet (Excel, Google Sheets). Ditambahkan opsi CSV sebagai format utama dalam dropdown export.
+
+### Issue
+[#132 — Add CSV export option to TransactionTable](https://github.com/akramram/self-financial-dashboard/issues/132)
+
+### Branch
+`feat/issue-132-csv-export` (merged to main, deleted)
+
+### Apa yang berubah
+
+**File yang dimodifikasi:**
+- `src/components/TransactionTable.tsx` — +110 lines, -35 lines
+
+**Perubahan:**
+- Tombol Export tunggal diganti dengan dropdown menu (shadcn `DropdownMenu`) yang menawarkan 2 opsi: **Export as CSV** (utama) dan **Export as JSON** (sekunder, behavior lama dipertahankan).
+- Ditambahkan `escapeCsvField()` helper — menangani field yang mengandung koma, tanda kutip, atau newline (standard CSV escaping).
+- Ditambahkan `transactionsToCsv()` helper — menghasilkan CSV dengan header row: Date, Description, Amount, Type, Category, Period, Paid, Notes.
+- Toast notification ditambahkan pada export sukses: "Exported N transactions as CSV" / "Exported N transactions as JSON".
+- Export CSV menggunakan `text/csv;charset=utf-8;` MIME type.
+- Semua format menghormati filter aktif (period, type, search, category).
+
+**Komponen UI:**
+- Dropdown trigger: icon Download + "Export" text (sama seperti sebelumnya).
+- Menu item CSV: icon FileSpreadsheet + "Export as CSV".
+- Menu item JSON: icon FileJson + "Export as JSON".
+
+### Test results
+✅ 147/147 tests passed (no new tests needed — pure UI enhancement). Duration: ~1.5s.
+
+### Build status
+✅ `npm run build` sukses, 0 errors.
+✅ PM2 restart online (clean delete + start via ecosystem.config.cjs), HTTP 200.
+✅ CSS hash HTTP 200 (bukan 404 stale).
+✅ Tidak ada runtime errors di PM2 logs.
+
+### Catatan
+- Backward compatible: JSON export masih tersedia sebagai opsi sekunder.
+- Tidak ada perubahan API, tidak ada perubahan DB schema.
+- Menggunakan shadcn DropdownMenu yang sudah terinstall.
+- BOM (Byte Order Mark) tidak ditambahkan — CSV kompatibel dengan Excel dan Google Sheets.
+
 ## Sesi Cron — 30 Juli 2026: Optimistic State Updates + Toast Notifications (Issue #130)
 
 ### Ringkasan
