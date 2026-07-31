@@ -189,7 +189,7 @@ export default function BudgetAlerts({ summaries, categories, activeMonth, trans
                       summaries.find((s) => s.month === activeMonth)?.period_id ?? 0,
                       alert.category
                     )}
-                    className="absolute top-2 right-2 p-0.5 rounded hover:bg-black/10 dark:hover:bg-slate-200/50 dark:bg-white/10 transition"
+                    className="absolute top-2 right-2 p-0.5 rounded hover:bg-black/10 dark:hover:bg-white/10 transition"
                     aria-label={`Dismiss ${alert.category} alert`}
                   >
                     <X className="h-3.5 w-3.5 opacity-50" />

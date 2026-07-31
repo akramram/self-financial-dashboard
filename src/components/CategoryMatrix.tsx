@@ -340,7 +340,7 @@ export default function CategoryMatrix({}: Props) {
                             title={amt > 0 ? `${row.category} · ${p.month}\n${formatIdr(amt)} (${count} tx${count !== 1 ? 's' : ''})\n\nClick to view transactions` : `${row.category} · ${p.month}\nNo spending`}
                             onClick={() => amt > 0 && openDrillDown(row.category, p.id)}
                           >
-                            {amt > 0 ? formatShort(amt) : <span className="text-slate-300 dark:text-slate-700">·</span>}
+                            {amt > 0 ? formatShort(amt) : <span className="text-slate-300 dark:text-slate-600">·</span>}
                           </TableCell>
                         );
                       })}
