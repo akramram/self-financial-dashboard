@@ -396,7 +396,7 @@ export default function FireCalculator() {
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-slate-600 dark:text-white/60">Savings Rate</span>
-                <span className={`text-sm font-semibold ${savingsRate >= 20 ? 'text-emerald-600' : savingsRate >= 0 ? 'text-gold-600' : 'text-red-600'}`}>
+                <span className={`text-sm font-semibold ${savingsRate >= 20 ? 'text-emerald-600 dark:text-emerald-400' : savingsRate >= 0 ? 'text-gold-600 dark:text-gold-400' : 'text-red-600 dark:text-red-400'}`}>
                   {savingsRate}%
                   {savingsRate >= 50 && <Badge className="ml-1.5 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 text-[10px]">Super Saver</Badge>}
                 </span>

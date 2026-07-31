@@ -588,10 +588,10 @@ export default function MonthlyReport({
                 {anomalies.map((a) => {
                   const severityColor =
                     a.severity === 'high'
-                      ? 'bg-red-100 text-red-700 border-red-300'
+                      ? 'bg-red-100 text-red-700 border-red-300 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800'
                       : a.severity === 'medium'
-                      ? 'bg-gold-500/10 text-gold-700 border-gold-400/30'
-                      : 'bg-mint-500/10 text-mint-600 border-mint-400/30';
+                      ? 'bg-gold-500/10 text-gold-700 border-gold-400/30 dark:bg-gold-700/20 dark:text-gold-300 dark:border-gold-700/40'
+                      : 'bg-mint-500/10 text-mint-600 border-mint-400/30 dark:bg-mint-700/20 dark:text-mint-300 dark:border-mint-700/40';
                   return (
                     <div
                       key={a.id}
@@ -608,10 +608,10 @@ export default function MonthlyReport({
                             variant="outline"
                             className={`text-xs capitalize ${
                               a.severity === 'high'
-                                ? 'border-red-300 text-red-700'
+                                ? 'border-red-300 text-red-700 dark:border-red-800 dark:text-red-300'
                                 : a.severity === 'medium'
-                                ? 'border-gold-400/30 text-gold-700'
-                                : 'border-mint-400/30 text-mint-600'
+                                ? 'border-gold-400/30 text-gold-700 dark:border-gold-700/40 dark:text-gold-300'
+                                : 'border-mint-400/30 text-mint-600 dark:border-mint-700/40 dark:text-mint-300'
                             }`}
                           >
                             {a.severity}

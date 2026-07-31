@@ -42,7 +42,7 @@ export default {
           400: '#f87171', 500: '#ef4444', 600: '#dc2626', 700: '#b91c1c',
         },
         gold: {
-          400: '#fbbf24', 500: '#f59e0b', 600: '#d97706', 700: '#b45309',
+          200: '#fde68a', 300: '#fcd34d', 400: '#fbbf24', 500: '#f59e0b', 600: '#d97706', 700: '#b45309',
         },
 
         // ─── shadcn/ui semantic (kept for backward compat) ─

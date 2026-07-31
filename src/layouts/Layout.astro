@@ -49,11 +49,11 @@ const { title = 'Financial Dashboard', balance, alerts = 0 } = Astro.props;
       <h1 class="text-sm font-bold text-foreground dark:text-white">{title}</h1>
       <div class="flex items-center gap-1.5">
         <!-- Settings (mobile) -->
-        <a href="/settings" class="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted dark:text-white/40 dark:hover:text-slate-800 dark:text-white/80 dark:hover:bg-slate-200/50 dark:bg-white/10 transition" aria-label="Settings">
+        <a href="/settings" class="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted dark:text-white/60 dark:hover:text-white dark:hover:bg-white/10 transition" aria-label="Settings">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
         </a>
         <!-- Dark mode toggle (mobile) -->
-        <button onclick="(function(){var h=document.documentElement;var d=h.classList.toggle('dark');localStorage.setItem('theme',d?'dark':'light')})()" class="p-1.5 rounded-lg bg-muted dark:bg-white/[0.05] text-muted-foreground dark:text-white/60 dark:hover:text-slate-900 dark:text-white hover:bg-accent dark:hover:bg-slate-200/50 dark:bg-white/10 transition text-sm" aria-label="Toggle theme">
+        <button onclick="(function(){var h=document.documentElement;var d=h.classList.toggle('dark');localStorage.setItem('theme',d?'dark':'light')})()" class="p-1.5 rounded-lg bg-muted dark:bg-white/[0.05] text-muted-foreground dark:text-white/60 dark:hover:text-white hover:bg-accent dark:hover:bg-white/10 transition text-sm" aria-label="Toggle theme">
           <span class="dark:hidden">🌙</span>
           <span class="hidden dark:inline">☀️</span>
         </button>
@@ -73,7 +73,7 @@ const { title = 'Financial Dashboard', balance, alerts = 0 } = Astro.props;
       </div>
       <div class="flex items-center gap-3">
         <!-- Dark mode toggle (desktop) -->
-        <button onclick="(function(){var h=document.documentElement;var d=h.classList.toggle('dark');localStorage.setItem('theme',d?'dark':'light')})()" class="p-2 rounded-xl bg-muted dark:bg-white/[0.05] text-muted-foreground dark:text-white/60 dark:hover:text-slate-900 dark:text-white hover:bg-accent dark:hover:bg-slate-200/50 dark:bg-white/10 transition" aria-label="Toggle theme">
+        <button onclick="(function(){var h=document.documentElement;var d=h.classList.toggle('dark');localStorage.setItem('theme',d?'dark':'light')})()" class="p-2 rounded-xl bg-muted dark:bg-white/[0.05] text-muted-foreground dark:text-white/60 dark:hover:text-white hover:bg-accent dark:hover:bg-white/10 transition" aria-label="Toggle theme">
           <span class="dark:hidden">🌙</span>
           <span class="hidden dark:inline">☀️</span>
         </button>
