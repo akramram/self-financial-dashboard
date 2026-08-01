@@ -1,5 +1,68 @@
 # Iteration Log
 
+## Sesi Cron — 1 Agustus 2026: Fix Dashboard P0-P2 Critique Bugs (Issue #136)
+
+### Ringkasan
+Memperbaiki 5 bugs kritis dari Impeccable Design Critique yang mengurangi trust user terhadap data di dashboard. Issue P1 (hardcoded runway, income delta bug) langsung mempengaruhi keakuratan data yang ditampilkan. Issue P2 (duplicate chart, wrong isPositive, duplicate CSS) mengurangi kualitas visual.
+
+### Issue
+[#136 — Fix Dashboard P0-P2 critique bugs: hardcoded runway, income delta, duplicate chart, spent isPositive](https://github.com/akramram/self-financial-dashboard/issues/136)
+
+### Branch
+`fix/dashboard-critique-p0p1-bugs` (merged to main, deleted)
+
+### PR
+[#137 — fix(#136): Fix Dashboard P0-P2 Critique Bugs](https://github.com/akramram/self-financial-dashboard/pull/137)
+
+### Apa yang berubah
+
+**File yang dimodifikasi:**
+- `src/components/Dashboard.tsx` — +33 lines, -19 lines
+
+**Perubahan:**
+
+1. **P1: Hardcoded Runway "8.2" → Dynamic dari API**
+   - Ditambah state `runwayData` yang fetch `/api/runway` on mount
+   - Runway card sekarang menampilkan data real-time: 1.2 months (bukan 8.2 hardcoded)
+   - Status icon berubah berdasarkan runway health: 🟢 healthy, 🟡 caution, 🔴 danger
+   - Loading skeleton (dash "—") saat data belum tersedia
+   - Ditambah link "View details →" ke halaman /runway
+
+2. **P1: Income StatCard Delta Bug**
+   - Delta sebelumnya: `income >= (income - (income - prevBalance))` = selalu true, menampilkan full income
+   - Delta sekarang: `formatIdr(income - prevIncome)` — menampilkan perubahan period-over-period yang benar
+   - `isPositive` sekarang: `income >= prevIncome` (naik = hijau, turun = merah)
+   - Ditambah `prevIncome` dan `prevSpending` ke glance computed data
+
+3. **P2: Duplicate NetworthChart dihapus**
+   - NetworthChart muncul 2x (Insights + Charts) dengan kapitalisasi berbeda
+   - Dihapus duplicate dari section Charts. Version di Insights adalah canonical.
+   - Category chart diubah dari grid 2-col ke full-width (karena partner chart dihapus)
+
+4. **P2: Spent StatCard isPositive diperbaiki**
+   - Sebelumnya: `isPositive={true}` hardcoded — delta selalu hijau/TrendingUp
+   - Sekarang: `isPositive={glance.spending <= glance.prevSpending}` — spending turun = positif, naik = negatif
+   - Delta menampilkan perubahan absolut (`spending - prevSpending`)
+
+5. **P2: Duplicate CSS class dihapus**
+   - 4 heading chart punya `text-slate-800 dark:text-white/80` duplikat
+   - Disederhanakan menjadi single class per heading
+
+### Test results
+✅ 147/147 tests passed. No test modifications needed (pure data wiring fix).
+
+### Build status
+✅ `npm run build` sukses, 0 errors.
+✅ PM2 restart online (clean delete + start via ecosystem.config.cjs), HTTP 200.
+✅ CSS hash HTTP 200 (bukan 404 stale).
+✅ Tidak ada runtime errors di PM2 logs.
+
+### Catatan
+- `/api/runway` sudah ada dan mengembalikan data lengkap (runway_months, status, tips, history, asset_breakdown)
+- Runway status values: `healthy` (≥6 months), `caution` (3-6), default `danger` (<3)
+- Perubahan backward compatible — tidak ada perubahan API, schema DB, atau komponen lain
+- Issues #125 dan #126 (off-palette colors, side-tab borders) sudah ditutup oleh PR sebelumnya (#127)
+
 ## Sesi Cron — 31 Juli 2026: CSV Export untuk TransactionTable (Issue #132)
 
 ### Ringkasan
