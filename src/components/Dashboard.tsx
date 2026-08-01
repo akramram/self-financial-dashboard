@@ -11,7 +11,7 @@ import StatCard from './ui/stat-card';
 import AnimatedCounter from './ui/animated-counter';
 import Sparkline from './Sparkline';
 
-import { DollarSign, Wallet, BarChart3, TrendingUp, TrendingDown, Scale, Shield, Bell, Plus, X } from 'lucide-react';
+import { DollarSign, Wallet, BarChart3, TrendingUp, TrendingDown, Scale, Shield, Bell, Plus, X, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -84,6 +84,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
   const [showAlerts, setShowAlerts] = useState(false);
   const [kickoffBanner, setKickoffBanner] = useState<{ show: boolean; currentMonth: string; nextMonth: string; recurringCount: number } | null>(null);
   const [kickoffOpen, setKickoffOpen] = useState(false);
+  const [runwayData, setRunwayData] = useState<{ runway_months: number; status: string; tips?: string[] } | null>(null);
 
   // ── Derived ───────────────────────────────────────────────────
   const periodOptions = useMemo(() => {
@@ -125,11 +126,11 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
     const nwPrev = nwPrevIdx > 0 ? nwSorted[nwPrevIdx - 1] : null;
     const nw = nwCurrent?.total ?? 0;
     const prevNw = nwPrev?.total ?? 0;
-    return { income, spending, balance, prevBalance, nw, prevNw, last6Income: sorted.slice(-6).map(s => s.income ?? 0), last6Spending: sorted.slice(-6).map(s => s.outcome?.total ?? 0), last6Nw: nwSorted.slice(-6).map(n => n.total ?? 0) };
+    return { income, spending, balance, prevBalance, prevIncome, prevSpending, nw, prevNw, last6Income: sorted.slice(-6).map(s => s.income ?? 0), last6Spending: sorted.slice(-6).map(s => s.outcome?.total ?? 0), last6Nw: nwSorted.slice(-6).map(n => n.total ?? 0) };
   }, [activeSummary, summaries, networth]);
 
   // ── Effects ───────────────────────────────────────────────────
-  useEffect(() => { fetchCategories().then(setCategories).catch(() => {}); fetchRecurringTransactions().then(r => setRecurringTitles(r.filter(rx => rx.active).map(rx => rx.title))).catch(() => {}); }, []);
+  useEffect(() => { fetchCategories().then(setCategories).catch(() => {}); fetchRecurringTransactions().then(r => setRecurringTitles(r.filter(rx => rx.active).map(rx => rx.title))).catch(() => {}); fetch('/api/runway').then(r => r.json()).then(d => setRunwayData(d)).catch(() => {}); }, []);
   useEffect(() => { const today = new Date(); if (today.getDate() < 21) return; const latest = summaries[summaries.length - 1]; if (!latest) return; const latestDate = new Date(latest.month + ' 1'); const nextDate = new Date(latestDate); nextDate.setMonth(nextDate.getMonth() + 1); const nextMonthStr = nextDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }); fetch('/api/kickoff').then(res => res.json()).then((status: any) => { if (status.hasNextMonth) { setKickoffBanner(null); return; } fetchRecurringTransactions().then(recurring => { setKickoffBanner({ show: true, currentMonth: latest.month, nextMonth: status.nextMonth || nextMonthStr, recurringCount: recurring.filter(r => r.active).length }); }).catch(() => {}); }).catch(() => {}); }, [summaries]);
 
   // ── Sort + pagination ────────────────────────────────────────
@@ -203,8 +204,8 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
           {/* 3 Glance Chips */}
           {glance && (
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <StatCard label="Income" value={formatIdr(glance.income)} delta={glance.income >= (glance.income - (glance.income - glance.prevBalance)) ? `+${formatIdr(glance.income)}` : formatIdr(glance.income)} isPositive={true} color="#34d399" icon={<DollarSign className="w-4 h-4" />} sparkline={<MiniSparkline data={glance.last6Income} color="#34d399" />} />
-              <StatCard label="Spent" value={formatIdr(glance.spending)} isPositive={true} color="#ef4444" icon={<Wallet className="w-4 h-4" />} sparkline={<MiniSparkline data={glance.last6Spending} color="#ef4444" />} />
+              <StatCard label="Income" value={formatIdr(glance.income)} delta={glance.prevIncome !== 0 ? `${glance.income >= glance.prevIncome ? '+' : ''}${formatIdr(glance.income - glance.prevIncome)}` : undefined} isPositive={glance.income >= glance.prevIncome} color="#34d399" icon={<DollarSign className="w-4 h-4" />} sparkline={<MiniSparkline data={glance.last6Income} color="#34d399" />} />
+              <StatCard label="Spent" value={formatIdr(glance.spending)} delta={glance.prevSpending !== 0 ? `${glance.spending <= glance.prevSpending ? '' : '+'}${formatIdr(glance.spending - glance.prevSpending)}` : undefined} isPositive={glance.spending <= glance.prevSpending} color="#ef4444" icon={<Wallet className="w-4 h-4" />} sparkline={<MiniSparkline data={glance.last6Spending} color="#ef4444" />} />
               <StatCard label="Net Worth" value={formatIdr(glance.nw)} isPositive={glance.nw >= glance.prevNw} color="#f59e0b" icon={<BarChart3 className="w-4 h-4" />} sparkline={<MiniSparkline data={glance.last6Nw} color="#f59e0b" />} />
             </div>
           )}
@@ -309,16 +310,30 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
             {/* Runway snapshot */}
             <GlassCard>
               <h3 className="text-sm font-semibold text-slate-800 dark:text-white/80 mb-3">Runway</h3>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: 'rgba(52,211,153,0.12)' }}>
-                  <Shield className="w-5 h-5" style={{ color: '#34d399' }} strokeWidth={1.8} />
-                </div>
+              {runwayData ? (
                 <div>
-                  <p className="text-2xl font-bold text-slate-900 dark:text-white">8.2</p>
-                  <p className="text-xs text-slate-500 dark:text-white/40">months of emergency fund</p>
+                  <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center`} style={{ backgroundColor: runwayData.status === 'healthy' ? 'rgba(52,211,153,0.12)' : runwayData.status === 'caution' ? 'rgba(245,158,11,0.12)' : 'rgba(239,68,68,0.12)' }}>
+                      {runwayData.status === 'healthy' ? <Shield className="w-5 h-5" style={{ color: '#34d399' }} strokeWidth={1.8} /> : runwayData.status === 'caution' ? <AlertTriangle className="w-5 h-5" style={{ color: '#f59e0b' }} strokeWidth={1.8} /> : <AlertTriangle className="w-5 h-5" style={{ color: '#ef4444' }} strokeWidth={1.8} />}
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-slate-900 dark:text-white">{runwayData.runway_months.toFixed(1)}</p>
+                      <p className="text-xs text-slate-500 dark:text-white/40">months of emergency fund</p>
+                    </div>
+                  </div>
+                  <a href="/runway" className="block mt-2 text-xs text-mint-500 hover:text-mint-400 no-underline">View details →</a>
                 </div>
-              </div>
-              <p className="text-xs text-slate-500 dark:text-white/40 mt-3">Based on average monthly burn rate</p>
+              ) : (
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-slate-200/60 dark:bg-white/[0.06]">
+                    <Shield className="w-5 h-5 text-slate-400 dark:text-white/20" strokeWidth={1.8} />
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold text-slate-300 dark:text-white/20">—</p>
+                    <p className="text-xs text-slate-500 dark:text-white/40">months of emergency fund</p>
+                  </div>
+                </div>
+              )}
             </GlassCard>
           </div>
 
@@ -409,14 +424,13 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
         <section>
           <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/40 mb-3">Charts</p>
           <div className="glass-card p-5 bg-slate-100 dark:bg-white/[0.02] border-slate-200 dark:border-white/[0.06] mb-4">
-            <h3 className="text-base font-semibold text-slate-800 dark:text-white/80 text-slate-800 dark:text-white/80">Cash Outcome vs Credit Payment</h3><OutcomeChart data={filteredSummaries} /></div>
+            <h3 className="text-base font-semibold text-slate-800 dark:text-white/80">Cash Outcome vs Credit Payment</h3><OutcomeChart data={filteredSummaries} /></div>
           <div className="glass-card p-5 bg-slate-100 dark:bg-white/[0.02] border-slate-200 dark:border-white/[0.06] mb-4">
-            <h3 className="text-base font-semibold text-slate-800 dark:text-white/80 text-slate-800 dark:text-white/80">Savings Rate Trend</h3><SavingsRateChart data={filteredSummaries} /></div>
+            <h3 className="text-base font-semibold text-slate-800 dark:text-white/80">Savings Rate Trend</h3><SavingsRateChart data={filteredSummaries} /></div>
           <div className="glass-card p-5 bg-slate-100 dark:bg-white/[0.02] border-slate-200 dark:border-white/[0.06] mb-4">
-            <h3 className="text-base font-semibold text-slate-800 dark:text-white/80 text-slate-800 dark:text-white/80">Category Spending Trend</h3><CategoryTrendChart data={filteredSummaries} categories={categories} /></div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-            <div className="glass-card p-5 bg-slate-100 dark:bg-white/[0.02] border-slate-200 dark:border-white/[0.06]"><h3 className="text-base font-semibold text-slate-800 dark:text-white/80 text-slate-800 dark:text-white/80">Networth Trend</h3><NetworthChart data={filteredNetworth} /></div>
-            <div className="glass-card p-5 bg-slate-100 dark:bg-white/[0.02] border-slate-200 dark:border-white/[0.06]"><h3 className="text-base font-semibold text-slate-800 dark:text-white/80 text-slate-800 dark:text-white/80">{isAllTime ? 'Latest Month Categories' : `${activeSummary?.month ?? ''} Categories`}</h3>{activeSummary?.category_totals && Object.keys(activeSummary.category_totals).length > 0 ? <CategoryChart data={activeSummary.category_totals} categories={categories} onCategoryClick={openCategoryDialog} /> : <p className="text-slate-500 dark:text-white/30 text-sm">No category data available.</p>}</div>
+            <h3 className="text-base font-semibold text-slate-800 dark:text-white/80">Category Spending Trend</h3><CategoryTrendChart data={filteredSummaries} categories={categories} /></div>
+          <div className="mb-4">
+            <div className="glass-card p-5 bg-slate-100 dark:bg-white/[0.02] border-slate-200 dark:border-white/[0.06]"><h3 className="text-base font-semibold text-slate-800 dark:text-white/80">{isAllTime ? 'Latest Month Categories' : `${activeSummary?.month ?? ''} Categories`}</h3>{activeSummary?.category_totals && Object.keys(activeSummary.category_totals).length > 0 ? <CategoryChart data={activeSummary.category_totals} categories={categories} onCategoryClick={openCategoryDialog} /> : <p className="text-slate-500 dark:text-white/30 text-sm">No category data available.</p>}</div>
           </div>
           <PeriodVsAverage summaries={filteredSummaries} categories={categories} activePeriodId={filterPeriodId} />
         </section>
