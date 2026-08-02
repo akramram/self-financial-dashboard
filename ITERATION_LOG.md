@@ -1,5 +1,50 @@
 # Iteration Log
 
+## Sesi Cron — 2 Agustus 2026: Period Progress Ring Indicator (PR #138)
+
+### Ringkasan
+Dashboard Balance Hero sekarang menampilkan **Period Progress Ring** — indicator SVG ring kecil (52×52px) di pojok kanan atas Balance Hero card yang menunjukkan progress waktu salary period (21st → 20th). Komponen reusable `PeriodProgressRing` yang menghitung hari tersisa, persentase elapsed, dan warna otomatis berdasarkan urgensi.
+
+### Issue/PR
+[#138 — feat: Period Progress Ring indicator on Dashboard Balance Hero](https://github.com/akramram/self-financial-dashboard/pull/138)
+
+### Branch
+`feat/period-progress-indicator` (merged to main, deleted)
+
+### Apa yang berubah
+
+**File baru:**
+- `src/components/ui/period-progress-ring.tsx` — Reusable SVG ring component. Props: `activeMonth?` (string dari periods table), `className?`. Menghitung period dates (21st bulan lalu → 20th bulan ini), menghitung days elapsed, days remaining, dan percentage. Color-coded: mint (early <50%), gold (mid 50-79%), coral (late 80%+). CSS transition smooth pada stroke-dashoffset animation.
+
+**File yang dimodifikasi:**
+- `src/components/Dashboard.tsx` — Import PeriodProgressRing, tambahkan di Balance Hero section dengan layout `flex items-start justify-between` sehingga balance info di kiri dan ring di kanan.
+
+**UX:**
+- Ring menunjukkan persentase progress di tengah lingkaran
+- Label "X days left" dengan ikon clock
+- Sublabel "Day N of 30"
+- Warna otomatis berdasarkan urgensi period
+- Mendukung dark mode dan light mode
+- Perhitungan purely client-side (tidak perlu API call)
+
+**Hasil data nyata (live dashboard):**
+- Period "August 2026": 18 days left, 44% elapsed, warna mint (early)
+
+### Test results
+✅ 147/147 tests passed (tidak ada test baru — komponen UI murni presentasi tanpa logic bisnis). Duration: ~1.4s.
+
+### Build status
+✅ `npm run build` sukses, 0 errors.
+✅ PM2 clean restart (delete + start ecosystem.config.cjs), HTTP 200 untuk `/login`.
+✅ CSS hash HTTP 200 (bukan 404 stale).
+
+### Catatan
+- Komponen mengikuti convention: React functional component, Tailwind dark/light classes, fintech palette colors.
+- Computed entirely client-side dari `activeMonth` string — tidak ada API dependency.
+- Reusable: bisa dipasang di halaman lain jika diperlukan.
+- Tidak ada perubahan skema DB, tidak ada perubahan API.
+- Backward compatible: Dashboard.tsx tetap bekerja jika `activeSummary?.month` undefined (fallback ke current salary period calculation).
+
 ## Sesi Cron — 1 Agustus 2026: Fix Dashboard P0-P2 Critique Bugs (Issue #136)
 
 ### Ringkasan
