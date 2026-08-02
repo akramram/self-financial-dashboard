@@ -22,6 +22,7 @@ import { useSortState } from '../hooks/useSortState';
 import SortableHeader from './SortableHeader';
 import EditTransactionDialog from './EditTransactionDialog';
 import MonthKickoffModal from './MonthKickoffModal';
+import PeriodProgressRing from './ui/period-progress-ring';
 import { toast } from 'sonner';
 
 import SpendingPulse from './SpendingPulse';
@@ -185,18 +186,21 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
           {/* Balance Hero */}
           {glance && (
             <GlassCard variant="hero" className="p-6 mb-4">
-              <div className="relative">
-                <p className="text-sm font-medium text-slate-500 dark:text-white/40 mb-1">Available Balance</p>
-                <AnimatedCounter value={glance.balance} formatFn={formatIdr} className="text-4xl font-bold text-slate-900 dark:text-white tracking-tight" />
-                <div className="flex items-center gap-3 mt-3">
-                  {glance.prevBalance !== 0 && (
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold" style={{ backgroundColor: 'rgba(52,211,153,0.12)', color: '#34d399' }}>
-                      {glance.balance >= glance.prevBalance ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                      {glance.balance >= glance.prevBalance ? '+' : ''}{formatIdr(glance.balance - glance.prevBalance)}
-                    </span>
-                  )}
-                  <span className="text-xs text-slate-500 dark:text-white/40">vs last period</span>
+              <div className="relative flex items-start justify-between">
+                <div>
+                  <p className="text-sm font-medium text-slate-500 dark:text-white/40 mb-1">Available Balance</p>
+                  <AnimatedCounter value={glance.balance} formatFn={formatIdr} className="text-4xl font-bold text-slate-900 dark:text-white tracking-tight" />
+                  <div className="flex items-center gap-3 mt-3">
+                    {glance.prevBalance !== 0 && (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold" style={{ backgroundColor: 'rgba(52,211,153,0.12)', color: '#34d399' }}>
+                        {glance.balance >= glance.prevBalance ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+                        {glance.balance >= glance.prevBalance ? '+' : ''}{formatIdr(glance.balance - glance.prevBalance)}
+                      </span>
+                    )}
+                    <span className="text-xs text-slate-500 dark:text-white/40">vs last period</span>
+                  </div>
                 </div>
+                <PeriodProgressRing activeMonth={activeSummary?.month} />
               </div>
             </GlassCard>
           )}
