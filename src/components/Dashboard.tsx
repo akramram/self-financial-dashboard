@@ -11,7 +11,7 @@ import StatCard from './ui/stat-card';
 import AnimatedCounter from './ui/animated-counter';
 import Sparkline from './Sparkline';
 
-import { DollarSign, Wallet, BarChart3, TrendingUp, TrendingDown, Scale, Shield, Bell, Plus, X, AlertTriangle } from 'lucide-react';
+import { DollarSign, Wallet, BarChart3, TrendingUp, TrendingDown, Scale, Shield, Bell, Plus, X, AlertTriangle, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -83,6 +83,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editForm, setEditForm] = useState<Partial<Transaction>>({});
   const [showAlerts, setShowAlerts] = useState(false);
+  const [feedSearch, setFeedSearch] = useState('');
   const [kickoffBanner, setKickoffBanner] = useState<{ show: boolean; currentMonth: string; nextMonth: string; recurringCount: number } | null>(null);
   const [kickoffOpen, setKickoffOpen] = useState(false);
   const [runwayData, setRunwayData] = useState<{ runway_months: number; status: string; tips?: string[] } | null>(null);
@@ -134,12 +135,34 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
   useEffect(() => { fetchCategories().then(setCategories).catch(() => {}); fetchRecurringTransactions().then(r => setRecurringTitles(r.filter(rx => rx.active).map(rx => rx.title))).catch(() => {}); fetch('/api/runway').then(r => r.json()).then(d => setRunwayData(d)).catch(() => {}); }, []);
   useEffect(() => { const today = new Date(); if (today.getDate() < 21) return; const latest = summaries[summaries.length - 1]; if (!latest) return; const latestDate = new Date(latest.month + ' 1'); const nextDate = new Date(latestDate); nextDate.setMonth(nextDate.getMonth() + 1); const nextMonthStr = nextDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }); fetch('/api/kickoff').then(res => res.json()).then((status: any) => { if (status.hasNextMonth) { setKickoffBanner(null); return; } fetchRecurringTransactions().then(recurring => { setKickoffBanner({ show: true, currentMonth: latest.month, nextMonth: status.nextMonth || nextMonthStr, recurringCount: recurring.filter(r => r.active).length }); }).catch(() => {}); }).catch(() => {}); }, [summaries]);
 
+  // Keyboard shortcut: / to focus feed search
+  const feedSearchRef = React.useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === '/' && !['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement)?.tagName) && !(e.target as HTMLElement)?.closest('[contenteditable]')) {
+        e.preventDefault();
+        feedSearchRef.current?.focus();
+      }
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, []);
+
   // ── Sort + pagination ────────────────────────────────────────
   const { toggleSort, sortData, isSorted } = useSortState();
   const getTxCellValue = useCallback((t: Transaction, key: string): string | number => { switch (key) { case 'paid': return t.done ? 1 : 0; case 'title': return t.title; case 'category': return t.category; case 'date': return new Date(t.created_time || t.date).getTime(); case 'amount': return t.amount; case 'type': return t.type; default: return ''; } }, []);
   const sortedTransactions = useMemo(() => sortData(filteredTransactions, getTxCellValue, data => [...data].sort((a, b) => parseCreatedTime(b).getTime() - parseCreatedTime(a).getTime())), [filteredTransactions, sortData, getTxCellValue]);
-  const totalTxPages = Math.max(1, Math.ceil(sortedTransactions.length / txPerPage));
-  const pagedTransactions = sortedTransactions.slice((txPage - 1) * txPerPage, txPage * txPerPage);
+  const searchedTransactions = useMemo(() => {
+    if (!feedSearch.trim()) return sortedTransactions;
+    const q = feedSearch.toLowerCase().trim();
+    return sortedTransactions.filter(t =>
+      t.title.toLowerCase().includes(q) ||
+      t.category.toLowerCase().includes(q) ||
+      t.type.toLowerCase().includes(q)
+    );
+  }, [sortedTransactions, feedSearch]);
+  const totalTxPages = Math.max(1, Math.ceil(searchedTransactions.length / txPerPage));
+  const pagedTransactions = searchedTransactions.slice((txPage - 1) * txPerPage, txPage * txPerPage);
   const goToPage = (page: number) => setTxPage(Math.max(1, Math.min(totalTxPages, page)));
 
   // ── Edit handlers ────────────────────────────────────────────
@@ -355,6 +378,28 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
           </div>
 
           <GlassCard className="p-0 overflow-hidden">
+            {/* Search bar */}
+            <div className="relative px-4 pt-3 pb-2">
+              <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-white/30" />
+              <input
+                ref={feedSearchRef}
+                type="text"
+                placeholder="Search transactions... ( / )"
+                value={feedSearch}
+                onChange={(e) => { setFeedSearch(e.target.value); setTxPage(1); }}
+                className="w-full pl-9 pr-8 py-2 text-sm rounded-lg bg-slate-100 dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.08] text-slate-700 dark:text-white/80 placeholder:text-slate-400 dark:placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-mint-500/30 focus:border-mint-500/50 transition"
+              />
+              {feedSearch && (
+                <button onClick={() => { setFeedSearch(''); setTxPage(1); }} className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white/30 hover:text-slate-600 dark:text-white/60 transition">
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+              {feedSearch && (
+                <p className="mt-1 text-[11px] text-slate-500 dark:text-white/40">
+                  {searchedTransactions.length} result{searchedTransactions.length !== 1 ? 's' : ''} found
+                </p>
+              )}
+            </div>
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
@@ -407,13 +452,21 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
                   })}
                 </TableBody>
               </Table>
+
+              {feedSearch && pagedTransactions.length === 0 && (
+                <div className="py-8 text-center">
+                  <Search className="w-8 h-8 mx-auto mb-2 text-slate-300 dark:text-white/20" />
+                  <p className="text-sm text-slate-500 dark:text-white/40">No transactions match "{feedSearch}"</p>
+                  <button onClick={() => { setFeedSearch(''); setTxPage(1); }} className="mt-2 text-xs text-mint-500 hover:text-mint-400 transition">Clear search</button>
+                </div>
+              )}
             </div>
 
             <EditTransactionDialog open={editingId !== null} transaction={editForm} onChange={handleChange} onSave={saveEdit} onCancel={cancelEdit} periods={summaries.map(s => ({ period_id: s.period_id, month: s.month }))} categories={categories.map(c => c.name)} />
 
-            {sortedTransactions.length > txPerPage && (
+            {searchedTransactions.length > txPerPage && (
               <div className="flex items-center justify-between px-5 py-3 border-t border-slate-200 dark:border-white/[0.05]">
-                <p className="text-xs text-slate-500 dark:text-white/30">Showing {(txPage - 1) * txPerPage + 1}–{Math.min(txPage * txPerPage, sortedTransactions.length)} of {sortedTransactions.length}</p>
+                <p className="text-xs text-slate-500 dark:text-white/30">Showing {(txPage - 1) * txPerPage + 1}–{Math.min(txPage * txPerPage, searchedTransactions.length)} of {searchedTransactions.length}</p>
                 <div className="flex items-center gap-2">
                   <Button variant="outline" size="sm" onClick={() => goToPage(txPage - 1)} disabled={txPage <= 1} className="h-7 text-xs bg-slate-100 dark:bg-white/[0.05] border-slate-300 dark:border-white/[0.08] text-slate-600 dark:text-white/60">Previous</Button>
                   <span className="text-xs text-slate-500 dark:text-white/30 min-w-[3rem] text-center">{txPage} / {totalTxPages}</span>
