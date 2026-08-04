@@ -1,5 +1,43 @@
 # Iteration Log
 
+## Sesi Cron — 4 Agustus 2026: Dashboard Feed Transaction Search Bar (PR #140)
+
+### Ringkasan
+Menambahkan search bar di section FEED Dashboard untuk memfilter transaksi secara real-time berdasarkan judul, kategori, dan tipe — tanpa perlu navigasi ke halaman `/transactions`.
+
+### Branch
+`feat/dashboard-feed-search` (merged to main, deleted)
+
+### Apa yang berubah
+
+**File dimodifikasi:**
+- `src/components/Dashboard.tsx` — +58 baris, -5 baris
+
+**Fitur baru:**
+- **Search bar** dengan glass-morphism styling di atas tabel transaksi Feed section
+- **Filter real-time** berdasarkan title, category, dan type (case-insensitive)
+- **Result count indicator** — menampilkan "N results found" saat ada query aktif
+- **Empty state** — menampilkan ikon search + pesan "No transactions match" + tombol "Clear search"
+- **Keyboard shortcut `/`** — fokus search dari mana saja di halaman (kecuali saat di input lain)
+- **Clear button (X)** — di kanan search bar untuk reset cepat
+- **Auto-reset pagination** — saat search query berubah, halaman kembali ke 1
+- **Dual-mode theme** — glass styling konsisten di light dan dark mode
+
+**Tidak ada perubahan:**
+- Tidak ada perubahan skema DB
+- Tidak ada API endpoint baru
+- Tidak ada perubahan komponen lain
+
+### Test results
+✅ 147/147 tests passed (tidak ada test baru yang diperlukan — fitur ini murni UI client-side).
+✅ `npm run build` sukses, 0 errors.
+✅ PM2 restart online, HTTP 200.
+
+### Catatan
+- Search mempertahankan sort state dari sort headers yang sudah ada
+- Filter mencari di title, category, DAN type — cukup fleksibel untuk menemukan transaksi apapun
+- Keyboard shortcut `/` mengikuti konvensi umum (Notion, VS Code, GitHub)
+
 ## Sesi Cron — 2 Agustus 2026: Period Progress Ring Indicator (PR #138)
 
 ### Ringkasan
