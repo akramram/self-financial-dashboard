@@ -207,10 +207,14 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
           </div>
 
           {/* Balance Hero */}
-          {glance && (
+          {glance && (() => {
+            const spendPct = glance.income > 0 ? Math.min(Math.round((glance.spending / glance.income) * 100), 100) : 0;
+            const savingsPct = 100 - spendPct;
+            const barColor = spendPct >= 100 ? '#ef4444' : spendPct >= 80 ? '#f59e0b' : '#34d399';
+            return (
             <GlassCard variant="hero" className="p-6 mb-4">
               <div className="relative flex items-start justify-between">
-                <div>
+                <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-slate-500 dark:text-white/40 mb-1">Available Balance</p>
                   <AnimatedCounter value={glance.balance} formatFn={formatIdr} className="text-4xl font-bold text-slate-900 dark:text-white tracking-tight" />
                   <div className="flex items-center gap-3 mt-3">
@@ -222,11 +226,33 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
                     )}
                     <span className="text-xs text-slate-500 dark:text-white/40">vs last period</span>
                   </div>
+
+                  {/* Income Allocation Bar */}
+                  <div className="mt-4">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-xs font-medium text-slate-500 dark:text-white/40">Income Allocation</span>
+                      <span className="text-xs font-semibold" style={{ color: barColor }}>{spendPct}% spent</span>
+                    </div>
+                    <div className="w-full h-2.5 rounded-full overflow-hidden bg-white/[0.15]">
+                      <div className="h-full rounded-full transition-all duration-500" style={{ width: `${spendPct}%`, backgroundColor: barColor }} />
+                    </div>
+                    <div className="flex items-center justify-between mt-1.5">
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full" style={{ backgroundColor: barColor }} />
+                        <span className="text-[11px] text-slate-500 dark:text-white/40">Spent {formatIdr(glance.spending)}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[11px] text-slate-500 dark:text-white/40">Saved {formatIdr(Math.max(0, glance.balance))}</span>
+                        <span className="w-2 h-2 rounded-full bg-white/30" />
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 <PeriodProgressRing activeMonth={activeSummary?.month} />
               </div>
             </GlassCard>
-          )}
+            );
+          })()}
 
           {/* 3 Glance Chips */}
           {glance && (
