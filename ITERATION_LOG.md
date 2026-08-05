@@ -1,5 +1,48 @@
 # Iteration Log
 
+## Sesi Cron — 5 Agustus 2026: Income Allocation Bar di Dashboard Balance Hero (PR #141)
+
+### Ringkasan
+Menambahkan **Income Allocation Bar** — progress bar visual di dalam Balance Hero card yang menunjukkan berapa persen income sudah terpakai (spent), dengan color-coded indicator: mint (<80%), gold (80-99%), coral (100%+). Legend menampilkan jumlah spent dan savings. Memberikan gambaran kesehatan finansial secara sekilas tanpa harus menghitung manual.
+
+### Issue/PR
+[#141 — feat: Income Allocation Bar in Dashboard Balance Hero](https://github.com/akramram/self-financial-dashboard/pull/141)
+
+### Branch
+`feat/dashboard-income-spending-bar` (merged to main, deleted)
+
+### Apa yang berubah
+
+**File dimodifikasi:**
+- `src/components/Dashboard.tsx` — +29 baris, -3 baris
+
+**Fitur baru:**
+- **Income Allocation Bar** — progress bar horizontal di Balance Hero
+- **Color-coded indicator:** mint (aman), gold (perhatian 80%+), coral (bahaya 100%+)
+- **Persentase label** — menampilkan "X% spent" di kanan atas bar
+- **Legend** — dot berwarna + jumlah spent (kiri) dan saved (kanan)
+- **CSS transition** — smooth animasi pada perubahan width
+- **`flex-1 min-w-0`** pada container kiri — mencegah overflow text ketika PeriodProgressRing aktif di kanan
+
+**Tidak ada perubahan:**
+- Tidak ada perubahan skema DB
+- Tidak ada API endpoint baru
+- Tidak ada perubahan komponen lain
+
+### Issue ditutup
+- **#136** — Fix Dashboard P0-P2 critique bugs (semua item sudah resolved di code, issue auto-close dari PR)
+
+### Test results
+✅ 147/147 tests passed (tidak ada test baru — fitur ini murni UI presentasi).
+✅ `npm run build` sukses, 0 errors.
+✅ PM2 clean restart (stop + delete + rm dist + build + start ecosystem), HTTP 200.
+✅ Live verified: menampilkan "96% spent" dengan bar gold (karena ≥80%).
+
+### Catatan
+- Menggunakan inline style untuk warna bar agar dynamic berdasarkan persentase
+- IIFE pattern `(() => { ... return (...) })()` untuk menghitung `spendPct` sebelum render
+- `Math.max(0, glance.balance)` untuk mencegah negatif pada label "Saved"
+
 ## Sesi Cron — 4 Agustus 2026: Dashboard Feed Transaction Search Bar (PR #140)
 
 ### Ringkasan
