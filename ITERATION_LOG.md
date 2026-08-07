@@ -1,5 +1,50 @@
 # Iteration Log
 
+## Sesi Cron — 7 Agustus 2026: Category Spending Trend Arrows di Dashboard (PR #142)
+
+### Ringkasan
+Menambahkan **indikator tren spending per kategori** di widget CategoryBudgets Dashboard. Setiap baris kategori sekarang menampilkan ikon panah kecil (▲/▼/→) dengan persentase perubahan dibandingkan periode sebelumnya, memberikan gambaran sekilas kategori mana yang trennya naik (merah — buruk) atau turun (hijau — baik).
+
+### Issue/PR
+[#142 — feat: Category Spending Trend Arrows in Dashboard](https://github.com/akramram/self-financial-dashboard/pull/142)
+
+### Branch
+`feat/category-spending-trend-arrows` (merged to main, deleted)
+
+### Apa yang berubah
+
+**File dimodifikasi:**
+- `src/components/CategoryBudgets.tsx` — +81 baris, -7 baris
+
+**Fitur baru:**
+- **Trend indicator per kategori** — ikon TrendingUp (merah), TrendingDown (hijau), atau Minus (abu) dengan persentase perubahan absolut
+- **Warna semantik:** hijau = spending turun (positif), merah = spending naik (negatif), abu = tidak berubah
+- **Label "Baru"** untuk kategori yang belum ada di periode sebelumnya
+- **Dead zone 5%** — perubahan ±5% dianggap "flat" untuk menghindari noise
+- **Tooltip** — hover menampilkan konteks lengkap (mis. "65% lebih rendah dari periode sebelumnya")
+- **Kompatibel dark/light theme**
+
+**Tidak ada perubahan:**
+- Tidak ada perubahan skema DB
+- Tidak ada API endpoint baru
+- Tidak ada perubahan komponen lain
+
+### Test results
+✅ 147/147 tests passed (tidak ada test baru — fitur ini murni UI presentasi).
+✅ `npm run build` sukses, 0 errors.
+✅ PM2 clean restart (stop + delete + rm dist + build + start ecosystem), HTTP 200.
+
+### Hasil live verification
+- Credit Card: 6% ↑ merah (spending naik)
+- Family: 65% ↓ hijau (spending turun)
+- Tagihan: — abu (tidak berubah)
+- Belanja: 51% ↓ hijau (spending turun)
+
+### Catatan
+- Menggunakan perbandingan `category_totals` antara periode aktif dengan periode sebelumnya (sorted by date)
+- Menggunakan lucide-react icons (TrendingUp, TrendingDown, Minus) — konsisten dengan standar proyek
+- Komputasi tren dilakukan di `useMemo` — performant, tidak ada API call tambahan
+
 ## Sesi Cron — 5 Agustus 2026: Income Allocation Bar di Dashboard Balance Hero (PR #141)
 
 ### Ringkasan
