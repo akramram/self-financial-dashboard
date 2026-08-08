@@ -36,6 +36,7 @@ import CategoryTrendChart from './CategoryTrendChart';
 import SavingsRateChart from './SavingsRateChart';
 import OutcomeBarChart from './OutcomeBarChart';
 import PeriodVsAverage from './PeriodVsAverage';
+import DailyBudgetIndicator from './DailyBudgetIndicator';
 
 function parseCreatedTime(tx: Transaction): Date {
   if (tx.created_time) {
@@ -271,6 +272,16 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
           {/* Spending Pulse + Safe to Spend merged */}
           <GlassCard className="mb-4">
             <SpendingPulse summaries={summaries} activeMonth={activeSummary?.month} />
+          </GlassCard>
+
+          {/* Daily Budget Indicator */}
+          <GlassCard className="mb-4">
+            <DailyBudgetIndicator
+              transactions={filteredTransactions}
+              income={glance?.income ?? 0}
+              spent={glance?.spending ?? 0}
+              activeMonth={activeSummary?.month}
+            />
           </GlassCard>
 
           {/* Category Budgets + Credit Snapshot side-by-side */}
