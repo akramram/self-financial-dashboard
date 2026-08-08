@@ -1,5 +1,55 @@
 # Iteration Log
 
+## Sesi Cron — 8 Agustus 2026: Daily Budget Indicator di Dashboard (PR #143)
+
+### Ringkasan
+Menambahkan **Daily Budget Indicator** — widget di section FLOW Dashboard yang menunjukkan **jatah belanja harian** berdasarkan sisa budget dibagi hari tersisa di periode gaji. Memberikan angka konkret yang actionable: "Hari ini Anda boleh belanja maks IDR X."
+
+### Issue/PR
+[#143 — feat: Daily Budget Indicator in Dashboard](https://github.com/akramram/self-financial-dashboard/pull/143)
+
+### Branch
+`feat/daily-budget-indicator` (merged to main, deleted)
+
+### Apa yang berubah
+
+**File ditambahkan:**
+- `src/components/DailyBudgetIndicator.tsx` — +172 baris (komponen baru)
+
+**File dimodifikasi:**
+- `src/components/Dashboard.tsx` — +11 baris (import + wire into FLOW section)
+
+**Fitur baru:**
+- **Daily Allowance** — menghitung (income - spent) / days remaining = angka harian yang boleh dibelanjakan
+- **Today's Spending** — menampilkan total belanja hari ini vs daily allowance dengan progress bar
+- **4 Status Levels** — safe (hijau/mint, <70%), warning (kuning/gold, 70-90%), danger (merah/coral, 90-99%), over (merah/coral, 100%+)
+- **Color-coded card** — background dan border berubah sesuai status
+- **Summary cards** — "Spent Today" dan "Left Today / Over by" di samping kanan
+- **Contextual tips** — pesan saran ketika over budget atau approaching limit
+- **Period-aware** — menghitung sisa hari berdasarkan salary period (21→20), bukan kalender biasa
+- **Kompatibel dark/light theme** — menggunakan Tailwind dark: variants
+
+**Tidak ada perubahan:**
+- Tidak ada perubahan skema DB
+- Tidak ada API endpoint baru
+- Tidak ada perubahan komponen lain selain Dashboard
+
+### Test results
+✅ 147/147 tests passed (tidak ada test baru — fitur ini murni UI presentasi).
+✅ `npm run build` sukses, 0 errors.
+✅ PM2 clean restart (stop + delete + rm dist + build + start ecosystem), HTTP 200.
+
+### Hasil live verification
+- Daily Allowance: IDR 46.710 (653.935 remaining / 14 days)
+- Spent Today: IDR 821.458 (termasuk beberapa transaksi hari ini)
+- Status: **Over** (merah) — karena belanja hari ini jauh melebihi jatah harian
+- Tip muncul: "Over today's budget — try to spend less tomorrow to compensate."
+
+### Catatan
+- Menghitung spent today dari `created_time` transaction (bukan `date` yang selalu 21st)
+- `remainingToday` fix: format angka negatif menggunakan `-IDR X` bukan `+IDR -X`
+- Period dates menggunakan fungsi `getPeriodDates()` yang sama dengan SpendingPulse (21st→20th)
+
 ## Sesi Cron — 7 Agustus 2026: Category Spending Trend Arrows di Dashboard (PR #142)
 
 ### Ringkasan
