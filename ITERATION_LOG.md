@@ -1,5 +1,45 @@
 # Iteration Log
 
+## Sesi Cron — 9 Agustus 2026: Quick Repeat — One-Click Repeat Recent Transactions (PR #146)
+
+### Ringkasan
+Menambahkan fitur **Quick Repeat** di QuickAddDialog — menampilkan 5 transaksi terbaru sebagai chip button yang bisa diklik satu kali untuk mengulangi transaksi yang sama tanpa mengetik manual. Ini mengurangi friction untuk daily expenses yang berulang (Grab, kopi, makan siang, dll).
+
+### Branch
+`feat/quick-repeat-recent-txs` (merged to main, deleted)
+
+### Apa yang berubah
+**File yang dimodifikasi:**
+- `src/components/QuickAddDialog.tsx` — +90 lines, -4 lines
+
+**Fitur baru:**
+- **Quick Repeat section** muncul di atas form manual dalam QuickAddDialog
+- Menampilkan 5 transaksi terakhir sebagai chip pills: `{nama} {amount} +icon`
+- One-click submit — klik chip langsung membuat transaksi baru dengan title, category, amount, dan type yang sama
+- Loading spinner pada chip yang sedang di-submit
+- Toast notification: `{title} — {amount} added`
+- Force flag `true` untuk bypass duplicate detection (ini intended repeat)
+- Divider line memisahkan Quick Repeat dari form manual di bawahnya
+- **RotateCcw** icon + label "QUICK REPEAT"
+- Dual-mode compatible (light + dark) dengan `bg-slate-100 dark:bg-white/[0.04]`
+- Hover effect: Plus icon muncul, background darkens
+
+**UX design:**
+- Label uppercase: "QUICK REPEAT" dengan icon RotateCcw
+- Chip pills: rounded-lg, flex-wrap, gap-1.5
+- Title di-truncate max 120px, amount ditampilkan di sebelah kanan
+- Disabled state saat loading (opacity-50 + spinner)
+- Hanya muncul jika ada transaksi (`recentTxs.length > 0`)
+
+### Build status
+✅ `npm run build` sukses, 0 errors.
+✅ PM2 restart online (clean delete + start via `ecosystem.config.cjs`), HTTP 200.
+✅ CSS hash HTTP 200 (bukan 404 stale).
+✅ Browser verified — Quick Repeat chips tampil 5 transaksi terbaru dengan benar.
+
+### PR
+[#146 — feat: Quick Repeat — one-click repeat recent transactions](https://github.com/akramram/self-financial-dashboard/pull/146)
+
 ## Sesi Cron — 8 Agustus 2026: Daily Budget Indicator di Dashboard (PR #143)
 
 ### Ringkasan
