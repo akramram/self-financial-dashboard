@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { fetchCategories } from '../lib/api';
-import type { Category } from '../lib/data';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { fetchCategories, fetchTransactions } from '../lib/api';
+import type { Category, Transaction } from '../lib/data';
 import { getActivePeriod, formatIdr } from '../lib/utils';
 import { useCategorySuggestion } from '../hooks/useCategorySuggestion';
 import {
@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Plus, Loader2, Sparkles, X } from 'lucide-react';
+import { Plus, Loader2, Sparkles, X, RotateCcw } from 'lucide-react';
 import { toast } from 'sonner';
 
 const TYPE_OPTIONS = [
@@ -50,6 +50,8 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded }: QuickAdd
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error' | 'duplicate'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
   const [showForceBtn, setShowForceBtn] = useState(false);
+  const [recentTxs, setRecentTxs] = useState<Transaction[]>([]);
+  const [repeatLoading, setRepeatLoading] = useState<string | null>(null);
 
   // Track whether the user has manually edited the category field.
   // While true, auto-suggest will NOT override the user's input.
@@ -76,6 +78,18 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded }: QuickAdd
   useEffect(() => {
     if (open) {
       fetchCategories().then(setCategories).catch(() => {});
+      // Fetch recent transactions for Quick Repeat
+      fetchTransactions().then((txs) => {
+        // Deduplicate by title+amount, take 5 most recent unique
+        const seen = new Map<string, Transaction>();
+        for (const tx of txs) {
+          const key = `${tx.title.toLowerCase()}|${tx.amount}`;
+          if (!seen.has(key)) {
+            seen.set(key, tx);
+          }
+        }
+        setRecentTxs(txs.slice(0, 5));
+      }).catch(() => {});
       setStatus('idle');
       setErrorMsg('');
       setShowForceBtn(false);
@@ -166,6 +180,48 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded }: QuickAdd
     submitTransaction(false);
   };
 
+  // Quick Repeat: one-click add of a recent transaction
+  const quickRepeat = async (tx: Transaction) => {
+    setRepeatLoading(tx.id.toString());
+    const monthName = `${defaultMonth} ${defaultYear}`;
+    const monthIdx = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December',
+    ].indexOf(defaultMonth) + 1;
+    const date = `${defaultYear}-${String(monthIdx).padStart(2, '0')}-21`;
+    const payload = {
+      month: monthName,
+      date,
+      title: tx.title,
+      category: tx.category,
+      amount: tx.amount,
+      currency: 'IDR',
+      type: tx.type,
+      payment_method: tx.payment_method,
+      done: true,
+      created_time: new Date().toISOString(),
+      force: true, // allow repeat even if similar exists
+    };
+    try {
+      const res = await fetch('/api/transactions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        toast.success(`${tx.title} — ${formatIdr(tx.amount)} added`);
+        onAdded?.();
+        onOpenChange(false);
+      } else {
+        toast.error('Failed to add transaction');
+      }
+    } catch {
+      toast.error('Connection failed');
+    } finally {
+      setRepeatLoading(null);
+    }
+  };
+
   const handleAmountKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -188,6 +244,36 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded }: QuickAdd
             Add a transaction to {defaultMonth} {defaultYear}. Press Enter in the amount field to submit.
           </DialogDescription>
         </DialogHeader>
+
+        {/* Quick Repeat — Recent Transactions */}
+        {recentTxs.length > 0 && (
+          <div className="space-y-2 mb-1">
+            <div className="flex items-center gap-1.5 text-[11px] font-medium text-slate-400 dark:text-white/30 uppercase tracking-wider">
+              <RotateCcw className="w-3 h-3" />
+              Quick Repeat
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {recentTxs.map((tx) => (
+                <button
+                  key={tx.id}
+                  type="button"
+                  disabled={repeatLoading === tx.id.toString()}
+                  onClick={() => quickRepeat(tx)}
+                  className="group inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all bg-slate-100 dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.06] hover:bg-slate-200 dark:hover:bg-white/[0.08] hover:border-slate-300 dark:hover:border-white/[0.1] text-slate-700 dark:text-white/70 disabled:opacity-50"
+                >
+                  <span className="truncate max-w-[120px]">{tx.title}</span>
+                  <span className="text-slate-400 dark:text-white/30 text-[11px]">{formatIdr(tx.amount)}</span>
+                  {repeatLoading === tx.id.toString() ? (
+                    <Loader2 className="w-3 h-3 animate-spin text-mint-500" />
+                  ) : (
+                    <Plus className="w-3 h-3 opacity-0 group-hover:opacity-100 text-mint-500 transition-opacity" />
+                  )}
+                </button>
+              ))}
+            </div>
+            <div className="h-px bg-slate-200 dark:bg-white/[0.06]"></div>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Title + Amount row */}
