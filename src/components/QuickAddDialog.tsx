@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Plus, Loader2, Sparkles, X, RotateCcw } from 'lucide-react';
+import { Plus, Loader2, Sparkles, X, RotateCcw, StickyNote, ChevronDown } from 'lucide-react';
 import { toast } from 'sonner';
 
 const TYPE_OPTIONS = [
@@ -44,9 +44,11 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded }: QuickAdd
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
   const [amount, setAmount] = useState('');
+  const [notes, setNotes] = useState('');
   const [type, setType] = useState<'cash' | 'credit_expense' | 'credit_payment'>('credit_expense');
   const [done, setDone] = useState(true);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [showNotes, setShowNotes] = useState(false);
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error' | 'duplicate'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
   const [showForceBtn, setShowForceBtn] = useState(false);
@@ -101,12 +103,14 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded }: QuickAdd
     setTitle('');
     setCategory('');
     setAmount('');
+    setNotes('');
     setType('credit_expense');
     setDone(true);
     setStatus('idle');
     setErrorMsg('');
     setShowForceBtn(false);
     setCategoryUserTouched(false);
+    setShowNotes(false);
   };
 
   const buildPayload = (force = false) => {
@@ -127,6 +131,7 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded }: QuickAdd
       payment_method: type === 'cash' ? 'Cash' : 'Credit',
       done,
       created_time: new Date().toISOString(),
+      notes: notes.trim() || undefined,
       ...(force ? { force: true } : {}),
     };
   };
@@ -376,6 +381,43 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded }: QuickAdd
             <Label htmlFor="qa-done" className="text-sm text-slate-600 dark:text-slate-300 cursor-pointer">
               Already paid
             </Label>
+          </div>
+
+          {/* Notes — collapsible to keep dialog compact */}
+          <div>
+            {!showNotes ? (
+              <button
+                type="button"
+                onClick={() => setShowNotes(true)}
+                className="inline-flex items-center gap-1.5 text-xs text-slate-400 dark:text-white/30 hover:text-slate-600 dark:hover:text-white/50 transition-colors"
+              >
+                <StickyNote className="w-3.5 h-3.5" />
+                Add note
+              </button>
+            ) : (
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="qa-notes" className="text-xs text-slate-500 dark:text-white/40">
+                    Notes (optional)
+                  </Label>
+                  <button
+                    type="button"
+                    onClick={() => { setShowNotes(false); setNotes(''); }}
+                    className="text-[11px] text-slate-400 dark:text-white/20 hover:text-slate-600 dark:hover:text-white/40 transition-colors"
+                  >
+                    Remove
+                  </button>
+                </div>
+                <textarea
+                  id="qa-notes"
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder="e.g. lunch with Budi, installment 3/12..."
+                  rows={2}
+                  className="w-full rounded-lg border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-white/[0.03] px-3 py-2 text-sm text-slate-900 dark:text-white/80 placeholder:text-slate-400 dark:placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-mint-500/40 focus:border-mint-500/40 resize-none transition-colors"
+                />
+              </div>
+            )}
           </div>
 
           {/* Status messages */}
