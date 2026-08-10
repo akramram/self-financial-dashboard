@@ -1,5 +1,38 @@
 # Iteration Log
 
+## Sesi Cron — 10 Agustus 2026: QuickAddDialog Notes Field (PR #148)
+
+### Ringkasan
+Menambahkan **Notes field** ke QuickAddDialog — kolom catatan opsional yang sebelumnya hanya tersedia di EditTransactionDialog dan AddTransactionForm. QuickAddDialog adalah entry point utama dari mobile (bottom tab center button), sehingga gap ini berdampak langsung pada daily UX.
+
+### Issue
+[#147 — Add Notes field to QuickAddDialog](https://github.com/akramram/self-financial-dashboard/issues/147)
+
+### Branch
+`feat/issue-147-quick-add-notes` (merged to main, deleted)
+
+### Apa yang berubah
+
+**File yang dimodifikasi:**
+- `src/components/QuickAddDialog.tsx` — +43 lines, -1 line
+
+**Fitur baru:**
+- **Collapsible notes textarea** — collapsed by default via `📝 Add note` toggle button
+- **Expand on click** — menampilkan textarea 2-baris dengan placeholder "e.g. lunch with Budi, installment 3/12..."
+- **Remove button** — menghapus catatan dan collapse kembali
+- **Notes saved to DB** — included di POST payload via existing `notes` column
+- **State management** — notes di-reset pada form reset dan dialog open
+- **Dual-mode compatible** — light/dark mode dengan fintech palette (mint ring, white/[0.03] bg)
+
+### Build status
+✅ `npm run build` sukses, 0 errors.
+✅ PM2 restart online (clean delete + start via `ecosystem.config.cjs`), HTTP 200.
+✅ CSS hash HTTP 200 (bukan 404 stale).
+✅ 147/147 tests passed.
+
+### PR
+[#148 — feat(#147): Add collapsible Notes field to QuickAddDialog](https://github.com/akramram/self-financial-dashboard/pull/148)
+
 ## Sesi Cron — 9 Agustus 2026: Quick Repeat — One-Click Repeat Recent Transactions (PR #146)
 
 ### Ringkasan
