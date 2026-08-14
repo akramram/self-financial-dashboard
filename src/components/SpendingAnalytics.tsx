@@ -222,7 +222,7 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
           backgroundColor: reversed.map((t) => {
             const catColor = categoryMap[t.category]?.color;
             if (catColor) return catColor + 'CC';
-            return 'rgba(99, 102, 241, 0.7)';
+            return 'rgba(5, 150, 105, 0.7)';
           }),
           borderRadius: 4,
           borderSkipped: false,
@@ -404,7 +404,7 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
             <BarChart3 className="w-4 h-4 text-slate-500 dark:text-white/40" />
             Spending by Day of Week
           </h3>
-          <p className="text-xs text-slate-500 dark:text-white/30 mb-3">All-time totals. Weekends in purple, weekdays in green.</p>
+          <p className="text-xs text-slate-500 dark:text-white/30 mb-3">All-time totals. Weekends in coral, weekdays in mint.</p>
           <div className="h-[250px]">
             <Bar data={dowChartData} options={{
               responsive: true, maintainAspectRatio: false,

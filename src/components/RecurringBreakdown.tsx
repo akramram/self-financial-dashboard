@@ -102,8 +102,8 @@ export default function RecurringBreakdown() {
       datasets: [
         {
           data: [currentPeriod.recurring, currentPeriod.discretionary],
-          backgroundColor: ['rgba(99, 102, 241, 0.8)', 'rgba(16, 185, 129, 0.8)'],
-          borderColor: ['rgba(99, 102, 241, 1)', 'rgba(16, 185, 129, 1)'],
+          backgroundColor: ['rgba(30, 58, 95, 0.85)', 'rgba(16, 185, 129, 0.8)'],
+          borderColor: ['rgba(30, 58, 95, 1)', 'rgba(16, 185, 129, 1)'],
           borderWidth: 2,
           hoverBorderWidth: 3,
         },
@@ -121,8 +121,8 @@ export default function RecurringBreakdown() {
         {
           label: 'Recurring %',
           data: periods.map((p) => p.recurring_pct),
-          borderColor: '#6366f1',
-          backgroundColor: 'rgba(99, 102, 241, 0.1)',
+          borderColor: '#1a2240',
+          backgroundColor: 'rgba(26, 34, 64, 0.1)',
           fill: true,
           tension: 0.3,
           pointRadius: 4,

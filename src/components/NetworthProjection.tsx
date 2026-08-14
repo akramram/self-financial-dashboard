@@ -97,8 +97,8 @@ export default function NetworthProjection({ data }: Props) {
       {
         label: 'Historical Net Worth',
         data: [...historicalValues, ...Array(projectedData.labels.length).fill(null)],
-        borderColor: '#8b5cf6',
-        backgroundColor: 'rgba(139, 92, 246, 0.08)',
+        borderColor: '#10b981',
+        backgroundColor: 'rgba(16, 185, 129, 0.08)',
         fill: true,
         tension: 0.3,
         pointRadius: 3,

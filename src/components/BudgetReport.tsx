@@ -159,10 +159,10 @@ export default function BudgetReport({ summaries, categories }: Props) {
         label: 'Spent',
         data: chartCategories.map((c) => c.spent),
         backgroundColor: chartCategories.map((c) =>
-          c.spent > c.limit && c.limit > 0 ? 'rgba(239, 68, 68, 0.7)' : 'rgba(59, 130, 246, 0.7)'
+          c.spent > c.limit && c.limit > 0 ? 'rgba(239, 68, 68, 0.7)' : 'rgba(16, 185, 129, 0.7)'
         ),
         borderColor: chartCategories.map((c) =>
-          c.spent > c.limit && c.limit > 0 ? 'rgba(239, 68, 68, 1)' : 'rgba(59, 130, 246, 1)'
+          c.spent > c.limit && c.limit > 0 ? 'rgba(239, 68, 68, 1)' : 'rgba(16, 185, 129, 1)'
         ),
         borderWidth: 1,
         borderRadius: 4,

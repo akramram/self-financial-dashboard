@@ -76,8 +76,8 @@ export default function CategoryRadarChart({
         {
           label: leftMonth,
           data: leftValues,
-          backgroundColor: 'rgba(59, 130, 246, 0.15)',
-          borderColor: 'rgba(59, 130, 246, 0.8)',
+          backgroundColor: 'rgba(16, 185, 129, 0.15)',
+          borderColor: 'rgba(16, 185, 129, 0.8)',
           borderWidth: 2,
           pointBackgroundColor: leftColors,
           pointBorderColor: leftColors,
