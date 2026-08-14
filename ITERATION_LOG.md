@@ -1,5 +1,38 @@
 # Iteration Log
 
+## Sesi Cron — 14 Agustus 2026: Fintech Palette Cleanup untuk 10 Komponen Chart (PR #150)
+
+### Ringkasan
+Menyelesaikan issue #149 — mengganti semua warna chart off-palette (indigo, purple, pink, violet, blue, orange, teal, rose) dengan fintech palette (navy/mint/coral/gold) di **10 komponen chart**. Issue asli menyebut 3 file, tapi grep seluruh repo menemukan pelanggaran kelas yang sama di 7 file lain — semuanya difix sekali jalan, menuntaskan cleanup PR #125–#127.
+
+### Issue
+[#149 — Fix off-palette chart colors in WeeklyTracker and Forecast](https://github.com/akramram/self-financial-dashboard/issues/149)
+
+### Branch
+`feat/issue-149-chart-palette` (merged to main, deleted)
+
+### Apa yang berubah
+| Komponen | Sebelum → Sesudah |
+|---|---|
+| WeeklyTracker | WEEK_COLORS/BORDERS indigo/purple/pink/orange/sky → mint/coral/gold/navy; donut palette → fintech; avg-daily line indigo → mint |
+| Forecast | Actual indigo → mint; Projected rose → coral; monthly bars indigo → mint |
+| SpendingAnalytics | Scatter fallback indigo → mint-600 |
+| SpendingDna | Radar violet → mint; discretionary bar pink → gold |
+| HealthScore | Trend line indigo → mint-600 |
+| BudgetReport | Default bars blue → mint |
+| CategoryRadarChart | Series blue → mint |
+| SpendingRhythm | Weekend purple → gold; weekday blue → mint |
+| RecurringBreakdown | Donut + trend line indigo → navy |
+| NetworthProjection | Historical line violet → mint |
+
+Warna on-palette tidak disentuh: `rgb(239,68,68)` = coral-500, `#f59e0b` = gold-500. Category 16-color palettes (CategoryChart dkk.) sengaja distinct per `references/category-colors.md`.
+
+### Test results
+✅ 147/147 tests passed (1.19s). Tidak ada perubahan test — perubahan murni warna chart.
+
+### Build status
+✅ `npm run build` sukses (clean `rm -rf dist/`). PM2 restart online. Authenticated curl: `/`, `/weekly`, `/forecast`, `/health`, `/dna`, `/spending-rhythm`, `/spending-mix`, `/matrix`, `/networth` semua HTTP 200. CSS hash 200. Tidak ada string off-palette rgb() di bundle client.
+
 ## Sesi Cron — 10 Agustus 2026: QuickAddDialog Notes Field (PR #148)
 
 ### Ringkasan
