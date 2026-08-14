@@ -186,8 +186,8 @@ export default function Forecast() {
       {
         label: 'Actual Spending',
         data: actualData,
-        borderColor: 'rgb(99, 102, 241)',
-        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+        borderColor: 'rgb(16, 185, 129)',
+        backgroundColor: 'rgba(16, 185, 129, 0.1)',
         fill: true,
         tension: 0.3,
         pointRadius: 2,
@@ -196,8 +196,8 @@ export default function Forecast() {
       {
         label: 'Projected',
         data: projectedData,
-        borderColor: 'rgb(244, 63, 94)',
-        backgroundColor: 'rgba(244, 63, 94, 0.05)',
+        borderColor: 'rgb(248, 113, 113)',
+        backgroundColor: 'rgba(248, 113, 113, 0.05)',
         borderDash: [6, 4],
         fill: true,
         tension: 0.3,
@@ -215,14 +215,14 @@ export default function Forecast() {
         label: 'Total Spent',
         data: f.recentMonthly.map((m) => m.total),
         backgroundColor: f.recentMonthly.map((m) =>
-          m.month === f.month ? 'rgba(99, 102, 241, 0.8)' : 'rgba(99, 102, 241, 0.4)'
+          m.month === f.month ? 'rgba(16, 185, 129, 0.8)' : 'rgba(16, 185, 129, 0.4)'
         ),
         borderRadius: 6,
       },
       {
         label: 'Daily Average × 30',
         data: f.recentMonthly.map((m) => m.daily_avg * 30),
-        backgroundColor: 'rgba(244, 63, 94, 0.3)',
+        backgroundColor: 'rgba(248, 113, 113, 0.3)',
         borderRadius: 6,
       },
     ],
@@ -407,7 +407,7 @@ export default function Forecast() {
               <span className="w-4 h-0.5 bg-mint-500 inline-block"></span> Actual
             </span>
             <span className="flex items-center gap-2">
-              <span className="w-4 h-0.5 bg-red-500 inline-block border-dashed border-t border-red-500"></span> Projected
+              <span className="w-4 h-0.5 bg-coral-400 inline-block border-dashed border-t border-coral-400"></span> Projected
             </span>
           </div>
         

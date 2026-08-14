@@ -233,8 +233,8 @@ export default function HealthScore({ summaries, categories }: Props) {
         {
           label: 'Health Score',
           data: healthData.history.map((h) => h.score),
-          borderColor: '#6366f1',
-          backgroundColor: 'rgba(99, 102, 241, 0.1)',
+          borderColor: '#059669',
+          backgroundColor: 'rgba(5, 150, 105, 0.1)',
           fill: true,
           tension: 0.3,
           pointBackgroundColor: healthData.history.map((h) => h.score >= 80

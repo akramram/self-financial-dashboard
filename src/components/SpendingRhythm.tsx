@@ -116,10 +116,10 @@ export default function SpendingRhythm() {
     if (!data) return null;
     const stats = data.dowStats;
     const isWeekendColors = stats.map((s) =>
-      s.isWeekend ? 'rgba(168, 85, 247, 0.7)' : 'rgba(59, 130, 246, 0.7)'
+      s.isWeekend ? 'rgba(234, 179, 8, 0.7)' : 'rgba(16, 185, 129, 0.7)'
     );
     const isWeekendBorders = stats.map((s) =>
-      s.isWeekend ? 'rgba(168, 85, 247, 1)' : 'rgba(59, 130, 246, 1)'
+      s.isWeekend ? 'rgba(234, 179, 8, 1)' : 'rgba(16, 185, 129, 1)'
     );
     return {
       labels: stats.map((s) => s.shortLabel),

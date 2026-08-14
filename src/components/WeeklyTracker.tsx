@@ -48,20 +48,20 @@ async function fetchWeeklySpending(periodId: number): Promise<WeeklySpendingResu
   return res.json();
 }
 
-// ── Color palette for weeks ─────────────────────────────────────────────────
+// ── Color palette for weeks (fintech palette: navy/mint/coral/gold) ───────────
 const WEEK_COLORS = [
-  'rgba(99, 102, 241, 0.8)',   // indigo
-  'rgba(168, 85, 247, 0.8)',   // purple
-  'rgba(236, 72, 153, 0.8)',   // pink
-  'rgba(249, 115, 22, 0.8)',   // orange
-  'rgba(14, 165, 233, 0.8)',   // sky
+  'rgba(16, 185, 129, 0.8)',   // mint-500
+  'rgba(248, 113, 113, 0.8)',  // coral-400
+  'rgba(234, 179, 8, 0.8)',    // gold-500
+  'rgba(30, 58, 95, 0.8)',     // navy-600
+  'rgba(104, 118, 160, 0.8)',  // navy-300
 ];
 const WEEK_BORDERS = [
-  'rgb(99, 102, 241)',
-  'rgb(168, 85, 247)',
-  'rgb(236, 72, 153)',
-  'rgb(249, 115, 22)',
-  'rgb(14, 165, 233)',
+  'rgb(16, 185, 129)',   // mint-500
+  'rgb(248, 113, 113)',  // coral-400
+  'rgb(234, 179, 8)',    // gold-500
+  'rgb(30, 58, 95)',     // navy-600
+  'rgb(104, 118, 160)',  // navy-300
 ];
 
 // ── Insight generation ───────────────────────────────────────────────────────
@@ -248,12 +248,12 @@ export default function WeeklyTracker() {
         {
           label: 'Avg Daily Spend',
           data: weeklyData.weeks.map((w) => w.avgDaily),
-          borderColor: 'rgb(99, 102, 241)',
-          backgroundColor: 'rgba(99, 102, 241, 0.1)',
+          borderColor: 'rgb(16, 185, 129)',
+          backgroundColor: 'rgba(16, 185, 129, 0.1)',
           fill: true,
           tension: 0.3,
           pointRadius: 5,
-          pointBackgroundColor: 'rgb(99, 102, 241)',
+          pointBackgroundColor: 'rgb(16, 185, 129)',
         },
       ],
     };
@@ -281,9 +281,9 @@ export default function WeeklyTracker() {
     }
 
     const palette = [
-      'rgb(99, 102, 241)', 'rgb(168, 85, 247)', 'rgb(236, 72, 153)',
-      'rgb(249, 115, 22)', 'rgb(14, 165, 233)', 'rgb(16, 185, 129)',
-      'rgb(234, 179, 8)', 'rgb(239, 68, 68)', 'rgb(148, 163, 184)',
+      'rgb(16, 185, 129)', 'rgb(248, 113, 113)', 'rgb(234, 179, 8)',
+      'rgb(30, 58, 95)', 'rgb(5, 150, 105)', 'rgb(217, 119, 6)',
+      'rgb(220, 38, 38)', 'rgb(104, 118, 160)', 'rgb(185, 28, 28)',
     ];
 
     return {
