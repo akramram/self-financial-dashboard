@@ -1,5 +1,30 @@
 # Iteration Log
 
+## Sesi Cron — 15 Agustus 2026: Selesaikan Widget Yatim Sesi Sebelumnya (PR #153)
+
+### Ringkasan
+Menemukan pekerjaan sesi sebelumnya yang belum selesai dan belum di-commit: 2 komponen orphaned (`TopMerchantsMini`, `AmountPresets`) yang tidak pernah di-wire ke app, plus timezone fix di `DailyBudgetIndicator`. Semuanya diselesaikan, di-wire, dites, dan dideploy. Issue #152.
+
+### Issue
+[#152 — Complete orphaned widgets: Top Merchants mini + Amount presets + timezone fix](https://github.com/akramram/self-financial-dashboard/issues/152)
+
+### Branch
+`feat/issue-152-orphaned-widgets` (merged to main via PR #153, deleted)
+
+### Apa yang berubah
+| Item | Detail |
+|---|---|
+| **TopMerchantsMini** | Widget top-5 merchant/title spend breakdown, di-wire ke Dashboard FLOW section setelah grid Top Categories / Credit Snapshot. Rank badge (mint/gold/slate), jumlah transaksi `×N`, bar proporsional. Render `null` saat tidak ada data — tidak ada kartu kosong. |
+| **AmountPresets** | Chip cepat 10K/25K/50K/100K/200K/500K di bawah field Amount di QuickAddDialog. Preset aktif highlight `mint-600`. Reusable via prop `presets`. |
+| **DailyBudgetIndicator timezone fix** | `toISOString().slice(0,10)` membandingkan tanggal UTC vs today lokal — untuk user WIB (UTC+7), "spent today" bisa meleset sehari. Sekarang today dan tanggal transaksi di-derive dari `Date` getter lokal. |
+| **Palet** | Semua hex baru pakai fintech palette: mint-500 `#10b981`, gold-500 `#f59e0b`. Tidak ada sky/emerald. |
+
+### Verifikasi
+- `npm run build` ✅
+- `npx vitest run` 147/147 ✅
+- SSR curl: widget render data live (Credit Card IDR 10.354.565, Istri IDR 3.000.000, Family IDR 1.500.000)
+- Clean rebuild (`rm -rf dist/`) + PM2 start via `ecosystem.config.cjs`, CSS hash 200 OK
+
 ## Sesi Cron — 14 Agustus 2026: Fintech Palette Cleanup untuk 10 Komponen Chart (PR #150)
 
 ### Ringkasan
