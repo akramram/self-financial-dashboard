@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
+import AmountPresets from '@/components/ui/amount-presets';
 import {
   Select,
   SelectContent,
@@ -308,6 +309,7 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded }: QuickAdd
                 ref={amountRef}
                 className="text-right"
               />
+              <AmountPresets currentValue={amount} onChange={setAmount} />
             </div>
             <div className="space-y-1.5">
               <Label>Type</Label>
