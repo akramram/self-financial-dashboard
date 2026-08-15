@@ -37,6 +37,7 @@ import SavingsRateChart from './SavingsRateChart';
 import OutcomeBarChart from './OutcomeBarChart';
 import PeriodVsAverage from './PeriodVsAverage';
 import DailyBudgetIndicator from './DailyBudgetIndicator';
+import TopMerchantsMini from './TopMerchantsMini';
 
 function parseCreatedTime(tx: Transaction): Date {
   if (tx.created_time) {
@@ -318,6 +319,12 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
               )}
             </GlassCard>
           </div>
+
+          {/* Top Merchants — merchant/title-level spend breakdown */}
+          <GlassCard className="mb-4">
+            <h3 className="text-sm font-semibold text-slate-800 dark:text-white/80 mb-3">Top Merchants</h3>
+            <TopMerchantsMini transactions={filteredTransactions} activePeriodId={activeSummary?.period_id ?? null} />
+          </GlassCard>
         </section>
 
         {/* ═══════════ SECTION 3: ACT — "Apa yang harus dilakukan?" ═══════════ */}

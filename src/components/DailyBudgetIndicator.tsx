@@ -56,11 +56,14 @@ export default function DailyBudgetIndicator({ transactions, income, spent, acti
     const dailyAllowance = Math.round(remaining / daysRemaining);
 
     // Calculate spent today from transactions
-    const todayStr = today.toISOString().slice(0, 10);
+    // Use LOCAL date (not toISOString which shifts to UTC) so WIB users get their local "today"
+    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
     const spentToday = transactions
       .filter(t => {
         if (!t.created_time) return false;
-        const txDate = t.created_time.slice(0, 10);
+        // Convert created_time (UTC string) to LOCAL date so it matches the local todayStr
+        const d = new Date(t.created_time);
+        const txDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
         return txDate === todayStr && t.done === 1 && (t.type === 'cash' || t.type === 'credit_expense');
       })
       .reduce((sum, t) => sum + t.amount, 0);
