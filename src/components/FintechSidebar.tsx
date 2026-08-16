@@ -141,21 +141,21 @@ export default function FintechSidebar({ balance, alerts = 0 }: Props) {
           ))}
 
           {!collapsed && (
-            <p className="px-3 pt-4 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-white/20">Analytics</p>
+            <p className="px-3 pt-4 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-white/40">Analytics</p>
           )}
           {ANALYTICS.map((item) => (
             <NavButton key={item.path} item={item} isPrimary={false} />
           ))}
 
           {!collapsed && (
-            <p className="px-3 pt-4 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-white/20">Planning</p>
+            <p className="px-3 pt-4 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-white/40">Planning</p>
           )}
           {PLANNING.map((item) => (
             <NavButton key={item.path} item={item} isPrimary={false} />
           ))}
 
           {!collapsed && (
-            <p className="px-3 pt-4 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-white/20">Reports</p>
+            <p className="px-3 pt-4 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-white/40">Reports</p>
           )}
           {REPORTS.map((item) => (
             <NavButton key={item.path} item={item} isPrimary={false} />

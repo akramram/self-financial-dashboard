@@ -419,7 +419,7 @@ export default function PortfolioTracker() {
               <Wallet className="w-4 h-4 text-slate-500" />
               Holdings ({investments.length})
             </h3>
-            <Button size="sm" onClick={openAdd} className="bg-emerald-600 hover:bg-emerald-700 text-slate-900 dark:text-white">
+            <Button size="sm" onClick={openAdd} className="bg-emerald-600 hover:bg-emerald-700 text-white">
               <Plus className="w-4 h-4 mr-1" />
               Add Holding
             </Button>
@@ -429,7 +429,7 @@ export default function PortfolioTracker() {
               <Wallet className="w-10 h-10 mx-auto mb-3 opacity-30" />
               <p className="text-sm font-medium">No investments tracked yet</p>
               <p className="text-xs mt-1">Add your first holding to start tracking your portfolio.</p>
-              <Button size="sm" onClick={openAdd} className="mt-4 bg-emerald-600 hover:bg-emerald-700 text-slate-900 dark:text-white">
+              <Button size="sm" onClick={openAdd} className="mt-4 bg-emerald-600 hover:bg-emerald-700 text-white">
                 <Plus className="w-4 h-4 mr-1" />
                 Add First Holding
               </Button>
@@ -640,7 +640,7 @@ export default function PortfolioTracker() {
             <Button
               onClick={handleSave}
               disabled={saving || !form.name}
-              className="bg-emerald-600 hover:bg-emerald-700 text-slate-900 dark:text-white"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white"
             >
               {saving ? 'Saving...' : editingId ? 'Save Changes' : 'Add Holding'}
             </Button>

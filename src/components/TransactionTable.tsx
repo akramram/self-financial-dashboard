@@ -775,7 +775,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                               toast.error('Failed to delete transaction');
                             }
                           }}
-                          className="h-7 text-xs text-slate-500 dark:text-white/30 hover:text-red-400 hover:bg-red-500/10"
+                          className="h-7 text-xs text-red-500 dark:text-red-300 hover:text-red-400 hover:bg-red-500/10"
                         >
                           Delete
                         </Button>

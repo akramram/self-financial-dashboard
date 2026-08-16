@@ -90,7 +90,7 @@ function NavRow({ item, active, onClick }: { item: NavItem; active: boolean; onC
 
 function GroupHeader({ label }: { label: string }) {
   return (
-    <p className="px-3 pt-4 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-white/20">
+    <p className="px-3 pt-4 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-white/40">
       {label}
     </p>
   );

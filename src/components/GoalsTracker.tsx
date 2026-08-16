@@ -830,7 +830,7 @@ export default function GoalsTracker({ networth }: Props) {
                   <span>{formatIdr(contributeTo.current_amount + Number(contributeAmount))}</span>
                 </div>
                 {contributeTo.current_amount + Number(contributeAmount) >= contributeTo.target_amount && (
-                  <Badge variant="default" className="mt-2 bg-emerald-600 text-slate-900 dark:text-white">
+                  <Badge variant="default" className="mt-2 bg-emerald-600 text-white">
                     🎉 Goal will be completed!
                   </Badge>
                 )}
@@ -845,7 +845,7 @@ export default function GoalsTracker({ networth }: Props) {
             <Button
               onClick={handleContribute}
               disabled={!contributeAmount || Number(contributeAmount) <= 0}
-              className="bg-emerald-600 hover:bg-emerald-700 text-slate-900 dark:text-white"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white"
             >
               Add Contribution
             </Button>

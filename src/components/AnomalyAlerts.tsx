@@ -103,7 +103,7 @@ export default function AnomalyAlerts({ month }: Props) {
                 onClick={() => toggleFilter('high')}
                 className={`text-[10px] px-1.5 py-0 rounded-full font-medium transition cursor-pointer border ${
                   severityFilter === 'high'
-                    ? 'bg-red-600 text-slate-900 dark:text-white border-red-600 ring-2 ring-red-300'
+                    ? 'bg-red-600 text-white border-red-600 ring-2 ring-red-300'
                     : 'bg-red-100 text-red-700 border-red-200 hover:bg-red-200 dark:bg-red-900/40 dark:text-red-300 dark:border-red-800 dark:hover:bg-red-900/60'
                 }`}
               >
