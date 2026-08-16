@@ -1,5 +1,35 @@
 # Iteration Log
 
+## Sesi Cron — 16 Agustus 2026: WCAG Contrast Cleanup + DESIGN.md Type Scale (PR #155)
+
+### Ringkasan
+Menutup sisa debt detector impeccable: 9 temuan `gray-on-color` (teks hitam `text-slate-900` di atas tombol saturasi `bg-emerald-600`/`bg-red-600` → `text-white`), label eyebrow sidebar `dark:text-white/20` → `/40` (WCAG AA di navy), tombol delete TransactionTable gray → merah destruktif, plus dokumen `DESIGN.md` baru (type scale + aturan kontras + referensi false-positive detector). Menutup issue #127; issue #126 (border-l-4) ternyata sudah bersih di sesi sebelumnya.
+
+### Issue
+[#127 — Fix flat typography hierarchy and invisible section labels](https://github.com/akramram/self-financial-dashboard/issues/127)
+
+### Branch
+`fix/issue-127-contrast-cleanup` (merged via PR #155, deleted)
+
+### Apa yang berubah
+| File | Perubahan |
+|---|---|
+| `AnomalyAlerts.tsx` | Chip filter severity high: `bg-red-600 text-slate-900` → `text-white` |
+| `GoalsTracker.tsx` | 3 tombol `bg-emerald-600 text-slate-900` → `text-white` |
+| `PortfolioTracker.tsx` | 3 tombol `bg-emerald-600 text-slate-900` → `text-white` |
+| `QuickAddFAB.tsx` | FAB `bg-emerald-600 text-slate-900` → `text-white` |
+| `login.astro` | Tombol Sign in → `text-white` |
+| `TransactionTable.tsx` | Tombol Delete `text-slate-500` → `text-red-500 dark:text-red-300` |
+| `FintechSidebar.tsx` + `MobileSidebar.tsx` | Group label Analytics/Planning/Reports `dark:text-white/20` → `/40` |
+| `DESIGN.md` (baru) | Type scale Label/Micro/Body/Title/Heading/Display, aturan kontras WCAG AA, false-positive spinner `border-b-2` |
+
+Catatan: `text-slate-900` pada `bg-mint-600`/`bg-gold-600` dipertahankan — background terang, kontras benar.
+
+### Verifikasi
+- Detector sebelum: 9 `gray-on-color` + 8 `border-accent-on-rounded`. Sesudah: 0 `gray-on-color`; 8 tersisa = false-positive spinner `animate-spin` (terdokumentasi di DESIGN.md).
+- `npm run build` ✅ 0 error. `npx vitest run` ✅ 147/147.
+- Deploy: PM2 clean start via ecosystem (`stop → rm -rf dist/ → build → start → save`), `/login` HTTP 200, CSS hash 200.
+
 ## Sesi Cron — 15 Agustus 2026: Selesaikan Widget Yatim Sesi Sebelumnya (PR #153)
 
 ### Ringkasan
