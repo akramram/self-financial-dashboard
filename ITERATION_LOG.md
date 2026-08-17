@@ -1,5 +1,30 @@
 # Iteration Log
 
+## Sesi Cron — 17 Agustus 2026: Visible Search Button untuk Command Palette (PR #158)
+
+### Ringkasan
+Command Palette (⌘K — fuzzy search 25+ halaman & aksi cepat) sebelumnya hanya bisa dibuka via keyboard shortcut. User mobile/PWA tidak punya akses sama sekali (tidak ada keyboard), dan user desktop yang tidak tahu shortcut tidak pernah menemukannya. Sekarang ada tombol Search pill yang terlihat di kedua top bar.
+
+### Issue
+[#157 — Add visible Search button to open Command Palette (mobile + desktop)](https://github.com/akramram/self-financial-dashboard/issues/157)
+
+### Branch
+`feat/cmd-palette-search-trigger` (merged via PR #158, deleted)
+
+### Apa yang berubah
+| File | Perubahan |
+|---|---|
+| `src/layouts/Layout.astro` | Search pill di mobile top bar (slot tengah, menggantikan spacer kosong, max-w-[180px]) + di desktop top bar (kanan, dengan kbd hint ⌘K, `ml-auto`) |
+| `src/components/CommandPalette.tsx` | +7 baris: `useEffect` listener event `cmd-palette-open` → `setOpen(true)` |
+
+Pola komunikasi: **Pattern 2 (CustomEvent)** — tombol Astro-rendered dispatch `window.dispatchEvent(new CustomEvent('cmd-palette-open'))`, island React listen. Inline `onclick` aman karena baru jalan saat klik (setelah hydrate), prinsip sama dengan theme toggle.
+
+### Verifikasi
+- `npm run build` ✅, `npx vitest run` 147/147 ✅
+- SSR curl ter-autentikasi: kedua tombol render (2× trigger), kbd hint ⌘K muncul
+- Bundle: listener `cmd-palette-open` ter-ship di hoisted chunk (add + remove)
+- Clean deploy: PM2 stop → rm dist → build → start ecosystem → save; CSS hash 200, `/` 200
+
 ## Sesi Cron — 16 Agustus 2026: WCAG Contrast Cleanup + DESIGN.md Type Scale (PR #155)
 
 ### Ringkasan
