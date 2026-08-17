@@ -146,6 +146,13 @@ export default function CommandPalette() {
     return () => document.removeEventListener('keydown', handler);
   }, []);
 
+  // Open via global event (search button in Layout top bars — Pattern 2: CustomEvent)
+  useEffect(() => {
+    const openPalette = () => setOpen(true);
+    window.addEventListener('cmd-palette-open', openPalette);
+    return () => window.removeEventListener('cmd-palette-open', openPalette);
+  }, []);
+
   // Focus input when opening
   useEffect(() => {
     if (open) {

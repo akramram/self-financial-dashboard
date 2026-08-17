@@ -52,6 +52,11 @@ const { title = 'Financial Dashboard', balance, alerts = 0 } = Astro.props;
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 6h16M4 12h16M4 18h16"/></svg>
       </button>
       <div></div>
+      <!-- Search pill (mobile) — opens command palette -->
+      <button onclick="window.dispatchEvent(new CustomEvent('cmd-palette-open'))" class="flex-1 max-w-[180px] mx-2 flex items-center gap-2 px-3 h-9 rounded-xl bg-muted dark:bg-white/[0.05] border border-border dark:border-white/[0.06] text-muted-foreground dark:text-white/50 hover:text-foreground dark:hover:text-white/80 hover:bg-accent dark:hover:bg-white/10 transition text-sm" aria-label="Search pages and actions">
+        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        <span class="truncate">Search…</span>
+      </button>
       <div class="flex items-center gap-1.5">
         <!-- Settings (mobile) -->
         <a href="/settings" class="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted dark:text-white/60 dark:hover:text-white dark:hover:bg-white/10 transition" aria-label="Settings">
@@ -72,7 +77,13 @@ const { title = 'Financial Dashboard', balance, alerts = 0 } = Astro.props;
 
     <!-- Desktop Top Bar -->
     <div class="hidden lg:flex items-center justify-between h-16 px-6 border-b border-border dark:border-white/[0.05] ml-[240px] transition-all duration-300" id="desktop-topbar">
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3 ml-auto">
+        <!-- Search pill (desktop) — opens command palette -->
+        <button onclick="window.dispatchEvent(new CustomEvent('cmd-palette-open'))" class="flex items-center gap-2.5 pl-3 pr-2.5 h-10 rounded-xl bg-muted dark:bg-white/[0.05] border border-border dark:border-white/[0.06] text-muted-foreground dark:text-white/50 hover:text-foreground dark:hover:text-white/80 hover:bg-accent dark:hover:bg-white/10 transition text-sm" aria-label="Search pages and actions">
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          <span>Search</span>
+          <kbd class="hidden md:inline-flex items-center px-1.5 py-0.5 rounded-md border border-border dark:border-white/10 bg-background dark:bg-white/[0.06] font-mono text-[10px] text-muted-foreground dark:text-white/40">⌘K</kbd>
+        </button>
         <!-- Dark mode toggle (desktop) -->
         <button onclick="(function(){var h=document.documentElement;var d=h.classList.toggle('dark');localStorage.setItem('theme',d?'dark':'light')})()" class="p-2 rounded-xl bg-muted dark:bg-white/[0.05] text-muted-foreground dark:text-white/60 dark:hover:text-white hover:bg-accent dark:hover:bg-white/10 transition" aria-label="Toggle theme">
           <span class="dark:hidden">🌙</span>
