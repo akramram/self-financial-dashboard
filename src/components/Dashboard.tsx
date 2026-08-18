@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import type { Transaction, NetworthRecord, MonthlySummary, Category } from '../lib/data';
 import { formatIdr, getActivePeriod } from '../lib/utils';
 import { updateTransactionApi, deleteTransactionApi, toggleTransactionDoneApi, fetchCategories, fetchRecurringTransactions } from '../lib/api';
+import { showDeleteUndoToast } from '../lib/undo';
 import '../lib/chartConfig';
 
 import { LazyMotion, domAnimation } from 'motion/react';
@@ -488,7 +489,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
                         <TableCell>
                           <div className="flex gap-2">
                             <Button variant="ghost" size="sm" className="h-7 text-xs text-slate-600 dark:text-white/50 hover:text-slate-800 dark:text-white/80" onClick={() => startEdit(row)}>Edit</Button>
-                            <Button variant="ghost" size="sm" className="h-7 text-xs text-red-400 hover:text-red-300" onClick={async () => { const confirmed = await confirmAction({ title: 'Delete Transaction', description: `Delete "${row.title}" (${formatIdr(row.amount)})?`, confirmLabel: 'Delete', variant: 'destructive' }); if (!confirmed) return; try { await deleteTransactionApi(row.id); setLocalTransactions(prev => prev.filter(t => t.id !== row.id)); toast.success(`"${row.title}" deleted`); } catch { toast.error('Failed to delete transaction'); } }}>Delete</Button>
+                            <Button variant="ghost" size="sm" className="h-7 text-xs text-red-400 hover:text-red-300" onClick={async () => { const confirmed = await confirmAction({ title: 'Delete Transaction', description: `Delete "${row.title}" (${formatIdr(row.amount)})?`, confirmLabel: 'Delete', variant: 'destructive' }); if (!confirmed) return; try { await deleteTransactionApi(row.id); setLocalTransactions(prev => prev.filter(t => t.id !== row.id)); showDeleteUndoToast([row], restored => setLocalTransactions(prev => [...prev, ...restored])); } catch { toast.error('Failed to delete transaction'); } }}>Delete</Button>
                           </div>
                         </TableCell>
                       </TableRow>
