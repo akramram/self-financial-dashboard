@@ -1,5 +1,31 @@
 # Iteration Log
 
+## Sesi Cron — 18 Agustus 2026: Undo Delete via Toast Action (PR #160)
+
+### Ringkasan
+Menghapus transaksi di finance app adalah aksi destruktif — sebelumnya salah klik Delete berarti data hilang permanen (confirm dialog saja tidak cukup). Sekarang setiap delete (single row di Dashboard feed & TransactionTable, plus bulk delete) menampilkan toast dengan tombol **Undo** (jendela 8 detik) yang me-restore transaksi persis seperti aslinya.
+
+### Branch
+`feat/undo-delete-toast` (merged via PR #160, deleted)
+
+### Apa yang berubah
+| File | Perubahan |
+|---|---|
+| `src/lib/undo.ts` (baru) | Helper reusable `showDeleteUndoToast(deleted, onRestored)` — toast sonner dengan action Undo, re-insert via `POST /api/transactions` + `force: true` (bypass duplicate guard 24 jam), callback optimistic restore |
+| `src/components/Dashboard.tsx` | Delete row feed: `toast.success` → `showDeleteUndoToast`, restore via `setLocalTransactions` |
+| `src/components/TransactionTable.tsx` | Single delete + bulk delete pakai helper yang sama; copy dialog bulk: "This cannot be undone." → "You can undo shortly after." |
+
+Detail teknis penting:
+- **`force: true` diperlukan** — transaksi yang baru di-delete lalu di-undo akan tertangkap duplicate guard (POST sama dalam 24 jam → 409). Diverifikasi live: plain POST 409, `force` 201.
+- **`created_time` terjaga** — re-insert men-spread field original, jadi penempatan heatmap SpendingCalendar tidak bergeser setelah undo.
+- ID baru diterima dari response API (`{id, ...body}`), state lokal diperbarui dengan ID baru.
+
+### Verifikasi
+- `npm run build` ✅, `npx vitest run` 147/147 ✅
+- Live API round-trip: insert → 409 duplicate → force 201 → cleanup (0 test rows tersisa)
+- Bundle: action Undo + `duration:8e3` ter-ship di chunk client
+- Clean deploy dari main: PM2 stop → rm dist → build → start ecosystem → save; `/login` 200, CSS hash 200
+
 ## Sesi Cron — 17 Agustus 2026: Visible Search Button untuk Command Palette (PR #158)
 
 ### Ringkasan
