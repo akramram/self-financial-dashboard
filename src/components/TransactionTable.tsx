@@ -8,6 +8,7 @@ import EditTransactionDialog from './EditTransactionDialog';
 import { StickyNote, Search, SlidersHorizontal, Download, X, Filter, ChevronDown, FileJson, FileSpreadsheet } from 'lucide-react';
 import { useConfirm } from './ConfirmDialog';
 import { toast } from 'sonner';
+import { showDeleteUndoToast } from '../lib/undo';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Table,
@@ -252,16 +253,17 @@ export default function TransactionTable({ transactions, showMonth = true, perio
     if (selected.size === 0) return;
     const confirmed = await confirmAction({
       title: 'Delete Transactions',
-      description: `Are you sure you want to delete ${selected.size} selected transactions? This cannot be undone.`,
+      description: `Are you sure you want to delete ${selected.size} selected transactions? You can undo shortly after.`,
       confirmLabel: 'Delete All',
       variant: 'destructive',
     });
     if (!confirmed) return;
     try {
+      const deleted = localTx.filter(t => selected.has(t.id));
       await deleteTransactionsBulkApi(Array.from(selected));
       setLocalTx(prev => prev.filter(t => !selected.has(t.id)));
       setSelected(new Set());
-      toast.success(`${selected.size} transactions deleted`);
+      showDeleteUndoToast(deleted, restored => setLocalTx(prev => [...prev, ...restored]));
     } catch {
       toast.error('Failed to delete transactions');
     }
@@ -770,7 +772,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                             try {
                               await deleteTransactionApi(row.id);
                               setLocalTx(prev => prev.filter(t => t.id !== row.id));
-                              toast.success(`"${row.title}" deleted`);
+                              showDeleteUndoToast([row], restored => setLocalTx(prev => [...prev, ...restored]));
                             } catch {
                               toast.error('Failed to delete transaction');
                             }
