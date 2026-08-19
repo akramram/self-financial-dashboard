@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import { Skeleton } from './ui/skeleton';
 import type { Transaction, MonthlySummary, Category } from '../lib/data';
 import { formatIdr, formatNumber } from '../lib/utils';
 import { fetchTransactions, fetchSummaries, fetchCategories } from '../lib/api';
@@ -279,9 +280,19 @@ export default function CreditCardTracker() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-mint-500/40" />
-        <span className="ml-3 text-slate-600 dark:text-white/50">Loading credit card data...</span>
+      <div className="glass-card p-5 space-y-4">
+        <Skeleton className="h-5 w-44" />
+        <div className="space-y-3">
+          {[0, 1].map((i) => (
+            <div key={i} className="flex items-center justify-between gap-4">
+              <div className="space-y-2 flex-1">
+                <Skeleton className="h-3.5 w-2/3" />
+                <Skeleton className="h-2.5 w-1/3" />
+              </div>
+              <Skeleton className="h-8 w-24 rounded-lg" />
+            </div>
+          ))}
+        </div>
       </div>
     );
   }

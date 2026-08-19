@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { Skeleton } from './ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -79,9 +80,16 @@ export default function FireCalculator() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-mint-500/40" />
-        <span className="ml-3 text-slate-600 dark:text-white/50">Crunching the numbers...</span>
+      <div className="glass-card p-5 space-y-4">
+        <Skeleton className="h-5 w-40" />
+        <div className="flex items-center justify-around py-4">
+          <Skeleton className="h-24 w-24 rounded-full" />
+          <div className="space-y-2">
+            <Skeleton className="h-3 w-32" />
+            <Skeleton className="h-3 w-24" />
+            <Skeleton className="h-3 w-28" />
+          </div>
+        </div>
       </div>
     );
   }

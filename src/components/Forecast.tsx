@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Skeleton } from './ui/skeleton';
 import { formatIdr, formatNumber } from '../lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -143,9 +144,13 @@ export default function Forecast() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-mint-500/40"></div>
-        <span className="ml-3 text-slate-600 dark:text-white/50">Loading forecast...</span>
+      <div className="glass-card p-5 space-y-4">
+        <Skeleton className="h-5 w-36" />
+        <Skeleton className="h-56 w-full rounded-xl" />
+        <div className="flex gap-2">
+          <Skeleton className="h-8 w-20 rounded-lg" />
+          <Skeleton className="h-8 w-20 rounded-lg" />
+        </div>
       </div>
     );
   }

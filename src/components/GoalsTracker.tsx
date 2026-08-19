@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { Skeleton } from './ui/skeleton';
 import type { FinancialGoal } from '../lib/api';
 import type { NetworthRecord } from '../lib/data';
 import { formatIdr, formatNumber } from '../lib/utils';
@@ -300,8 +301,19 @@ export default function GoalsTracker({ networth }: Props) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-mint-500/40" />
+      <div className="glass-card p-5 space-y-4">
+        <Skeleton className="h-5 w-32" />
+        <div className="space-y-3">
+          {[0, 1, 2].map((i) => (
+            <div key={i}>
+              <div className="flex items-center justify-between mb-1.5">
+                <Skeleton className="h-3.5 w-28" />
+                <Skeleton className="h-3.5 w-20" />
+              </div>
+              <Skeleton className="h-2 w-full rounded-full" />
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
