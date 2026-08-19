@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { Skeleton } from './ui/skeleton';
 import {
   Chart as ChartJS,
   ArcElement,
@@ -270,8 +271,16 @@ export default function PortfolioTracker() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-16">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-mint-500/40" />
+      <div className="glass-card p-5 space-y-4">
+        <Skeleton className="h-5 w-40" />
+        <div className="flex items-center justify-around py-4">
+          <Skeleton className="h-28 w-28 rounded-full" />
+          <div className="space-y-2">
+            <Skeleton className="h-3 w-32" />
+            <Skeleton className="h-3 w-24" />
+            <Skeleton className="h-3 w-28" />
+          </div>
+        </div>
       </div>
     );
   }
