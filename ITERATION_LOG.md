@@ -1,5 +1,34 @@
 # Iteration Log
 
+## Sesi Cron — 19 Agustus 2026: Content-Shaped Skeleton Loaders (PR #162)
+
+### Ringkasan
+7 halaman analytics (Budget Recommendations, Credit Card, FIRE, Health Score, Goals, Portfolio, Forecast) sebelumnya menampilkan spinner polos saat loading — lingkaran kecil di tengah halaman kosong yang menyebabkan layout shift besar saat konten masuk. Sekarang tiap halaman menampilkan **skeleton yang meniru layout konten aslinya** (baris list, progress bar, lingkaran donut/gauge, blok chart), sehingga user langsung tahu apa yang akan muncul dan tidak ada layout jump.
+
+### Branch
+`feat/skeleton-loading-states` (merged via PR #162, deleted)
+
+### Apa yang berubah
+| File | Perubahan |
+|---|---|
+| `src/components/ui/skeleton.tsx` (baru) | Primitive `Skeleton` reusable — `animate-pulse rounded-md bg-slate-200 dark:bg-white/10`, dual-mode (light/dark) aman |
+| `BudgetRecommendations.tsx` | Spinner → card + 3 baris list (ikon + teks) |
+| `CreditCardTracker.tsx` | Spinner → card + 2 baris label/amount |
+| `FireCalculator.tsx` | Spinner → card + lingkaran gauge + legend |
+| `HealthScore.tsx` | Spinner → card + lingkaran skor + deskripsi |
+| `GoalsTracker.tsx` | Spinner → card + 3 baris label + progress bar |
+| `PortfolioTracker.tsx` | Spinner → card + donut + legend |
+| `Forecast.tsx` | Spinner → card + heading + blok chart + filter pills |
+
+`DataImport.tsx` sengaja tidak diubah — spinner di sana adalah busy indicator di dalam tombol Import, bukan page loading state (pattern yang benar).
+
+Bonus: menghapus semua 8 temuan tersisa detector impeccable `border-accent-on-rounded` (semuanya false-positive spinner `border-b-2` — kini spinner-nya memang hilang). Skeleton mengikuti pattern yang sudah dipakai `RunwayAnalysis` dan `SafeToSpend`, sesuai rekomendasi skill (Tailwind `animate-pulse`, tanpa library baru).
+
+### Verifikasi
+- `npm run build` ✅, `npx vitest run` 147/147 ✅
+- `grep -rc 'animate-spin rounded-full h-8 w-8 border-b-2' src/components/` → 0
+- Detector impeccable setelah: 0 temuan di file yang diubah
+
 ## Sesi Cron — 18 Agustus 2026: Undo Delete via Toast Action (PR #160)
 
 ### Ringkasan
