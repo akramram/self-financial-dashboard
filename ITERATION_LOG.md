@@ -1,5 +1,26 @@
 # Iteration Log
 
+## Sesi Cron — 20 Agustus 2026: Category Filter di Halaman Transactions (PR #164)
+
+### Ringkasan
+Halaman Transactions sebelumnya hanya bisa filter via type, period, search text, date range, dan amount range — untuk melihat satu kategori user harus mengetik namanya di search (yang juga match judul/notes). Sekarang ada dropdown **All Categories** di filter bar, persist ke URL.
+
+### Branch
+`feat/txn-category-filter` (merged via PR #164, deleted)
+
+### Apa yang berubah
+| File | Perubahan |
+|---|---|
+| `src/components/TransactionTable.tsx` | +28/-2 — dropdown kategori (shadcn Select) di samping filter Type/Period; state `filterCategory`; opsi = union `categories` table (via `/api/categories`) ∪ kategori yang muncul di transaksi (label orphan tetap bisa difilter), sorted alphabetically; persist ke URL param `?category=` via pattern `history.replaceState` yang sudah ada; ikut dihitung di active-filter badge dan direset oleh Clear Filters |
+
+Tanpa perubahan API/DB. Tidak ada issue GitHub open yang relevan (satu-satunya issue open #126 border-l-4 diverifikasi sudah bersih — 0 temuan `border-l-` di `src/`; detector impeccable tinggal 1 false-positive spinner di DataImport).
+
+### Verifikasi
+- `npm run build` ✅
+- `npx vitest run` 146/147 — 1 failure pre-existing di `main` (diverifikasi via stash): test budget-pace date-dependent, 20 Agustus = hari terakhir periode → `time_elapsed_pct` 100 → `pace_diff` 0. Tidak terkait perubahan ini.
+- Deploy bersih: PM2 stop → rm dist → build → start; `/` 302 (auth), CSS hash 200, chunk `TransactionTable.BJlREvqt.js` berisi "All Categories"
+
+
 ## Sesi Cron — 19 Agustus 2026: Content-Shaped Skeleton Loaders (PR #162)
 
 ### Ringkasan
