@@ -90,12 +90,13 @@ export default function TransactionTable({ transactions, showMonth = true, perio
   }, [periods]);
 
   const getInitialState = () => {
-    if (typeof window === 'undefined') return { page: 1, filterType: 'all', filterPeriodId: 'all', search: '', dateFrom: '', dateTo: '', amountMin: '', amountMax: '' };
+    if (typeof window === 'undefined') return { page: 1, filterType: 'all', filterPeriodId: 'all', filterCategory: 'all', search: '', dateFrom: '', dateTo: '', amountMin: '', amountMax: '' };
     const params = new URLSearchParams(window.location.search);
     return {
       page: Math.max(1, parseInt(params.get('page') || '1', 10) || 1),
       filterType: params.get('type') || 'all',
       filterPeriodId: params.get('period_id') || 'all',
+      filterCategory: params.get('category') || 'all',
       search: params.get('search') || '',
       dateFrom: params.get('dateFrom') || '',
       dateTo: params.get('dateTo') || '',
@@ -108,6 +109,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
   const [page, setPage] = useState(initial.page);
   const [filterType, setFilterType] = useState<string>(initial.filterType);
   const [filterPeriodId, setFilterPeriodId] = useState<string>(initial.filterPeriodId);
+  const [filterCategory, setFilterCategory] = useState<string>(initial.filterCategory);
   const [search, setSearch] = useState(initial.search);
   const [dateFrom, setDateFrom] = useState(initial.dateFrom);
   const [dateTo, setDateTo] = useState(initial.dateTo);
@@ -121,6 +123,13 @@ export default function TransactionTable({ transactions, showMonth = true, perio
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const rowsPerPage = 25;
   const { toggleSort, sortData, isSorted } = useSortState();
+
+  // Category options: DB categories + any category present in transactions (so orphan labels stay filterable)
+  const categoryOptions = useMemo(() => {
+    const names = new Set<string>(categories.map((c) => c.name));
+    localTx.forEach((t) => { if (t.category) names.add(t.category); });
+    return Array.from(names).sort((a, b) => a.localeCompare(b));
+  }, [categories, localTx]);
 
   const getCellValue = useCallback((t: Transaction, key: string): string | number => {
     switch (key) {
@@ -145,6 +154,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
     if (page > 1) params.set('page', String(page)); else params.delete('page');
     if (filterType !== 'all') params.set('type', filterType); else params.delete('type');
     if (filterPeriodId !== 'all') params.set('period_id', filterPeriodId); else params.delete('period_id');
+    if (filterCategory !== 'all') params.set('category', filterCategory); else params.delete('category');
     if (search.trim()) params.set('search', search.trim()); else params.delete('search');
     if (dateFrom) params.set('dateFrom', dateFrom); else params.delete('dateFrom');
     if (dateTo) params.set('dateTo', dateTo); else params.delete('dateTo');
@@ -153,7 +163,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
     const qs = params.toString();
     const url = window.location.pathname + (qs ? '?' + qs : '');
     window.history.replaceState(null, '', url);
-  }, [page, filterType, filterPeriodId, search, dateFrom, dateTo, amountMin, amountMax]);
+  }, [page, filterType, filterPeriodId, filterCategory, search, dateFrom, dateTo, amountMin, amountMax]);
 
   const sorted = useMemo(() => {
     return sortData(localTx, getCellValue, (data) =>
@@ -163,6 +173,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
 
   let filtered = sorted;
   if (filterType !== 'all') filtered = filtered.filter((t) => t.type === filterType);
+  if (filterCategory !== 'all') filtered = filtered.filter((t) => t.category === filterCategory);
   if (filterPeriodId !== 'all') {
     const pid = parseInt(filterPeriodId, 10);
     filtered = filtered.filter((t) => t.period_id === pid);
@@ -193,6 +204,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
   const activeFilterCount = [
     filterType !== 'all',
     filterPeriodId !== 'all',
+    filterCategory !== 'all',
     search.trim() !== '',
     dateFrom !== '',
     dateTo !== '',
@@ -205,6 +217,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
   const clearFilters = () => {
     setFilterType('all');
     setFilterPeriodId('all');
+    setFilterCategory('all');
     setSearch('');
     setDateFrom('');
     setDateTo('');
@@ -331,6 +344,19 @@ export default function TransactionTable({ transactions, showMonth = true, perio
               <SelectItem value="all">All Periods</SelectItem>
               {monthOptions.map((p) => (
                 <SelectItem key={p.period_id} value={p.period_id.toString()}>{p.month}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {/* Category filter */}
+          <Select value={filterCategory} onValueChange={(v) => { setFilterCategory(v); setPage(1); }}>
+            <SelectTrigger className="w-[160px] bg-slate-100 dark:bg-white/[0.04] border-slate-300 dark:border-white/[0.08] text-slate-700 dark:text-white/70">
+              <SelectValue placeholder="All Categories" />
+            </SelectTrigger>
+            <SelectContent className="bg-slate-100 dark:bg-navy-800 border-slate-300 dark:border-white/[0.08] max-h-[300px]">
+              <SelectItem value="all">All Categories</SelectItem>
+              {categoryOptions.map((c) => (
+                <SelectItem key={c} value={c}>{c}</SelectItem>
               ))}
             </SelectContent>
           </Select>
