@@ -231,6 +231,13 @@ export default function TransactionTable({ transactions, showMonth = true, perio
   const safePage = Math.min(page, totalPages);
   const pageRows = filtered.slice((safePage - 1) * rowsPerPage, safePage * rowsPerPage);
 
+  let total = 0, cash = 0, credit = 0, unpaid = 0, unpaidCount = 0;
+  for (const t of filtered) {
+    total += t.amount;
+    if (t.type === 'cash') cash += t.amount; else credit += t.amount;
+    if (!t.done) { unpaid += t.amount; unpaidCount++; }
+  }
+
   // ── Bulk actions ───────────────────────────────────────────────
 
   const toggleSelect = (id: number) => {
@@ -609,13 +616,31 @@ export default function TransactionTable({ transactions, showMonth = true, perio
       </div>
 
       {/* ─── Summary Bar ────────────────────────────────────────── */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mb-4">
         <p className="text-xs text-slate-500 dark:text-white/30">
           <span className="text-slate-600 dark:text-white/60 font-semibold">{filtered.length.toLocaleString()}</span> transaction{filtered.length !== 1 ? 's' : ''}
           {filtered.length !== transactions.length && (
             <span className="text-slate-400 dark:text-white/20"> / {transactions.length.toLocaleString()} total</span>
           )}
         </p>
+        {filtered.length > 0 && (
+          <>
+            <span className="text-xs text-slate-500 dark:text-white/30">
+              Outflow <span className="font-semibold text-slate-700 dark:text-white/80">{formatIdr(total)}</span>
+            </span>
+            <span className="text-xs text-slate-500 dark:text-white/30">
+              Cash <span className="font-semibold text-mint-600 dark:text-mint-400">{formatIdr(cash)}</span>
+            </span>
+            <span className="text-xs text-slate-500 dark:text-white/30">
+              Credit <span className="font-semibold text-coral-600 dark:text-coral-400">{formatIdr(credit)}</span>
+            </span>
+            {unpaidCount > 0 && (
+              <span className="text-xs text-slate-500 dark:text-white/30">
+                Unpaid <span className="font-semibold text-gold-600 dark:text-gold-400">{unpaidCount} · {formatIdr(unpaid)}</span>
+              </span>
+            )}
+          </>
+        )}
       </div>
 
       {/* ─── Bulk Actions ───────────────────────────────────────── */}
