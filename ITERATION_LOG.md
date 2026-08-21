@@ -1,5 +1,29 @@
 # Iteration Log
 
+## Sesi Cron — 21 Agustus 2026: Live Filter Totals di TransactionTable (PR #168)
+
+### Ringkasan
+Halaman Transactions sebelumnya hanya menampilkan jumlah baris di summary bar — saat filter kategori/period/tipe aktif, user tidak bisa langsung tahu berapa total uang yang terwakili filter tersebut (harus export CSV). Sekarang summary bar menampilkan **total live yang mengikuti filter**: Outflow (semua), Cash (`type=cash`), Credit (`credit_expense`+`credit_payment`), dan Unpaid (count · jumlah, hanya muncul jika ada). Semua diperbarui instan saat filter berubah.
+
+### Branch
+`feat/txn-live-filter-totals` (merged via PR #168, deleted)
+
+### Apa yang berubah
+| File | Perubahan |
+|---|---|
+| `src/components/TransactionTable.tsx` | +26/−1 — summary bar: derive `total/cash/credit/unpaid/unpaidCount` via satu loop `for` atas `filtered` (plain compute, tanpa `useMemo` — chain filter sudah recompute tiap render); chip warna fintech dual-mode: mint (Cash), coral (Credit), gold (Unpaid); Unpaid chip conditional `> 0` |
+
+Tanpa perubahan API/DB — murni derivasi client-side.
+
+### Bonus
+- Issue #126 (border-l-4 glass cards) diverifikasi bersih (grep 0 temuan, detector hanya 1 false-positive spinner DataImport) → **ditutup** dengan komentar verifikasi.
+
+### Verifikasi
+- `npm run build` ✅
+- `npx vitest run` 146/147 — 1 failure pre-existing di `main` (diverifikasi via stash): test budget-pace date-dependent, 21 Agustus membuat `time_elapsed_pct` = 100 → `pace_diff` = 0. Tidak terkait.
+- Deploy bersih: PM2 stop → rm dist → build → restart; `/` 302 (auth), CSS hash 200
+- Live SSR: summary bar merender data nyata — "830 transactions · Outflow IDR 1.359.119.373 · Cash IDR 268.616.367 · Credit IDR 1.090.503.006 · Unpaid 118 · IDR 754.150.688"
+
 ## Sesi Cron — 20 Agustus 2026: Category Filter di Halaman Transactions (PR #164)
 
 ### Ringkasan
