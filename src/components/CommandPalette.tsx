@@ -1,4 +1,14 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { formatIdr } from '../lib/utils';
+
+interface TxResult {
+  id: number;
+  title: string;
+  category?: string;
+  amount: number;
+  type?: string;
+  done?: number | boolean;
+}
 
 interface CommandItem {
   id: string;
@@ -123,6 +133,8 @@ export default function CommandPalette() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [txResults, setTxResults] = useState<TxResult[]>([]);
+  const [txLoading, setTxLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -152,6 +164,30 @@ export default function CommandPalette() {
     window.addEventListener('cmd-palette-open', openPalette);
     return () => window.removeEventListener('cmd-palette-open', openPalette);
   }, []);
+
+  // Live transaction search (debounced, only when open, ≥3 chars, not searching for pages/actions keywords)
+  useEffect(() => {
+    const trimmed = query.trim();
+    if (!open || trimmed.length < 3) {
+      setTxResults([]);
+      setTxLoading(false);
+      return;
+    }
+    const controller = new AbortController();
+    setTxLoading(true);
+    const timer = setTimeout(() => {
+      fetch(`/api/transactions?search=${encodeURIComponent(trimmed)}`, { signal: controller.signal })
+        .then((r) => (r.ok ? r.json() : []))
+        .then((rows: TxResult[]) => setTxResults(Array.isArray(rows) ? rows.slice(0, 5) : []))
+        .catch(() => {})
+        .finally(() => setTxLoading(false));
+    }, 250);
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+      setTxLoading(false);
+    };
+  }, [query, open]);
 
   // Focus input when opening
   useEffect(() => {
@@ -213,8 +249,13 @@ export default function CommandPalette() {
 
   // Adjust selected index when items change
   useEffect(() => {
-    setSelectedIndex((prev) => Math.min(prev, Math.max(0, flatItems.length + filteredItems.recent.length - 1)));
-  }, [flatItems.length, filteredItems.recent.length]);
+    setSelectedIndex((prev) => Math.min(prev, Math.max(0, flatItems.length + filteredItems.recent.length + txResults.length - 1)));
+  }, [flatItems.length, filteredItems.recent.length, txResults.length]);
+
+  const handleSelectTx = useCallback((tx: TxResult) => {
+    setOpen(false);
+    window.location.href = `/transactions?search=${encodeURIComponent(tx.title)}`;
+  }, []);
 
   const handleSelect = useCallback((item: CommandItem) => {
     if (item.href === '__toggle_theme__') {
@@ -241,7 +282,7 @@ export default function CommandPalette() {
   // Keyboard navigation within the palette
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      const total = filteredItems.recent.length + flatItems.length;
+      const total = filteredItems.recent.length + flatItems.length + txResults.length;
 
       switch (e.key) {
         case 'ArrowDown':
@@ -256,14 +297,16 @@ export default function CommandPalette() {
           e.preventDefault();
           {
             const idx = selectedIndex;
-            let item: CommandItem | undefined;
-            if (idx < filteredItems.recent.length) {
-              item = filteredItems.recent[idx];
+            if (idx < txResults.length) {
+              const tx = txResults[idx];
+              if (tx) handleSelectTx(tx);
+            } else if (idx < txResults.length + filteredItems.recent.length) {
+              const item = filteredItems.recent[idx - txResults.length];
+              if (item) handleSelect(item);
             } else {
-              const result = flatItems[idx - filteredItems.recent.length];
-              item = result?.item;
+              const result = flatItems[idx - txResults.length - filteredItems.recent.length] as { item: CommandItem } | undefined;
+              if (result) handleSelect(result.item);
             }
-            if (item) handleSelect(item);
           }
           break;
         case 'Escape':
@@ -272,7 +315,7 @@ export default function CommandPalette() {
           break;
       }
     },
-    [selectedIndex, filteredItems, flatItems, handleSelect]
+    [selectedIndex, filteredItems, flatItems, txResults, handleSelect, handleSelectTx]
   );
 
   // Scroll selected item into view
@@ -294,7 +337,7 @@ export default function CommandPalette() {
           Recent
         </div>
         {filteredItems.recent.map((item, idx) => {
-          const globalIdx = idx;
+          const globalIdx = txResults.length + idx;
           return (
             <div
               key={`recent-${item.id}`}
@@ -325,6 +368,7 @@ export default function CommandPalette() {
   const pages = flatItems.filter((r) => r.item.group === 'pages');
   const actions = flatItems.filter((r) => r.item.group === 'actions');
   const recentCount = filteredItems.recent.length;
+  const txCount = txResults.length;
 
   return (
     <div className="fixed inset-0 z-[100]">
@@ -346,11 +390,14 @@ export default function CommandPalette() {
               ref={inputRef}
               type="text"
               className="flex-1 bg-transparent text-sm outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500 text-slate-800 dark:text-slate-100"
-              placeholder="Search pages, actions..."
+              placeholder="Search pages, actions, transactions..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={handleKeyDown}
             />
+            {txLoading && (
+              <span className="w-4 h-4 border-2 border-mint-500/40 border-t-mint-500 rounded-full animate-spin shrink-0" />
+            )}
             <kbd className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-[10px] font-mono text-slate-500 dark:text-slate-400">
               ESC
             </kbd>
@@ -358,6 +405,47 @@ export default function CommandPalette() {
 
           {/* Results List */}
           <div ref={listRef} className="max-h-[60vh] overflow-y-auto px-2 py-2">
+            {/* Transactions Group (live search) */}
+            {query.trim().length >= 3 && (txCount > 0 || txLoading) && (
+              <div className="pb-2">
+                <div className="px-2 py-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  Transactions
+                </div>
+                {txResults.map((tx, idx) => {
+                  const globalIdx = idx;
+                  const isExpense = tx.type === 'cash' || tx.type === 'credit_expense';
+                  return (
+                    <div
+                      key={`tx-${tx.id}`}
+                      ref={(el) => { itemRefs.current[globalIdx] = el; }}
+                      className={`
+                        flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-colors text-left
+                        ${selectedIndex === globalIdx
+                          ? 'bg-slate-100 dark:bg-slate-700'
+                          : 'hover:bg-slate-50 dark:hover:bg-slate-700/50'}
+                      `}
+                      onMouseEnter={() => setSelectedIndex(globalIdx)}
+                      onClick={() => handleSelectTx(tx)}
+                    >
+                      <span className="text-lg shrink-0">{isExpense ? '💸' : '💰'}</span>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-sm font-medium truncate">{tx.title}</div>
+                        <div className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                          {tx.category || 'Uncategorized'}
+                        </div>
+                      </div>
+                      <span className={`text-xs font-mono shrink-0 ${isExpense ? 'text-coral-500' : 'text-mint-500'}`}>
+                        {isExpense ? '-' : '+'}{formatIdr(tx.amount)}
+                      </span>
+                    </div>
+                  );
+                })}
+                {txCount === 0 && txLoading && (
+                  <div className="px-3 py-2 text-xs text-slate-400 dark:text-slate-500">Searching transactions…</div>
+                )}
+              </div>
+            )}
+
             {renderRecentItems()}
 
             {/* Pages Group */}
@@ -369,7 +457,7 @@ export default function CommandPalette() {
                   </div>
                 )}
                 {pages.map((result, idx) => {
-                  const globalIdx = recentCount + idx;
+                  const globalIdx = txCount + recentCount + idx;
                   return (
                     <div
                       key={result.item.id}
@@ -423,7 +511,7 @@ export default function CommandPalette() {
                 </div>
                 {actions.map((result, idx) => {
                   const pagesLen = pages.length;
-                  const globalIdx = recentCount + pagesLen + idx;
+                  const globalIdx = txCount + recentCount + pagesLen + idx;
                   return (
                     <div
                       key={result.item.id}
@@ -460,7 +548,7 @@ export default function CommandPalette() {
             )}
 
             {/* No results */}
-            {flatItems.length === 0 && filteredItems.recent.length === 0 && (
+            {flatItems.length === 0 && filteredItems.recent.length === 0 && txResults.length === 0 && !txLoading && (
               <div className="py-12 text-center">
                 <p className="text-sm text-slate-500 dark:text-slate-400">
                   No results for "<span className="font-medium text-slate-700 dark:text-slate-200">{query}</span>"
