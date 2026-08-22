@@ -1,34 +1,5 @@
 # Iteration Log
 
-## Sesi Cron — 22 Agustus 2026: Live Transaction Search di Command Palette (PR #170)
-
-### Ringkasan
-Command palette (⌘K / tombol search di top bar) sebelumnya hanya mencari halaman dan actions. Sekarang juga melakukan **live search transaksi**: ketik ≥3 karakter dan hasil transaksi matching muncul di grup "Transactions" paling atas — ikon expense/income, judul, kategori, dan nominal (coral/mint via formatIdr). Pilih hasil → navigasi ke `/transactions?search=<title>`, memanfaatkan URL-param filter yang sudah ada di TransactionTable (FIN-032-fix) sehingga halaman tujuan langsung ter-filter tanpa kode tambahan.
-
-### Branch
-`feat/cmd-palette-tx-search` (merged to main via PR #170, deleted)
-
-### Apa yang berubah
-**File yang dimodifikasi:** `src/components/CommandPalette.tsx` (satu file, +103/-15)
-- Live fetch `/api/transactions?search=` dengan debounce 250ms + AbortController (cancel in-flight request saat query berubah). Max 5 hasil ditampilkan.
-- Grup hasil "Transactions" render di atas Pages/Actions. Loading spinner mint di input saat fetch berjalan; placeholder diupdate ke "Search pages, actions, transactions...".
-- Navigasi keyboard penuh: hasil transaksi ikut dalam siklus ↑↓/Enter (index global di-offset).
-- State "No results" tidak tampil saat masih searching; recent items dinomori ulang dengan offset txCount.
-- Zero perubahan backend — endpoint GET `/api/transactions` yang sudah ada dipakai apa adanya.
-
-### Test results
-✅ 146/147 tests passed. 1 failure (`marks category as over_pace`) terverifikasi pre-existing di `main` (dijalankan langsung pada main sebelum merge — gagal sama). Tidak ada test baru karena perubahan murni UI client-side pada komponen tanpa coverage test eksisting.
-
-### Build status
-✅ `npm run build` sukses. Deploy bersih: pm2 stop → rm -rf dist/ → build → start via ecosystem.config.cjs → online.
-✅ HTTP 200 `/`, CSS hash 200 (bukan 404 stale). API search live: `?search=netflix` → 26 hasil, `?search=net` → hasil "Internet". Halaman `/transactions?search=Internet` → 200.
-✅ Tidak ada runtime error di PM2 logs.
-
-### Catatan
-- Threshold ≥3 karakter mencegah fetch berlebihan untuk query pendek (halaman/actions fuzzy match lokal tetap jalan untuk query pendek).
-- AbortController + cleanup `finally` menjamin tidak ada race antar query cepat.
-- Integrasi hanya di CommandPalette — tidak menyentuh TransactionTable, API, atau DB.
-
 ## Sesi Cron — 21 Agustus 2026: Live Filter Totals di TransactionTable (PR #168)
 
 ### Ringkasan
