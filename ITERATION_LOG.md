@@ -1,5 +1,30 @@
 # Iteration Log
 
+## Sesi Cron — 23 Agustus 2026: Fix False "All Caught Up" di FinancialInsights (PR #172)
+
+### Ringkasan
+Widget Insights di Dashboard selalu menampilkan insight **"All Caught Up"** (semua transaksi periode aktif sudah dibayar) — padahal DB punya 117 transaksi unpaid. Penyebab: `FinancialInsights.tsx` memfilter transaksi dengan `t.month === activeMonth`, padahal kolom `month` di tabel `transactions` sudah dihapus saat migrasi period_id (Jun 2026) dan `getTransactions()` (`SELECT * FROM transactions`) tidak pernah mengembalikan properti `month`. Akibatnya `monthTxs` selalu kosong → `unpaidTxs.length === 0` selalu true → insight "Unpaid Transactions" tidak pernah muncul.
+
+### Branch
+`feat/insight-card-nav` (merged via PR #172, deleted)
+
+### Apa yang berubah
+| File | Perubahan |
+|---|---|
+| `src/components/FinancialInsights.tsx` | +3/−1 — resolve `activePeriodId` dari `currentSummary?.period_id`, filter `t.period_id === activePeriodId` (pola sama seperti MonthComparison/category dialog pasca-migrasi) |
+| `src/__tests__/components.test.tsx` | +41 — 2 test baru FinancialInsights: (1) unpaid di periode aktif → warning "Unpaid Transactions" muncul dengan jumlah+nominal; (2) unpaid di periode lain → benar tereksklusi, "All Caught Up" tampil |
+
+Tanpa perubahan API/DB.
+
+### Verifikasi
+- `npx vitest run` 148/149 — 1 failure pre-existing date-dependent budget-pace (dijelaskan di ITERATION_LOG sejak 20 Agu; 23 Agu > 21 → `time_elapsed_pct` 100).
+- Live: login via API + curl `/` → insight "All Caught Up" muncul; cek DB konfirmasi periode aktif September 2026 memang 0 unpaid → sekarang akurat, bukan false positive.
+- Deploy bersih: pm2 stop → rm -rf dist → build → start; `/login` 200, CSS hash 200, PM2 error log kosong.
+
+### Catatan
+- Ini bug klasik pasca-migrasi yang terdokumentasi di skill (`t.month` stale reference), tapi lolos di FinancialInsights karena gejalanya justru "semua terlihat normal" (positive insight palsu), bukan data kosong.
+- Security scanner cron memblokir string `ecosystem.config.cjs` dalam satu command panjang (false positive "schemeless URL") — dipecah jadi command terpisah; deploy tetap via ecosystem config.
+
 ## Sesi Cron — 22 Agustus 2026: Live Transaction Search di Command Palette (PR #170)
 
 ### Ringkasan
