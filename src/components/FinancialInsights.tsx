@@ -34,7 +34,9 @@ export default function FinancialInsights({ transactions, networth, summaries, c
       .filter((n) => new Date(n.date).getTime() < new Date(currentNetworth?.date || 0).getTime())
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
 
-    const monthTxs = transactions.filter((t) => t.month === activeMonth);
+    // ponytail: t.month was removed in the period_id migration — filter by period_id
+    const activePeriodId = currentSummary?.period_id;
+    const monthTxs = transactions.filter((t) => t.period_id === activePeriodId);
     const unpaidTxs = monthTxs.filter((t) => !t.done);
 
     // 1. Budget alerts
