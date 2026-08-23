@@ -44,6 +44,7 @@ vi.mock('../lib/utils', () => ({
 import DashboardSummaryCards from '../components/DashboardSummaryCards';
 import SpendingPulse from '../components/SpendingPulse';
 import AlertsPanel from '../components/AlertsPanel';
+import FinancialInsights from '../components/FinancialInsights';
 
 // ─── Shared test data helpers ────────────────────────────────────────────────
 
@@ -501,5 +502,46 @@ describe('AlertsPanel', () => {
     await waitFor(() => {
       expect(screen.queryByText(/Food is over budget/)).not.toBeInTheDocument();
     });
+  });
+});
+
+describe('FinancialInsights', () => {
+  it('flags unpaid transactions for the active period (period_id filter, not t.month)', () => {
+    const txs = [
+      { id: 1, period_id: 1, month: 'July 2026', title: 'Netflix', category: 'Tagihan', amount: 150000, type: 'cash', done: false },
+      { id: 2, period_id: 1, month: 'July 2026', title: 'Gaji', category: 'Income', amount: 10000000, type: 'cash', done: true },
+      // different period — must NOT count even though t.month label differs
+      { id: 3, period_id: 2, month: 'August 2026', title: 'Old bill', category: 'Tagihan', amount: 200000, type: 'cash', done: false },
+    ];
+    render(
+      <FinancialInsights
+        transactions={txs as any}
+        networth={[]}
+        summaries={[makeSummary('July 2026', 10_000_000, 7_000_000, 1)]}
+        categories={[]}
+        activeMonth="July 2026"
+      />,
+    );
+    expect(screen.getByText('Unpaid Transactions')).toBeInTheDocument();
+    expect(screen.getByText(/1 unpaid bill totaling IDR 150,000/)).toBeInTheDocument();
+  });
+
+  it('shows All Caught Up when the active period has no unpaid transactions', () => {
+    const txs = [
+      { id: 1, period_id: 1, title: 'Netflix', category: 'Tagihan', amount: 150000, type: 'cash', done: true },
+      // unpaid but belongs to another period
+      { id: 2, period_id: 2, title: 'Old bill', category: 'Tagihan', amount: 200000, type: 'cash', done: false },
+    ];
+    render(
+      <FinancialInsights
+        transactions={txs as any}
+        networth={[]}
+        summaries={[makeSummary('July 2026', 10_000_000, 7_000_000, 1)]}
+        categories={[]}
+        activeMonth="July 2026"
+      />,
+    );
+    expect(screen.getByText('All Caught Up')).toBeInTheDocument();
+    expect(screen.queryByText('Unpaid Transactions')).not.toBeInTheDocument();
   });
 });
