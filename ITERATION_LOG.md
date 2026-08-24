@@ -1,5 +1,35 @@
 # Iteration Log
 
+## Sesi Cron — 24 Agustus 2026: Upcoming Bills Widget di Dashboard (PR #174)
+
+### Ringkasan
+Jadwal recurring (10 item aktif: Cicilan Tyranno, Kontrakan, Family, Istri, Internet, Zakat, EV Battery, Fast Charger, Cash Rumah, Youtube) tidak pernah tampil di dashboard — user harus membuka halaman `/recurring` untuk melihat tagihan apa yang akan jatuh tempo. Dibuat widget **Upcoming Bills** di Section 3 (ACT) dashboard yang menampilkan schedule tagihan period aktif dalam satu pandangan.
+
+### Branch
+`feat/upcoming-bills-widget` (merged via PR #174, deleted)
+
+### Apa yang berubah
+**File baru:**
+- `src/components/UpcomingBills.tsx` — widget presentational murni. Data dari `RecurringTransaction[]` yang sudah di-fetch Dashboard (tanpa API baru). Per row: judul, nominal, tanggal jatuh tempo (dihitung dari `created_at` day-of-month dipetakan ke period 21→20 — mirror logika kickoff), ikon payment (cash=mint / credit=gold). Badge status: ✅ paid (dari `done` template), **OVERDUE** (coral), gold "TODAY/Nd" untuk ≤3 hari, countdown muted untuk sisanya. Header menampilkan total **pending** (unpaid) berwarna coral. Respects `end_date` — item lewat period terakhir disembunyikan, yang masih aktif menampilkan "· ends Sep 2026". Item inactive di-skip. Empty state: render null (tanpa card yatim). Link "Manage recurring →" ke `/recurring`.
+
+**File yang dimodifikasi:**
+- `src/components/Dashboard.tsx` — state baru `recurringAll` (list lengkap, disamping `recurringTitles` eksisting dari fetch yang sama — zero extra request). Widget dirender di Section 3 ACT setelah Quick Actions.
+- `src/__tests__/components.test.tsx` — +4 test: render row + pending total, badge OVERDUE/paid, filter inactive + end_date, null render saat kosong.
+
+### Hasil data nyata
+Period aktif "September 2026" (21 Aug–20 Sep): seluruh 10 tagihan tampil dengan due date masing-masing (EV Battery tgl 1, Youtube tgl 1, Kontrakan tgl 4, Fast Charger tgl 4, Cicilan Tyranno & Internet tgl 17 — di Agustus, Zakat/Family/Istri/Cash Rumah tgl 28).
+
+### Test results
+✅ 31/31 component tests pass. 1 failure pre-existing di `db.test.ts` (Budget Pace, date-sensitive) yang juga gagal di `main` sebelum branch — tidak terkait.
+
+### Build status
+✅ `npm run build` sukses. ✅ PM2 clean restart (stop → rm dist → build → start ecosystem). HTTP 200. Widget terverifikasi ada di bundle `Dashboard.BO-UmqQq.js`. Tidak ada runtime errors.
+
+### Catatan
+- Zero new API endpoint — reuses fetch `/api/recurring` yang sudah ada.
+- Due-date mapping: day ≥ 21 → bulan kalender sebelumnya dalam period (konsisten dengan `recurringCreatedTime` di kickoff).
+- Sort: unpaid dulu (by due date), paid di belakang.
+
 ## Sesi Cron — 23 Agustus 2026: Fix False "All Caught Up" di FinancialInsights (PR #172)
 
 ### Ringkasan
