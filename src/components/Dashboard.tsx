@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
-import type { Transaction, NetworthRecord, MonthlySummary, Category } from '../lib/data';
+import type { Transaction, NetworthRecord, MonthlySummary, Category, RecurringTransaction } from '../lib/data';
 import { formatIdr, getActivePeriod } from '../lib/utils';
 import { updateTransactionApi, deleteTransactionApi, toggleTransactionDoneApi, fetchCategories, fetchRecurringTransactions } from '../lib/api';
 import { showDeleteUndoToast } from '../lib/undo';
@@ -39,6 +39,7 @@ import OutcomeBarChart from './OutcomeBarChart';
 import PeriodVsAverage from './PeriodVsAverage';
 import DailyBudgetIndicator from './DailyBudgetIndicator';
 import TopMerchantsMini from './TopMerchantsMini';
+import UpcomingBills from './UpcomingBills';
 
 function parseCreatedTime(tx: Transaction): Date {
   if (tx.created_time) {
@@ -81,6 +82,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
   const [txPage, setTxPage] = useState(1); const txPerPage = 10;
   const [categories, setCategories] = useState<Category[]>([]);
   const [recurringTitles, setRecurringTitles] = useState<string[]>([]);
+  const [recurringAll, setRecurringAll] = useState<RecurringTransaction[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -135,7 +137,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
   }, [activeSummary, summaries, networth]);
 
   // ── Effects ───────────────────────────────────────────────────
-  useEffect(() => { fetchCategories().then(setCategories).catch(() => {}); fetchRecurringTransactions().then(r => setRecurringTitles(r.filter(rx => rx.active).map(rx => rx.title))).catch(() => {}); fetch('/api/runway').then(r => r.json()).then(d => setRunwayData(d)).catch(() => {}); }, []);
+  useEffect(() => { fetchCategories().then(setCategories).catch(() => {}); fetchRecurringTransactions().then(r => { setRecurringTitles(r.filter(rx => rx.active).map(rx => rx.title)); setRecurringAll(r); }).catch(() => {}); fetch('/api/runway').then(r => r.json()).then(d => setRunwayData(d)).catch(() => {}); }, []);
   useEffect(() => { const today = new Date(); if (today.getDate() < 21) return; const latest = summaries[summaries.length - 1]; if (!latest) return; const latestDate = new Date(latest.month + ' 1'); const nextDate = new Date(latestDate); nextDate.setMonth(nextDate.getMonth() + 1); const nextMonthStr = nextDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }); fetch('/api/kickoff').then(res => res.json()).then((status: any) => { if (status.hasNextMonth) { setKickoffBanner(null); return; } fetchRecurringTransactions().then(recurring => { setKickoffBanner({ show: true, currentMonth: latest.month, nextMonth: status.nextMonth || nextMonthStr, recurringCount: recurring.filter(r => r.active).length }); }).catch(() => {}); }).catch(() => {}); }, [summaries]);
 
   // Keyboard shortcut: / to focus feed search
@@ -362,6 +364,11 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
               </Button>
             )}
           </div>
+
+          {/* Upcoming Bills — recurring schedule for active period */}
+          <GlassCard className="mb-4">
+            <UpcomingBills recurring={recurringAll} activeMonth={activeSummary?.month ?? ''} />
+          </GlassCard>
 
           <MonthKickoffModal open={kickoffOpen} onOpenChange={setKickoffOpen} nextMonth={kickoffBanner?.nextMonth || ''} recurringCount={kickoffBanner?.recurringCount || 0} onSuccess={() => { setKickoffBanner(null); window.location.reload(); }} />
         </section>

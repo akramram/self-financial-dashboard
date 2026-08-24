@@ -545,3 +545,75 @@ describe('FinancialInsights', () => {
     expect(screen.queryByText('Unpaid Transactions')).not.toBeInTheDocument();
   });
 });
+
+// ─── UpcomingBills tests ────────────────────────────────────────────────────
+
+import UpcomingBills from '../components/UpcomingBills';
+
+function makeRecurring(overrides: Partial<any> = {}) {
+  return {
+    id: 1,
+    title: 'Netflix',
+    category: 'Tagihan',
+    amount: 150000,
+    type: 'cash',
+    payment_method: 'Cash',
+    done: false,
+    active: true,
+    end_date: null,
+    created_at: '5',
+    ...overrides,
+  } as any;
+}
+
+describe('UpcomingBills', () => {
+  it('renders bill rows with title and amount', () => {
+    render(
+      <UpcomingBills
+        recurring={[makeRecurring({ id: 1, title: 'Kontrakan', amount: 1150000, created_at: '4' })]}
+        activeMonth="August 2026"
+      />,
+    );
+    expect(screen.getByText('Kontrakan')).toBeInTheDocument();
+    expect(screen.getAllByText('IDR 1,150,000').length).toBeGreaterThan(0);
+    expect(screen.getByText(/pending/)).toBeInTheDocument();
+  });
+
+  it('shows OVERDUE badge for unpaid bill past its due day, and mint check for paid ones', () => {
+    render(
+      <UpcomingBills
+        recurring={[
+          makeRecurring({ id: 1, title: 'Late Bill', created_at: '22', done: false }), // due Jul 22 — past by Aug 24
+          makeRecurring({ id: 2, title: 'Paid Bill', created_at: '28', done: true }),
+        ]}
+        activeMonth="August 2026"
+      />,
+    );
+    expect(screen.getByText('OVERDUE')).toBeInTheDocument();
+    expect(screen.getByText('Late Bill')).toBeInTheDocument();
+    expect(screen.getByText('Paid Bill')).toBeInTheDocument();
+  });
+
+  it('skips inactive recurring items and items past their end_date', () => {
+    render(
+      <UpcomingBills
+        recurring={[
+          makeRecurring({ id: 1, title: 'Paused', active: false }),
+          makeRecurring({ id: 2, title: 'Ended', end_date: '2026-07' }), // active period Aug 2026 > end 2026-07
+          makeRecurring({ id: 3, title: 'Still Active', end_date: '2026-09' }),
+        ]}
+        activeMonth="August 2026"
+      />,
+    );
+    expect(screen.queryByText('Paused')).not.toBeInTheDocument();
+    expect(screen.queryByText('Ended')).not.toBeInTheDocument();
+    expect(screen.getByText('Still Active')).toBeInTheDocument();
+  });
+
+  it('renders nothing when no active recurring items exist', () => {
+    const { container } = render(
+      <UpcomingBills recurring={[makeRecurring({ active: false })]} activeMonth="August 2026" />,
+    );
+    expect(container.firstChild).toBeNull();
+  });
+});
