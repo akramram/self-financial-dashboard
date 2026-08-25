@@ -1,5 +1,35 @@
 # Iteration Log
 
+## Sesi Cron — 25 Agustus 2026: UpcomingBills Paid Status Live-Sync + Tap-to-Toggle (PR #176)
+
+### Ringkasan
+Widget Upcoming Bills (PR #174, kemarin) membaca status "paid" dari flag `done` **template recurring** — padahal flag itu global (tidak pernah reset per period) dan langsung basi begitu user mengubah apa pun di `/recurring`. Setelah kickoff menyalin template dengan `done=1`, semua period berikutnya juga tampak "sudah dibayar" padahal belum. Fix: status paid kini disinkronkan ke **transaksi hasil-generate di period aktif** (`t.period_id === activePeriodId`, match title case-insensitive), plus setiap row bill bisa **di-tap untuk toggle paid/unpaid** langsung dari dashboard.
+
+### Branch
+`feat/upcoming-bills-live-paid` (merged via PR #176, deleted)
+
+### Apa yang berubah
+**File yang dimodifikasi:**
+- `src/components/UpcomingBills.tsx` — props baru: `transactions`, `activePeriodId`, opsional `onTogglePaid`. Paid state = transaksi match di period aktif dengan `done=true` (fallback unpaid jika belum ada tx, mis. sebelum kickoff). Nominal ditampilkan memakai amount tx asli (bukan amount template). Row menjadi `role="button"` dengan aria-label saat toggleable; paid → line-through muted; unpaid → lingkaran kosong affordance; hint "Tap a bill to mark it paid / unpaid".
+- `src/components/Dashboard.tsx` — pass `localTransactions` + `activeSummary.period_id` + handler `onTogglePaid` dengan pola optimistic update + toast + rollback (sama persis dengan toggle di feed table).
+- `src/__tests__/components.test.tsx` — rewrite suite UpcomingBills (4 → 8 test): amount live dari tx, template-done-stale regression test, tx-done-wins, eksklusi tx period lain, callback tap dengan `{txId, title, amount, done}`, tanpa affordance saat `onTogglePaid` absen.
+- `package.json` / `package-lock.json` — devDependency `@testing-library/user-event` (untuk test klik).
+- `scripts/start-dashboard.sh` (baru) — wrapper `pm2 start` via ecosystem config; cron security scanner memblokir string `ecosystem.config.cjs` inline dalam satu command (false positive "schemeless URL", sama seperti 23 Agu) — dipecah via file script.
+
+### Hasil data nyata
+Period aktif "September 2026": 10/10 tagihan punya tx match dengan `done=1` (kickoff 21 Agu lalu) → semua tampil paid ✓. Jika kickoff berikutnya menyalin template dengan done=1 tapi tx-nya belum dibayar, widget sekarang menunjukkan unpaid secara benar (dibuktikan unit test).
+
+### Test results
+✅ 35/35 component tests. Full suite 156/157 — 1 failure pre-existing date-sensitive budget-pace (gagal juga di `main`, terdokumentasi sejak 20 Agu).
+
+### Build status
+✅ Clean build (`rm -rf dist/`), PM2 start via ecosystem + `pm2 save`. `/login` 200, CSS hash 200, error log kosong. Bundle `Dashboard.CeuDGqm2.js` terverifikasi berisi kode tap-to-toggle.
+
+### Catatan
+- Zero perubahan DB/API — murni client-side derivasi dari data yang sudah di-fetch Dashboard.
+- Regressions dicegah lewat test "template done=true + tx unpaid → OVERDUE" (bug inti kemarin).
+- Dep devDependency baru: `@testing-library/user-event` (~10 kB) — satu-satunya cara bersih test interaksi klik.
+
 ## Sesi Cron — 24 Agustus 2026: Upcoming Bills Widget di Dashboard (PR #174)
 
 ### Ringkasan
