@@ -365,9 +365,25 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
             )}
           </div>
 
-          {/* Upcoming Bills — recurring schedule for active period */}
+          {/* Upcoming Bills — recurring schedule for active period (paid state synced to generated tx, tap-to-toggle) */}
           <GlassCard className="mb-4">
-            <UpcomingBills recurring={recurringAll} activeMonth={activeSummary?.month ?? ''} />
+            <UpcomingBills
+              recurring={recurringAll}
+              transactions={localTransactions}
+              activePeriodId={activeSummary?.period_id ?? null}
+              activeMonth={activeSummary?.month ?? ''}
+              onTogglePaid={async (bill) => {
+                // Optimistic update (same pattern as feed table toggle)
+                setLocalTransactions(prev => prev.map(t => t.id === bill.txId ? { ...t, done: bill.done } as Transaction : t));
+                try {
+                  await toggleTransactionDoneApi(bill.txId, bill.done);
+                  toast.success(bill.done ? `"${bill.title}" marked as paid` : `"${bill.title}" marked as unpaid`);
+                } catch {
+                  setLocalTransactions(prev => prev.map(t => t.id === bill.txId ? { ...t, done: !bill.done } as Transaction : t));
+                  toast.error('Failed to update payment status');
+                }
+              }}
+            />
           </GlassCard>
 
           <MonthKickoffModal open={kickoffOpen} onOpenChange={setKickoffOpen} nextMonth={kickoffBanner?.nextMonth || ''} recurringCount={kickoffBanner?.recurringCount || 0} onSuccess={() => { setKickoffBanner(null); window.location.reload(); }} />

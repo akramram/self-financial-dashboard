@@ -1,11 +1,14 @@
 import React, { useMemo } from 'react';
-import type { RecurringTransaction } from '../lib/data';
+import type { RecurringTransaction, Transaction } from '../lib/data';
 import { formatIdr } from '../lib/utils';
-import { CalendarClock, CheckCircle2, CreditCard, Wallet } from 'lucide-react';
+import { CalendarClock, CheckCircle2, Circle, CreditCard, Loader2, Wallet } from 'lucide-react';
 
 interface Props {
   recurring: RecurringTransaction[];
+  transactions: Transaction[];
+  activePeriodId: number | null;
   activeMonth: string; // display label, e.g. "August 2026" (period ends 20th of that month)
+  onTogglePaid?: (bill: { txId: number; title: string; amount: number; done: boolean }) => void;
 }
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -27,16 +30,25 @@ interface Bill {
   amount: number;
   type: RecurringTransaction['type'];
   dueDate: Date;
+  /** true when a matching generated transaction exists AND is marked done */
   paid: boolean;
-  dueThisPeriod: boolean;
+  /** id of the generated transaction in the active period, if any (enables tap-to-toggle) */
+  txId: number | null;
   endLabel: string | null;
 }
 
-export default function UpcomingBills({ recurring, activeMonth }: Props) {
+export default function UpcomingBills({ recurring, transactions, activePeriodId, activeMonth, onTogglePaid }: Props) {
   const { bills, unpaidTotal } = useMemo(() => {
     const range = getPeriodDates(activeMonth);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+
+    // Actual payment state comes from the generated transaction in the active period —
+    // NOT from the recurring template's global `done` flag (that one never resets per period).
+    const periodTxs = activePeriodId != null ? transactions.filter((t) => t.period_id === activePeriodId) : [];
+    const txByTitle = new Map<string, Transaction>();
+    for (const t of periodTxs) {
+      const key = t.title.trim().toLowerCase();
+      if (!txByTitle.has(key)) txByTitle.set(key, t); // first match wins if duplicates exist
+    }
 
     const all: Bill[] = [];
     for (const r of recurring) {
@@ -58,14 +70,15 @@ export default function UpcomingBills({ recurring, activeMonth }: Props) {
       }
 
       if (due) {
+        const tx = txByTitle.get(r.title.trim().toLowerCase()) || null;
         all.push({
           id: r.id,
           title: r.title,
-          amount: r.amount,
+          amount: tx ? tx.amount : r.amount, // prefer the real billed amount when present
           type: r.type,
           dueDate: due,
-          paid: r.done,
-          dueThisPeriod: true,
+          paid: tx ? Boolean(tx.done) : false,
+          txId: tx ? tx.id : null,
           endLabel: r.end_date ? MONTHS[new Date(r.end_date + '-01T12:00:00Z').getUTCMonth()] + ' ' + r.end_date.slice(0, 4) : null,
         });
       }
@@ -77,9 +90,9 @@ export default function UpcomingBills({ recurring, activeMonth }: Props) {
       return a.dueDate.getTime() - b.dueDate.getTime();
     });
 
-    const unpaidTotal = all.filter(b => !b.paid).reduce((s, b) => s + b.amount, 0);
+    const unpaidTotal = all.filter((b) => !b.paid).reduce((s, b) => s + b.amount, 0);
     return { bills: all, unpaidTotal };
-  }, [recurring, activeMonth]);
+  }, [recurring, transactions, activePeriodId, activeMonth]);
 
   if (bills.length === 0) return null;
 
@@ -102,14 +115,21 @@ export default function UpcomingBills({ recurring, activeMonth }: Props) {
           const daysLeft = Math.ceil((b.dueDate.getTime() - today.getTime()) / 86400000);
           const overdue = !b.paid && daysLeft < 0;
           const imminent = !b.paid && !overdue && daysLeft <= 3;
+          const toggleable = Boolean(onTogglePaid) && b.txId != null;
           return (
-            <li key={b.id} className="flex items-center justify-between gap-3 px-3 py-2 rounded-lg bg-slate-100/70 dark:bg-white/[0.03] border border-slate-200/60 dark:border-white/[0.04]">
+            <li
+              key={b.id}
+              className={`flex items-center justify-between gap-3 px-3 py-2 rounded-lg bg-slate-100/70 dark:bg-white/[0.03] border border-slate-200/60 dark:border-white/[0.04] ${toggleable ? 'cursor-pointer hover:bg-slate-200/70 dark:hover:bg-white/[0.06] transition' : ''}`}
+              onClick={toggleable ? () => onTogglePaid!({ txId: b.txId!, title: b.title, amount: b.amount, done: !b.paid }) : undefined}
+              role={toggleable ? 'button' : undefined}
+              aria-label={toggleable ? `Mark ${b.title} as ${b.paid ? 'unpaid' : 'paid'}` : undefined}
+            >
               <div className="flex items-center gap-2.5 min-w-0">
                 <span className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${b.type === 'cash' ? 'bg-mint-500/10' : 'bg-gold-500/10'}`}>
                   {b.type === 'cash' ? <Wallet className="w-3.5 h-3.5 text-mint-500" strokeWidth={1.8} /> : <CreditCard className="w-3.5 h-3.5 text-gold-400" strokeWidth={1.8} />}
                 </span>
                 <div className="min-w-0">
-                  <p className="text-sm font-medium text-slate-800 dark:text-white/80 truncate">{b.title}</p>
+                  <p className={`text-sm font-medium truncate ${b.paid ? 'text-slate-400 dark:text-white/35 line-through' : 'text-slate-800 dark:text-white/80'}`}>{b.title}</p>
                   <p className="text-[11px] text-slate-500 dark:text-white/40 flex items-center gap-1">
                     <CalendarClock className="w-3 h-3" />
                     due {b.dueDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
@@ -120,13 +140,20 @@ export default function UpcomingBills({ recurring, activeMonth }: Props) {
               <div className="flex items-center gap-2.5 shrink-0">
                 <span className="text-sm font-semibold text-slate-800 dark:text-white/80 tabular-nums">{formatIdr(b.amount)}</span>
                 {b.paid ? (
-                  <CheckCircle2 className="w-4 h-4 text-mint-500" strokeWidth={1.8} />
+                  toggleable ? (
+                    <CheckCircle2 className="w-4 h-4 text-mint-500" strokeWidth={1.8} />
+                  ) : (
+                    <CheckCircle2 className="w-4 h-4 text-mint-500" strokeWidth={1.8} />
+                  )
                 ) : overdue ? (
                   <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-coral-500/15 text-coral-400">OVERDUE</span>
                 ) : imminent ? (
                   <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-gold-500/15 text-gold-400">{daysLeft === 0 ? 'TODAY' : `${daysLeft}d`}</span>
                 ) : (
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-medium text-slate-500 dark:text-white/30">{daysLeft}d</span>
+                  <span className="flex items-center gap-1.5">
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-medium text-slate-500 dark:text-white/30">{daysLeft}d</span>
+                    {toggleable && <Circle className="w-4 h-4 text-slate-300 dark:text-white/20" strokeWidth={1.8} />}
+                  </span>
                 )}
               </div>
             </li>
@@ -134,7 +161,8 @@ export default function UpcomingBills({ recurring, activeMonth }: Props) {
         })}
       </ul>
 
-      <a href="/recurring" className="block mt-3 text-xs text-mint-500 hover:text-mint-400 no-underline">Manage recurring →</a>
+      <p className="mt-2 text-[10px] text-slate-400 dark:text-white/25">Tap a bill to mark it paid / unpaid</p>
+      <a href="/recurring" className="block mt-1.5 text-xs text-mint-500 hover:text-mint-400 no-underline">Manage recurring →</a>
     </div>
   );
 }
