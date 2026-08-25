@@ -4,6 +4,7 @@
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
 import '@testing-library/jest-dom/vitest';
 
@@ -566,32 +567,113 @@ function makeRecurring(overrides: Partial<any> = {}) {
   } as any;
 }
 
+function makeTx(overrides: Partial<any> = {}) {
+  return {
+    id: 900,
+    period_id: 38,
+    month: 'September 2026',
+    date: '2026-08-21',
+    title: 'Netflix',
+    category: 'Tagihan',
+    amount: 150000,
+    currency: 'IDR',
+    type: 'cash',
+    payment_method: 'Cash',
+    done: true,
+    created_time: '2026-08-25T02:00:00.000Z',
+    ...overrides,
+  } as any;
+}
+
 describe('UpcomingBills', () => {
-  it('renders bill rows with title and amount', () => {
+  it('renders bill rows with title and amount (live amount from period tx)', () => {
     render(
       <UpcomingBills
         recurring={[makeRecurring({ id: 1, title: 'Kontrakan', amount: 1150000, created_at: '4' })]}
+        transactions={[makeTx({ id: 913, title: 'Kontrakan', amount: 1100000, done: false })]}
+        activePeriodId={38}
         activeMonth="August 2026"
       />,
     );
     expect(screen.getByText('Kontrakan')).toBeInTheDocument();
-    expect(screen.getAllByText('IDR 1,150,000').length).toBeGreaterThan(0);
+    // real billed amount (1.1M) wins over template amount (1.15M)
+    expect(screen.getAllByText('IDR 1,100,000').length).toBeGreaterThan(0);
     expect(screen.getByText(/pending/)).toBeInTheDocument();
   });
 
-  it('shows OVERDUE badge for unpaid bill past its due day, and mint check for paid ones', () => {
+  it('derives paid status from the generated period transaction, not the template done flag', () => {
     render(
       <UpcomingBills
         recurring={[
-          makeRecurring({ id: 1, title: 'Late Bill', created_at: '22', done: false }), // due Jul 22 — past by Aug 24
-          makeRecurring({ id: 2, title: 'Paid Bill', created_at: '28', done: true }),
+          // template says done=true, but the period tx is unpaid → must render unpaid (no mint check)
+          makeRecurring({ id: 1, title: 'StaleTpl', created_at: '22', done: true }),
         ]}
+        transactions={[makeTx({ id: 950, title: 'StaleTpl', done: false })]}
+        activePeriodId={38}
         activeMonth="August 2026"
       />,
     );
+    expect(screen.getByText('StaleTpl')).toBeInTheDocument();
+    expect(screen.getByText('OVERDUE')).toBeInTheDocument(); // due Jul 22 — past, unpaid
+    // no line-through paid styling on the title
+    const title = screen.getByText('StaleTpl');
+    expect(title.className).not.toContain('line-through');
+  });
+
+  it('marks a bill paid when its period transaction is done even if template is done=false', () => {
+    render(
+      <UpcomingBills
+        recurring={[makeRecurring({ id: 1, title: 'PaidLive', created_at: '28', done: false })]}
+        transactions={[makeTx({ id: 951, title: 'PaidLive', done: true })]}
+        activePeriodId={38}
+        activeMonth="August 2026"
+      />,
+    );
+    expect(screen.getByText('PaidLive')).toBeInTheDocument();
+    expect(screen.queryByText('OVERDUE')).not.toBeInTheDocument();
+    const title = screen.getByText('PaidLive');
+    expect(title.className).toContain('line-through');
+  });
+
+  it('ignores transactions from other periods', () => {
+    render(
+      <UpcomingBills
+        recurring={[makeRecurring({ id: 1, title: 'OtherPeriod', created_at: '22' })]}
+        transactions={[makeTx({ id: 952, title: 'OtherPeriod', done: true, period_id: 37 })]}
+        activePeriodId={38}
+        activeMonth="August 2026"
+      />,
+    );
+    // tx belongs to period 37, not the active 38 → bill stays unpaid → OVERDUE
     expect(screen.getByText('OVERDUE')).toBeInTheDocument();
-    expect(screen.getByText('Late Bill')).toBeInTheDocument();
-    expect(screen.getByText('Paid Bill')).toBeInTheDocument();
+  });
+
+  it('calls onTogglePaid with the period tx id when a bill row is tapped', async () => {
+    const onTogglePaid = vi.fn();
+    render(
+      <UpcomingBills
+        recurring={[makeRecurring({ id: 1, title: 'TapMe', created_at: '28', done: false })]}
+        transactions={[makeTx({ id: 953, title: 'TapMe', done: false })]}
+        activePeriodId={38}
+        activeMonth="August 2026"
+        onTogglePaid={onTogglePaid}
+      />,
+    );
+    const row = screen.getByRole('button', { name: /Mark TapMe as paid/i });
+    await userEvent.click(row);
+    expect(onTogglePaid).toHaveBeenCalledWith({ txId: 953, title: 'TapMe', amount: 150000, done: true });
+  });
+
+  it('does not render toggle affordance when onTogglePaid is absent', () => {
+    render(
+      <UpcomingBills
+        recurring={[makeRecurring({ id: 1, title: 'NoToggle', created_at: '28', done: false })]}
+        transactions={[makeTx({ id: 954, title: 'NoToggle', done: false })]}
+        activePeriodId={38}
+        activeMonth="August 2026"
+      />,
+    );
+    expect(screen.queryByRole('button')).toBeNull();
   });
 
   it('skips inactive recurring items and items past their end_date', () => {
@@ -602,6 +684,8 @@ describe('UpcomingBills', () => {
           makeRecurring({ id: 2, title: 'Ended', end_date: '2026-07' }), // active period Aug 2026 > end 2026-07
           makeRecurring({ id: 3, title: 'Still Active', end_date: '2026-09' }),
         ]}
+        transactions={[]}
+        activePeriodId={38}
         activeMonth="August 2026"
       />,
     );
@@ -612,7 +696,7 @@ describe('UpcomingBills', () => {
 
   it('renders nothing when no active recurring items exist', () => {
     const { container } = render(
-      <UpcomingBills recurring={[makeRecurring({ active: false })]} activeMonth="August 2026" />,
+      <UpcomingBills recurring={[makeRecurring({ active: false })]} transactions={[]} activePeriodId={38} activeMonth="August 2026" />,
     );
     expect(container.firstChild).toBeNull();
   });
