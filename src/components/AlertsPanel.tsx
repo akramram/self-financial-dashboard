@@ -221,6 +221,11 @@ export default function AlertsPanel({
     return merged;
   }, [anomalyAlerts, budgetAlerts]);
 
+  // ── Broadcast live count to sidebar/mobile bells (Pattern 2: CustomEvent) ──
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('alerts-count', { detail: allAlerts.length }));
+  }, [allAlerts.length]);
+
   if (loading) return null;
   if (allAlerts.length === 0) return null;
 

@@ -396,6 +396,46 @@ export function getCategoryByName(name: string) {
   return db.prepare('SELECT * FROM categories WHERE name = ? COLLATE NOCASE').get(name) as any;
 }
 
+/**
+ * Count active alerts for the current period — anomaly alerts (server-side
+ * detection) + budget "over limit" alerts. Used by Layout to badge the bell.
+ * Mirrors AlertsPanel logic: over-budget always counts; "approaching" (80-99%)
+ * is skipped when all category spend comes from recurring transactions.
+ * ponytail: ignores per-user localStorage dismissals (server can't see them);
+ * upgrade to an API + client count if that mismatch bothers anyone.
+ */
+export function getActiveAlertCount(): number {
+  try {
+    const periodId = getActivePeriodId();
+    if (periodId == null) return 0;
+
+    let count = getAnomalies(periodId).length;
+
+    const rows = db.prepare(`
+      SELECT t.category AS cat, SUM(t.amount) AS total
+      FROM transactions t
+      WHERE t.period_id = ? AND t.done = 1
+        AND t.type IN ('cash', 'credit_expense')
+      GROUP BY t.category
+    `).all(periodId) as { cat: string; total: number }[];
+
+    if (rows.length > 0) {
+      const limits: Record<string, number> = {};
+      for (const c of getCategories() as any[]) {
+        if (c.monthly_limit > 0) limits[c.name] = c.monthly_limit;
+      }
+      for (const r of rows) {
+        const limit = limits[r.cat];
+        if (limit && r.total > limit) count++;
+      }
+    }
+
+    return count;
+  } catch {
+    return 0;
+  }
+}
+
 export function insertCategory(cat: { name: string; color: string; monthly_limit?: number }) {
   const stmt = db.prepare(`
     INSERT INTO categories (name, color, monthly_limit)

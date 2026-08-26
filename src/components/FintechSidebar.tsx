@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   LayoutDashboard, ArrowRightLeft, PieChart, Target, Settings,
   TrendingUp, Calendar, Shield, Wallet, CreditCard, Menu, X, Bell,
@@ -58,8 +58,21 @@ const REPORTS = [
   { path: '/recommendations', label: 'Tips', icon: Trophy },
 ];
 
-export default function FintechSidebar({ balance, alerts = 0 }: Props) {
+export default function FintechSidebar({ balance, alerts: initialAlerts = 0 }: Props) {
   const [collapsed, setCollapsed] = useState(false);
+  const [alerts, setAlerts] = useState(initialAlerts);
+
+  // Live alert count — AlertsPanel broadcasts the panel's exact count
+  // (anomaly + budget, after localStorage dismissals) on every recompute.
+  useEffect(() => {
+    const sync = (e: Event) => {
+      const n = (e as CustomEvent<number>).detail;
+      if (typeof n === 'number' && n >= 0) setAlerts(n);
+    };
+    window.addEventListener('alerts-count', sync);
+    return () => window.removeEventListener('alerts-count', sync);
+  }, []);
+
   const currentPath = useMemo(() => {
     if (typeof window === 'undefined') return '/';
     return window.location.pathname.replace(/\/$/, '') || '/';

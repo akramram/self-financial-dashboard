@@ -3,13 +3,14 @@ import '../styles/globals.css';
 import FintechSidebar from '../components/FintechSidebar';
 import FintechBottomTabs from '../components/FintechBottomTabs';
 import MobileSidebar from '../components/MobileSidebar';
+import { getActiveAlertCount } from '../lib/db';
 
 export interface Props {
   title?: string;
   balance?: string;
   alerts?: number;
 }
-const { title = 'Financial Dashboard', balance, alerts = 0 } = Astro.props;
+const { title = 'Financial Dashboard', balance, alerts = getActiveAlertCount() } = Astro.props;
 ---
 
 <!DOCTYPE html>

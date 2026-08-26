@@ -851,6 +851,76 @@ describe('DB — Runway Analysis queries', () => {
 
 // ─── suggestCategory ────────────────────────────────────────────────────────
 
+/**
+ * Local mirror of getActiveAlertCount's budget-count query for testing
+ * against an isolated DB (db.ts connects to the real DB at import time —
+ * same caveat as suggestCategoryQuery above).
+ */
+function budgetOverLimitCount(db: any, periodId: number) {
+  const rows = db.prepare(`
+    SELECT t.category AS cat, SUM(t.amount) AS total
+    FROM transactions t
+    WHERE t.period_id = ? AND t.done = 1
+      AND t.type IN ('cash', 'credit_expense')
+    GROUP BY t.category
+  `).all(periodId) as { cat: string; total: number }[];
+  const limits: Record<string, number> = {};
+  for (const c of db.prepare('SELECT name, monthly_limit FROM categories').all() as any[]) {
+    if (c.monthly_limit > 0) limits[c.name] = c.monthly_limit;
+  }
+  let count = 0;
+  for (const r of rows) {
+    const limit = limits[r.cat];
+    if (limit && r.total > limit) count++;
+  }
+  return count;
+}
+
+describe('DB — Active Alert Count (budget over-limit)', () => {
+  let db: any, cleanup: () => void;
+  let periodId: number;
+
+  beforeEach(() => {
+    const t = createTestDb();
+    db = t.db;
+    cleanup = t.cleanup;
+    const p = seedPeriod(db, 'July 2026');
+    periodId = p.id;
+  });
+
+  afterEach(() => cleanup());
+
+  it('counts categories over their monthly limit', () => {
+    seedCategory(db, 'Food', '#ef4444', 500000);
+    seedCategory(db, 'Drink', '#ef4444', 500000);
+    seedTransaction(db, periodId, { category: 'Food', amount: 600000, type: 'cash', done: 1 });   // over
+    seedTransaction(db, periodId, { category: 'Drink', amount: 450000, type: 'cash', done: 1 }); // under
+    expect(budgetOverLimitCount(db, periodId)).toBe(1);
+  });
+
+  it('ignores unpaid (done=0) and credit_payment rows', () => {
+    seedCategory(db, 'Food', '#ef4444', 500000);
+    seedTransaction(db, periodId, { category: 'Food', amount: 600000, type: 'cash', done: 0 });          // unpaid
+    seedTransaction(db, periodId, { category: 'Food', amount: 700000, type: 'credit_payment', done: 1 }); // not spend
+    expect(budgetOverLimitCount(db, periodId)).toBe(0);
+  });
+
+  it('ignores categories without a limit and other periods', () => {
+    seedCategory(db, 'Food', '#ef4444', 0); // no limit
+    const other = seedPeriod(db, 'June 2026');
+    seedTransaction(db, periodId, { category: 'Food', amount: 600000, type: 'cash', done: 1 });
+    seedTransaction(db, other.id, { category: 'Food', amount: 900000, type: 'cash', done: 1 });
+    expect(budgetOverLimitCount(db, periodId)).toBe(0);
+  });
+
+  it('sums multiple transactions in the same category before comparing', () => {
+    seedCategory(db, 'Food', '#ef4444', 500000);
+    seedTransaction(db, periodId, { category: 'Food', amount: 300000, type: 'cash', done: 1 });
+    seedTransaction(db, periodId, { category: 'Food', amount: 300000, type: 'credit_expense', done: 1 });
+    expect(budgetOverLimitCount(db, periodId)).toBe(1); // 600k total > 500k
+  });
+});
+
 describe('DB — suggestCategory', () => {
   let db: any, cleanup: () => void;
   let periodId: number;
