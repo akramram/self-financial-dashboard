@@ -504,6 +504,57 @@ describe('AlertsPanel', () => {
       expect(screen.queryByText(/Food is over budget/)).not.toBeInTheDocument();
     });
   });
+
+  it('broadcasts alerts-count event with live alert total for sidebar bells', async () => {
+    mockFetch.mockResolvedValue({ json: () => Promise.resolve([]) });
+    const txs = [
+      { id: 1, period_id: 1, title: 'Steak', category: 'Food', amount: 600000, type: 'cash', done: 1 },
+      { id: 2, period_id: 1, title: 'Coffee', category: 'Drink', amount: 450000, type: 'cash', done: 1 },
+    ];
+    const events: number[] = [];
+    const listener = (e: Event) => events.push((e as CustomEvent<number>).detail);
+    window.addEventListener('alerts-count', listener);
+    render(
+      <AlertsPanel
+        month="July 2026"
+        summaries={[makeSummaryWithCats('July 2026', 1, 10_000_000, 4_000_000, { Food: 600000, Drink: 450000 })]}
+        categories={[makeCategory('Food', 500000), makeCategory('Drink', 500000)]}
+        transactions={txs}
+        recurringTitles={[]}
+      />,
+    );
+    await waitFor(() => {
+      expect(events).toContain(2);
+    });
+    window.removeEventListener('alerts-count', listener);
+  });
+
+  it('rebroadcasts lower count after dismissal', async () => {
+    mockFetch.mockResolvedValue({ json: () => Promise.resolve([]) });
+    const txs = [
+      { id: 1, period_id: 1, title: 'Steak', category: 'Food', amount: 600000, type: 'cash', done: 1 },
+    ];
+    const events: number[] = [];
+    const listener = (e: Event) => events.push((e as CustomEvent<number>).detail);
+    window.addEventListener('alerts-count', listener);
+    render(
+      <AlertsPanel
+        month="July 2026"
+        summaries={[makeSummaryWithCats('July 2026', 1, 10_000_000, 4_000_000, { Food: 600000 })]}
+        categories={[makeCategory('Food', 500000)]}
+        transactions={txs}
+        recurringTitles={[]}
+      />,
+    );
+    await waitFor(() => {
+      expect(screen.getByText(/Food is over budget/)).toBeInTheDocument();
+    });
+    screen.getAllByTitle('Dismiss')[0].click();
+    await waitFor(() => {
+      expect(events[events.length - 1]).toBe(0);
+    });
+    window.removeEventListener('alerts-count', listener);
+  });
 });
 
 describe('FinancialInsights', () => {

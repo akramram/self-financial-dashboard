@@ -96,8 +96,20 @@ function GroupHeader({ label }: { label: string }) {
   );
 }
 
-export default function MobileSidebar({ balance, alerts = 0 }: Props) {
+export default function MobileSidebar({ balance, alerts: initialAlerts = 0 }: Props) {
   const [open, setOpen] = useState(false);
+  const [alerts, setAlerts] = useState(initialAlerts);
+
+  // Live alert count — same broadcast FintechSidebar listens to
+  useEffect(() => {
+    const sync = (e: Event) => {
+      const n = (e as CustomEvent<number>).detail;
+      if (typeof n === 'number' && n >= 0) setAlerts(n);
+    };
+    window.addEventListener('alerts-count', sync);
+    return () => window.removeEventListener('alerts-count', sync);
+  }, []);
+
   const currentPath = useMemo(() => {
     if (typeof window === 'undefined') return '/';
     return window.location.pathname.replace(/\/$/, '') || '/';
