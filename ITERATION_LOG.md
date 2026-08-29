@@ -1,5 +1,33 @@
 # Iteration Log
 
+## Sesi Cron — 29 Agustus 2026: Live Data-Sync Event Bus — Dashboard Refresh Tanpa Reload (PR #178)
+
+### Ringkasan
+Sebelumnya setiap mutasi di luar Dashboard (Quick Add, form Add Transaction/Networth, undo restore) tidak memberi tahu Dashboard/TransactionTable — widget basi sampai user manual refresh. Kini ada event bus kecil same-tab (`src/lib/dataSync.ts`, ~20 baris): semua mutasi broadcast `notifyDataChanged()`, Dashboard + TransactionTable listen dan refetch server truth (transactions + summaries + networth). Angka dashboard update instan tanpa full page reload.
+
+### Branch
+`feat/live-data-sync` (merged via PR #178, deleted)
+
+### Apa yang berubah
+**File baru:**
+- `src/lib/dataSync.ts` — event bus (`notifyDataChanged(scope)` / `onDataChanged(cb)`), CustomEvent `fin-data-changed`. ponytail: cross-tab sync via BroadcastChannel kalau multi-tab editing jadi real.
+- `src/__tests__/dataSync.test.ts` — 3 test (fire listener, unsubscribe, scope di detail).
+
+**File yang dimodifikasi:**
+- `src/components/Dashboard.tsx` — props (`transactions`/`networth`/`summaries`) jadi local state yang live-synced; listener refetch semua tiga endpoint; semua titik mutasi (saveEdit, toggle bill, toggle feed) mem-broadcast.
+- `src/components/TransactionTable.tsx` — listener refetch `localTx`; edit/delete/bulk/toggle broadcast.
+- `src/components/QuickAddDialog.tsx`, `AddTransactionForm.tsx`, `AddNetworthForm.tsx`, `src/lib/undo.ts` — broadcast setelah sukses insert/restore.
+
+### Test fix
+Budget Pace db.test date-fragile (terdokumentasi gagal sejak 20 Agu): period seed berakhir 2026-08-20, tanggal real melewati itu → `time_elapsed_pct` clamp 100 → `pace_diff = 0` → assertion gagal. Fix: `vi.setSystemTime(new Date('2026-08-05T12:00:00'))` freeze clock mid-period di `beforeEach`, `vi.useRealTimers()` di `afterEach`. Suite kini **166/166 green**.
+
+### Build status
+✅ Clean build, PR #178 merged (merge commit), deploy via ecosystem + `pm2 save`.
+
+### Catatan
+- Zero perubahan DB/API — murni client-side.
+- Stale branch lama `feat/live-data-sync-bus` (== main, tidak pernah di-push) dihapus saat sesi ini.
+
 ## Sesi Cron — 25 Agustus 2026: UpcomingBills Paid Status Live-Sync + Tap-to-Toggle (PR #176)
 
 ### Ringkasan
