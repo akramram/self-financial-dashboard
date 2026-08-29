@@ -1,8 +1,9 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import type { Transaction, Category } from '../lib/data';
-import { updateTransactionApi, deleteTransactionApi, toggleTransactionDoneApi, deleteTransactionsBulkApi, updateTransactionsBulkApi, fetchCategories } from '../lib/api';
+import { updateTransactionApi, deleteTransactionApi, toggleTransactionDoneApi, deleteTransactionsBulkApi, updateTransactionsBulkApi, fetchCategories, fetchTransactions } from '../lib/api';
 import { formatIdr } from '../lib/utils';
 import { useSortState } from '../hooks/useSortState';
+import { onDataChanged, notifyDataChanged } from '../lib/dataSync';
 import SortableHeader from './SortableHeader';
 import EditTransactionDialog from './EditTransactionDialog';
 import { StickyNote, Search, SlidersHorizontal, Download, X, Filter, ChevronDown, FileJson, FileSpreadsheet } from 'lucide-react';
@@ -148,6 +149,11 @@ export default function TransactionTable({ transactions, showMonth = true, perio
     fetchCategories().then(setCategories).catch(() => {});
   }, []);
 
+  // Live data sync: refetch when another component mutates data (quick add dialog, etc.)
+  useEffect(() => onDataChanged(() => {
+    fetchTransactions().then(setLocalTx).catch(() => {});
+  }), []);
+
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const params = new URLSearchParams(window.location.search);
@@ -264,6 +270,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
       setEditingId(null);
       setEditForm({});
       toast.success('Transaction updated');
+      notifyDataChanged('transactions');
     } catch {
       toast.error('Failed to update transaction');
     }
@@ -284,6 +291,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
       setLocalTx(prev => prev.filter(t => !selected.has(t.id)));
       setSelected(new Set());
       showDeleteUndoToast(deleted, restored => setLocalTx(prev => [...prev, ...restored]));
+      notifyDataChanged('transactions');
     } catch {
       toast.error('Failed to delete transactions');
     }
@@ -297,6 +305,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
       setSelected(new Set());
       setBulkCategory('');
       toast.success(`${selected.size} transactions categorized as "${bulkCategory}"`);
+      notifyDataChanged('transactions');
     } catch {
       toast.error('Failed to update categories');
     }
@@ -765,6 +774,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                           try {
                             await toggleTransactionDoneApi(row.id, newDone);
                             toast.success(newDone ? 'Marked as paid' : 'Marked as unpaid');
+                            notifyDataChanged('transactions');
                           } catch {
                             // Revert on failure
                             setLocalTx(prev => prev.map(t => t.id === row.id ? { ...t, done: newDone ? 0 : 1 } as Transaction : t));
@@ -824,6 +834,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                               await deleteTransactionApi(row.id);
                               setLocalTx(prev => prev.filter(t => t.id !== row.id));
                               showDeleteUndoToast([row], restored => setLocalTx(prev => [...prev, ...restored]));
+                              notifyDataChanged('transactions');
                             } catch {
                               toast.error('Failed to delete transaction');
                             }

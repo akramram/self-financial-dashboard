@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createNetworth, fetchNetworth } from '../lib/api';
+import { notifyDataChanged } from '../lib/dataSync';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -85,6 +86,7 @@ export default function AddNetworthForm() {
     });
 
     setMessage('Networth entry added successfully!');
+    notifyDataChanged('networth');
     setTimeout(() => setMessage(''), 3000);
   };
 

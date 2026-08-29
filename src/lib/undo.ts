@@ -1,5 +1,6 @@
 import { toast } from 'sonner';
 import type { Transaction } from './data';
+import { notifyDataChanged } from './dataSync';
 
 /**
  * Undo-able delete: shows a toast with an "Undo" action that re-inserts
@@ -31,6 +32,7 @@ export function showDeleteUndoToast(
             restored.push({ ...tx, id: created.id });
           }
           onRestored(restored);
+          notifyDataChanged('transactions');
           toast.success(restored.length === 1 ? `"${restored[0].title}" restored` : `${restored.length} transactions restored`);
         } catch {
           toast.error('Failed to restore — data was deleted permanently');
