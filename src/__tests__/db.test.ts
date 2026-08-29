@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { createTestDb, seedPeriod, seedTransaction, seedCategory } from './helpers';
 
 describe('DB — Periods', () => {
@@ -563,12 +563,18 @@ describe('DB — Budget Pace', () => {
     const t = createTestDb();
     db = t.db;
     cleanup = t.cleanup;
-    // Use a future period so time_elapsed_pct < 100
+    // Freeze clock mid-period (Aug 5) so time_elapsed_pct < 100 regardless of
+    // when the suite runs — pace math must not depend on the real wall date.
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-08-05T12:00:00'));
     const p = seedPeriod(db, 'August 2026');
     periodId = p.id;
   });
 
-  afterEach(() => cleanup());
+  afterEach(() => {
+    vi.useRealTimers();
+    cleanup();
+  });
 
   /** Helper: seed a category with a budget limit. */
   function seedBudgetCategory(name: string, limit: number, color = '#3b82f6') {

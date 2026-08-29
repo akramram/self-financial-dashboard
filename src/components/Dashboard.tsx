@@ -1,8 +1,9 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import type { Transaction, NetworthRecord, MonthlySummary, Category, RecurringTransaction } from '../lib/data';
 import { formatIdr, getActivePeriod } from '../lib/utils';
-import { updateTransactionApi, deleteTransactionApi, toggleTransactionDoneApi, fetchCategories, fetchRecurringTransactions } from '../lib/api';
+import { updateTransactionApi, deleteTransactionApi, toggleTransactionDoneApi, fetchCategories, fetchRecurringTransactions, fetchTransactions } from '../lib/api';
 import { showDeleteUndoToast } from '../lib/undo';
+import { onDataChanged, notifyDataChanged } from '../lib/dataSync';
 import '../lib/chartConfig';
 
 import { LazyMotion, domAnimation } from 'motion/react';
@@ -70,13 +71,15 @@ interface Props {
   summaries: MonthlySummary[];
 }
 
-export default function Dashboard({ transactions, networth, summaries }: Props) {
+export default function Dashboard({ transactions: txProps, networth: nwProps, summaries: sumProps }: Props) {
   const { confirm: confirmAction } = useConfirm();
   const activePeriod = useMemo(() => { const { month, year } = getActivePeriod(); return `${month} ${year}`; }, []);
 
   // ── State ─────────────────────────────────────────────────────
-  // Local transaction state (mirrors props, updated optimistically on mutations)
-  const [localTransactions, setLocalTransactions] = useState<Transaction[]>(transactions);
+  // Local state (mirrors props, updated optimistically on mutations + live-synced)
+  const [localTransactions, setLocalTransactions] = useState<Transaction[]>(txProps);
+  const [networth, setNetworth] = useState<NetworthRecord[]>(nwProps);
+  const [summaries, setSummaries] = useState<MonthlySummary[]>(sumProps);
   const [filterPeriodId, setFilterPeriodId] = useState<number | null>(null);
   const [filterAllTime, setFilterAllTime] = useState(true);
   const [txPage, setTxPage] = useState(1); const txPerPage = 10;
@@ -138,6 +141,14 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
 
   // ── Effects ───────────────────────────────────────────────────
   useEffect(() => { fetchCategories().then(setCategories).catch(() => {}); fetchRecurringTransactions().then(r => { setRecurringTitles(r.filter(rx => rx.active).map(rx => rx.title)); setRecurringAll(r); }).catch(() => {}); fetch('/api/runway').then(r => r.json()).then(d => setRunwayData(d)).catch(() => {}); }, []);
+
+  // Live data sync: refetch server truth when another component mutates data
+  // (quick add dialog, command palette, other widgets)
+  useEffect(() => onDataChanged(() => {
+    fetchTransactions().then(setLocalTransactions).catch(() => {});
+    fetch('/api/summary').then(r => r.json()).then(setSummaries).catch(() => {});
+    fetch('/api/networth').then(r => r.json()).then(setNetworth).catch(() => {});
+  }), []);
   useEffect(() => { const today = new Date(); if (today.getDate() < 21) return; const latest = summaries[summaries.length - 1]; if (!latest) return; const latestDate = new Date(latest.month + ' 1'); const nextDate = new Date(latestDate); nextDate.setMonth(nextDate.getMonth() + 1); const nextMonthStr = nextDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }); fetch('/api/kickoff').then(res => res.json()).then((status: any) => { if (status.hasNextMonth) { setKickoffBanner(null); return; } fetchRecurringTransactions().then(recurring => { setKickoffBanner({ show: true, currentMonth: latest.month, nextMonth: status.nextMonth || nextMonthStr, recurringCount: recurring.filter(r => r.active).length }); }).catch(() => {}); }).catch(() => {}); }, [summaries]);
 
   // Keyboard shortcut: / to focus feed search
@@ -175,7 +186,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
   const cancelEdit = () => { setEditingId(null); setEditForm({}); };
   const saveEdit = async () => {
     if (!editForm.id) return;
-    const original = transactions.find(t => t.id === editForm.id);
+    const original = localTransactions.find(t => t.id === editForm.id);
     if (!original) return;
     const updates = { ...original, ...(editForm as Transaction) };
     try {
@@ -184,6 +195,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
       setEditingId(null);
       setEditForm({});
       toast.success('Transaction updated');
+      notifyDataChanged('transactions');
     } catch {
       toast.error('Failed to update transaction');
     }
@@ -349,7 +361,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
                 <h3 className="text-sm font-semibold text-slate-800 dark:text-white/80">Alerts</h3>
                 <button onClick={() => setShowAlerts(false)} className="text-slate-500 dark:text-white/30 hover:text-slate-600 dark:text-white/60"><X className="w-4 h-4" /></button>
               </div>
-              <AlertsPanel month={activeSummary?.month} summaries={summaries} categories={categories} transactions={transactions} recurringTitles={recurringTitles} />
+              <AlertsPanel month={activeSummary?.month} summaries={summaries} categories={categories} transactions={localTransactions} recurringTitles={recurringTitles} />
             </GlassCard>
           )}
 
@@ -378,6 +390,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
                 try {
                   await toggleTransactionDoneApi(bill.txId, bill.done);
                   toast.success(bill.done ? `"${bill.title}" marked as paid` : `"${bill.title}" marked as unpaid`);
+                  notifyDataChanged('transactions');
                 } catch {
                   setLocalTransactions(prev => prev.map(t => t.id === bill.txId ? { ...t, done: !bill.done } as Transaction : t));
                   toast.error('Failed to update payment status');
@@ -434,7 +447,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
 
           {/* Financial Insights — compact */}
           <GlassCard className="mb-4">
-            <FinancialInsights transactions={transactions} networth={networth} summaries={summaries} categories={categories} activeMonth={activeSummary?.month} />
+            <FinancialInsights transactions={localTransactions} networth={networth} summaries={summaries} categories={categories} activeMonth={activeSummary?.month} />
           </GlassCard>
         </section>
 
@@ -496,6 +509,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
                             try {
                               await toggleTransactionDoneApi(row.id, newDone);
                               toast.success(newDone ? 'Marked as paid' : 'Marked as unpaid');
+                              notifyDataChanged('transactions');
                             } catch {
                               setLocalTransactions(prev => prev.map(t => t.id === row.id ? { ...t, done: newDone ? 0 : 1 } as Transaction : t));
                               toast.error('Failed to update payment status');
@@ -566,7 +580,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
             <DialogHeader>
               <DialogTitle className="text-slate-900 dark:text-white">{selectedCategory} — {activeSummary?.month}</DialogTitle>
               <DialogDescription className="text-slate-500 dark:text-white/40">
-                {(() => { const catTxs = transactions.filter(t => t.category === selectedCategory && t.period_id === activeSummary?.period_id); const total = catTxs.reduce((sum, t) => sum + t.amount, 0); return `${catTxs.length} transaction${catTxs.length !== 1 ? 's' : ''} • Total: ${formatIdr(total)}`; })()}
+                {(() => { const catTxs = localTransactions.filter(t => t.category === selectedCategory && t.period_id === activeSummary?.period_id); const total = catTxs.reduce((sum, t) => sum + t.amount, 0); return `${catTxs.length} transaction${catTxs.length !== 1 ? 's' : ''} • Total: ${formatIdr(total)}`; })()}
               </DialogDescription>
             </DialogHeader>
             <div className="mb-4">
@@ -574,7 +588,7 @@ export default function Dashboard({ transactions, networth, summaries }: Props) 
               <OutcomeBarChart data={activeSummary?.category_totals || {}} categories={categories} highlightCategory={selectedCategory} summaries={summaries} />
             </div>
             <div>
-              {(() => { const catTxs = transactions.filter(t => t.category === selectedCategory && t.period_id === activeSummary?.period_id).sort((a, b) => parseCreatedTime(b).getTime() - parseCreatedTime(a).getTime()); if (catTxs.length === 0) return <p className="text-sm text-slate-500 dark:text-white/30">No transactions found.</p>; return (
+              {(() => { const catTxs = localTransactions.filter(t => t.category === selectedCategory && t.period_id === activeSummary?.period_id).sort((a, b) => parseCreatedTime(b).getTime() - parseCreatedTime(a).getTime()); if (catTxs.length === 0) return <p className="text-sm text-slate-500 dark:text-white/30">No transactions found.</p>; return (
                 <Table>
                   <TableHeader><TableRow className="border-slate-200 dark:border-white/[0.05]"><TableHead className="text-slate-600 dark:text-white/50">Title</TableHead><TableHead className="text-slate-600 dark:text-white/50">Date</TableHead><TableHead className="text-right text-slate-600 dark:text-white/50">Amount</TableHead><TableHead className="text-slate-600 dark:text-white/50">Type</TableHead></TableRow></TableHeader>
                   <TableBody>{catTxs.map(t => { const d = parseCreatedTime(t); const dateStr = isNaN(d.getTime()) ? t.date : d.toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' }); const typeLabel = t.type === 'cash' ? 'Cash' : t.type === 'credit_payment' ? 'Credit Pay' : 'Credit'; return (<TableRow key={t.id} className="border-slate-200 dark:border-white/[0.03]"><TableCell className="font-medium text-slate-800 dark:text-white/80">{t.title}</TableCell><TableCell className="text-slate-500 dark:text-white/40 text-xs">{dateStr}</TableCell><TableCell className="text-right font-medium text-slate-800 dark:text-white/90">{formatIdr(t.amount)}</TableCell><TableCell className="text-xs font-semibold uppercase"><Badge variant="outline" className="border-slate-300 dark:border-white/[0.1]">{typeLabel}</Badge></TableCell></TableRow>); })}</TableBody>

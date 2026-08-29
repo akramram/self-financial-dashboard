@@ -3,6 +3,7 @@ import { createTransaction, fetchCategories } from '../lib/api';
 import type { Category } from '../lib/data';
 import { getActivePeriod } from '../lib/utils';
 import { useCategorySuggestion } from '../hooks/useCategorySuggestion';
+import { notifyDataChanged } from '../lib/dataSync';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -110,6 +111,7 @@ export default function AddTransactionForm() {
       return;
     }
     setMessage('Transaction added successfully!');
+    notifyDataChanged('transactions');
     setTitle('');
     setCategory('');
     setAmount('');
@@ -128,6 +130,7 @@ export default function AddTransactionForm() {
     setShowDuplicateDialog(false);
     if (res.ok) {
       setMessage('Transaction added successfully!');
+      notifyDataChanged('transactions');
       setTitle('');
       setCategory('');
       setAmount('');

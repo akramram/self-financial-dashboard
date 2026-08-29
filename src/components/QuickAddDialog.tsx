@@ -26,6 +26,7 @@ import {
 } from '@/components/ui/select';
 import { Plus, Loader2, Sparkles, X, RotateCcw, StickyNote, ChevronDown } from 'lucide-react';
 import { toast } from 'sonner';
+import { notifyDataChanged } from '../lib/dataSync';
 
 const TYPE_OPTIONS = [
   { value: 'cash', label: 'Cash' },
@@ -173,6 +174,7 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded }: QuickAdd
         resetForm();
         onOpenChange(false);
         toast.success('Transaction added');
+        notifyDataChanged('transactions');
         if (onAdded) onAdded();
       }, 600);
     } catch {
@@ -216,6 +218,7 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded }: QuickAdd
       });
       if (res.ok) {
         toast.success(`${tx.title} — ${formatIdr(tx.amount)} added`);
+        notifyDataChanged('transactions');
         onAdded?.();
         onOpenChange(false);
       } else {
