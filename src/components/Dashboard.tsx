@@ -11,6 +11,7 @@ import { LazyMotion, domAnimation } from 'motion/react';
 import GlassCard from './ui/glass-card';
 import StatCard from './ui/stat-card';
 import AnimatedCounter from './ui/animated-counter';
+import InView from './ui/in-view';
 import Sparkline from './Sparkline';
 
 import { DollarSign, Wallet, BarChart3, TrendingUp, TrendingDown, Scale, Shield, Bell, Plus, X, AlertTriangle, Search } from 'lucide-react';
@@ -208,7 +209,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
       <div className="space-y-5">
 
         {/* ═══════════ SECTION 1: PULSE — "Gimana kondisi sekarang?" ═══════════ */}
-        <section>
+        <InView as="section" y={16} blur={6}>
           {/* Period filter pill */}
           <div className="flex items-center justify-between mb-3">
             <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/40">Pulse</p>
@@ -279,10 +280,10 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
               <StatCard label="Net Worth" value={formatIdr(glance.nw)} isPositive={glance.nw >= glance.prevNw} color="#f59e0b" icon={<BarChart3 className="w-4 h-4" />} sparkline={<MiniSparkline data={glance.last6Nw} color="#f59e0b" />} />
             </div>
           )}
-        </section>
+        </InView>
 
         {/* ═══════════ SECTION 2: FLOW — "Ke mana duit?" ═══════════ */}
-        <section>
+        <InView as="section" delay={0.05}>
           <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/40 mb-3">Flow</p>
 
           {/* Spending Pulse + Safe to Spend merged */}
@@ -340,10 +341,10 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
             <h3 className="text-sm font-semibold text-slate-800 dark:text-white/80 mb-3">Top Merchants</h3>
             <TopMerchantsMini transactions={filteredTransactions} activePeriodId={activeSummary?.period_id ?? null} />
           </GlassCard>
-        </section>
+        </InView>
 
         {/* ═══════════ SECTION 3: ACT — "Apa yang harus dilakukan?" ═══════════ */}
-        <section>
+        <InView as="section" delay={0.1}>
           <div className="flex items-center justify-between mb-3">
             <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/40">Act</p>
             {/* Alert bell */}
@@ -400,10 +401,10 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
           </GlassCard>
 
           <MonthKickoffModal open={kickoffOpen} onOpenChange={setKickoffOpen} nextMonth={kickoffBanner?.nextMonth || ''} recurringCount={kickoffBanner?.recurringCount || 0} onSuccess={() => { setKickoffBanner(null); window.location.reload(); }} />
-        </section>
+        </InView>
 
         {/* ═══════════ SECTION 4: INSIGHTS — "Pahami lebih dalam" ═══════════ */}
-        <section>
+        <InView as="section" delay={0.15}>
           <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/40 mb-3">Insights</p>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
@@ -449,10 +450,10 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
           <GlassCard className="mb-4">
             <FinancialInsights transactions={localTransactions} networth={networth} summaries={summaries} categories={categories} activeMonth={activeSummary?.month} />
           </GlassCard>
-        </section>
+        </InView>
 
         {/* ═══════════ SECTION 5: FEED — Recent transactions ═══════════ */}
-        <section>
+        <InView as="section" delay={0.2}>
           <div className="flex items-center justify-between mb-3">
             <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/40">Feed</p>
             <a href="/transactions" className="text-xs text-slate-500 dark:text-white/40 hover:text-slate-700 dark:text-white/70 no-underline">View all →</a>
@@ -557,10 +558,10 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
               </div>
             )}
           </GlassCard>
-        </section>
+        </InView>
 
         {/* ═══════════ CHARTS — lower section ═══════════ */}
-        <section>
+        <InView as="section" delay={0.25}>
           <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/40 mb-3">Charts</p>
           <div className="glass-card p-5 bg-slate-100 dark:bg-white/[0.02] border-slate-200 dark:border-white/[0.06] mb-4">
             <h3 className="text-base font-semibold text-slate-800 dark:text-white/80">Cash Outcome vs Credit Payment</h3><OutcomeChart data={filteredSummaries} /></div>
@@ -572,7 +573,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
             <div className="glass-card p-5 bg-slate-100 dark:bg-white/[0.02] border-slate-200 dark:border-white/[0.06]"><h3 className="text-base font-semibold text-slate-800 dark:text-white/80">{isAllTime ? 'Latest Month Categories' : `${activeSummary?.month ?? ''} Categories`}</h3>{activeSummary?.category_totals && Object.keys(activeSummary.category_totals).length > 0 ? <CategoryChart data={activeSummary.category_totals} categories={categories} onCategoryClick={openCategoryDialog} /> : <p className="text-slate-500 dark:text-white/30 text-sm">No category data available.</p>}</div>
           </div>
           <PeriodVsAverage summaries={filteredSummaries} categories={categories} activePeriodId={filterPeriodId} />
-        </section>
+        </InView>
 
         {/* ═══════════ Category Drill-Down Dialog ═══════════ */}
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
