@@ -1,6 +1,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { TrendingUp, TrendingDown } from 'lucide-react';
+import { motion } from 'motion/react';
 
 interface StatCardProps {
   label: string;
@@ -30,16 +31,19 @@ export default function StatCard({
   onClick,
 }: StatCardProps) {
   return (
-    <div
+    <motion.div
       className={cn(
-        'relative p-4 rounded-2xl transition-all duration-300',
+        'relative p-4 rounded-2xl',
         'bg-slate-100 dark:bg-white/[0.03] backdrop-blur-sm',
         'border border-slate-200 dark:border-white/[0.06]',
-        onClick && 'cursor-pointer hover:scale-[1.02] hover:shadow-lg',
+        onClick && 'cursor-pointer',
         'group',
         className,
       )}
       onClick={onClick}
+      whileHover={onClick ? { scale: 1.02, y: -2 } : undefined}
+      whileTap={onClick ? { scale: 0.98 } : undefined}
+      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
     >
       {/* Radar glow on hover */}
       <div
@@ -66,17 +70,24 @@ export default function StatCard({
 
           {/* Delta */}
           {delta && (
-            <div className="flex items-center gap-1" style={{ color: isPositive ? color : color }}>
+            <motion.div
+              key={delta}
+              className="flex items-center gap-1"
+              style={{ color: isPositive ? color : color }}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, ease: 'easeOut' }}
+            >
               {isPositive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
               <span className="text-xs font-semibold">{delta}</span>
               {deltaPct && <span className="text-[10px] opacity-50">{deltaPct}</span>}
-            </div>
+            </motion.div>
           )}
         </div>
 
         {/* Sparkline */}
         {sparkline && <div className="ml-2 shrink-0 self-end">{sparkline}</div>}
       </div>
-    </div>
+    </motion.div>
   );
 }
