@@ -1,5 +1,31 @@
 # Iteration Log
 
+## Sesi Cron — 30 Agustus 2026: Cross-Tab Data Sync via BroadcastChannel (PR #180)
+
+### Ringkasan
+Event bus data-sync kemarin (PR #178) hanya bekerja same-tab. Kini `notifyDataChanged()` juga `postMessage` ke `BroadcastChannel('fin-data-sync')`, dan `onDataChanged()` me-relay pesan remote menjadi CustomEvent lokal — quick add / edit / delete di tab A langsung me-refresh Dashboard + TransactionTable di tab B (same origin). Semua listener existing bekerja tanpa perubahan apa pun.
+
+### Branch
+`feat/cross-tab-sync` (merged via PR #180, deleted)
+
+### Apa yang berubah
+**File yang dimodifikasi:**
+- `src/lib/dataSync.ts` — singleton channel per page (module-level, lazy, try/catch fallback null untuk browser tanpa BroadcastChannel). `postMessage` tidak pernah deliver ke pengirim + satu channel shared per page → listener same-tab tetap fire **tepat satu kali** (no echo loop). Pesan remote di-re-dispatch sebagai CustomEvent dengan `detail.remote = true`.
+- `src/__tests__/dataSync.test.ts` — 3 → 7 test: relay tab A → tab B (isolasi module via `vi.resetModules`), no-echo (exactly once), fallback tanpa BroadcastChannel, scope terjaga lewat relay.
+
+**File baru:**
+- `src/__tests__/fakeBroadcastChannel.ts` — FakeChannel dengan semantik delivery sesuai spec (other channels same name, never self; `vi.resetModules` + dynamic import untuk simulasi dua tab).
+
+### Test results
+✅ 7/7 dataSync, full suite **170/170** (~1.3s). Test menemukan bug nyata sebelum ship: implementasi pertama (channel per-panggilan) membuat listener sama fire 2× — fixed dengan singleton.
+
+### Build status
+✅ Clean build (`rm -rf dist/`), PM2 delete + start via script wrapper + `pm2 save`. `/` 302 auth, `/login` + `/transactions` 200, CSS hash 200, error log kosong. Bundle `dataSync.BqDnxtFh.js` terverifikasi berisi `BroadcastChannel('fin-data-sync')`.
+
+### Catatan
+- Zero perubahan caller — Dashboard/TransactionTable/forms tidak tersentuh.
+- Browser lama tanpa BroadcastChannel degrade diam-diam ke same-tab-only.
+
 ## Sesi Cron — 29 Agustus 2026: Live Data-Sync Event Bus — Dashboard Refresh Tanpa Reload (PR #178)
 
 ### Ringkasan
