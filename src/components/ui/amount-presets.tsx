@@ -1,6 +1,6 @@
 import React from 'react';
 
-interface AmountPreset {
+export interface AmountPreset {
   label: string;
   value: number;
 }

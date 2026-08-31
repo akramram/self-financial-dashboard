@@ -1268,6 +1268,39 @@ export function getTitleSpending(periodId: number) {
   `).all(periodId) as any[];
 }
 
+// ─── Smart Amount Presets ──────────────────────────────────────────────────
+
+export interface AmountPresetSuggestion {
+  value: number;
+  count: number;
+}
+
+/**
+ * Most frequently used exact amounts from recent paid expense transactions.
+ * Used by Quick Add to personalize the amount preset chips.
+ * Considers only cash/credit_expense (not income, not credit_payment —
+ * those amounts are dictated by statements, not habit).
+ */
+export function getTopAmounts(limit = 6, periodWindow = 6): AmountPresetSuggestion[] {
+  const rows = db.prepare(`
+    SELECT t.amount as value, COUNT(*) as count
+    FROM transactions t
+    JOIN periods p ON t.period_id = p.id
+    WHERE t.done = 1
+      AND t.type IN ('cash', 'credit_expense')
+      AND t.amount > 0
+      AND p.start_date >= (
+        SELECT COALESCE(MIN(start_date), '9999-99-99') FROM (
+          SELECT start_date FROM periods ORDER BY start_date DESC LIMIT ?
+        )
+      )
+    GROUP BY t.amount
+    ORDER BY count DESC, t.amount ASC
+    LIMIT ?
+  `).all(periodWindow, limit) as AmountPresetSuggestion[];
+  return rows;
+}
+
 // ─── Smart Category Suggestion ─────────────────────────────────────────────
 
 export interface CategorySuggestion {

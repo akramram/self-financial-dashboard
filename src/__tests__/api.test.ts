@@ -27,6 +27,7 @@ const mockGetGoals = vi.fn();
 const mockInsertGoal = vi.fn();
 const mockGetRecurringCostAnalysis = vi.fn();
 const mockSuggestCategory = vi.fn();
+const mockGetTopAmounts = vi.fn();
 
 vi.mock('../lib/db', () => ({
   db: {},
@@ -50,6 +51,7 @@ vi.mock('../lib/db', () => ({
   insertGoal: mockInsertGoal,
   getRecurringCostAnalysis: mockGetRecurringCostAnalysis,
   suggestCategory: mockSuggestCategory,
+  getTopAmounts: mockGetTopAmounts,
 }));
 
 async function parseJson(res: Response) {
@@ -783,5 +785,45 @@ describe('API — GET /api/suggest-category', () => {
     expect(body.category).toBeNull();
     expect(body.match_type).toBeNull();
     expect(body.sample_count).toBe(0);
+  });
+});
+
+// ─── GET /api/amount-presets ────────────────────────────────────────────────
+
+describe('API — GET /api/amount-presets', () => {
+  let GET: any;
+
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    const mod = await import('../pages/api/amount-presets');
+    GET = mod.GET;
+  });
+
+  it('returns presets with short-form labels', async () => {
+    mockGetTopAmounts.mockReturnValue([
+      { value: 25000, count: 5 },
+      { value: 1500000, count: 2 },
+    ]);
+    const res = await GET({ request: makeRequest('/api/amount-presets') });
+    expect(res.status).toBe(200);
+    const body = await parseJson(res);
+    expect(body.presets).toEqual([
+      { label: '25K', value: 25000 },
+      { label: '1.5M', value: 1500000 },
+    ]);
+  });
+
+  it('calls getTopAmounts with default limit and window', async () => {
+    mockGetTopAmounts.mockReturnValue([]);
+    await GET({ request: makeRequest('/api/amount-presets') });
+    expect(mockGetTopAmounts).toHaveBeenCalledWith(6, 6);
+  });
+
+  it('returns empty presets array when no history', async () => {
+    mockGetTopAmounts.mockReturnValue([]);
+    const res = await GET({ request: makeRequest('/api/amount-presets') });
+    expect(res.status).toBe(200);
+    const body = await parseJson(res);
+    expect(body.presets).toEqual([]);
   });
 });

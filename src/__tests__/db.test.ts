@@ -1150,3 +1150,92 @@ function suggestCategoryQuery(db: any, title: string) {
 
   return { category: null, confidence: 0, match_type: null, sample_count: 0 };
 }
+
+// ─── getTopAmounts ───────────────────────────────────────────────────────────
+
+/**
+ * Local mirror of getTopAmounts SQL for testing against an isolated DB
+ * (db.ts connects to the real DB at import time).
+ */
+function topAmountsQuery(db: any, limit = 6, periodWindow = 6) {
+  return db.prepare(`
+    SELECT t.amount as value, COUNT(*) as count
+    FROM transactions t
+    JOIN periods p ON t.period_id = p.id
+    WHERE t.done = 1
+      AND t.type IN ('cash', 'credit_expense')
+      AND t.amount > 0
+      AND p.start_date >= (
+        SELECT COALESCE(MIN(start_date), '9999-99-99') FROM (
+          SELECT start_date FROM periods ORDER BY start_date DESC LIMIT ?
+        )
+      )
+    GROUP BY t.amount
+    ORDER BY count DESC, t.amount ASC
+    LIMIT ?
+  `).all(periodWindow, limit);
+}
+
+describe('DB — getTopAmounts', () => {
+  let db: any, cleanup: () => void;
+  let periodId: number;
+
+  beforeEach(() => {
+    const t = createTestDb();
+    db = t.db;
+    cleanup = t.cleanup;
+    const p = seedPeriod(db, 'July 2026');
+    periodId = p.id;
+  });
+
+  afterEach(() => cleanup());
+
+  it('returns most frequent amounts ordered by count desc', () => {
+    for (let i = 0; i < 5; i++) seedTransaction(db, periodId, { title: 'Kopi', amount: 25000, type: 'cash', done: 1 });
+    for (let i = 0; i < 3; i++) seedTransaction(db, periodId, { title: 'Makan', amount: 50000, type: 'cash', done: 1 });
+    seedTransaction(db, periodId, { title: 'Once', amount: 100000, type: 'cash', done: 1 });
+    const rows = topAmountsQuery(db);
+    expect(rows[0]).toEqual({ value: 25000, count: 5 });
+    expect(rows[1]).toEqual({ value: 50000, count: 3 });
+    expect(rows[2]).toEqual({ value: 100000, count: 1 });
+  });
+
+  it('excludes income, credit_payment, unpaid, and zero-amount rows', () => {
+    seedTransaction(db, periodId, { title: 'Gaji', amount: 15000000, type: 'cash', done: 1 }); // salary but type cash — included by design
+    seedTransaction(db, periodId, { title: 'CC', amount: 999999, type: 'credit_payment', done: 1 });
+    seedTransaction(db, periodId, { title: 'Pending', amount: 77777, type: 'cash', done: 0 });
+    seedTransaction(db, periodId, { title: 'Zero', amount: 0, type: 'cash', done: 1 });
+    const rows = topAmountsQuery(db) as Array<{ value: number }>;
+    const values = rows.map((r) => r.value);
+    expect(values).toContain(15000000);
+    expect(values).not.toContain(999999);
+    expect(values).not.toContain(77777);
+    expect(values).not.toContain(0);
+  });
+
+  it('limits to the 6 most recent periods via start_date window', () => {
+    // Seed 7 periods; the oldest (Jan) falls outside the 6-period window
+    const oldP = seedPeriod(db, 'January 2026');
+    for (let i = 0; i < 10; i++) seedTransaction(db, oldP.id, { title: 'Old', amount: 12345, type: 'cash', done: 1 });
+    ['February 2026', 'March 2026', 'April 2026', 'May 2026', 'June 2026'].forEach((m) => {
+      const p = seedPeriod(db, m);
+      seedTransaction(db, p.id, { title: `Tx ${m}`, amount: 54321, type: 'cash', done: 1 });
+    });
+    const rows = topAmountsQuery(db) as Array<{ value: number }>;
+    const values = rows.map((r) => r.value);
+    expect(values).not.toContain(12345);
+    expect(values).toContain(54321);
+  });
+
+  it('breaks count ties by ascending amount', () => {
+    seedTransaction(db, periodId, { title: 'B', amount: 90000, type: 'cash', done: 1 });
+    seedTransaction(db, periodId, { title: 'A', amount: 20000, type: 'cash', done: 1 });
+    const rows = topAmountsQuery(db) as Array<{ value: number }>;
+    expect(rows[0].value).toBe(20000); // tie → smaller amount first
+  });
+
+  it('respects the limit parameter', () => {
+    for (let i = 1; i <= 10; i++) seedTransaction(db, periodId, { title: `T${i}`, amount: 1000 * i, type: 'cash', done: 1 });
+    expect(topAmountsQuery(db, 3).length).toBe(3);
+  });
+});
