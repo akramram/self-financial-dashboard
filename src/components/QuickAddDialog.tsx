@@ -16,7 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
-import AmountPresets from '@/components/ui/amount-presets';
+import AmountPresets, { DEFAULT_PRESETS, type AmountPreset } from '@/components/ui/amount-presets';
 import {
   Select,
   SelectContent,
@@ -56,6 +56,7 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded }: QuickAdd
   const [showForceBtn, setShowForceBtn] = useState(false);
   const [recentTxs, setRecentTxs] = useState<Transaction[]>([]);
   const [repeatLoading, setRepeatLoading] = useState<string | null>(null);
+  const [amountPresets, setAmountPresets] = useState<AmountPreset[]>(DEFAULT_PRESETS);
 
   // Track whether the user has manually edited the category field.
   // While true, auto-suggest will NOT override the user's input.
@@ -82,6 +83,15 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded }: QuickAdd
   useEffect(() => {
     if (open) {
       fetchCategories().then(setCategories).catch(() => {});
+      // Fetch personalized amount presets (most-used amounts) — silent fallback to defaults
+      fetch('/api/amount-presets')
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => {
+          if (d?.presets?.length) {
+            setAmountPresets(d.presets.map((p: AmountPreset) => ({ label: p.label, value: Number(p.value) })));
+          }
+        })
+        .catch(() => {});
       // Fetch recent transactions for Quick Repeat
       fetchTransactions().then((txs) => {
         // Deduplicate by title+amount, take 5 most recent unique
@@ -312,7 +322,7 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded }: QuickAdd
                 ref={amountRef}
                 className="text-right"
               />
-              <AmountPresets currentValue={amount} onChange={setAmount} />
+              <AmountPresets presets={amountPresets} currentValue={amount} onChange={setAmount} />
             </div>
             <div className="space-y-1.5">
               <Label>Type</Label>
