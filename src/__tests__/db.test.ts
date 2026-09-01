@@ -1239,3 +1239,108 @@ describe('DB — getTopAmounts', () => {
     expect(topAmountsQuery(db, 3).length).toBe(3);
   });
 });
+
+// ─── getTopTitles ───────────────────────────────────────────────────────────
+
+/**
+ * Local mirror of getTopTitles SQL for testing against an isolated DB
+ * (db.ts connects to the real DB at import time).
+ */
+function topTitlesQuery(db: any, limit = 30) {
+  const rows = db.prepare(`
+    SELECT LOWER(TRIM(title)) AS norm, COUNT(*) AS count,
+           MAX(COALESCE(created_time, date)) AS last_used
+    FROM transactions
+    WHERE done = 1 AND TRIM(title) != ''
+    GROUP BY norm
+    ORDER BY count DESC, last_used DESC
+    LIMIT ?
+  `).all(limit);
+  if (rows.length === 0) return [];
+  const modal = db.prepare(`
+    SELECT LOWER(TRIM(title)) AS norm, amount, type, category, COUNT(*) AS cnt
+    FROM transactions
+    WHERE done = 1 AND TRIM(title) != ''
+    GROUP BY norm, amount, type, category
+  `).all();
+  const best = new Map<string, any>();
+  for (const m of modal) {
+    const cur = best.get(m.norm);
+    if (!cur || m.cnt > cur.cnt) best.set(m.norm, m);
+  }
+  const cased = db.prepare(`
+    SELECT title, LOWER(TRIM(title)) AS norm, COALESCE(created_time, date) AS ts
+    FROM transactions
+    WHERE done = 1 AND TRIM(title) != ''
+    ORDER BY ts ASC
+  `).all();
+  const casing = new Map<string, string>();
+  for (const c of cased) casing.set(c.norm, c.title);
+  return rows.map((r: any) => {
+    const b = best.get(r.norm);
+    return {
+      title: casing.get(r.norm) || r.norm,
+      count: r.count,
+      amount: b ? b.amount : null,
+      type: b ? b.type : null,
+      category: b ? b.category : null,
+      last_used: r.last_used,
+    };
+  });
+}
+
+describe('DB — getTopTitles', () => {
+  let db: any, cleanup: () => void;
+  let periodId: number;
+
+  beforeEach(() => {
+    const t = createTestDb();
+    db = t.db;
+    cleanup = t.cleanup;
+    const p = seedPeriod(db, 'July 2026');
+    periodId = p.id;
+  });
+
+  afterEach(() => cleanup());
+
+  it('ranks titles by frequency and attaches modal amount/type/category', () => {
+    for (let i = 0; i < 4; i++) seedTransaction(db, periodId, { title: 'Listrik', category: 'Tagihan', amount: 100000, type: 'credit_expense', done: 1 });
+    for (let i = 0; i < 2; i++) seedTransaction(db, periodId, { title: 'Bensin', category: 'Bensin', amount: 50000, type: 'cash', done: 1 });
+    const rows = topTitlesQuery(db);
+    expect(rows[0].title).toBe('Listrik');
+    expect(rows[0].count).toBe(4);
+    expect(rows[0].amount).toBe(100000);
+    expect(rows[0].type).toBe('credit_expense');
+    expect(rows[0].category).toBe('Tagihan');
+    expect(rows[1].title).toBe('Bensin');
+  });
+
+  it('normalizes case and whitespace variants into one title', () => {
+    seedTransaction(db, periodId, { title: 'Kopi Senja', category: 'Makan', amount: 25000, type: 'cash', done: 1 });
+    seedTransaction(db, periodId, { title: '  kopi senja ', category: 'Makan', amount: 25000, type: 'cash', done: 1 });
+    const rows = topTitlesQuery(db);
+    expect(rows.length).toBe(1);
+    expect(rows[0].count).toBe(2);
+  });
+
+  it('excludes unpaid and blank titles', () => {
+    seedTransaction(db, periodId, { title: 'Unpaid', amount: 1000, type: 'cash', done: 0 });
+    seedTransaction(db, periodId, { title: '   ', amount: 1000, type: 'cash', done: 1 });
+    const rows = topTitlesQuery(db);
+    expect(rows.find((r: any) => r.title === 'Unpaid')).toBeUndefined();
+    expect(rows.length).toBe(0);
+  });
+
+  it('picks modal amount when a title has varying amounts', () => {
+    seedTransaction(db, periodId, { title: 'Grab', amount: 20000, type: 'cash', done: 1 });
+    seedTransaction(db, periodId, { title: 'Grab', amount: 20000, type: 'cash', done: 1 });
+    seedTransaction(db, periodId, { title: 'Grab', amount: 60000, type: 'cash', done: 1 });
+    const rows = topTitlesQuery(db);
+    expect(rows[0].amount).toBe(20000);
+  });
+
+  it('respects the limit parameter', () => {
+    for (let i = 1; i <= 10; i++) seedTransaction(db, periodId, { title: `T${i}`, amount: 1000, type: 'cash', done: 1 });
+    expect(topTitlesQuery(db, 3).length).toBe(3);
+  });
+});

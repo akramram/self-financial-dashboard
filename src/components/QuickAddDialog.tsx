@@ -57,10 +57,15 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded }: QuickAdd
   const [recentTxs, setRecentTxs] = useState<Transaction[]>([]);
   const [repeatLoading, setRepeatLoading] = useState<string | null>(null);
   const [amountPresets, setAmountPresets] = useState<AmountPreset[]>(DEFAULT_PRESETS);
+  const [titlePresets, setTitlePresets] = useState<{ title: string; count: number; amount: number | null; type: string | null; category: string | null }[]>([]);
+  const [titleMatched, setTitleMatched] = useState(false);
 
   // Track whether the user has manually edited the category field.
   // While true, auto-suggest will NOT override the user's input.
   const [categoryUserTouched, setCategoryUserTouched] = useState(false);
+  // Same for amount/type — title-history auto-fill won't override manual edits.
+  const [amountUserTouched, setAmountUserTouched] = useState(false);
+  const [typeUserTouched, setTypeUserTouched] = useState(false);
 
   const titleRef = useRef<HTMLInputElement>(null);
   const amountRef = useRef<HTMLInputElement>(null);
@@ -68,6 +73,35 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded }: QuickAdd
   // Smart category suggestion — debounced fetch based on title
   const { suggestedCategory, confidence, isLoading: suggestionLoading, isAutoFilled } =
     useCategorySuggestion(title);
+
+  // Title-history auto-fill: when the typed title exactly matches a known
+  // frequent title, fill its usual amount/type/category (unless user overrode).
+  useEffect(() => {
+    const norm = title.trim().toLowerCase();
+    if (!norm || titlePresets.length === 0) {
+      setTitleMatched(false);
+      return;
+    }
+    const preset = titlePresets.find((p) => p.title.trim().toLowerCase() === norm);
+    if (!preset) {
+      setTitleMatched(false);
+      return;
+    }
+    setTitleMatched(true);
+    if (!amountUserTouched && preset.amount != null && String(preset.amount) !== amount) {
+      setAmount(String(preset.amount));
+    }
+    const validTypes = ['cash', 'credit_expense', 'credit_payment'];
+    if (!typeUserTouched && preset.type && validTypes.includes(preset.type) && preset.type !== type) {
+      setType(preset.type as 'cash' | 'credit_expense' | 'credit_payment');
+    }
+    // Category handled by the suggestion hook below (it covers this case too),
+    // but keep it here as a direct fallback when the API suggestion lags.
+    if (!categoryUserTouched && preset.category && preset.category !== category) {
+      setCategory(preset.category);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [title, titlePresets]);
 
   // Auto-fill category when suggestion arrives and user hasn't manually typed one
   useEffect(() => {
@@ -90,6 +124,13 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded }: QuickAdd
           if (d?.presets?.length) {
             setAmountPresets(d.presets.map((p: AmountPreset) => ({ label: p.label, value: Number(p.value) })));
           }
+        })
+        .catch(() => {});
+      // Fetch frequently-used titles for autocomplete + auto-fill — silent fallback
+      fetch('/api/title-presets')
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => {
+          if (d?.titles?.length) setTitlePresets(d.titles);
         })
         .catch(() => {});
       // Fetch recent transactions for Quick Repeat
@@ -123,6 +164,9 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded }: QuickAdd
     setShowForceBtn(false);
     setCategoryUserTouched(false);
     setShowNotes(false);
+    setAmountUserTouched(false);
+    setTypeUserTouched(false);
+    setTitleMatched(false);
   };
 
   const buildPayload = (force = false) => {
@@ -297,16 +341,32 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded }: QuickAdd
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Title + Amount row */}
           <div className="space-y-1.5">
-            <Label htmlFor="qa-title">Title <span className="text-red-500">*</span></Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="qa-title">Title <span className="text-red-500">*</span></Label>
+              {titleMatched && (
+                <span className="text-[11px] text-mint-600 dark:text-mint-400 flex items-center gap-1">
+                  <Sparkles className="w-3 h-3" />
+                  Auto-filled from history
+                </span>
+              )}
+            </div>
             <Input
               id="qa-title"
               type="text"
+              list="qa-title-presets"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. Kopi Senja"
               ref={titleRef}
               autoComplete="off"
             />
+            <datalist id="qa-title-presets">
+              {titlePresets.slice(0, 20).map((p) => (
+                <option key={p.title} value={p.title}>
+                  {p.category ? `${p.category} · ${p.count}×` : `${p.count}×`}
+                </option>
+              ))}
+            </datalist>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
@@ -316,17 +376,17 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded }: QuickAdd
                 id="qa-amount"
                 type="number"
                 value={amount}
-                onChange={(e) => setAmount(e.target.value)}
+                onChange={(e) => { setAmountUserTouched(true); setAmount(e.target.value); }}
                 onKeyDown={handleAmountKeyDown}
                 placeholder="25000"
                 ref={amountRef}
                 className="text-right"
               />
-              <AmountPresets presets={amountPresets} currentValue={amount} onChange={setAmount} />
+              <AmountPresets presets={amountPresets} currentValue={amount} onChange={(v) => { setAmountUserTouched(true); setAmount(v); }} />
             </div>
             <div className="space-y-1.5">
               <Label>Type</Label>
-              <Select value={type} onValueChange={(v) => setType(v as any)}>
+              <Select value={type} onValueChange={(v) => { setTypeUserTouched(true); setType(v as any); }}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>

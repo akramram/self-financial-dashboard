@@ -1275,6 +1275,73 @@ export interface AmountPresetSuggestion {
   count: number;
 }
 
+// ─── Smart Title Presets ───────────────────────────────────────────────────
+
+export interface TitlePreset {
+  title: string;
+  count: number;
+  amount: number | null;
+  type: string | null;
+  category: string | null;
+  last_used: string | null;
+}
+
+/**
+ * Most frequently used transaction titles (case/whitespace-normalized),
+ * with the modal (most common) amount/type/category for each title.
+ * Used by Quick Add for title autocomplete + one-shot auto-fill on match.
+ */
+export function getTopTitles(limit = 30): TitlePreset[] {
+  const rows = db.prepare(`
+    SELECT
+      LOWER(TRIM(title)) AS norm,
+      COUNT(*) AS count,
+      MAX(COALESCE(created_time, date)) AS last_used
+    FROM transactions
+    WHERE done = 1 AND TRIM(title) != ''
+    GROUP BY norm
+    ORDER BY count DESC, last_used DESC
+    LIMIT ?
+  `).all(limit) as Array<{ norm: string; count: number; last_used: string }>;
+  if (rows.length === 0) return [];
+
+  // Modal amount/type/category per normalized title (single pass per field)
+  const modal = db.prepare(`
+    SELECT LOWER(TRIM(title)) AS norm, amount, type, category, COUNT(*) AS cnt
+    FROM transactions
+    WHERE done = 1 AND TRIM(title) != ''
+    GROUP BY norm, amount, type, category
+  `).all() as Array<{ norm: string; amount: number; type: string; category: string; cnt: number }>;
+
+  const best = new Map<string, { amount: number; type: string; category: string; cnt: number }>();
+  for (const m of modal) {
+    const cur = best.get(m.norm);
+    if (!cur || m.cnt > cur.cnt) best.set(m.norm, m);
+  }
+
+  // Preserve original casing: pick the most recent original-cased variant per norm
+  const cased = db.prepare(`
+    SELECT title, LOWER(TRIM(title)) AS norm, COALESCE(created_time, date) AS ts
+    FROM transactions
+    WHERE done = 1 AND TRIM(title) != ''
+    ORDER BY ts ASC
+  `).all() as Array<{ title: string; norm: string; ts: string }>;
+  const casing = new Map<string, string>();
+  for (const c of cased) casing.set(c.norm, c.title); // later ts overwrites → most recent casing wins
+
+  return rows.map((r) => {
+    const b = best.get(r.norm);
+    return {
+      title: casing.get(r.norm) || r.norm,
+      count: r.count,
+      amount: b ? b.amount : null,
+      type: b ? b.type : null,
+      category: b ? b.category : null,
+      last_used: r.last_used,
+    };
+  });
+}
+
 /**
  * Most frequently used exact amounts from recent paid expense transactions.
  * Used by Quick Add to personalize the amount preset chips.
