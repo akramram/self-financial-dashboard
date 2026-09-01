@@ -1,5 +1,23 @@
 # Iteration Log
 
+## Sesi Cron — 1 September 2026: Smart Title Autocomplete di Quick Add (PR #185)
+
+**Inovasi:** Field Title di QuickAddDialog sekarang belajar dari riwayat transaksi.
+
+- **Autocomplete judul** — `<datalist>` native berisi 20 judul tersering (dinormalisasi case/whitespace). Setiap opsi menampilkan hint `category · count×`.
+- **Auto-fill sekali klik** — saat judul yang diketik cocok exact (case-insensitive) dengan judul yang sering dipakai, dialog otomatis mengisi **amount, type, dan category** yang paling umum untuk judul itu. Badge "✨ Auto-filled from history" muncul di sebelah label Title.
+- **Edit manual selalu menang** — guard `amountUserTouched` / `typeUserTouched` (pola sama dengan `categoryUserTouched` yang sudah ada) mencegah auto-fill menimpa input user / preset chips. Semua guard reset saat submit/reopen.
+
+**Implementasi:**
+- `getTopTitles(limit)` di `src/lib/db.ts` — ranking judul by frequency + modal amount/type/category + casing terbaru. Read-only, tanpa schema change.
+- `GET /api/title-presets` — endpoint baru, dilindungi auth middleware (GET = semua user terautentikasi).
+- `QuickAddDialog.tsx` — fetch presets saat open (silent fallback), effect exact-match, datalist + badge.
+
+**Testing:** 5 test baru di `db.test.ts` (ranking, normalisasi, exclude unpaid/blank, modal amount, limit). Full suite 183 passed. Build bersih, deploy PM2, `/api/title-presets` terverifikasi live dengan session admin.
+
+**PR:** https://github.com/akramram/self-financial-dashboard/pull/185 (merged)
+
+
 ## Sesi Cron — 30 Agustus 2026: Cross-Tab Data Sync via BroadcastChannel (PR #180)
 
 ### Ringkasan
