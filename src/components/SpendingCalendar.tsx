@@ -25,7 +25,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react';
+import { CalendarDays, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 
 interface PeriodOption {
   period_id: number;
@@ -184,6 +184,12 @@ export default function SpendingCalendar({ transactions, periods }: Props) {
     setDialogOpen(true);
   };
 
+  // Open Quick Add pinned to this calendar day (Pattern 2: CustomEvent dispatch —
+  // crosses island boundary: calendar page → Layout-mounted QuickAddFAB).
+  const addForDay = (dKey: string) => {
+    window.dispatchEvent(new CustomEvent('quick-add-open', { detail: { date: dKey } }));
+  };
+
   const selectedDayData = selectedDateKey ? dailyTotals[selectedDateKey] : null;
 
   const selectedDateLabel = useMemo(() => {
@@ -266,6 +272,9 @@ export default function SpendingCalendar({ transactions, periods }: Props) {
             <span className="inline-block w-3 h-3 rounded-sm bg-red-100 dark:bg-red-900/30" />
             <span>High</span>
           </div>
+          <span className="hidden sm:inline text-xs text-slate-400 dark:text-white/25 pl-2 border-l border-slate-200 dark:border-white/[0.06]">
+            Tap an empty day (or right-click any day) to add a transaction on that date
+          </span>
         </div>
       </div>
 
@@ -293,6 +302,7 @@ export default function SpendingCalendar({ transactions, periods }: Props) {
             const total = data?.total ?? 0;
             const count = data?.count ?? 0;
             const isToday = dKey === todayKey;
+            const isFuture = date.getTime() > new Date(new Date().toDateString()).getTime();
             const heatClass = getHeatColor(total);
             // Show month abbreviation on period start (21st) and month boundary (1st)
             const showMonthLabel = date.getDate() === 21 || date.getDate() === 1;
@@ -301,13 +311,16 @@ export default function SpendingCalendar({ transactions, periods }: Props) {
             return (
               <button
                 key={dKey}
-                onClick={() => count > 0 && openDay(dKey)}
+                onClick={() => { if (count > 0) openDay(dKey); else addForDay(dKey); }}
+                onContextMenu={(e) => { e.preventDefault(); addForDay(dKey); }}
+                aria-label={`${dKey}${count > 0 ? ` — ${count} transaction${count !== 1 ? 's' : ''}, ${formatIdr(total)}` : ' — no transactions'}${!isFuture ? ' (right-click or long-press to add)' : ''}`}
+                title={count > 0 ? `${count} tx · ${formatIdr(total)} — right-click to add` : !isFuture ? 'Click to add a transaction' : undefined}
                 className={`
                   aspect-square rounded-lg border transition-all hover:scale-105 hover:shadow-sm
                   flex flex-col items-center justify-center gap-0.5
                   ${heatClass}
                   ${isToday ? 'ring-2 ring-mint-500 ring-offset-1 ring-offset-slate-50 dark:ring-offset-navy-950' : 'border-slate-200 dark:border-white/[0.06]'}
-                  ${count > 0 ? 'cursor-pointer' : 'cursor-default'}
+                  ${count > 0 || !isFuture ? 'cursor-pointer' : 'cursor-default'}
                   ${isMonthBoundary ? 'ring-1 ring-slate-300 dark:ring-white/10' : ''}
                 `}
               >
@@ -432,7 +445,15 @@ export default function SpendingCalendar({ transactions, periods }: Props) {
             </div>
           )}
 
-          <div className="flex justify-end pt-2">
+          <div className="flex justify-end gap-2 pt-2">
+            <Button
+              size="sm"
+              onClick={() => { setDialogOpen(false); addForDay(selectedDateKey!); }}
+              className="bg-emerald-600 hover:bg-emerald-700"
+            >
+              <Plus className="w-4 h-4" />
+              Add for this day
+            </Button>
             <Button size="sm" variant="secondary" onClick={() => setDialogOpen(false)}>
               Close
             </Button>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { fetchCategories, fetchTransactions } from '../lib/api';
 import type { Category, Transaction } from '../lib/data';
-import { getActivePeriod, formatIdr } from '../lib/utils';
+import { getActivePeriod, formatIdr, periodForDate } from '../lib/utils';
 import { useCategorySuggestion } from '../hooks/useCategorySuggestion';
 import {
   Dialog,
@@ -38,10 +38,18 @@ interface QuickAddDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onAdded?: () => void;
+  /** YYYY-MM-DD — when set, the transaction is placed on this day (period + created_time). */
+  presetDate?: string | null;
 }
 
-export default function QuickAddDialog({ open, onOpenChange, onAdded }: QuickAddDialogProps) {
-  const { month: defaultMonth, year: defaultYear } = getActivePeriod();
+export default function QuickAddDialog({ open, onOpenChange, onAdded, presetDate }: QuickAddDialogProps) {
+  // Target period: derived from presetDate when given (day ≥ 21 → next month's
+  // period), else the active period for today.
+  const pinnedPeriod = useMemo(
+    () => (presetDate ? periodForDate(presetDate) : null),
+    [presetDate],
+  );
+  const { month: defaultMonth, year: defaultYear } = pinnedPeriod ?? getActivePeriod();
 
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
@@ -186,7 +194,9 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded }: QuickAdd
       type,
       payment_method: type === 'cash' ? 'Cash' : 'Credit',
       done,
-      created_time: new Date().toISOString(),
+      // Pin to the selected day when opened from the calendar (noon UTC
+      // keeps the local date stable across timezones).
+      created_time: presetDate ? `${presetDate}T12:00:00.000Z` : new Date().toISOString(),
       notes: notes.trim() || undefined,
       ...(force ? { force: true } : {}),
     };
@@ -261,7 +271,7 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded }: QuickAdd
       type: tx.type,
       payment_method: tx.payment_method,
       done: true,
-      created_time: new Date().toISOString(),
+      created_time: presetDate ? `${presetDate}T12:00:00.000Z` : new Date().toISOString(),
       force: true, // allow repeat even if similar exists
     };
     try {
@@ -295,6 +305,15 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded }: QuickAdd
   const isAmountValid = amount && Number(amount) > 0;
   const previewAmount = isAmountValid ? formatIdr(Number(amount)) : '';
 
+  // "Aug 28" style label for the pinned date (calendar context)
+  const selectedDateLabel = useMemo(() => {
+    if (!presetDate) return '';
+    const d = new Date(`${presetDate}T12:00:00`);
+    if (isNaN(d.getTime())) return presetDate;
+    const abbr = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return `${abbr[d.getMonth()]} ${d.getDate()}`;
+  }, [presetDate]);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[480px]">
@@ -304,7 +323,11 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded }: QuickAdd
             Quick Add Transaction
           </DialogTitle>
           <DialogDescription>
-            Add a transaction to {defaultMonth} {defaultYear}. Press Enter in the amount field to submit.
+            {presetDate ? (
+              <>Adding to <span className="font-medium text-mint-600 dark:text-mint-400">{defaultMonth} {defaultYear}</span> · pinned to <span className="font-medium text-mint-600 dark:text-mint-400">{selectedDateLabel}</span>. Press Enter in the amount field to submit.</>
+            ) : (
+              <>Add a transaction to {defaultMonth} {defaultYear}. Press Enter in the amount field to submit.</>
+            )}
           </DialogDescription>
         </DialogHeader>
 

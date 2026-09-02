@@ -12,6 +12,7 @@ import { Plus } from 'lucide-react';
  */
 export default function QuickAddFAB() {
   const [open, setOpen] = useState(false);
+  const [presetDate, setPresetDate] = useState<string | null>(null);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -23,6 +24,7 @@ export default function QuickAddFAB() {
           return;
         }
         e.preventDefault();
+        setPresetDate(null); // keyboard shortcut = today
         setOpen(true);
       }
       // Escape closes
@@ -32,8 +34,13 @@ export default function QuickAddFAB() {
     };
     window.addEventListener('keydown', handleKeyDown);
 
-    // Listen for custom event from Command Palette
-    const handleQuickAddOpen = () => setOpen(true);
+    // Listen for custom event from Command Palette / Calendar day cells.
+    // detail: { date?: string } — YYYY-MM-DD pins the new transaction to that day.
+    const handleQuickAddOpen = (e: Event) => {
+      const date = (e as CustomEvent).detail?.date;
+      setPresetDate(typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : null);
+      setOpen(true);
+    };
     window.addEventListener('quick-add-open', handleQuickAddOpen);
 
     return () => {
@@ -46,7 +53,7 @@ export default function QuickAddFAB() {
     <>
       {/* Floating Action Button — desktop only (mobile uses bottom-tab center button) */}
       <button
-        onClick={() => setOpen(true)}
+        onClick={() => { setPresetDate(null); setOpen(true); }}
         className="hidden lg:flex fixed bottom-8 right-8 z-40 w-14 h-14 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg hover:shadow-xl transition-all hover:scale-110 items-center justify-center group"
         aria-label="Quick add transaction (Shift+N)"
         title="Quick Add Transaction (Shift+N)"
@@ -55,7 +62,7 @@ export default function QuickAddFAB() {
       </button>
 
       {/* Quick Add Dialog */}
-      <QuickAddDialog open={open} onOpenChange={setOpen} />
+      <QuickAddDialog open={open} onOpenChange={setOpen} presetDate={presetDate} />
     </>
   );
 }

@@ -51,6 +51,30 @@ export function getActivePeriodMonth(): string {
   return `${month} ${year}`;
 }
 
+/**
+ * Salary period that contains an arbitrary YYYY-MM-DD date.
+ * Same 21st→20th convention as getActivePeriod(), but for a given day
+ * instead of today. Returns null for unparseable input.
+ * Used by Quick Add to place a transaction on a specific calendar day.
+ */
+export function periodForDate(dateStr: string): { month: string; year: number } | null {
+  const d = new Date(`${dateStr}T12:00:00`);
+  if (isNaN(d.getTime())) return null;
+  const day = d.getDate();
+  if (day >= 21) {
+    // Second half of the period → period is named after next month
+    const next = new Date(d.getFullYear(), d.getMonth() + 1, 1);
+    return {
+      month: next.toLocaleDateString('en-US', { month: 'long' }),
+      year: next.getFullYear(),
+    };
+  }
+  return {
+    month: d.toLocaleDateString('en-US', { month: 'long' }),
+    year: d.getFullYear(),
+  };
+}
+
 export function getMonthSortKey(monthName: string): number {
   const monthMap: Record<string, number> = {
     january: 1, february: 2, march: 3, april: 4, may: 5, june: 6,
