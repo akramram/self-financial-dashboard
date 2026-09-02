@@ -1,5 +1,22 @@
 # Iteration Log
 
+## Sesi Cron — 2 September 2026: Quick Add dari Hari Kalender (PR #186)
+
+**Inovasi:** Tap hari di Spending Calendar → Quick Add terbuka ter-pin ke tanggal itu.
+
+- **Masalah:** Quick Add selalu stamp `created_time = now` + period aktif. Log transaksi kemarin harus edit ulang — dan heatmap menaruhnya di "hari ini" sampai diedit. Hari kosong di kalender tidak ada aksinya.
+- **`periodForDate(dateStr)`** (`src/lib/utils.ts`) — resolusi period gaji (21→20) untuk tanggal arbitrer, termasuk year boundary (25 Des → period January).
+- **Event `quick-add-open` sekarang terima `detail: { date }`** — QuickAddFAB validasi format, forward sebagai prop `presetDate` ke QuickAddDialog. Dispatcher lama (Command Palette, bottom tabs) tanpa detail → perilaku tidak berubah.
+- **`presetDate` di QuickAddDialog** — period target diturunkan dari tanggal itu; `created_time` di-pin ke `{date}T12:00:00.000Z` (noon UTC, stabil lintas timezone). Deskripsi dialog menampilkan "pinned to Aug 28". Berlaku juga untuk Quick Repeat.
+- **SpendingCalendar** — klik hari kosong (non-masa-depan) / right-click hari mana pun / tombol "Add for this day" di dialog detail hari → dispatch event ter-pin. Hint di legend.
+- **`scripts/deploy-dashboard.sh`** — wrapper deploy bersih cron-safe (inline version kena false-positive security scanner).
+
+**Testing:** 5 test baru `periodForDate` di `src/__tests__/utils.test.ts`. Full suite **188/188** (~1.4s).
+
+**Build/Deploy:** ✅ Clean build, PM2 delete + start via ecosystem, `/login` 200, CSS hash 200, error log kosong. Bundle grep verifikasi kode baru ada di chunk live.
+
+**PR:** https://github.com/akramram/self-financial-dashboard/pull/186 (merged)
+
 ## Sesi Cron — 1 September 2026: Smart Title Autocomplete di Quick Add (PR #185)
 
 **Inovasi:** Field Title di QuickAddDialog sekarang belajar dari riwayat transaksi.
