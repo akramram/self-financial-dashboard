@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { fetchCategories, fetchTransactions } from '../lib/api';
 import type { Category, Transaction } from '../lib/data';
-import { getActivePeriod, formatIdr, periodForDate } from '../lib/utils';
+import { getActivePeriod, formatIdr, periodForDate, parseQuickAmount } from '../lib/utils';
 import { useCategorySuggestion } from '../hooks/useCategorySuggestion';
 import {
   Dialog,
@@ -189,7 +189,7 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded, presetDate
       date,
       title: title.trim(),
       category: (category || title.split(' ')[0]).trim(),
-      amount: Number(amount),
+      amount: parsedAmount ?? 0,
       currency: 'IDR',
       type,
       payment_method: type === 'cash' ? 'Cash' : 'Credit',
@@ -203,7 +203,7 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded, presetDate
   };
 
   const submitTransaction = async (force = false) => {
-    if (!title.trim() || !amount) {
+    if (!title.trim() || parsedAmount == null) {
       setErrorMsg('Judul dan jumlah wajib diisi.');
       setStatus('error');
       return;
@@ -302,8 +302,10 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded, presetDate
     }
   };
 
-  const isAmountValid = amount && Number(amount) > 0;
-  const previewAmount = isAmountValid ? formatIdr(Number(amount)) : '';
+  // Quick amount syntax: "25rb" / "1,5jt" / "30k" / "1.500.000" all work.
+  const parsedAmount = useMemo(() => parseQuickAmount(amount), [amount]);
+  const isAmountValid = parsedAmount != null;
+  const previewAmount = isAmountValid ? formatIdr(parsedAmount!) : '';
 
   // "Aug 28" style label for the pinned date (calendar context)
   const selectedDateLabel = useMemo(() => {
@@ -394,18 +396,25 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded, presetDate
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label htmlFor="qa-amount">Amount <span className="text-red-500">*</span></Label>
+              <Label htmlFor="qa-amount">
+                Amount <span className="text-red-500">*</span>
+                {isAmountValid && amount.trim() !== String(parsedAmount) && (
+                  <span className="ml-2 text-[11px] font-normal text-mint-600 dark:text-mint-400">→ {previewAmount}</span>
+                )}
+              </Label>
               <Input
                 id="qa-amount"
-                type="number"
+                type="text"
+                inputMode="decimal"
                 value={amount}
                 onChange={(e) => { setAmountUserTouched(true); setAmount(e.target.value); }}
                 onKeyDown={handleAmountKeyDown}
-                placeholder="25000"
+                placeholder="25000 · 25rb · 1,5jt"
                 ref={amountRef}
                 className="text-right"
+                autoComplete="off"
               />
-              <AmountPresets presets={amountPresets} currentValue={amount} onChange={(v) => { setAmountUserTouched(true); setAmount(v); }} />
+              <AmountPresets presets={amountPresets} currentValue={isAmountValid ? String(parsedAmount) : ''} onChange={(v) => { setAmountUserTouched(true); setAmount(v); }} />
             </div>
             <div className="space-y-1.5">
               <Label>Type</Label>

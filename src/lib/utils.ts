@@ -16,6 +16,37 @@ export function formatNumber(n: number | undefined | null): string {
 }
 
 /**
+ * Parse quick amount syntax used in Quick Add: "25rb", "1,5jt", "30k", "2.5m",
+ * "1.500.000", "25000". Returns the rupiah value, or null when unparseable.
+ * ponytail: no parentheses/negative math — expenses are always positive here.
+ */
+export function parseQuickAmount(raw: string): number | null {
+  const s = raw.trim().toLowerCase().replace(/\s+/g, '');
+  if (!s) return null;
+  const m = s.match(/^([\d.,]+)(jt|juta|m|rb|ribu|k)?$/);
+  if (!m) return null;
+  const numPart = m[1];
+  const suffix = m[2];
+  let n: number;
+  if (suffix) {
+    // With a suffix, '.'/',' act as decimal separators: "1,5jt" / "1.5m"
+    n = Number(numPart.replace(/,/g, '.'));
+  } else if (/^\d{1,3}(\.\d{3})+$/.test(numPart)) {
+    // Indonesian thousands grouping without suffix: "1.500.000"
+    n = Number(numPart.replace(/\./g, ''));
+  } else {
+    // Plain number; allow comma as decimal ("12,5" → 12.5)
+    n = Number(numPart.replace(/,/g, '.'));
+  }
+  if (!Number.isFinite(n) || n <= 0) return null;
+  switch (suffix) {
+    case 'jt': case 'juta': case 'm': return Math.round(n * 1_000_000);
+    case 'rb': case 'ribu': case 'k': return Math.round(n * 1_000);
+    default: return Math.round(n);
+  }
+}
+
+/**
  * Returns the current active billing period based on the 21st-of-month kickoff rule.
  * Each period runs from the 21st of a month to the 20th of the next month.
  * The period is named after the month it ends in (the 20th).
