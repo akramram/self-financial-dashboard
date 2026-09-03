@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { periodForDate } from '../lib/utils';
+import { periodForDate, parseQuickAmount } from '../lib/utils';
 
 describe('periodForDate — salary period for arbitrary date', () => {
   it('day < 21 → period named after current month', () => {
@@ -36,5 +36,34 @@ describe('periodForDate — salary period for arbitrary date', () => {
   it('returns null for unparseable input', () => {
     expect(periodForDate('not-a-date')).toBeNull();
     expect(periodForDate('')).toBeNull();
+  });
+});
+
+describe('parseQuickAmount — quick amount syntax', () => {
+  it('parses Indonesian suffixes', () => {
+    expect(parseQuickAmount('25rb')).toBe(25000);
+    expect(parseQuickAmount('5 ribu')).toBe(5000);
+    expect(parseQuickAmount('1,5jt')).toBe(1500000);
+    expect(parseQuickAmount('2JT')).toBe(2000000);
+  });
+
+  it('parses international suffixes', () => {
+    expect(parseQuickAmount('30k')).toBe(30000);
+    expect(parseQuickAmount('2.5m')).toBe(2500000);
+    expect(parseQuickAmount('750K')).toBe(750000);
+  });
+
+  it('parses plain numbers and thousands grouping', () => {
+    expect(parseQuickAmount('25000')).toBe(25000);
+    expect(parseQuickAmount('1.500.000')).toBe(1500000);
+    expect(parseQuickAmount(' 100 ')).toBe(100);
+  });
+
+  it('returns null for invalid input', () => {
+    expect(parseQuickAmount('')).toBeNull();
+    expect(parseQuickAmount('abc')).toBeNull();
+    expect(parseQuickAmount('0')).toBeNull();
+    expect(parseQuickAmount('1.2.3')).toBeNull();
+    expect(parseQuickAmount('25rbx')).toBeNull();
   });
 });
