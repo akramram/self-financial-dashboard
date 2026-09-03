@@ -1,5 +1,20 @@
 # Iteration Log
 
+## Sesi Cron — 3 September 2026: Quick Amount Syntax di Quick Add (PR #187)
+
+**Inovasi:** Field Amount di QuickAddDialog menerima format nominal cepat ala Indonesia.
+
+- **Masalah:** Input `type="number"` hanya terima angka mentah. Catat "lima puluh ribu" berarti ketik `50000` — 5 karakter mudah salah. Tidak ada tempat lain di app yang pakai `25rb`.
+- **`parseQuickAmount(raw)`** (`src/lib/utils.ts`, ~30 baris, zero dependency) — suffix `rb`/`ribu`/`k` → ×1.000, `jt`/`juta`/`m` → ×1.000.000. Case-insensitive, spasi bebas (`5 ribu`, `2JT` valid). `.`/`,` sebelum suffix = desimal (`1,5jt` → 1.500.000). Tanpa suffix: grouping Indonesia `1.500.000` di-strip titiknya; plain number tetap jalan.
+- **UI:** input jadi `type="text" inputMode="decimal"` (keyboard numerik tetap muncul di mobile), placeholder `25000 · 25rb · 1,5jt`. Live preview `→ IDR 1.500.000` di label saat input belum final. Submit + AmountPresets highlight + Quick Repeat payload semuanya pakai hasil parse. Invalid (`abc`, `0`, `25rbx`) → tombol disabled.
+- **Backward compatible:** angka biasa `25000` parse ke dirinya sendiri — perilaku lama tidak berubah.
+
+**Testing:** 11 test baru `parseQuickAmount` di `src/__tests__/utils.test.ts` (4 kelompok: suffix ID, suffix intl, grouping/plain, invalid). Full suite **192/192** (~1.5s).
+
+**Build/Deploy:** ✅ Clean build (`rm -rf dist/`), PM2 restart via ecosystem, `/login` 200, CSS hash 200.
+
+**PR:** https://github.com/akramram/self-financial-dashboard/pull/187 (merged)
+
 ## Sesi Cron — 2 September 2026: Quick Add dari Hari Kalender (PR #186)
 
 **Inovasi:** Tap hari di Spending Calendar → Quick Add terbuka ter-pin ke tanggal itu.
