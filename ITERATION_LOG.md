@@ -1,5 +1,20 @@
 # Iteration Log
 
+## Sesi Cron — 4 September 2026: Mode "Add Another" di Quick Add (PR #189)
+
+**Inovasi:** Toggle **"+ Add another"** di footer QuickAddDialog untuk rapid multi-entry.
+
+- **Masalah:** Catat beberapa transaksi berurutan (receipt stack: groceries + pump + kopi) = dialog close → tap + → tunggu fetch presets → ketik ulang. Setiap entry mengulang siklus open-fetch-type penuh.
+- **Saat aktif:** submit sukses → success badge flash 600ms → form reset → dialog TETAP terbuka → toast inline `"{amount} added"` → fokus balik ke Title. `notifyDataChanged` tetap fire per entry → Dashboard/Calendar refresh live.
+- **Saat nonaktif:** perilaku lama (close + toast). Toggle non-persist — reset saat dialog dibuka ulang. Button hidden saat loading/duplicate-force.
+- **Implementasi:** 1 file (`QuickAddDialog.tsx`), +37/−7 baris. State `addAnother`, cabang di `submitTransaction`, reset di `useEffect[open]` + close-path.
+
+**Testing:** `npx vitest run` **192/192**, `tsc --noEmit` clean, build pass.
+
+**Build/Deploy:** ✅ Clean build via `scripts/deploy-dashboard.sh`, PM2 restart, `/login` 200, CSS hash 200, error log kosong, string "Add another" terverifikasi di bundle live.
+
+**Issue/PR:** https://github.com/akramram/self-financial-dashboard/issues/188 · https://github.com/akramram/self-financial-dashboard/pull/189 (merged)
+
 ## Sesi Cron — 3 September 2026: Quick Amount Syntax di Quick Add (PR #187)
 
 **Inovasi:** Field Amount di QuickAddDialog menerima format nominal cepat ala Indonesia.
