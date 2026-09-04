@@ -59,6 +59,9 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded, presetDate
   const [done, setDone] = useState(true);
   const [categories, setCategories] = useState<Category[]>([]);
   const [showNotes, setShowNotes] = useState(false);
+  // When true, a successful submit keeps the dialog open with a cleared form
+  // for rapid multi-entry (e.g. logging a receipt stack).
+  const [addAnother, setAddAnother] = useState(false);
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error' | 'duplicate'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
   const [showForceBtn, setShowForceBtn] = useState(false);
@@ -156,6 +159,7 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded, presetDate
       setStatus('idle');
       setErrorMsg('');
       setShowForceBtn(false);
+      setAddAnother(false);
       setTimeout(() => titleRef.current?.focus(), 100);
     }
   }, [open]);
@@ -234,13 +238,28 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded, presetDate
       }
 
       setStatus('success');
-      setTimeout(() => {
-        resetForm();
-        onOpenChange(false);
-        toast.success('Transaction added');
-        notifyDataChanged('transactions');
-        if (onAdded) onAdded();
-      }, 600);
+      const addedLabel = previewAmount || 'Transaction';
+      if (addAnother) {
+        // Rapid entry mode: keep the dialog open, clear the form, toast inline.
+        // Brief pause lets the success badge flash before reset.
+        setTimeout(() => {
+          resetForm();
+          setStatus('idle');
+          toast.success(`${addedLabel} added`);
+          notifyDataChanged('transactions');
+          if (onAdded) onAdded();
+          titleRef.current?.focus();
+        }, 600);
+      } else {
+        setTimeout(() => {
+          resetForm();
+          setAddAnother(false);
+          onOpenChange(false);
+          toast.success(`${addedLabel} added`);
+          notifyDataChanged('transactions');
+          if (onAdded) onAdded();
+        }, 600);
+      }
     } catch {
       setErrorMsg('Koneksi gagal. Coba lagi.');
       setStatus('error');
@@ -553,6 +572,17 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded, presetDate
             >
               Cancel
             </Button>
+            {status !== 'loading' && (
+              <Button
+                type="button"
+                variant={addAnother ? 'default' : 'outline'}
+                onClick={() => setAddAnother((v) => !v)}
+                className={addAnother ? 'bg-mint-600 hover:bg-mint-700 text-white' : ''}
+                title={addAnother ? 'Dialog stays open after adding' : 'Tap to keep dialog open for rapid entry'}
+              >
+                {addAnother ? '✓ Add another' : '+ Add another'}
+              </Button>
+            )}
             {showForceBtn ? (
               <Button
                 type="button"
