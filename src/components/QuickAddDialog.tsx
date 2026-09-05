@@ -17,6 +17,7 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import AmountPresets, { DEFAULT_PRESETS, type AmountPreset } from '@/components/ui/amount-presets';
+import DateTimePicker from '@/components/ui/datetime-picker';
 import {
   Select,
   SelectContent,
@@ -42,12 +43,22 @@ interface QuickAddDialogProps {
   presetDate?: string | null;
 }
 
+const todayLocal = () => new Date().toLocaleDateString('en-CA');
+const nowLocal = () => new Date().toTimeString().slice(0, 5);
+// local date+time → ISO (server-side day grouping uses SUBSTR, so local
+// date must survive; explicit local parse keeps it exact)
+const localToIso = (d: string, t: string) => new Date(`${d}T${t}:00`).toISOString();
+
 export default function QuickAddDialog({ open, onOpenChange, onAdded, presetDate }: QuickAddDialogProps) {
-  // Target period: derived from presetDate when given (day ≥ 21 → next month's
+  // Transaction date (YYYY-MM-DD) + time (HH:mm). Defaults to now (or the
+  // calendar-pinned day); drives the target period and created_time (backdating).
+  const [txDate, setTxDate] = useState('');
+  const [txTime, setTxTime] = useState('');
+  // Target period: derived from txDate when set (day ≥ 21 → next month's
   // period), else the active period for today.
   const pinnedPeriod = useMemo(
-    () => (presetDate ? periodForDate(presetDate) : null),
-    [presetDate],
+    () => (txDate ? periodForDate(txDate) : null),
+    [txDate],
   );
   const { month: defaultMonth, year: defaultYear } = pinnedPeriod ?? getActivePeriod();
 
@@ -156,6 +167,8 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded, presetDate
         }
         setRecentTxs(txs.slice(0, 5));
       }).catch(() => {});
+      setTxDate(presetDate ?? todayLocal());
+      setTxTime(nowLocal());
       setStatus('idle');
       setErrorMsg('');
       setShowForceBtn(false);
@@ -165,6 +178,8 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded, presetDate
   }, [open]);
 
   const resetForm = () => {
+    setTxDate(presetDate ?? todayLocal());
+    setTxTime(nowLocal());
     setTitle('');
     setCategory('');
     setAmount('');
@@ -198,9 +213,8 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded, presetDate
       type,
       payment_method: type === 'cash' ? 'Cash' : 'Credit',
       done,
-      // Pin to the selected day when opened from the calendar (noon UTC
-      // keeps the local date stable across timezones).
-      created_time: presetDate ? `${presetDate}T12:00:00.000Z` : new Date().toISOString(),
+      // Real timestamp from the picked date+time (defaults to now).
+      created_time: localToIso(txDate || todayLocal(), txTime || nowLocal()),
       notes: notes.trim() || undefined,
       ...(force ? { force: true } : {}),
     };
@@ -290,7 +304,7 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded, presetDate
       type: tx.type,
       payment_method: tx.payment_method,
       done: true,
-      created_time: presetDate ? `${presetDate}T12:00:00.000Z` : new Date().toISOString(),
+      created_time: localToIso(txDate || todayLocal(), txTime || nowLocal()),
       force: true, // allow repeat even if similar exists
     };
     try {
@@ -326,14 +340,14 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded, presetDate
   const isAmountValid = parsedAmount != null;
   const previewAmount = isAmountValid ? formatIdr(parsedAmount!) : '';
 
-  // "Aug 28" style label for the pinned date (calendar context)
+  // "Aug 28" style label for the transaction date
   const selectedDateLabel = useMemo(() => {
-    if (!presetDate) return '';
-    const d = new Date(`${presetDate}T12:00:00`);
-    if (isNaN(d.getTime())) return presetDate;
+    if (!txDate) return '';
+    const d = new Date(`${txDate}T12:00:00`);
+    if (isNaN(d.getTime())) return txDate;
     const abbr = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     return `${abbr[d.getMonth()]} ${d.getDate()}`;
-  }, [presetDate]);
+  }, [txDate]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -344,11 +358,7 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded, presetDate
             Quick Add Transaction
           </DialogTitle>
           <DialogDescription>
-            {presetDate ? (
-              <>Adding to <span className="font-medium text-mint-600 dark:text-mint-400">{defaultMonth} {defaultYear}</span> · pinned to <span className="font-medium text-mint-600 dark:text-mint-400">{selectedDateLabel}</span>. Press Enter in the amount field to submit.</>
-            ) : (
-              <>Add a transaction to {defaultMonth} {defaultYear}. Press Enter in the amount field to submit.</>
-            )}
+            <>Adding to <span className="font-medium text-mint-600 dark:text-mint-400">{defaultMonth} {defaultYear}</span>{txDate && txDate !== todayLocal() && <> · dated <span className="font-medium text-gold-600 dark:text-gold-400">{selectedDateLabel}</span></>}. Press Enter in the amount field to submit.</>
           </DialogDescription>
         </DialogHeader>
 
@@ -497,16 +507,28 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded, presetDate
             </datalist>
           </div>
 
-          {/* Paid checkbox */}
-          <div className="flex items-center gap-2">
-            <Checkbox
-              id="qa-done"
-              checked={done}
-              onCheckedChange={(v) => setDone(!!v)}
-            />
-            <Label htmlFor="qa-done" className="text-sm text-slate-600 dark:text-slate-300 cursor-pointer">
-              Already paid
-            </Label>
+          {/* Paid checkbox + transaction date */}
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="qa-done"
+                checked={done}
+                onCheckedChange={(v) => setDone(!!v)}
+              />
+              <Label htmlFor="qa-done" className="text-sm text-slate-600 dark:text-slate-300 cursor-pointer">
+                Already paid
+              </Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <Label htmlFor="qa-date" className="text-xs text-slate-500 dark:text-white/40">
+                Date
+              </Label>
+              <DateTimePicker
+                date={txDate}
+                time={txTime || nowLocal()}
+                onChange={(d, t) => { setTxDate(d); setTxTime(t); }}
+              />
+            </div>
           </div>
 
           {/* Notes — collapsible to keep dialog compact */}
