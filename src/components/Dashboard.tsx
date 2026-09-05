@@ -14,7 +14,7 @@ import AnimatedCounter from './ui/animated-counter';
 import InView from './ui/in-view';
 import Sparkline from './Sparkline';
 
-import { DollarSign, Wallet, BarChart3, TrendingUp, TrendingDown, Scale, Shield, Bell, Plus, X, AlertTriangle, Search } from 'lucide-react';
+import { DollarSign, Wallet, BarChart3, TrendingUp, TrendingDown, Scale, Shield, Bell, Plus, X, AlertTriangle, Search, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -42,6 +42,7 @@ import PeriodVsAverage from './PeriodVsAverage';
 import DailyBudgetIndicator from './DailyBudgetIndicator';
 import TopMerchantsMini from './TopMerchantsMini';
 import UpcomingBills from './UpcomingBills';
+import TransactionDetailSheet from './TransactionDetailSheet';
 
 function parseCreatedTime(tx: Transaction): Date {
   if (tx.created_time) {
@@ -96,6 +97,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
   const [kickoffBanner, setKickoffBanner] = useState<{ show: boolean; currentMonth: string; nextMonth: string; recurringCount: number } | null>(null);
   const [kickoffOpen, setKickoffOpen] = useState(false);
   const [runwayData, setRunwayData] = useState<{ runway_months: number; status: string; tips?: string[] } | null>(null);
+  const [detailTx, setDetailTx] = useState<Transaction | null>(null);
 
   // ── Derived ───────────────────────────────────────────────────
   const periodOptions = useMemo(() => {
@@ -492,7 +494,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
                     <SortableHeader sortKey="date" currentDirection={isSorted('date')} onSort={toggleSort}>Date</SortableHeader>
                     <SortableHeader sortKey="amount" currentDirection={isSorted('amount')} onSort={toggleSort} className="text-right">Amount</SortableHeader>
                     <SortableHeader sortKey="type" currentDirection={isSorted('type')} onSort={toggleSort}>Type</SortableHeader>
-                    <TableHead></TableHead>
+                    <TableHead className="w-8"></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -502,11 +504,13 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
                     const typeClass = row.type === 'cash' ? 'text-mint-400' : row.type === 'credit_payment' ? 'text-gold-400' : 'text-coral-400';
                     const typeLabel = row.type === 'cash' ? 'Cash' : row.type === 'credit_payment' ? 'Credit Pay' : 'Credit';
                     return (
-                      <TableRow key={row.id} className="border-slate-200 dark:border-white/[0.03] hover:bg-slate-100 dark:bg-white/[0.03]">
+                      <TableRow key={row.id} onClick={() => setDetailTx(row)} className="cursor-pointer border-slate-200 dark:border-white/[0.03] hover:bg-slate-100 dark:hover:bg-white/[0.05] transition-colors">
                         <TableCell>
-                          <Button size="sm" variant="ghost" onClick={async () => {
+                          <Button size="sm" variant="ghost" onClick={async (e) => {
+                            e.stopPropagation();
                             const newDone = !row.done;
                             setLocalTransactions(prev => prev.map(t => t.id === row.id ? { ...t, done: newDone ? 1 : 0 } as Transaction : t));
+                            if (detailTx?.id === row.id) setDetailTx(prev => prev && prev.id === row.id ? { ...prev, done: !!newDone } : prev);
                             try {
                               await toggleTransactionDoneApi(row.id, newDone);
                               toast.success(newDone ? 'Marked as paid' : 'Marked as unpaid');
@@ -524,11 +528,8 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
                         <TableCell className="text-slate-500 dark:text-white/40 text-xs">{dateStr}</TableCell>
                         <TableCell className="font-medium text-right text-slate-800 dark:text-white/90">{formatIdr(row.amount)}</TableCell>
                         <TableCell className={`${typeClass} text-xs font-semibold uppercase`}>{typeLabel}</TableCell>
-                        <TableCell>
-                          <div className="flex gap-2">
-                            <Button variant="ghost" size="sm" className="h-7 text-xs text-slate-600 dark:text-white/50 hover:text-slate-800 dark:text-white/80" onClick={() => startEdit(row)}>Edit</Button>
-                            <Button variant="ghost" size="sm" className="h-7 text-xs text-red-400 hover:text-red-300" onClick={async () => { const confirmed = await confirmAction({ title: 'Delete Transaction', description: `Delete "${row.title}" (${formatIdr(row.amount)})?`, confirmLabel: 'Delete', variant: 'destructive' }); if (!confirmed) return; try { await deleteTransactionApi(row.id); setLocalTransactions(prev => prev.filter(t => t.id !== row.id)); showDeleteUndoToast([row], restored => setLocalTransactions(prev => [...prev, ...restored])); } catch { toast.error('Failed to delete transaction'); } }}>Delete</Button>
-                          </div>
+                        <TableCell className="text-slate-400 dark:text-white/30">
+                          <ChevronRight className="w-4 h-4" />
                         </TableCell>
                       </TableRow>
                     );
@@ -546,6 +547,40 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
             </div>
 
             <EditTransactionDialog open={editingId !== null} transaction={editForm} onChange={handleChange} onSave={saveEdit} onCancel={cancelEdit} periods={summaries.map(s => ({ period_id: s.period_id, month: s.month }))} categories={categories.map(c => c.name)} />
+
+            {/* Transaction detail sheet — row tap target */}
+            <TransactionDetailSheet
+              open={!!detailTx}
+              transaction={localTransactions.find(t => t.id === detailTx?.id) ?? detailTx}
+              onClose={() => setDetailTx(null)}
+              onToggleDone={async (tx) => {
+                const newDone = !tx.done;
+                setLocalTransactions(prev => prev.map(t => t.id === tx.id ? { ...t, done: !!newDone } : t));
+                setDetailTx(prev => prev && prev.id === tx.id ? { ...prev, done: !!newDone } : prev);
+                try {
+                  await toggleTransactionDoneApi(tx.id, newDone);
+                  toast.success(newDone ? 'Marked as paid' : 'Marked as unpaid');
+                  notifyDataChanged('transactions');
+                } catch {
+                  setLocalTransactions(prev => prev.map(t => t.id === tx.id ? { ...t, done: !newDone } : t));
+                  setDetailTx(prev => prev && prev.id === tx.id ? { ...prev, done: !newDone } : prev);
+                  toast.error('Failed to update payment status');
+                }
+              }}
+              onEdit={(tx) => { setDetailTx(null); startEdit(tx); }}
+              onDelete={async (tx) => {
+                const confirmed = await confirmAction({ title: 'Delete Transaction', description: `Delete "${tx.title}" (${formatIdr(tx.amount)})?`, confirmLabel: 'Delete', variant: 'destructive' });
+                if (!confirmed) return;
+                try {
+                  await deleteTransactionApi(tx.id);
+                  setLocalTransactions(prev => prev.filter(t => t.id !== tx.id));
+                  setDetailTx(null);
+                  showDeleteUndoToast([tx], restored => setLocalTransactions(prev => [...prev, ...restored]));
+                } catch {
+                  toast.error('Failed to delete transaction');
+                }
+              }}
+            />
 
             {searchedTransactions.length > txPerPage && (
               <div className="flex items-center justify-between px-5 py-3 border-t border-slate-200 dark:border-white/[0.05]">
