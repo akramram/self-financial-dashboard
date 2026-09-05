@@ -1,5 +1,16 @@
 # Iteration Log
 
+## Sesi Cron — 5 September 2026: Transaction Detail Sheet — Tap Row Feed untuk Detail + Actions (PR #190)
+
+**Inovasi:** Row di Dashboard Feed sekarang bisa di-tap → membuka **TransactionDetailSheet** (bottom sheet di mobile, dialog di desktop) berisi detail lengkap + actions. Sebelumnya row feed punya 2 tombol inline (Edit/Delete) yang cramped di mobile.
+
+**Perubahan:**
+- **Baru** `src/components/TransactionDetailSheet.tsx` — amount hero besar, badge kategori, payment method, tanggal+jam lengkap (locale id-ID), notes, toggle Paid/Unpaid (optimistic), tombol Edit & Delete. Bottom-sheet via positioning classes di DialogContent (reuse Radix Dialog, nol dependency baru). Drag handle visual + rounded-t-2xl + max-h-[90vh] scroll.
+- **`src/components/Dashboard.tsx`** — row feed clickable (`cursor-pointer`, hover bg, chevron affordance `ChevronRight` menggantikan tombol inline). Toggle paid di sheet & feed saling sync (optimistic update keduanya). Delete tetap pakai ConfirmDialog + undo toast. Edit reuse EditTransactionDialog.
+- Dual-mode theme (light/dark) penuh — semua warna pakai pasangan `slate-*` / `dark:white/*`.
+
+**Verifikasi:** `npm run build` ✅ · `npx vitest run` 192/192 ✅ · deploy clean (pm2 delete → rm dist → build → start ecosystem) ✅ · HTTP 200 `/` & `/login` · CSS hash 200 (bukan stale) · no runtime errors di PM2 logs.
+
 ## Sesi Cron — 4 September 2026: Mode "Add Another" di Quick Add (PR #189)
 
 **Inovasi:** Toggle **"+ Add another"** di footer QuickAddDialog untuk rapid multi-entry.
