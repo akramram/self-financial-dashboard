@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createTransaction, fetchCategories } from '../lib/api';
 import type { Category } from '../lib/data';
-import { getActivePeriod } from '../lib/utils';
+import { getActivePeriod, periodForDate } from '../lib/utils';
 import { useCategorySuggestion } from '../hooks/useCategorySuggestion';
 import { notifyDataChanged } from '../lib/dataSync';
 import { Input } from '@/components/ui/input';
@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Sparkles, X, Loader2 } from 'lucide-react';
+import DateTimePicker from '@/components/ui/datetime-picker';
 import {
   Dialog,
   DialogContent,
@@ -37,10 +38,16 @@ const TYPE_OPTIONS = [
   { value: 'credit_payment', label: 'Credit Payment' },
 ];
 
+const todayLocal = () => new Date().toLocaleDateString('en-CA');
+const nowLocal = () => new Date().toTimeString().slice(0, 5);
+const localToIso = (d: string, t: string) => new Date(`${d}T${t}:00`).toISOString();
+
 export default function AddTransactionForm() {
   const { month: defaultMonth, year: defaultYear } = getActivePeriod();
   const [month, setMonth] = useState(defaultMonth);
   const [year, setYear] = useState(defaultYear);
+  const [txDate, setTxDate] = useState(todayLocal());
+  const [txTime, setTxTime] = useState(nowLocal());
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
   const [amount, setAmount] = useState('');
@@ -71,6 +78,18 @@ export default function AddTransactionForm() {
     fetchCategories().then(setCategories).catch(() => {});
   }, []);
 
+  // When the date changes, snap the period (month/year selects) to match —
+  // day ≥ 21 belongs to next month's period (21st→20th convention).
+  const handleDateChange = (d: string) => {
+    setTxDate(d);
+    if (!d) return;
+    const p = periodForDate(d);
+    if (p) {
+      setMonth(p.month);
+      setYear(p.year);
+    }
+  };
+
   const buildPayload = () => {
     const monthName = `${month} ${year}`;
     const monthIdx = MONTH_OPTIONS.indexOf(month) + 1;
@@ -86,7 +105,8 @@ export default function AddTransactionForm() {
       payment_method: type === 'cash' ? 'Cash' : 'Credit',
       done,
       notes: notes.trim() || undefined,
-      created_time: new Date().toISOString(),
+      // Real timestamp from the picked date+time.
+      created_time: localToIso(txDate || todayLocal(), txTime || nowLocal()),
     };
   };
 
@@ -177,6 +197,18 @@ export default function AddTransactionForm() {
                 onChange={(e) => setYear(Number(e.target.value))}
               />
             </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label>Date & Time</Label>
+            <DateTimePicker
+              date={txDate}
+              time={txTime}
+              onChange={(d, t) => { handleDateChange(d); setTxTime(t); }}
+            />
+            <p className="text-xs text-slate-600 dark:text-white/50">
+              Tanggal transaksi sebenarnya — ubah kalau input untuk hari sebelumnya. Period menyesuaikan otomatis.
+            </p>
           </div>
 
           <div className="space-y-1.5">
