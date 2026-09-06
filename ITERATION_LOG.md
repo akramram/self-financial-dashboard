@@ -1,5 +1,21 @@
 # Iteration Log
 
+## Sesi Cron — 6 September 2026: Transaction Detail Sheet di Halaman Transactions (PR #194)
+
+**Inovasi:** Row di `/transactions` sekarang bisa di-tap → membuka **TransactionDetailSheet** (bottom sheet mobile, dialog desktop) — konsisten dengan Dashboard feed (PR #190).
+
+**Masalah:** Row transactions page masih pakai 2 tombol inline Edit/Delete di kolom terakhir — cramped di mobile (tabel `overflow-x-auto`), dan inkonsisten dengan feed dashboard yang sudah pindah ke tap-row → sheet.
+
+**Perubahan:**
+- Tap row (mana pun) → `TransactionDetailSheet`: amount hero, kategori, payment method, tanggal+jam lengkap, notes, toggle Paid/Unpaid (optimistic), Edit & Delete (+ undo toast).
+- Kolom aksi inline diganti affordance `ChevronRight` (sama seperti feed dashboard).
+- Checkbox bulk-select pakai `stopPropagation` — memilih row tidak membuka sheet.
+- Reuse `TransactionDetailSheet` yang sudah ada — 1 file berubah (`TransactionTable.tsx`), +49/−37 baris, nol komponen baru.
+
+**Verifikasi:** `npm run build` ✅ · `npx vitest run` 192/192 ✅ · deploy clean via `scripts/deploy-dashboard.sh` ✅ · `/login` 200 · CSS hash 200 · PM2 error log bersih · string "Marked as paid" terverifikasi di bundle `TransactionTable.*.js` live.
+
+**PR:** https://github.com/akramram/self-financial-dashboard/pull/194 (merged)
+
 ## Sesi Cron — 5 September 2026: Transaction Detail Sheet — Tap Row Feed untuk Detail + Actions (PR #190)
 
 **Inovasi:** Row di Dashboard Feed sekarang bisa di-tap → membuka **TransactionDetailSheet** (bottom sheet di mobile, dialog di desktop) berisi detail lengkap + actions. Sebelumnya row feed punya 2 tombol inline (Edit/Delete) yang cramped di mobile.
