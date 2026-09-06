@@ -62,6 +62,11 @@ export default function FintechSidebar({ balance, alerts: initialAlerts = 0 }: P
   const [collapsed, setCollapsed] = useState(false);
   const [alerts, setAlerts] = useState(initialAlerts);
 
+  // Keep layout offsets (topbar margin, main padding) in sync with width
+  useEffect(() => {
+    document.documentElement.style.setProperty('--sidebar-w', collapsed ? '72px' : '240px');
+  }, [collapsed]);
+
   // Live alert count — AlertsPanel broadcasts the panel's exact count
   // (anomaly + budget, after localStorage dismissals) on every recompute.
   useEffect(() => {
@@ -202,8 +207,6 @@ export default function FintechSidebar({ balance, alerts: initialAlerts = 0 }: P
         </div>
       </aside>
 
-      {/* Sidebar spacer for desktop layout */}
-      <div id="sidebar-spacer" className={`hidden lg:block transition-all duration-300 ${collapsed ? 'w-[72px]' : 'w-[240px]'}`} />
     </>
   );
 }
