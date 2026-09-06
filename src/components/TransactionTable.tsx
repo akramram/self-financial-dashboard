@@ -6,7 +6,8 @@ import { useSortState } from '../hooks/useSortState';
 import { onDataChanged, notifyDataChanged } from '../lib/dataSync';
 import SortableHeader from './SortableHeader';
 import EditTransactionDialog from './EditTransactionDialog';
-import { StickyNote, Search, SlidersHorizontal, Download, X, Filter, ChevronDown, FileJson, FileSpreadsheet } from 'lucide-react';
+import TransactionDetailSheet from './TransactionDetailSheet';
+import { StickyNote, Search, SlidersHorizontal, Download, X, Filter, ChevronDown, ChevronRight, FileJson, FileSpreadsheet } from 'lucide-react';
 import { useConfirm } from './ConfirmDialog';
 import { toast } from 'sonner';
 import { showDeleteUndoToast } from '../lib/undo';
@@ -118,6 +119,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
   const [amountMax, setAmountMax] = useState(initial.amountMax);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editForm, setEditForm] = useState<Partial<Transaction>>({});
+  const [detailTx, setDetailTx] = useState<Transaction | null>(null);
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [bulkCategory, setBulkCategory] = useState<string>('');
   const [categories, setCategories] = useState<Category[]>([]);
@@ -758,8 +760,12 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                   row.type === 'cash' ? 'Cash' : row.type === 'credit_payment' ? 'Credit Pay' : 'Credit';
 
                 return (
-                  <TableRow key={row.id} className="border-slate-200 dark:border-white/[0.04] hover:bg-slate-100 dark:bg-white/[0.02] transition-colors">
-                    <TableCell className="py-2.5">
+                  <TableRow
+                    key={row.id}
+                    onClick={() => setDetailTx(row)}
+                    className="cursor-pointer border-slate-200 dark:border-white/[0.04] hover:bg-slate-100 dark:hover:bg-white/[0.05] transition-colors"
+                  >
+                    <TableCell className="py-2.5" onClick={(e) => e.stopPropagation()}>
                       <Checkbox
                         checked={selected.has(row.id)}
                         onCheckedChange={() => toggleSelect(row.id)}
@@ -810,39 +816,8 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                       </span>
                     </TableCell>
                     <TableCell className="py-2.5">
-                      <div className="flex gap-1">
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => { setEditingId(row.id); setEditForm({ ...row }); }}
-                          className="h-7 text-xs text-slate-600 dark:text-white/50 hover:text-slate-900 dark:text-white hover:bg-slate-200/60 dark:bg-white/[0.06]"
-                        >
-                          Edit
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={async () => {
-                            const confirmed = await confirmAction({
-                              title: 'Delete Transaction',
-                              description: `Delete "${row.title}" (${formatIdr(row.amount)})?`,
-                              confirmLabel: 'Delete',
-                              variant: 'destructive',
-                            });
-                            if (!confirmed) return;
-                            try {
-                              await deleteTransactionApi(row.id);
-                              setLocalTx(prev => prev.filter(t => t.id !== row.id));
-                              showDeleteUndoToast([row], restored => setLocalTx(prev => [...prev, ...restored]));
-                              notifyDataChanged('transactions');
-                            } catch {
-                              toast.error('Failed to delete transaction');
-                            }
-                          }}
-                          className="h-7 text-xs text-red-500 dark:text-red-300 hover:text-red-400 hover:bg-red-500/10"
-                        >
-                          Delete
-                        </Button>
+                      <div className="flex justify-end">
+                        <ChevronRight className="w-4 h-4 text-slate-400 dark:text-white/30" />
                       </div>
                     </TableCell>
                   </TableRow>
@@ -903,7 +878,44 @@ export default function TransactionTable({ transactions, showMonth = true, perio
         </div>
       </div>
 
-      {/* ─── Edit Dialog ────────────────────────────────────────── */}
+      {/* ─── Detail Sheet (row tap) + Edit Dialog ────────────────── */}
+      <TransactionDetailSheet
+        open={!!detailTx}
+        transaction={localTx.find(t => t.id === detailTx?.id) ?? detailTx}
+        onClose={() => setDetailTx(null)}
+        onToggleDone={async (tx) => {
+          const newDone = !tx.done;
+          setLocalTx(prev => prev.map(t => t.id === tx.id ? { ...t, done: !!newDone } : t));
+          try {
+            await toggleTransactionDoneApi(tx.id, newDone);
+            toast.success(newDone ? 'Marked as paid' : 'Marked as unpaid');
+            notifyDataChanged('transactions');
+          } catch {
+            setLocalTx(prev => prev.map(t => t.id === tx.id ? { ...t, done: !newDone } : t));
+            toast.error('Failed to update payment status');
+          }
+        }}
+        onEdit={(tx) => { setDetailTx(null); setEditingId(tx.id); setEditForm({ ...tx }); }}
+        onDelete={async (tx) => {
+          const confirmed = await confirmAction({
+            title: 'Delete Transaction',
+            description: `Delete "${tx.title}" (${formatIdr(tx.amount)})?`,
+            confirmLabel: 'Delete',
+            variant: 'destructive',
+          });
+          if (!confirmed) return;
+          try {
+            await deleteTransactionApi(tx.id);
+            setLocalTx(prev => prev.filter(t => t.id !== tx.id));
+            setDetailTx(null);
+            showDeleteUndoToast([tx], restored => setLocalTx(prev => [...prev, ...restored]));
+            notifyDataChanged('transactions');
+          } catch {
+            toast.error('Failed to delete transaction');
+          }
+        }}
+      />
+
       {editingId && (
         <EditTransactionDialog
           open={true}
