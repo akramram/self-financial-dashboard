@@ -3,7 +3,7 @@
  * @jest-dom
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import '@testing-library/jest-dom/vitest';
@@ -750,5 +750,112 @@ describe('UpcomingBills', () => {
       <UpcomingBills recurring={[makeRecurring({ active: false })]} transactions={[]} activePeriodId={38} activeMonth="August 2026" />,
     );
     expect(container.firstChild).toBeNull();
+  });
+});
+
+// ─── TransactionDetailSheet swipe-to-dismiss tests ─────────────────────────
+
+import TransactionDetailSheet from '../components/TransactionDetailSheet';
+
+vi.mock('@/components/ui/dialog', () => ({
+  Dialog: ({ children, open, onOpenChange }: any) => (
+    <div data-testid="dialog" data-open={open}>{open ? children : null}</div>
+  ),
+  DialogContent: ({ children, onPointerDown, onPointerMove, onPointerUp, onPointerCancel, style }: any) => (
+    <div
+      data-testid="dialog-content"
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerCancel={onPointerCancel}
+      style={style}
+    >
+      {children}
+    </div>
+  ),
+  DialogHeader: ({ children }: any) => <div>{children}</div>,
+  DialogTitle: ({ children }: any) => <h2>{children}</h2>,
+  DialogDescription: ({ children }: any) => <p>{children}</p>,
+}));
+
+function makeSheetTx(overrides: Partial<any> = {}) {
+  return {
+    id: 77,
+    period_id: 38,
+    month: 'September 2026',
+    date: '2026-08-21',
+    title: 'Kopi Kenangan',
+    category: 'Makanan',
+    amount: 28000,
+    currency: 'IDR',
+    type: 'cash',
+    payment_method: 'Cash',
+    done: true,
+    created_time: '2026-08-25T02:00:00.000Z',
+    ...overrides,
+  } as any;
+}
+
+function pointerEvent(type: string, opts: { clientY?: number; clientX?: number; pointerType?: string; pointerId?: number } = {}) {
+  return {
+    type,
+    pointerType: opts.pointerType ?? 'touch',
+    pointerId: opts.pointerId ?? 1,
+    clientX: opts.clientX ?? 0,
+    clientY: opts.clientY ?? 0,
+    bubbles: true,
+    cancelable: true,
+  } as any;
+}
+
+describe('TransactionDetailSheet', () => {
+  const base = { open: true, onClose: vi.fn(), onToggleDone: vi.fn(), onEdit: vi.fn(), onDelete: vi.fn() };
+
+  it('renders transaction details when open', () => {
+    render(<TransactionDetailSheet {...base} transaction={makeSheetTx()} />);
+    expect(screen.getByText('Kopi Kenangan')).toBeInTheDocument();
+    expect(screen.getAllByText('IDR 28,000').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Cash').length).toBeGreaterThan(0);
+  });
+
+  it('calls onClose when dragged down past the dismiss threshold', () => {
+    const onClose = vi.fn();
+    render(<TransactionDetailSheet {...base} onClose={onClose} transaction={makeSheetTx()} />);
+    const el = screen.getByTestId('dialog-content');
+    fireEvent.pointerDown(el, pointerEvent('pointerdown', { clientY: 300 }));
+    fireEvent.pointerMove(el, pointerEvent('pointermove', { clientY: 350 }));
+    fireEvent.pointerMove(el, pointerEvent('pointermove', { clientY: 420 }));
+    fireEvent.pointerUp(el, pointerEvent('pointerup', { clientY: 420 }));
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('springs back (no onClose) on a short drag', () => {
+    const onClose = vi.fn();
+    render(<TransactionDetailSheet {...base} onClose={onClose} transaction={makeSheetTx()} />);
+    const el = screen.getByTestId('dialog-content');
+    fireEvent.pointerDown(el, pointerEvent('pointerdown', { clientY: 300 }));
+    fireEvent.pointerMove(el, pointerEvent('pointermove', { clientY: 320 }));
+    fireEvent.pointerUp(el, pointerEvent('pointerup', { clientY: 320 }));
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it('ignores mouse drags (desktop uses X button)', () => {
+    const onClose = vi.fn();
+    render(<TransactionDetailSheet {...base} onClose={onClose} transaction={makeSheetTx()} />);
+    const el = screen.getByTestId('dialog-content');
+    fireEvent.pointerDown(el, pointerEvent('pointerdown', { clientY: 300, pointerType: 'mouse' }));
+    fireEvent.pointerMove(el, pointerEvent('pointermove', { clientY: 420, pointerType: 'mouse' }));
+    fireEvent.pointerUp(el, pointerEvent('pointerup', { clientY: 420, pointerType: 'mouse' }));
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it('ignores horizontal swipes (lateral, not dismiss)', () => {
+    const onClose = vi.fn();
+    render(<TransactionDetailSheet {...base} onClose={onClose} transaction={makeSheetTx()} />);
+    const el = screen.getByTestId('dialog-content');
+    fireEvent.pointerDown(el, pointerEvent('pointerdown', { clientY: 300, clientX: 100 }));
+    fireEvent.pointerMove(el, pointerEvent('pointermove', { clientY: 305, clientX: 250 }));
+    fireEvent.pointerUp(el, pointerEvent('pointerup', { clientY: 305, clientX: 250 }));
+    expect(onClose).not.toHaveBeenCalled();
   });
 });

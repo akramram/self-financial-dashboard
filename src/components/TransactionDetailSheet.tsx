@@ -15,38 +15,92 @@ interface Props {
   onDelete: (tx: Transaction) => void;
 }
 
+const DISMISS_THRESHOLD = 90; // px of downward drag before the sheet dismisses
+
 /**
- * Transaction detail sheet — bottom sheet on mobile (max-w-lg mx-auto, anchored
- * bottom), centered dialog on desktop. Row actions live here, not inline in the
- * feed table.
- * ponytail: no swipe-to-dismiss — Radix Dialog only; add sheet gestures if ever needed.
+ * Transaction detail sheet — bottom sheet on mobile, centered dialog on desktop.
+ * Row actions live here, not inline in the feed table.
+ * Swipe-to-dismiss: touch/pen drag downward (from scroll-top) translates the
+ * sheet with the finger; past DISMISS_THRESHOLD it closes, else it springs back.
+ * ponytail: no velocity fling — pure distance threshold; add velocity tracking
+ * if the spring-back ever feels sluggish.
  */
 export default function TransactionDetailSheet({ open, transaction, onClose, onToggleDone, onEdit, onDelete }: Props) {
-  if (!transaction) return null;
+  const contentRef = React.useRef<HTMLDivElement | null>(null);
+  const drag = React.useRef<{ startY: number; startX: number; startScroll: number; pointerId: number; active: boolean } | null>(null);
+  const [dragY, setDragY] = React.useState(0);
+  const [dragging, setDragging] = React.useState(false);
 
-  const d = transaction.created_time ? new Date(transaction.created_time) : new Date(transaction.date);
-  const valid = !isNaN(d.getTime());
-  const dateStr = valid
-    ? d.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
-    : transaction.date;
-  const timeStr = valid ? d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '';
+  React.useEffect(() => {
+    if (open) { setDragY(0); setDragging(false); drag.current = null; }
+  }, [open]);
 
-  const typeMeta = transaction.type === 'cash'
+  const onPointerDown = (e: React.PointerEvent) => {
+    if (e.pointerType === 'mouse') return; // mouse users have X + backdrop
+    drag.current = { startY: e.clientY, startX: e.clientX, startScroll: contentRef.current?.scrollTop ?? 0, pointerId: e.pointerId, active: false };
+  };
+
+  const onPointerMove = (e: React.PointerEvent) => {
+    const st = drag.current;
+    if (!st || st.pointerId !== e.pointerId) return;
+    const dy = e.clientY - st.startY;
+    const dx = e.clientX - st.startX;
+    if (!st.active) {
+      // claim only clearly-vertical downward drags from the top of the sheet —
+      // at scrollTop 0 a downward drag cannot be a scroll, so no conflict
+      if (dy > 10 && dy > Math.abs(dx) && st.startScroll <= 0) {
+        st.active = true;
+        setDragging(true);
+      }
+      return;
+    }
+    if (dy > 0) setDragY(dy);
+  };
+
+  const endDrag = (e?: React.PointerEvent) => {
+    const st = drag.current;
+    if (!st || (e && st.pointerId !== e.pointerId)) return;
+    drag.current = null;
+    if (st.active) {
+      setDragging(false);
+      if (dragY > DISMISS_THRESHOLD) onClose();
+      else setDragY(0); // spring back (200ms transition via style)
+    }
+  };
+
+  const d = transaction?.created_time ? new Date(transaction.created_time) : transaction ? new Date(transaction.date) : null;
+  const valid = d ? !isNaN(d.getTime()) : false;
+  const dateStr = valid && d ? d.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : transaction?.date ?? '';
+  const timeStr = valid && d ? d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '';
+
+  const typeMeta = transaction?.type === 'cash'
     ? { label: 'Cash', icon: Wallet, cls: 'text-mint-400' }
-    : transaction.type === 'credit_payment'
+    : transaction?.type === 'credit_payment'
       ? { label: 'Credit Payment', icon: Receipt, cls: 'text-gold-400' }
       : { label: 'Credit Expense', icon: CreditCard, cls: 'text-coral-400' };
   const TypeIcon = typeMeta.icon;
 
+  if (!transaction) return null;
+
   return (
     <Dialog open={open} onOpenChange={(o) => { if (!o) onClose(); }}>
-      {/* ponytail: bottom-sheet via positioning classes on DialogContent — no separate
-          Sheet primitive needed until we want swipe gestures. */}
+      {/* bottom-sheet via positioning classes on DialogContent — no separate
+          Sheet primitive needed; swipe gesture implemented inline above. */}
       <DialogContent
+        ref={contentRef}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
         className="max-w-lg w-full fixed left-1/2 bottom-0 -translate-x-1/2 translate-y-0 top-auto rounded-b-none sm:rounded-b-lg rounded-t-2xl border-t border-slate-300 dark:border-white/[0.08] bg-slate-100 dark:bg-navy-800 p-0 gap-0 overflow-hidden max-h-[90vh] overflow-y-auto"
+        style={{
+          ...(dragY > 0 ? { transform: `translate(-50%, ${dragY}px)` } : null),
+          transition: dragging ? 'none' : 'transform 200ms ease-out',
+          overscrollBehavior: 'contain',
+        }}
       >
         {/* drag handle */}
-        <div className="flex justify-center pt-3 pb-1">
+        <div className="flex justify-center pt-3 pb-1 touch-none select-none">
           <div className="w-10 h-1 rounded-full bg-slate-300 dark:bg-white/20" />
         </div>
 
