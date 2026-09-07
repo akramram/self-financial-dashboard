@@ -1,5 +1,20 @@
 # Iteration Log
 
+## Sesi Cron — 7 September 2026: Swipe-to-Dismiss di Transaction Detail Sheet (PR #196)
+
+**Inovasi:** Bottom sheet `TransactionDetailSheet` sekarang bisa **di-swipe ke bawah untuk dismiss** — mobile UX native. Ini menuntaskan marker `ponytail` yang ditinggalkan PR #190 ("add sheet gestures if ever needed").
+
+**Masalah:** Bottom sheet tanpa gesture terasa tidak native — user mobile harus menyentuh backdrop atau tombol X. Sheet punya drag handle visual, tapi handle-nya tidak berfungsi apa-apa.
+
+**Perubahan:**
+- **Gesture zero-dependency** — pointer events inline di `DialogContent` (`src/components/TransactionDetailSheet.tsx`, +~45 baris): drag touch/pen ke bawah → sheet mengikuti jari (`transform: translate(-50%, Npx)`); lewat **90px** → close; drag pendek → spring back 200ms.
+- **Guard anti false-claim:** mouse diabaikan (desktop pakai X/backdrop), swipe horizontal diabaikan (`dy > |dx|`), drag hanya diklaim saat `scrollTop <= 0` — scroll vertikal DI DALAM sheet tetap normal. `overscrollBehavior: contain` cegah page bounce di belakang sheet.
+- **5 test baru** (`components.test.tsx`, Radix dialog di-mock): render detail, drag past threshold → onClose, short drag → spring back, mouse drag ignored, horizontal swipe ignored.
+
+**Verifikasi:** `npm run build` ✅ · `npx vitest run` **197/197** ✅ · deploy clean via `scripts/deploy-dashboard.sh` ✅ · `/login` 200 · CSS hash 200 · PM2 error log kosong · kode terverifikasi di bundle live.
+
+**PR:** https://github.com/akramram/self-financial-dashboard/pull/196 (merged)
+
 ## Sesi Cron — 6 September 2026: Transaction Detail Sheet di Halaman Transactions (PR #194)
 
 **Inovasi:** Row di `/transactions` sekarang bisa di-tap → membuka **TransactionDetailSheet** (bottom sheet mobile, dialog desktop) — konsisten dengan Dashboard feed (PR #190).
