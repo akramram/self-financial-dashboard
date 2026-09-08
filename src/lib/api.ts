@@ -1,4 +1,5 @@
 import type { Transaction, NetworthRecord, MonthlySummary, Category, Investment, PortfolioSummary } from './data';
+import { getActivePeriod } from './utils';
 
 export async function fetchTransactions(filters?: { periodId?: number; type?: string; search?: string; category?: string }): Promise<Transaction[]> {
   const params = new URLSearchParams();
@@ -42,6 +43,38 @@ export async function toggleTransactionDoneApi(id: number, done: boolean): Promi
 
 export async function deleteTransactionApi(id: number): Promise<void> {
   await fetch(`/api/transactions/${id}`, { method: 'DELETE' });
+}
+
+/**
+ * One-tap repeat: duplicate a transaction into the ACTIVE period (today).
+ * Copies title/category/amount/type/payment_method/notes; done=true; created_time=now.
+ * force:true bypasses the duplicate guard (a repeat IS an intentional duplicate).
+ */
+export async function repeatTransactionApi(tx: Transaction): Promise<Response> {
+  const now = new Date();
+  const { month, year } = getActivePeriod();
+  const monthIdx = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December',
+  ].indexOf(month) + 1;
+  return fetch('/api/transactions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      month,
+      date: `${year}-${String(monthIdx).padStart(2, '0')}-21`,
+      title: tx.title,
+      category: tx.category,
+      amount: tx.amount,
+      currency: tx.currency || 'IDR',
+      type: tx.type,
+      payment_method: tx.payment_method,
+      done: true,
+      created_time: now.toISOString(),
+      notes: tx.notes,
+      force: true,
+    }),
+  });
 }
 
 export async function fetchNetworth(): Promise<NetworthRecord[]> {

@@ -809,13 +809,20 @@ function pointerEvent(type: string, opts: { clientY?: number; clientX?: number; 
 }
 
 describe('TransactionDetailSheet', () => {
-  const base = { open: true, onClose: vi.fn(), onToggleDone: vi.fn(), onEdit: vi.fn(), onDelete: vi.fn() };
+  const base = { open: true, onClose: vi.fn(), onToggleDone: vi.fn(), onEdit: vi.fn(), onDelete: vi.fn(), onRepeat: vi.fn() };
 
   it('renders transaction details when open', () => {
     render(<TransactionDetailSheet {...base} transaction={makeSheetTx()} />);
     expect(screen.getByText('Kopi Kenangan')).toBeInTheDocument();
     expect(screen.getAllByText('IDR 28,000').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Cash').length).toBeGreaterThan(0);
+  });
+
+  it('calls onRepeat when the Repeat button is clicked', () => {
+    render(<TransactionDetailSheet {...base} transaction={makeSheetTx()} />);
+    fireEvent.click(screen.getByRole('button', { name: /repeat/i }));
+    expect(base.onRepeat).toHaveBeenCalledTimes(1);
+    expect(base.onRepeat).toHaveBeenCalledWith(expect.objectContaining({ id: 77, title: 'Kopi Kenangan' }));
   });
 
   it('calls onClose when dragged down past the dismiss threshold', () => {

@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import type { Transaction, NetworthRecord, MonthlySummary, Category, RecurringTransaction } from '../lib/data';
 import { formatIdr, getActivePeriod } from '../lib/utils';
-import { updateTransactionApi, deleteTransactionApi, toggleTransactionDoneApi, fetchCategories, fetchRecurringTransactions, fetchTransactions } from '../lib/api';
+import { updateTransactionApi, deleteTransactionApi, toggleTransactionDoneApi, repeatTransactionApi, fetchCategories, fetchRecurringTransactions, fetchTransactions } from '../lib/api';
 import { showDeleteUndoToast } from '../lib/undo';
 import { onDataChanged, notifyDataChanged } from '../lib/dataSync';
 import '../lib/chartConfig';
@@ -568,6 +568,17 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
                 }
               }}
               onEdit={(tx) => { setDetailTx(null); startEdit(tx); }}
+              onRepeat={async (tx) => {
+                try {
+                  const res = await repeatTransactionApi(tx);
+                  if (!res.ok) throw new Error();
+                  setDetailTx(null);
+                  toast.success(`${tx.title} — ${formatIdr(tx.amount)} repeated`);
+                  notifyDataChanged('transactions');
+                } catch {
+                  toast.error('Failed to repeat transaction');
+                }
+              }}
               onDelete={async (tx) => {
                 const confirmed = await confirmAction({ title: 'Delete Transaction', description: `Delete "${tx.title}" (${formatIdr(tx.amount)})?`, confirmLabel: 'Delete', variant: 'destructive' });
                 if (!confirmed) return;
