@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import type { Transaction, Category } from '../lib/data';
-import { updateTransactionApi, deleteTransactionApi, toggleTransactionDoneApi, deleteTransactionsBulkApi, updateTransactionsBulkApi, fetchCategories, fetchTransactions } from '../lib/api';
+import { updateTransactionApi, deleteTransactionApi, toggleTransactionDoneApi, repeatTransactionApi, deleteTransactionsBulkApi, updateTransactionsBulkApi, fetchCategories, fetchTransactions } from '../lib/api';
 import { formatIdr } from '../lib/utils';
 import { useSortState } from '../hooks/useSortState';
 import { onDataChanged, notifyDataChanged } from '../lib/dataSync';
@@ -896,6 +896,17 @@ export default function TransactionTable({ transactions, showMonth = true, perio
           }
         }}
         onEdit={(tx) => { setDetailTx(null); setEditingId(tx.id); setEditForm({ ...tx }); }}
+        onRepeat={async (tx) => {
+          try {
+            const res = await repeatTransactionApi(tx);
+            if (!res.ok) throw new Error();
+            setDetailTx(null);
+            toast.success(`${tx.title} — ${formatIdr(tx.amount)} repeated`);
+            notifyDataChanged('transactions');
+          } catch {
+            toast.error('Failed to repeat transaction');
+          }
+        }}
         onDelete={async (tx) => {
           const confirmed = await confirmAction({
             title: 'Delete Transaction',

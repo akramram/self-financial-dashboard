@@ -4,7 +4,7 @@ import { formatIdr } from '../lib/utils';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Wallet, CreditCard, Receipt, Pencil, Trash2, CheckCircle2, Circle } from 'lucide-react';
+import { Wallet, CreditCard, Receipt, Pencil, Trash2, CheckCircle2, Circle, RotateCcw } from 'lucide-react';
 
 interface Props {
   open: boolean;
@@ -13,6 +13,8 @@ interface Props {
   onToggleDone: (tx: Transaction) => void;
   onEdit: (tx: Transaction) => void;
   onDelete: (tx: Transaction) => void;
+  /** Duplicate this transaction into the active period (one-tap repeat). */
+  onRepeat: (tx: Transaction) => void;
 }
 
 const DISMISS_THRESHOLD = 90; // px of downward drag before the sheet dismisses
@@ -25,7 +27,7 @@ const DISMISS_THRESHOLD = 90; // px of downward drag before the sheet dismisses
  * ponytail: no velocity fling — pure distance threshold; add velocity tracking
  * if the spring-back ever feels sluggish.
  */
-export default function TransactionDetailSheet({ open, transaction, onClose, onToggleDone, onEdit, onDelete }: Props) {
+export default function TransactionDetailSheet({ open, transaction, onClose, onToggleDone, onEdit, onDelete, onRepeat }: Props) {
   const contentRef = React.useRef<HTMLDivElement | null>(null);
   const drag = React.useRef<{ startY: number; startX: number; startScroll: number; pointerId: number; active: boolean } | null>(null);
   const [dragY, setDragY] = React.useState(0);
@@ -165,20 +167,27 @@ export default function TransactionDetailSheet({ open, transaction, onClose, onT
           </button>
         </div>
 
-        <div className="px-6 pb-6 pt-2 grid grid-cols-2 gap-3">
+        <div className="px-6 pb-6 pt-2 grid grid-cols-3 gap-3">
           <Button
             variant="outline"
             onClick={() => onEdit(transaction)}
             className="h-11 bg-slate-100 dark:bg-white/[0.05] border-slate-300 dark:border-white/[0.1] text-slate-700 dark:text-white/80 hover:bg-slate-200 dark:hover:bg-white/[0.1]"
           >
-            <Pencil className="w-4 h-4 mr-2" /> Edit
+            <Pencil className="w-4 h-4 mr-1.5" /> Edit
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => onRepeat(transaction)}
+            className="h-11 bg-slate-100 dark:bg-white/[0.05] border-slate-300 dark:border-white/[0.1] text-mint-600 dark:text-mint-400 hover:bg-mint-500/10"
+          >
+            <RotateCcw className="w-4 h-4 mr-1.5" /> Repeat
           </Button>
           <Button
             variant="outline"
             onClick={() => onDelete(transaction)}
             className="h-11 bg-slate-100 dark:bg-white/[0.05] border-slate-300 dark:border-white/[0.1] text-red-400 hover:bg-red-500/10 hover:text-red-300"
           >
-            <Trash2 className="w-4 h-4 mr-2" /> Delete
+            <Trash2 className="w-4 h-4 mr-1.5" /> Delete
           </Button>
         </div>
       </DialogContent>
