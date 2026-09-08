@@ -1,5 +1,28 @@
 # Iteration Log
 
+## Sesi Cron — 8 September 2026: One-Tap Repeat di Transaction Detail Sheet (PR #198)
+
+### Ringkasan
+Tombol **Repeat** di transaction detail sheet — duplikat transaksi apa pun ke periode aktif dengan satu tap. Extends alur Quick Repeat (PR #146, sebelumnya hanya di QuickAddDialog) ke semua tempat transaksi dilihat: Dashboard feed + halaman Transactions, mobile sheet maupun desktop dialog.
+
+### Branch
+`feat/txn-sheet-repeat-action` (merged via PR #198, deleted)
+
+### Apa yang berubah
+- **`TransactionDetailSheet.tsx`** — action grid jadi 3 kolom (Edit | Repeat | Delete). Tombol Repeat mint (`RotateCcw`), prop baru `onRepeat(tx)`.
+- **`src/lib/api.ts`** — `repeatTransactionApi(tx)`: resolve periode aktif via `getActivePeriod()` (konvensi gaji 21→20), payload POST dengan field sama (title, category, amount, type, payment_method, notes), `done=true`, `created_time=now`, `force=true` (repeat = duplikat intentional, bypass duplicate guard).
+- **`Dashboard.tsx` + `TransactionTable.tsx`** — wiring `onRepeat`: close sheet, toast sukses/gagal, `notifyDataChanged('transactions')` → semua widget refetch via live event bus.
+- **`components.test.tsx`** — +1 test: klik tombol Repeat memanggil `onRepeat` dengan transaction object.
+
+### Test & Build
+- ✅ `npx vitest run` — 198/198 pass (1 baru)
+- ✅ `npm run build` — pass (clean dist, PM2 full restart via ecosystem)
+- ✅ Live verify via API: repeat "Bento Kopi" → tx id 958, period 38 (aktif), done=1; test data dibersihkan setelahnya
+
+### Catatan
+- Tidak ada perubahan skema DB / API route — hanya client-side helper pakai endpoint POST yang ada.
+- Semantik period tetap: repeat selalu masuk periode aktif hari ini, bukan periode transaksi asal.
+
 ## Sesi Cron — 7 September 2026: Swipe-to-Dismiss di Transaction Detail Sheet (PR #196)
 
 **Inovasi:** Bottom sheet `TransactionDetailSheet` sekarang bisa **di-swipe ke bawah untuk dismiss** — mobile UX native. Ini menuntaskan marker `ponytail` yang ditinggalkan PR #190 ("add sheet gestures if ever needed").
