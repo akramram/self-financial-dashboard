@@ -110,9 +110,10 @@ export default function MobileSidebar({ balance, alerts: initialAlerts = 0 }: Pr
     return () => window.removeEventListener('alerts-count', sync);
   }, []);
 
-  const currentPath = useMemo(() => {
-    if (typeof window === 'undefined') return '/';
-    return window.location.pathname.replace(/\/$/, '') || '/';
+  // Hydration-safe current path: SSR renders '/', client sets real path after mount.
+  const [currentPath, setCurrentPath] = useState('/');
+  useEffect(() => {
+    setCurrentPath(window.location.pathname.replace(/\/$/, '') || '/');
   }, []);
 
   const isActive = (path: string) => currentPath === path;

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { LayoutDashboard, ArrowRightLeft, PieChart, Target, Plus } from 'lucide-react';
 
 const TABS = [
@@ -13,9 +13,10 @@ function openQuickAdd() {
 }
 
 export default function FintechBottomTabs() {
-  const currentPath = useMemo(() => {
-    if (typeof window === 'undefined') return '/';
-    return window.location.pathname.replace(/\/$/, '') || '/';
+  // Hydration-safe current path: SSR renders '/', client sets real path after mount.
+  const [currentPath, setCurrentPath] = useState('/');
+  useEffect(() => {
+    setCurrentPath(window.location.pathname.replace(/\/$/, '') || '/');
   }, []);
 
   return (
