@@ -154,7 +154,29 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
   }), []);
   useEffect(() => { const today = new Date(); if (today.getDate() < 21) return; const latest = summaries[summaries.length - 1]; if (!latest) return; const latestDate = new Date(latest.month + ' 1'); const nextDate = new Date(latestDate); nextDate.setMonth(nextDate.getMonth() + 1); const nextMonthStr = nextDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }); fetch('/api/kickoff').then(res => res.json()).then((status: any) => { if (status.hasNextMonth) { setKickoffBanner(null); return; } fetchRecurringTransactions().then(recurring => { setKickoffBanner({ show: true, currentMonth: latest.month, nextMonth: status.nextMonth || nextMonthStr, recurringCount: recurring.filter(r => r.active).length }); }).catch(() => {}); }).catch(() => {}); }, [summaries]);
 
-  // Keyboard shortcut: / to focus feed search
+  // ── URL state (hydration-safe: defaults match SSR, real values set post-mount) ──
+  // Pattern from PR #200: reading window.location during render causes React #418.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const p = params.get('period');
+    if (p && p !== 'all' && /^\d+$/.test(p)) {
+      setFilterPeriodId(parseInt(p, 10));
+      setFilterAllTime(false);
+    }
+    const q = params.get('q');
+    if (q) setFeedSearch(q);
+  }, []);
+
+  // Sync filter + search back to URL — shareable/bookmarkable, survives refresh.
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (!filterAllTime && filterPeriodId != null) params.set('period', String(filterPeriodId));
+    if (feedSearch.trim()) params.set('q', feedSearch.trim());
+    const qs = params.toString();
+    window.history.replaceState({}, '', qs ? `${window.location.pathname}?${qs}` : window.location.pathname);
+  }, [filterPeriodId, filterAllTime, feedSearch]);
+
+  // ── Keyboard shortcut: / to focus feed search ────────────────
   const feedSearchRef = React.useRef<HTMLInputElement>(null);
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -458,7 +480,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
         <InView as="section" delay={0.2}>
           <div className="flex items-center justify-between mb-3">
             <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/40">Feed</p>
-            <a href="/transactions" className="text-xs text-slate-500 dark:text-white/40 hover:text-slate-700 dark:text-white/70 no-underline">View all →</a>
+            <a href={`/transactions${!filterAllTime && filterPeriodId != null ? `?period_id=${filterPeriodId}` : ''}${feedSearch.trim() ? `${!filterAllTime && filterPeriodId != null ? '&' : '?'}search=${encodeURIComponent(feedSearch.trim())}` : ''}`} className="text-xs text-slate-500 dark:text-white/40 hover:text-slate-700 dark:hover:text-white/70 no-underline">View all →</a>
           </div>
 
           <GlassCard className="p-0 overflow-hidden">
