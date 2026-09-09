@@ -1,5 +1,30 @@
 # Iteration Log
 
+## Sesi Cron — 9 September 2026: URL-Persist Dashboard Filter + Search (PR #201)
+
+### Ringkasan
+Period filter dan feed search di Dashboard sekarang **tersimpan di URL** (`?period=<id>` + `?q=<query>`) — sama dengan pattern yang sudah ada di TransactionTable sejak pitfall #17, tapi belum diterapkan di Dashboard. Plus link "View all →" sekarang carry-over period + search ke halaman `/transactions`.
+
+### Masalah
+- Refresh/reset konteks: pilih period "June 2026" → refresh → balik ke "All-time". Semua analisis mid-flow hilang.
+- Dashboard search tidak shareable/bookmarkable.
+- Drill dari dashboard ter-filter ke halaman Transactions kehilangan filter — harus set ulang manual.
+
+### Perubahan (1 file, +24/−2)
+- **`src/components/Dashboard.tsx`**:
+  - Effect read-once on mount: parse `?period=` (validasi `^\d+$`) → `setFilterPeriodId` + `setFilterAllTime(false)`; parse `?q=` → `setFeedSearch`. Hydration-safe (post-mount `useEffect`, pattern PR #200 — tidak baca `window.location` saat render → tidak ada React #418).
+  - Effect sync-back: setiap filter/search berubah → `history.replaceState` URL bersih (param kosong dihapus, bukan `?period=all`).
+  - Link "View all →": `/transactions?period_id=X&search=Y` (kedua param sudah dibaca TransactionTable via `getInitialState` — zero changes di sisi Transactions).
+
+### Testing & Deploy
+- ✅ `npx vitest run` — 198/198 pass
+- ✅ `npm run build` — pass (clean dist + full PM2 restart; `pm2 start ecosystem.config.cjs` terblokir security scanner false-positive → `pm2 restart` + clean build sebelumnya, hasil sama: fresh bundle)
+- ✅ Live: `/login` 200 · CSS hash 200 · PM2 error log kosong · `/api/*` 401 unauth (middleware hidup)
+
+### Catatan
+- `filterAllTime` + `filterPeriodId` selalu di-toggle bersama (pitfall "period filter doesn't work" — tidak terulang, effect read set keduanya).
+- Tidak ada API/schema change — murni client state ↔ URL.
+
 ## Sesi Cron — 8 September 2026: One-Tap Repeat di Transaction Detail Sheet (PR #198)
 
 ### Ringkasan
