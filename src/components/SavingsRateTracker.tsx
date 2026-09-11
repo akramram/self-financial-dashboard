@@ -195,7 +195,7 @@ export default function SavingsRateTracker() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="text-slate-500 dark:text-white/30">Loading savings rate data…</div>
+        <div className="text-slate-500 dark:text-white/40">Loading savings rate data…</div>
       </div>
     );
   }
@@ -213,7 +213,7 @@ export default function SavingsRateTracker() {
       <div className="flex flex-col items-center justify-center py-20 text-center">
         <PiggyBank className="w-12 h-12 text-slate-300 dark:text-white/15 mb-4" />
         <h3 className="text-lg font-semibold text-slate-500 dark:text-white/40">No savings data yet</h3>
-        <p className="text-sm text-slate-500 dark:text-white/30 mt-2 max-w-md">
+        <p className="text-sm text-slate-500 dark:text-white/40 mt-2 max-w-md">
           You need income records and spending transactions to compute your savings rate.
           Try running month kickoff or adding income via the settings page.
         </p>
@@ -561,7 +561,7 @@ function StatCard({ icon, label, value, subtitle, color }: {
         <span className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-white/40">{label}</span>
       </div>
       <div className="text-2xl font-bold text-slate-900 dark:text-white">{value}</div>
-      <div className="text-xs text-slate-500 dark:text-white/30 mt-1">{subtitle}</div>
+      <div className="text-xs text-slate-500 dark:text-white/40 mt-1">{subtitle}</div>
     </div>
   );
 }

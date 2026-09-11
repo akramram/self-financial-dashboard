@@ -302,7 +302,7 @@ export default function HealthScore({ summaries, categories }: Props) {
     return (
       <div className="glass-card p-5">
         
-          <Heart className="mx-auto h-12 w-12 text-slate-500 dark:text-white/30 mb-4" />
+          <Heart className="mx-auto h-12 w-12 text-slate-500 dark:text-white/40 mb-4" />
           <p className="text-slate-600 dark:text-white/50">Not enough data to calculate health score.</p>
           <p className="text-sm text-slate-500 dark:text-white/40 mt-1">Add transactions and income data to get started.</p>
         

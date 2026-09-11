@@ -365,7 +365,7 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded, presetDate
         {/* Quick Repeat, Recent Transactions */}
         {recentTxs.length > 0 && (
           <div className="space-y-2 mb-1">
-            <div className="flex items-center gap-1.5 text-[11px] font-medium text-slate-400 dark:text-white/30 uppercase tracking-wider">
+            <div className="flex items-center gap-1.5 text-[11px] font-medium text-slate-400 dark:text-white/40 uppercase tracking-wider">
               <RotateCcw className="w-3 h-3" />
               Quick Repeat
             </div>
@@ -379,7 +379,7 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded, presetDate
                   className="group inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all bg-slate-100 dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.06] hover:bg-slate-200 dark:hover:bg-white/[0.08] hover:border-slate-300 dark:hover:border-white/[0.1] text-slate-700 dark:text-white/70 disabled:opacity-50"
                 >
                   <span className="truncate max-w-[120px]">{tx.title}</span>
-                  <span className="text-slate-400 dark:text-white/30 text-[11px]">{formatIdr(tx.amount)}</span>
+                  <span className="text-slate-400 dark:text-white/40 text-[11px]">{formatIdr(tx.amount)}</span>
                   {repeatLoading === tx.id.toString() ? (
                     <Loader2 className="w-3 h-3 animate-spin text-mint-500" />
                   ) : (
@@ -537,7 +537,7 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded, presetDate
               <button
                 type="button"
                 onClick={() => setShowNotes(true)}
-                className="inline-flex items-center gap-1.5 text-xs text-slate-400 dark:text-white/30 hover:text-slate-600 dark:hover:text-white/50 transition-colors"
+                className="inline-flex items-center gap-1.5 text-xs text-slate-400 dark:text-white/40 hover:text-slate-600 dark:hover:text-white/50 transition-colors"
               >
                 <StickyNote className="w-3.5 h-3.5" />
                 Add note
@@ -551,7 +551,7 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded, presetDate
                   <button
                     type="button"
                     onClick={() => { setShowNotes(false); setNotes(''); }}
-                    className="text-[11px] text-slate-400 dark:text-white/20 hover:text-slate-600 dark:hover:text-white/40 transition-colors"
+                    className="text-[11px] text-slate-400 dark:text-white/40 hover:text-slate-600 dark:hover:text-white/40 transition-colors"
                   >
                     Remove
                   </button>

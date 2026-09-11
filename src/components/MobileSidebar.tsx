@@ -209,7 +209,7 @@ export default function MobileSidebar({ balance, alerts: initialAlerts = 0 }: Pr
             className="relative flex items-center rounded-xl px-3 py-2 gap-3 transition-colors hover:bg-slate-100 dark:bg-white/5 no-underline"
           >
             <Bell
-              className={`w-5 h-5 ${alerts > 0 ? 'text-mint-500' : 'text-slate-400 dark:text-white/30'}`}
+              className={`w-5 h-5 ${alerts > 0 ? 'text-mint-500' : 'text-slate-400 dark:text-white/40'}`}
               strokeWidth={1.8}
             />
             <span className={`text-sm ${alerts > 0 ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-white/40'}`}>

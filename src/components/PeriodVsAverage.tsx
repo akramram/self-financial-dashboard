@@ -108,7 +108,7 @@ export default function PeriodVsAverage({
           <BarChart3 className="h-4 w-4 text-slate-500 dark:text-white/40" />
           Period vs Average
         </h3>
-        <p className="text-sm text-slate-500 dark:text-white/30">
+        <p className="text-sm text-slate-500 dark:text-white/40">
           Need at least 2 periods of data to compare.
         </p>
       </div>
@@ -212,7 +212,7 @@ export default function PeriodVsAverage({
                 </span>
               </div>
               {v.count < lookbackPeriods && v.current > 0 && (
-                <p className="text-[10px] text-slate-500 dark:text-white/30 ml-5">
+                <p className="text-[10px] text-slate-500 dark:text-white/40 ml-5">
                   New category, only {v.count} historical period{v.count !== 1 ? 's' : ''} for comparison
                 </p>
               )}
@@ -222,7 +222,7 @@ export default function PeriodVsAverage({
       </div>
 
       {variances.length === 0 && (
-        <p className="text-sm text-slate-500 dark:text-white/30 text-center py-4">
+        <p className="text-sm text-slate-500 dark:text-white/40 text-center py-4">
           No category data to compare.
         </p>
       )}

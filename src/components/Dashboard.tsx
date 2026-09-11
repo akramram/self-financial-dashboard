@@ -384,7 +384,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
             <GlassCard className="mb-4">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-sm font-semibold text-slate-800 dark:text-white/80">Alerts</h3>
-                <button onClick={() => setShowAlerts(false)} className="text-slate-500 dark:text-white/30 hover:text-slate-600 dark:text-white/60"><X className="w-4 h-4" /></button>
+                <button onClick={() => setShowAlerts(false)} className="text-slate-500 dark:text-white/40 hover:text-slate-600 dark:text-white/60"><X className="w-4 h-4" /></button>
               </div>
               <AlertsPanel month={activeSummary?.month} summaries={summaries} categories={categories} transactions={localTransactions} recurringTitles={recurringTitles} />
             </GlassCard>
@@ -459,10 +459,10 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
               ) : (
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-slate-200/60 dark:bg-white/[0.06]">
-                    <Shield className="w-5 h-5 text-slate-400 dark:text-white/20" strokeWidth={1.8} />
+                    <Shield className="w-5 h-5 text-slate-400 dark:text-white/40" strokeWidth={1.8} />
                   </div>
                   <div>
-                    <p className="text-2xl font-bold text-slate-300 dark:text-white/20">-</p>
+                    <p className="text-2xl font-bold text-slate-300 dark:text-white/40">-</p>
                     <p className="text-xs text-slate-500 dark:text-white/40">months of emergency fund</p>
                   </div>
                 </div>
@@ -486,7 +486,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
           <GlassCard className="p-0 overflow-hidden">
             {/* Search bar */}
             <div className="relative px-4 pt-3 pb-2">
-              <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-white/30" />
+              <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-white/40" />
               <input
                 ref={feedSearchRef}
                 type="text"
@@ -496,7 +496,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
                 className="w-full pl-9 pr-8 py-2 text-sm rounded-lg bg-slate-100 dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.08] text-slate-700 dark:text-white/80 placeholder:text-slate-400 dark:placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-mint-500/60 focus:ring-offset-0 focus:border-mint-500/50 transition"
               />
               {feedSearch && (
-                <button onClick={() => { setFeedSearch(''); setTxPage(1); }} className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white/30 hover:text-slate-600 dark:text-white/60 transition">
+                <button onClick={() => { setFeedSearch(''); setTxPage(1); }} className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white/40 hover:text-slate-600 dark:text-white/60 transition">
                   <X className="w-3.5 h-3.5" />
                 </button>
               )}
@@ -550,7 +550,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
                         <TableCell className="text-slate-500 dark:text-white/40 text-xs">{dateStr}</TableCell>
                         <TableCell className="font-medium text-right text-slate-800 dark:text-white/90">{formatIdr(row.amount)}</TableCell>
                         <TableCell className={`${typeClass} text-xs font-semibold uppercase`}>{typeLabel}</TableCell>
-                        <TableCell className="text-slate-400 dark:text-white/30">
+                        <TableCell className="text-slate-400 dark:text-white/40">
                           <ChevronRight className="w-4 h-4" />
                         </TableCell>
                       </TableRow>
@@ -561,7 +561,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
 
               {feedSearch && pagedTransactions.length === 0 && (
                 <div className="py-8 text-center">
-                  <Search className="w-8 h-8 mx-auto mb-2 text-slate-300 dark:text-white/20" />
+                  <Search className="w-8 h-8 mx-auto mb-2 text-slate-300 dark:text-white/40" />
                   <p className="text-sm text-slate-500 dark:text-white/40">No transactions match "{feedSearch}"</p>
                   <button onClick={() => { setFeedSearch(''); setTxPage(1); }} className="mt-2 text-xs text-mint-500 hover:text-mint-400 transition">Clear search</button>
                 </div>
@@ -617,10 +617,10 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
 
             {searchedTransactions.length > txPerPage && (
               <div className="flex items-center justify-between px-5 py-3 border-t border-slate-200 dark:border-white/[0.05]">
-                <p className="text-xs text-slate-500 dark:text-white/30">Showing {(txPage - 1) * txPerPage + 1}–{Math.min(txPage * txPerPage, searchedTransactions.length)} of {searchedTransactions.length}</p>
+                <p className="text-xs text-slate-500 dark:text-white/40">Showing {(txPage - 1) * txPerPage + 1}–{Math.min(txPage * txPerPage, searchedTransactions.length)} of {searchedTransactions.length}</p>
                 <div className="flex items-center gap-2">
                   <Button variant="outline" size="sm" onClick={() => goToPage(txPage - 1)} disabled={txPage <= 1} className="h-7 text-xs bg-slate-100 dark:bg-white/[0.05] border-slate-300 dark:border-white/[0.08] text-slate-600 dark:text-white/60">Previous</Button>
-                  <span className="text-xs text-slate-500 dark:text-white/30 min-w-[3rem] text-center">{txPage} / {totalTxPages}</span>
+                  <span className="text-xs text-slate-500 dark:text-white/40 min-w-[3rem] text-center">{txPage} / {totalTxPages}</span>
                   <Button variant="outline" size="sm" onClick={() => goToPage(txPage + 1)} disabled={txPage >= totalTxPages} className="h-7 text-xs bg-slate-100 dark:bg-white/[0.05] border-slate-300 dark:border-white/[0.08] text-slate-600 dark:text-white/60">Next</Button>
                 </div>
               </div>
@@ -638,7 +638,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
           <div className="glass-card p-5 bg-slate-100 dark:bg-white/[0.02] border-slate-200 dark:border-white/[0.06] mb-4">
             <h3 className="text-base font-semibold text-slate-800 dark:text-white/80">Category Spending Trend</h3><CategoryTrendChart data={filteredSummaries} categories={categories} /></div>
           <div className="mb-4">
-            <div className="glass-card p-5 bg-slate-100 dark:bg-white/[0.02] border-slate-200 dark:border-white/[0.06]"><h3 className="text-base font-semibold text-slate-800 dark:text-white/80">{isAllTime ? 'Latest Month Categories' : `${activeSummary?.month ?? ''} Categories`}</h3>{activeSummary?.category_totals && Object.keys(activeSummary.category_totals).length > 0 ? <CategoryChart data={activeSummary.category_totals} categories={categories} onCategoryClick={openCategoryDialog} /> : <p className="text-slate-500 dark:text-white/30 text-sm">No category data available.</p>}</div>
+            <div className="glass-card p-5 bg-slate-100 dark:bg-white/[0.02] border-slate-200 dark:border-white/[0.06]"><h3 className="text-base font-semibold text-slate-800 dark:text-white/80">{isAllTime ? 'Latest Month Categories' : `${activeSummary?.month ?? ''} Categories`}</h3>{activeSummary?.category_totals && Object.keys(activeSummary.category_totals).length > 0 ? <CategoryChart data={activeSummary.category_totals} categories={categories} onCategoryClick={openCategoryDialog} /> : <p className="text-slate-500 dark:text-white/40 text-sm">No category data available.</p>}</div>
           </div>
           <PeriodVsAverage summaries={filteredSummaries} categories={categories} activePeriodId={filterPeriodId} />
         </InView>
@@ -657,7 +657,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
               <OutcomeBarChart data={activeSummary?.category_totals || {}} categories={categories} highlightCategory={selectedCategory} summaries={summaries} />
             </div>
             <div>
-              {(() => { const catTxs = localTransactions.filter(t => t.category === selectedCategory && t.period_id === activeSummary?.period_id).sort((a, b) => parseCreatedTime(b).getTime() - parseCreatedTime(a).getTime()); if (catTxs.length === 0) return <p className="text-sm text-slate-500 dark:text-white/30">No transactions found.</p>; return (
+              {(() => { const catTxs = localTransactions.filter(t => t.category === selectedCategory && t.period_id === activeSummary?.period_id).sort((a, b) => parseCreatedTime(b).getTime() - parseCreatedTime(a).getTime()); if (catTxs.length === 0) return <p className="text-sm text-slate-500 dark:text-white/40">No transactions found.</p>; return (
                 <Table>
                   <TableHeader><TableRow className="border-slate-200 dark:border-white/[0.05]"><TableHead className="text-slate-600 dark:text-white/50">Title</TableHead><TableHead className="text-slate-600 dark:text-white/50">Date</TableHead><TableHead className="text-right text-slate-600 dark:text-white/50">Amount</TableHead><TableHead className="text-slate-600 dark:text-white/50">Type</TableHead></TableRow></TableHeader>
                   <TableBody>{catTxs.map(t => { const d = parseCreatedTime(t); const dateStr = isNaN(d.getTime()) ? t.date : d.toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' }); const typeLabel = t.type === 'cash' ? 'Cash' : t.type === 'credit_payment' ? 'Credit Pay' : 'Credit'; return (<TableRow key={t.id} className="border-slate-200 dark:border-white/[0.03]"><TableCell className="font-medium text-slate-800 dark:text-white/80">{t.title}</TableCell><TableCell className="text-slate-500 dark:text-white/40 text-xs">{dateStr}</TableCell><TableCell className="text-right font-medium text-slate-800 dark:text-white/90">{formatIdr(t.amount)}</TableCell><TableCell className="text-xs font-semibold uppercase"><Badge variant="outline" className="border-slate-300 dark:border-white/[0.1]">{typeLabel}</Badge></TableCell></TableRow>); })}</TableBody>
