@@ -255,7 +255,10 @@ export default function RunwayAnalysis({ periodId, compact = false }: Props) {
         
           <div className="flex items-center gap-2 text-slate-600 dark:text-white/50 text-sm">
             <Droplet className="w-4 h-4" />
-            <span>Belum ada data networth. Tambahkan data networth untuk menghitung runway.</span>
+            <div className="space-y-2">
+              <span>Runway butuh data networth, dan belum ada satu pun yang tercatat.</span>
+              <a href="/networth" className="inline-flex items-center gap-1.5 text-sm font-medium text-mint-600 dark:text-mint-400 hover:underline">Tambah data networth</a>
+            </div>
           </div>
         
       </div>
