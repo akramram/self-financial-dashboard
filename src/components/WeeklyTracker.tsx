@@ -315,6 +315,7 @@ export default function WeeklyTracker() {
   if (loading && !weeklyData) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* skeleton bars: pulse communicates loading (R-19 purpose) */}
         {[1, 2, 3, 4, 5, 6].map((i) => (
           <div key={i} className="h-40 rounded-xl bg-slate-200/60 dark:bg-white/[0.08] animate-pulse" />
         ))}
