@@ -126,3 +126,25 @@
     outline-offset: 2px;
   }
 }
+
+/* ── Background: subtle conic aurora on navy (dark mode only) ────────────── */
+/* Reason (R-07/R-31): fintech "market radar" motif; light mode stays clean
+   slate because glass cards need a quiet backdrop there. Dose: glow peaks at
+   5% mint alpha, offset off-center, fixed-attachment so it reads as ambient
+   light, not decoration. */
+.dark body,
+body:has(.dark) {
+  background-image:
+    repeating-conic-gradient(
+      from 0deg at 85% -10%,
+      hsl(163 94% 42% / 0.05) 0deg 6deg,
+      transparent 6deg 24deg
+    ),
+    repeating-conic-gradient(
+      from 180deg at 0% 110%,
+      hsl(228 57% 30% / 0.35) 0deg 10deg,
+      hsl(228 57% 5% / 0) 10deg 40deg
+    );
+  background-attachment: fixed;
+  background-color: hsl(228 57% 5%);
+}
