@@ -202,6 +202,8 @@ export interface RecurringTransaction {
   active: boolean;
   end_date: string | null;
   created_at: string;
+  goal_id?: number | null;
+  goal_name?: string | null;
 }
 
 export async function fetchRecurringTransactions(): Promise<RecurringTransaction[]> {
