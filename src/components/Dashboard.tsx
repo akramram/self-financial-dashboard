@@ -493,7 +493,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
                 placeholder="Search transactions... ( / )"
                 value={feedSearch}
                 onChange={(e) => { setFeedSearch(e.target.value); setTxPage(1); }}
-                className="w-full pl-9 pr-8 py-2 text-sm rounded-lg bg-slate-100 dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.08] text-slate-700 dark:text-white/80 placeholder:text-slate-400 dark:placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-mint-500/30 focus:border-mint-500/50 transition"
+                className="w-full pl-9 pr-8 py-2 text-sm rounded-lg bg-slate-100 dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.08] text-slate-700 dark:text-white/80 placeholder:text-slate-400 dark:placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-mint-500/60 focus:ring-offset-0 focus:border-mint-500/50 transition"
               />
               {feedSearch && (
                 <button onClick={() => { setFeedSearch(''); setTxPage(1); }} className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white/30 hover:text-slate-600 dark:text-white/60 transition">
