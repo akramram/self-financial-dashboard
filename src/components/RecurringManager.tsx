@@ -22,8 +22,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { fetchCategories } from '../lib/api';
+import { fetchCategories, fetchGoals } from '../lib/api';
 import type { Category } from '../lib/data';
+import type { FinancialGoal } from '../lib/api';
+import { Target } from 'lucide-react';
 
 const TYPE_OPTIONS = [
   { value: 'cash', label: 'Cash' },
@@ -37,6 +39,7 @@ export default function RecurringManager() {
   const { confirm: confirmAction } = useConfirm();
   const [recurring, setRecurring] = useState<RecurringTransaction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [goals, setGoals] = useState<FinancialGoal[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -53,6 +56,7 @@ export default function RecurringManager() {
     done: boolean;
     end_date: string;
     created_at: string;
+    goal_id: string;
   }>({
     title: '',
     category: '',
@@ -62,6 +66,7 @@ export default function RecurringManager() {
     done: false,
     end_date: '',
     created_at: defaultDay(),
+    goal_id: 'none',
   });
 
   useEffect(() => {
@@ -70,9 +75,10 @@ export default function RecurringManager() {
 
   async function loadData() {
     try {
-      const [r, c] = await Promise.all([fetchRecurringTransactions(), fetchCategories()]);
+      const [r, c, g] = await Promise.all([fetchRecurringTransactions(), fetchCategories(), fetchGoals()]);
       setRecurring(r);
       setCategories(c);
+      setGoals(g);
       setError('');
     } catch (e) {
       setError('Failed to load data');
@@ -104,6 +110,7 @@ export default function RecurringManager() {
         active: editForm.active,
         end_date: editForm.end_date || null,
         created_at: editForm.created_at || defaultDay(),
+        goal_id: editForm.goal_id ?? null,
       });
       setEditingId(null);
       setEditForm({});
@@ -153,8 +160,9 @@ export default function RecurringManager() {
         active: true,
         end_date: addForm.end_date || null,
         created_at: addForm.created_at || defaultDay(),
+        goal_id: addForm.goal_id === 'none' ? null : Number(addForm.goal_id),
       });
-      setAddForm({ title: '', category: '', amount: '', type: 'cash', payment_method: 'Cash', done: false, end_date: '', created_at: defaultDay() });
+      setAddForm({ title: '', category: '', amount: '', type: 'cash', payment_method: 'Cash', done: false, end_date: '', created_at: defaultDay(), goal_id: 'none' });
       setIsAdding(false);
       setError('');
       await loadData();
@@ -271,6 +279,21 @@ export default function RecurringManager() {
                 />
                 <p className="text-xs text-slate-500 dark:text-white/40">Tanggal transaksi muncul tiap bulan (1-28, default: hari ini)</p>
               </div>
+              <div className="space-y-1.5">
+                <Label>Link ke Goal (opsional)</Label>
+                <Select value={addForm.goal_id} onValueChange={(v) => setAddForm((p) => ({ ...p, goal_id: v }))}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="No goal" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">No goal</SelectItem>
+                    {goals.filter((g) => !g.completed).map((g) => (
+                      <SelectItem key={g.id} value={String(g.id)}>{g.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-slate-500 dark:text-white/40">Transfer terjadwal yang sudah dibayar otomatis menambah progres goal tiap period</p>
+              </div>
             </div>
             <div className="flex justify-end">
               <Button size="sm" onClick={handleAdd}>Save Recurring</Button>
@@ -289,6 +312,7 @@ export default function RecurringManager() {
                 <TableHead>Type</TableHead>
                 <TableHead>End Date</TableHead>
                 <TableHead>Tgl</TableHead>
+                <TableHead>Goal</TableHead>
                 <TableHead>Paid</TableHead>
                 <TableHead className="w-32"></TableHead>
               </TableRow>
@@ -381,6 +405,22 @@ export default function RecurringManager() {
                           />
                         </TableCell>
                         <TableCell>
+                          <Select
+                            value={editForm.goal_id != null ? String(editForm.goal_id) : 'none'}
+                            onValueChange={(v) => setEditForm((p) => ({ ...p, goal_id: v === 'none' ? null : Number(v) }))}
+                          >
+                            <SelectTrigger className="h-8 text-xs w-[140px]">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="none">No goal</SelectItem>
+                              {goals.filter((g) => !g.completed || g.id === editForm.goal_id).map((g) => (
+                                <SelectItem key={g.id} value={String(g.id)}>{g.name}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </TableCell>
+                        <TableCell>
                           <Checkbox
                             checked={!!editForm.done}
                             onCheckedChange={(v) => setEditForm((p) => ({ ...p, done: !!v }))}
@@ -403,7 +443,15 @@ export default function RecurringManager() {
                           onCheckedChange={() => toggleActive(item)}
                         />
                       </TableCell>
-                      <TableCell className="font-medium">{item.title}</TableCell>
+                      <TableCell className="font-medium">
+                        {item.title}
+                        {item.goal_name && (
+                          <span className="ml-2 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-medium text-gold-600 dark:text-gold-400 bg-gold-500/10 dark:bg-gold-500/15">
+                            <Target className="w-3 h-3" />
+                            {item.goal_name}
+                          </span>
+                        )}
+                      </TableCell>
                       <TableCell>{item.category}</TableCell>
                       <TableCell className="text-right">{formatIdr(item.amount)}</TableCell>
                       <TableCell className="text-xs">
@@ -414,6 +462,14 @@ export default function RecurringManager() {
                       </TableCell>
                       <TableCell className="text-xs text-slate-500 dark:text-white/40">
                         {item.created_at || '-'}
+                      </TableCell>
+                      <TableCell className="text-xs text-slate-500 dark:text-white/40">
+                        {item.goal_name ? (
+                          <span className="inline-flex items-center gap-1 text-gold-600 dark:text-gold-400">
+                            <Target className="w-3 h-3" />
+                            {item.goal_name}
+                          </span>
+                        ) : '-'}
                       </TableCell>
                       <TableCell>
                         {item.done ? (

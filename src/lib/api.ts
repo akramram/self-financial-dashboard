@@ -209,7 +209,7 @@ export async function fetchRecurringTransactions(): Promise<RecurringTransaction
   return res.json();
 }
 
-export async function createRecurringTransaction(tx: Omit<RecurringTransaction, 'id'>): Promise<RecurringTransaction> {
+export async function createRecurringTransaction(tx: Omit<RecurringTransaction, 'id'> & { goal_id?: number | null }): Promise<RecurringTransaction> {
   const res = await fetch('/api/recurring', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -218,7 +218,7 @@ export async function createRecurringTransaction(tx: Omit<RecurringTransaction, 
   return res.json();
 }
 
-export async function updateRecurringTransactionApi(id: number, tx: Partial<Omit<RecurringTransaction, 'id'>>): Promise<void> {
+export async function updateRecurringTransactionApi(id: number, tx: Partial<Omit<RecurringTransaction, 'id'>> & { goal_id?: number | null }): Promise<void> {
   await fetch(`/api/recurring/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
