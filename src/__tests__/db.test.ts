@@ -1419,3 +1419,75 @@ describe('DB — Networth milestone crossing', () => {
     expect(r.next).toBe(25_000_000);
   });
 });
+
+describe('DB — Goal auto-contribution (recurring link)', () => {
+  let db: any, dbPath: string, cleanup: () => void;
+  let goalId: number, recId: number, periodId: number;
+
+  // Mirror of contributeToGoal in src/lib/db.ts (highest DB seam available in test context)
+  function contributeToGoalMirror(goalId: number, recurringId: number, periodId: number, amount: number): boolean {
+    const goal = db.prepare('SELECT completed, target_amount, current_amount FROM goals WHERE id = ?').get(goalId);
+    if (!goal || goal.completed === 1) return false;
+    const res = db.prepare('INSERT OR IGNORE INTO goal_contributions (goal_id, recurring_id, period_id, amount) VALUES (?, ?, ?, ?)')
+      .run([Number(goalId), Number(recurringId), Number(periodId), Number(amount)]);
+    if (res.changes === 0) return false;
+    const newCurrent = Number(goal.current_amount) + Number(amount);
+    const nowCompleted = newCurrent >= Number(goal.target_amount) ? 1 : 0;
+    db.prepare('UPDATE goals SET current_amount = ?, completed = COALESCE(?, completed), updated_at = CURRENT_TIMESTAMP WHERE id = ?')
+      .run(newCurrent, nowCompleted, goalId);
+    return true;
+  }
+
+  beforeEach(() => {
+    ({ db, dbPath, cleanup } = createTestDb());
+    periodId = (seedPeriod(db, 'July 2026') as any).id;
+    db.prepare(`INSERT INTO goals (name, target_amount, current_amount, start_date, target_date) VALUES ('Tabungan Rumah', 10000000, 0, '2026-01-01', '2027-01-01')`).run();
+    goalId = Number((db.prepare('SELECT id FROM goals').get() as any).id);
+    db.prepare(`INSERT INTO recurring_transactions (title, category, amount, type, done, goal_id) VALUES ('Auto-save BCA', 'Savings', 2000000, 'cash', 1, ?)`).run(goalId);
+    recId = Number((db.prepare('SELECT id FROM recurring_transactions').get() as any).id);
+  });
+
+  afterEach(() => { cleanup(); void dbPath; });
+
+  it('contributes when recurring done and linked', () => {
+    expect(contributeToGoalMirror(goalId, recId, periodId, 2000000)).toBe(true);
+    const goal = db.prepare('SELECT current_amount FROM goals WHERE id = ?').get(goalId) as any;
+    expect(goal.current_amount).toBe(2000000);
+  });
+
+  it('re-kickoff same period is idempotent (no double count)', () => {
+    contributeToGoalMirror(goalId, recId, periodId, 2000000);
+    expect(contributeToGoalMirror(goalId, recId, periodId, 2000000)).toBe(false);
+    const goal = db.prepare('SELECT current_amount FROM goals WHERE id = ?').get(goalId) as any;
+    expect(goal.current_amount).toBe(2000000); // not 4000000
+  });
+
+  it('next period contributes again', () => {
+    const p2 = (seedPeriod(db, 'August 2026') as any).id;
+    contributeToGoalMirror(goalId, recId, periodId, 2000000);
+    contributeToGoalMirror(goalId, recId, p2, 2000000);
+    const goal = db.prepare('SELECT current_amount FROM goals WHERE id = ?').get(goalId) as any;
+    expect(goal.current_amount).toBe(4000000);
+  });
+
+  it('skips completed goals', () => {
+    db.prepare('UPDATE goals SET completed = 1 WHERE id = ?').run(goalId);
+    expect(contributeToGoalMirror(goalId, recId, periodId, 2000000)).toBe(false);
+  });
+
+  it('unlink (goal_id null) keeps ledger history intact', () => {
+    contributeToGoalMirror(goalId, recId, periodId, 2000000);
+    db.prepare('UPDATE recurring_transactions SET goal_id = NULL WHERE id = ?').run(recId);
+    const rows = db.prepare('SELECT COUNT(*) as c FROM goal_contributions').get() as any;
+    expect(rows.c).toBe(1);
+    const goal = db.prepare('SELECT current_amount FROM goals WHERE id = ?').get(goalId) as any;
+    expect(goal.current_amount).toBe(2000000);
+  });
+
+  it('completes goal when contribution reaches target', () => {
+    db.prepare('UPDATE goals SET target_amount = 2000000 WHERE id = ?').run(goalId);
+    contributeToGoalMirror(goalId, recId, periodId, 2000000);
+    const goal = db.prepare('SELECT completed FROM goals WHERE id = ?').get(goalId) as any;
+    expect(goal.completed).toBe(1);
+  });
+});

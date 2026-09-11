@@ -28,6 +28,12 @@ export const POST: APIRoute = async ({ request }) => {
       headers: { 'Content-Type': 'application/json' },
     });
   }
+  if (body.goal_id !== undefined && body.goal_id !== null && !Number.isInteger(Number(body.goal_id))) {
+    return new Response(JSON.stringify({ error: 'goal_id must be an integer or null' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
   const id = insertRecurringTransaction(body);
   return new Response(JSON.stringify({ id, ...body }), {
     status: 201,

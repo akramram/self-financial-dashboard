@@ -87,7 +87,8 @@ export function createTestDb() {
       done INTEGER NOT NULL DEFAULT 0,
       active INTEGER NOT NULL DEFAULT 1,
       end_date TEXT,
-      created_at TEXT DEFAULT CURRENT_TIMESTAMP
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      goal_id INTEGER REFERENCES goals(id)
     );
 
     CREATE TABLE IF NOT EXISTS goals (
@@ -126,6 +127,16 @@ export function createTestDb() {
     CREATE INDEX IF NOT EXISTS idx_tx_date ON transactions(date);
     CREATE INDEX IF NOT EXISTS idx_goals_completed ON goals(completed);
     CREATE INDEX IF NOT EXISTS idx_investments_type ON investments(type);
+
+    CREATE TABLE IF NOT EXISTS goal_contributions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      goal_id INTEGER NOT NULL REFERENCES goals(id),
+      recurring_id INTEGER NOT NULL REFERENCES recurring_transactions(id),
+      period_id INTEGER NOT NULL REFERENCES periods(id),
+      amount REAL NOT NULL,
+      contributed_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_goal_contrib_unique ON goal_contributions(goal_id, recurring_id, period_id);
   `);
 
   function cleanup() {
