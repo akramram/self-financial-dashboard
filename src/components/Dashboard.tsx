@@ -293,8 +293,36 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
                 <PeriodProgressRing activeMonth={activeSummary?.month} />
               </div>
             </GlassCard>
-            );
+            ); 
           })()}
+
+          {/* Credit Snapshot — directly under Balance Hero */}
+          {activeSummary && (
+            <GlassCard className="mb-4">
+              <h3 className="text-sm font-semibold text-slate-800 dark:text-white/80 mb-3">Credit Snapshot</h3>
+              <div className="space-y-3">
+                <div>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span className="text-slate-600 dark:text-white/50">Credit Payment (Prior Month)</span>
+                    <span className="font-semibold text-gold-400">{formatIdr(activeSummary.outcome.credit_payment ?? 0)}</span>
+                  </div>
+                  <div className="w-full bg-slate-200/60 dark:bg-white/[0.06] rounded-full h-2">
+                    <div className="bg-gold-500 h-2 rounded-full transition-all" style={{ width: `${activeSummary.outcome.total > 0 ? Math.round(((activeSummary.outcome.credit_payment ?? 0) / activeSummary.outcome.total) * 100) : 0}%` }} />
+                  </div>
+                </div>
+                <div>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span className="text-slate-600 dark:text-white/50">Current Month Credit Expenses</span>
+                    <span className="font-semibold text-coral-400">{formatIdr(activeSummary.outcome.credit_expenses ?? 0)}</span>
+                  </div>
+                  <div className="w-full bg-slate-200/60 dark:bg-white/[0.06] rounded-full h-2">
+                    <div className="bg-coral-500 h-2 rounded-full transition-all" style={{ width: `${activeSummary.outcome.total > 0 ? Math.round(((activeSummary.outcome.credit_expenses ?? 0) / activeSummary.outcome.total) * 100) : 0}%` }} />
+                  </div>
+                </div>
+                <p className="text-xs text-slate-500 dark:text-white/40">Credit expenses this month will be paid next month.</p>
+              </div>
+            </GlassCard>
+          )}
 
           {/* 3 Glance Chips */}
           {glance && (
@@ -325,38 +353,11 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
             />
           </GlassCard>
 
-          {/* Category Budgets + Credit Snapshot side-by-side */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+          {/* Category Budgets full width */}
+          <div className="mb-4">
             <GlassCard>
               <h3 className="text-sm font-semibold text-slate-800 dark:text-white/80 mb-3">Top Categories</h3>
               <CategoryBudgets summaries={summaries} categories={categories} activeMonth={activeSummary?.month} onCategoryClick={openCategoryDialog} />
-            </GlassCard>
-
-            <GlassCard>
-              <h3 className="text-sm font-semibold text-slate-800 dark:text-white/80 mb-3">Credit Snapshot</h3>
-              {activeSummary && (
-                <div className="space-y-3">
-                  <div>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span className="text-slate-600 dark:text-white/50">Credit Payment (Prior Month)</span>
-                      <span className="font-semibold text-gold-400">{formatIdr(activeSummary.outcome.credit_payment ?? 0)}</span>
-                    </div>
-                    <div className="w-full bg-slate-200/60 dark:bg-white/[0.06] rounded-full h-2">
-                      <div className="bg-gold-500 h-2 rounded-full transition-all" style={{ width: `${activeSummary.outcome.total > 0 ? Math.round(((activeSummary.outcome.credit_payment ?? 0) / activeSummary.outcome.total) * 100) : 0}%` }} />
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span className="text-slate-600 dark:text-white/50">Current Month Credit Expenses</span>
-                      <span className="font-semibold text-coral-400">{formatIdr(activeSummary.outcome.credit_expenses ?? 0)}</span>
-                    </div>
-                    <div className="w-full bg-slate-200/60 dark:bg-white/[0.06] rounded-full h-2">
-                      <div className="bg-coral-500 h-2 rounded-full transition-all" style={{ width: `${activeSummary.outcome.total > 0 ? Math.round(((activeSummary.outcome.credit_expenses ?? 0) / activeSummary.outcome.total) * 100) : 0}%` }} />
-                    </div>
-                  </div>
-                  <p className="text-xs text-slate-500 dark:text-white/40">Credit expenses this month will be paid next month.</p>
-                </div>
-              )}
             </GlassCard>
           </div>
 
