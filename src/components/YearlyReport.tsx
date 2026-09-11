@@ -249,7 +249,8 @@ export default function YearlyReport({ summaries, categories }: Props) {
 
       {yearSummaries.length === 0 ? (
         <div className="glass-card p-5">
-          No data available for {selectedYear}.
+          Tidak ada transaksi sepanjang {selectedYear}. Pilih tahun lain di atas, atau{' '}
+            <a href="/add" className="text-mint-600 dark:text-mint-400 font-medium hover:underline">catat transaksi</a> untuk tahun ini.
           </div>
       ) : (
         <>

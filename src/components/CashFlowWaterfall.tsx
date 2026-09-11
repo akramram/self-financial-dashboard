@@ -274,7 +274,10 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
 
       {!summary ? (
         <div className="glass-card p-5">
-          <p>No data available for the selected month.</p>
+          <div className="space-y-2">
+            <p>Belum ada transaksi di bulan ini, jadi aliran kas belum bisa digambar.</p>
+            <a href="/add" className="inline-flex items-center gap-1.5 text-sm font-medium text-mint-600 dark:text-mint-400 hover:underline">Tambah transaksi pertama</a>
+          </div>
           </div>
       ) : (
         <>

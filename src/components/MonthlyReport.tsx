@@ -131,7 +131,8 @@ export default function MonthlyReport({
     return (
       <div className="text-center py-20">
         <p className="text-slate-600 dark:text-white/50 text-lg">
-          No data available for the selected period.
+          Belum ada transaksi di periode ini, jadi laporan belum bisa dibuat.{' '}
+            <a href="/add" className="text-mint-600 dark:text-mint-400 font-medium hover:underline">Catat transaksi pertama</a> untuk melihat laporan bulanan.
         </p>
         <p className="text-slate-500 dark:text-white/40 text-sm mt-2">
           Add transactions and net worth data first.
