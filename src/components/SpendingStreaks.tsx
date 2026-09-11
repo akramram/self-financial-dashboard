@@ -149,6 +149,7 @@ export default function SpendingStreaks() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20 text-slate-600 dark:text-white/50">
+        {/* loading state (R-19 purpose) */}
         <div className="animate-pulse">Loading streaks…</div>
       </div>
     );

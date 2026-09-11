@@ -226,6 +226,7 @@ export default function RunwayAnalysis({ periodId, compact = false }: Props) {
     return (
       <div className="glass-card p-5 border-slate-200 dark:border-white/[0.06] shadow-none">
         
+          {/* loading skeleton (R-19 purpose) */}
           <div className="animate-pulse space-y-3">
             <div className="h-5 w-32 bg-slate-200/60 dark:bg-white/[0.08] rounded" />
             <div className="h-40 w-40 mx-auto bg-slate-200/60 dark:bg-white/[0.08] rounded-full" />

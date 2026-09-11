@@ -172,6 +172,7 @@ export default function RecurringBreakdown() {
   if (loading && !data) {
     return (
       <div className="flex items-center justify-center h-64">
+        {/* loading state: pulse communicates fetch in progress (R-19 purpose) */}
         <div className="text-slate-500 dark:text-white/40 animate-pulse">Loading breakdown...</div>
       </div>
     );

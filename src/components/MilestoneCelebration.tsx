@@ -96,7 +96,7 @@ export default function MilestoneCelebration({ milestones, next, total, onClose 
             <X className="w-4 h-4 text-white" />
           </button>
           <div className="absolute inset-0 flex items-end justify-center">
-            <Sparkles className="w-5 h-5 text-white/40 mb-3 animate-pulse" />
+            <Sparkles className="w-5 h-5 text-white/40 mb-3" />
           </div>
         </div>
 

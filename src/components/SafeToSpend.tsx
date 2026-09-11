@@ -84,6 +84,7 @@ export default function SafeToSpend({ periodId }: Props) {
   if (loading) {
     return (
       <div className="glass-card p-5 border-slate-200 dark:border-slate-700 shadow-none animate-pulse">
+            {/* loading skeleton (R-19 purpose) */}
         <div className="h-24 bg-slate-100 dark:bg-slate-800 rounded-lg" />
         </div>
     );
