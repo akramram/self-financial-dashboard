@@ -13,6 +13,7 @@ interface StatCardProps {
   color?: string;
   icon?: React.ReactNode;
   sparkline?: React.ReactNode;
+  emphasis?: boolean;
   className?: string;
   onClick?: () => void;
 }
@@ -27,6 +28,7 @@ export default function StatCard({
   color = '#00d4aa',
   icon,
   sparkline,
+  emphasis = false,
   className,
   onClick,
 }: StatCardProps) {
@@ -35,6 +37,7 @@ export default function StatCard({
       className={cn(
         'relative p-4 rounded-2xl',
         'bg-slate-100 dark:bg-white/[0.03] backdrop-blur-sm',
+        emphasis && 'ring-1 ring-white/[0.08] dark:bg-white/[0.05] p-5',
         'border border-slate-200 dark:border-white/[0.06]',
         onClick && 'cursor-pointer',
         'group',
@@ -64,7 +67,7 @@ export default function StatCard({
           </div>
 
           {/* Value */}
-          <div className="text-lg font-bold text-slate-900 dark:text-white mb-1.5 truncate">
+          <div className={cn("font-bold text-slate-900 dark:text-white mb-1.5 truncate", emphasis ? "text-xl" : "text-lg")}>
             {valueComponent ?? value}
           </div>
 
