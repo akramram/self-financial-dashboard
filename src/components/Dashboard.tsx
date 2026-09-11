@@ -301,7 +301,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <StatCard label="Income" value={formatIdr(glance.income)} delta={glance.prevIncome !== 0 ? `${glance.income >= glance.prevIncome ? '+' : ''}${formatIdr(glance.income - glance.prevIncome)}` : undefined} isPositive={glance.income >= glance.prevIncome} color="#34d399" icon={<DollarSign className="w-4 h-4" />} sparkline={<MiniSparkline data={glance.last6Income} color="#34d399" />} />
               <StatCard label="Spent" value={formatIdr(glance.spending)} delta={glance.prevSpending !== 0 ? `${glance.spending <= glance.prevSpending ? '' : '+'}${formatIdr(glance.spending - glance.prevSpending)}` : undefined} isPositive={glance.spending <= glance.prevSpending} color="#ef4444" icon={<Wallet className="w-4 h-4" />} sparkline={<MiniSparkline data={glance.last6Spending} color="#ef4444" />} />
-              <StatCard label="Net Worth" value={formatIdr(glance.nw)} isPositive={glance.nw >= glance.prevNw} color="#f59e0b" icon={<BarChart3 className="w-4 h-4" />} sparkline={<MiniSparkline data={glance.last6Nw} color="#f59e0b" />} />
+              <StatCard emphasis label="Net Worth" value={formatIdr(glance.nw)} isPositive={glance.nw >= glance.prevNw} color="#f59e0b" icon={<BarChart3 className="w-4 h-4" />} sparkline={<MiniSparkline data={glance.last6Nw} color="#f59e0b" />} />
             </div>
           )}
         </InView>
