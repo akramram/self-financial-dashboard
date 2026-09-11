@@ -69,7 +69,7 @@ const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   savings: <PiggyBankIcon />,
   discipline: <ShieldIcon />,
   longevity: <Calendar className="w-3.5 h-3.5" />,
-  diversity: <Sparkles className="w-3.5 h-3.5" />,
+  diversity: <Sparkles className="w-3.5 h-3.5" />, // gamification reward glyph (R-04 reason: achievement unlock context)
 };
 
 function PiggyBankIcon() {

@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Sparkles, X, Loader2 } from 'lucide-react';
+import { History, X, Loader2 } from 'lucide-react';
 import DateTimePicker from '@/components/ui/datetime-picker';
 import {
   Dialog,
@@ -235,7 +235,7 @@ export default function AddTransactionForm() {
                   className="inline-flex items-center gap-1 text-[11px] font-medium text-mint-500 dark:text-mint-400 hover:text-mint-600 dark:hover:text-mint-300 transition"
                   title="Suggested based on your history: click to clear"
                 >
-                  <Sparkles className="w-3 h-3" />
+                  <History className="w-3 h-3" />
                   Auto: {suggestedCategory}
                   <span className="opacity-60">({Math.round(confidence * 100)}%)</span>
                   <X className="w-3 h-3 ml-0.5" />
