@@ -249,7 +249,7 @@ export default function RunwayAnalysis({ periodId, compact = false }: Props) {
     );
   }
 
-  // No data available
+  // Empty state: no networth data yet
   if (data.total_assets === 0) {
     return (
       <div className="glass-card p-5 border-slate-200 dark:border-white/[0.06] shadow-none">
