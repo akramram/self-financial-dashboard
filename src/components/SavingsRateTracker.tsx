@@ -278,7 +278,7 @@ export default function SavingsRateTracker() {
 
   return (
     <div className="space-y-6">
-      {/* === Hero — Current Savings Rate === */}
+      {/* === Hero, Current Savings Rate === */}
       <div className="rounded-2xl p-6 text-slate-900 dark:text-white shadow-lg"
         style={{ background: `linear-gradient(135deg, ${currentBench.color}, ${currentBench.color}dd)` }}>
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -323,7 +323,7 @@ export default function SavingsRateTracker() {
           {data.trend === 'declining' && <TrendingDown className="w-5 h-5" />}
           {data.trend === 'stable' && <Minus className="w-5 h-5" />}
           <span>
-            Your savings rate is <strong>{data.trend}</strong> —
+            Your savings rate is <strong>{data.trend}</strong> -
             trailing 3-period avg is <strong>{data.trailing3_avg.toFixed(1)}%</strong> vs
             trailing 6-period avg of <strong>{data.trailing6_avg.toFixed(1)}%</strong>.
           </span>

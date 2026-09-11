@@ -282,7 +282,7 @@ export default function SpendingCalendar({ transactions, periods }: Props) {
       <div className="glass-card p-5">
         <h3 className="text-base font-semibold flex items-center gap-2 text-slate-800 dark:text-white/80">
           <CalendarDays className="w-4 h-4 text-slate-500 dark:text-white/40" />
-          Spending Heatmap — {periodLabel}
+          Spending Heatmap - {periodLabel}
           <span className="text-xs font-normal text-slate-500 dark:text-white/30">
             ({selectedMonth} salary period)
           </span>
@@ -313,8 +313,8 @@ export default function SpendingCalendar({ transactions, periods }: Props) {
                 key={dKey}
                 onClick={() => { if (count > 0) openDay(dKey); else addForDay(dKey); }}
                 onContextMenu={(e) => { e.preventDefault(); addForDay(dKey); }}
-                aria-label={`${dKey}${count > 0 ? ` — ${count} transaction${count !== 1 ? 's' : ''}, ${formatIdr(total)}` : ' — no transactions'}${!isFuture ? ' (right-click or long-press to add)' : ''}`}
-                title={count > 0 ? `${count} tx · ${formatIdr(total)} — right-click to add` : !isFuture ? 'Click to add a transaction' : undefined}
+                aria-label={`${dKey}${count > 0 ? ` - ${count} transaction${count !== 1 ? 's' : ''}, ${formatIdr(total)}` : ' - no transactions'}${!isFuture ? ' (right-click or long-press to add)' : ''}`}
+                title={count > 0 ? `${count} tx · ${formatIdr(total)} - right-click to add` : !isFuture ? 'Click to add a transaction' : undefined}
                 className={`
                   aspect-square rounded-lg border transition-all hover:scale-105 hover:shadow-sm
                   flex flex-col items-center justify-center gap-0.5

@@ -410,16 +410,16 @@ export default function RecurringManager() {
                         {item.type === 'cash' ? 'Cash' : item.type === 'credit_expense' ? 'Credit' : 'Credit Pay'}
                       </TableCell>
                       <TableCell className="text-xs text-slate-500 dark:text-white/40">
-                        {item.end_date || '—'}
+                        {item.end_date || '-'}
                       </TableCell>
                       <TableCell className="text-xs text-slate-500 dark:text-white/40">
-                        {item.created_at || '—'}
+                        {item.created_at || '-'}
                       </TableCell>
                       <TableCell>
                         {item.done ? (
                           <span className="text-xs text-emerald-600 font-medium">Paid</span>
                         ) : (
-                          <span className="text-xs text-slate-500 dark:text-white/40">—</span>
+                          <span className="text-xs text-slate-500 dark:text-white/40">-</span>
                         )}
                       </TableCell>
                       <TableCell>

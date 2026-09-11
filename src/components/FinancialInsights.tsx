@@ -150,7 +150,7 @@ export default function FinancialInsights({ transactions, networth, summaries, c
           type: 'success',
           icon: <PiggyBank className="w-4 h-4" />,
           title: 'Healthy Savings',
-          message: `Savings rate is ${rate.toFixed(1)}% — great job!`,
+          message: `Savings rate is ${rate.toFixed(1)}% - great job!`,
         });
       }
     }

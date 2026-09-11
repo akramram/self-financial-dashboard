@@ -2459,6 +2459,40 @@ function getEarliestTxDate(): Date | null {
   return isNaN(d.getTime()) ? null : d;
 }
 
+// ── Net-worth milestone thresholds (IDR) ─────────────────────────────────
+// Single source of truth — shared by getAchievements() badges and the
+// milestone-crossing detection used by the networth POST/PUT APIs.
+export const NETWORTH_MILESTONES = [
+  { target: 10_000_000,  label: '10 Million',  tier: 'bronze',   icon: '🥉' },
+  { target: 25_000_000,  label: '25 Million',  tier: 'silver',   icon: '🥈' },
+  { target: 50_000_000,  label: '50 Million',  tier: 'gold',     icon: '🥇' },
+  { target: 100_000_000, label: '100 Million', tier: 'platinum', icon: '💎' },
+  { target: 500_000_000, label: '500 Million', tier: 'platinum', icon: '👑' },
+] as const;
+
+/**
+ * Detect milestone(s) newly crossed by writing `newTotal` for `periodId`:
+ * milestones where the PRE-EXISTING all-time peak was below target but the
+ * new total (including this write) reaches it. Returns crossed list plus
+ * the next locked milestone (for "X to go" context). Null-safe on
+ * first-ever entry (no prior rows → all milestones up to newTotal count).
+ */
+export function getNetworthMilestoneCrossing(periodId: number, newTotal: number) {
+  const peakRow = db.prepare(`
+    SELECT MAX(n.total) AS peak
+    FROM networth n JOIN periods p ON n.period_id = p.id
+    WHERE n.period_id != ?
+  `).get(periodId) as { peak: number | null } | undefined;
+  const prevPeak = peakRow?.peak ?? 0;
+
+  const crossed = NETWORTH_MILESTONES.filter(
+    (m) => prevPeak < m.target && newTotal >= m.target,
+  ).map((m) => ({ ...m }));
+
+  const next = NETWORTH_MILESTONES.find((m) => newTotal < m.target) ?? null;
+  return { crossed, prevPeak, next };
+}
+
 export function getAchievements(): AchievementsResult {
   // ── Pull the raw data we need ────────────────────────────────────────────
   const networthRows = db.prepare(`
@@ -2547,14 +2581,7 @@ export function getAchievements(): AchievementsResult {
   `).get() as any;
   const largestTx = largestTxRow?.amount ?? 0;
 
-  // ── Net-worth milestone thresholds (IDR) ─────────────────────────────────
-  const nwThresholds = [
-    { target: 10_000_000,  label: '10 Million',  tier: 'bronze',   icon: '🥉' },
-    { target: 25_000_000,  label: '25 Million',  tier: 'silver',   icon: '🥈' },
-    { target: 50_000_000,  label: '50 Million',  tier: 'gold',     icon: '🥇' },
-    { target: 100_000_000, label: '100 Million', tier: 'platinum', icon: '💎' },
-    { target: 500_000_000, label: '500 Million', tier: 'platinum', icon: '👑' },
-  ];
+  const nwThresholds = NETWORTH_MILESTONES;
 
   // ── Build badge list ─────────────────────────────────────────────────────
   const badges: AchievementBadge[] = [];

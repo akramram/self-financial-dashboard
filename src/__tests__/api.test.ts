@@ -21,6 +21,7 @@ const mockGetCategories = vi.fn();
 const mockInsertCategory = vi.fn();
 const mockGetCategoryByName = vi.fn();
 const mockGetNetworth = vi.fn();
+const mockGetNetworthMilestoneCrossing = vi.fn();
 const mockUpsertNetworth = vi.fn();
 const mockRecalcNetworthMoM = vi.fn();
 const mockGetGoals = vi.fn();
@@ -45,6 +46,7 @@ vi.mock('../lib/db', () => ({
   insertCategory: mockInsertCategory,
   getCategoryByName: mockGetCategoryByName,
   getNetworth: mockGetNetworth,
+  getNetworthMilestoneCrossing: mockGetNetworthMilestoneCrossing,
   upsertNetworth: mockUpsertNetworth,
   recalcNetworthMoM: mockRecalcNetworthMoM,
   getGoals: mockGetGoals,
@@ -401,6 +403,7 @@ describe('API — POST /api/networth', () => {
   it('creates networth record with period_id', async () => {
     mockUpsertNetworth.mockReturnValue(undefined);
     mockRecalcNetworthMoM.mockReturnValue(undefined);
+    mockGetNetworthMilestoneCrossing.mockReturnValue({ crossed: [], prevPeak: 0, next: null });
 
     const res = await POST({
       request: makeRequest('/api/networth', {
@@ -414,6 +417,30 @@ describe('API — POST /api/networth', () => {
     expect(body.success).toBe(true);
     expect(mockUpsertNetworth).toHaveBeenCalledTimes(1);
     expect(mockRecalcNetworthMoM).toHaveBeenCalledTimes(1);
+  });
+
+  it('returns crossed milestones when the save crosses a threshold', async () => {
+    mockGetNetworthMilestoneCrossing.mockReturnValue({
+      crossed: [{ target: 50_000_000, label: '50 Million', tier: 'gold', icon: '🥇' }],
+      prevPeak: 41_687_068,
+      next: { target: 100_000_000, label: '100 Million', tier: 'platinum', icon: '💎' },
+    });
+
+    const res = await POST({
+      request: makeRequest('/api/networth', {
+        method: 'POST',
+        body: JSON.stringify({ period_id: 1, date: '2026-10-21', total: 50_500_000 }),
+      }),
+    });
+
+    expect(res.status).toBe(201);
+    const body = await parseJson(res);
+    expect(body.milestones).toHaveLength(1);
+    expect(body.milestones[0].label).toBe('50 Million');
+    expect(body.nextMilestone.target).toBe(100_000_000);
+    // crossing check must run BEFORE the write (pre-write peak)
+    expect(mockGetNetworthMilestoneCrossing).toHaveBeenCalledWith(1, 50_500_000);
+    expect(mockUpsertNetworth).toHaveBeenCalledTimes(1);
   });
 
   it('returns 400 when period_id and month are both missing', async () => {

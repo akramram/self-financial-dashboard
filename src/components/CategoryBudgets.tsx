@@ -79,7 +79,7 @@ export default function CategoryBudgets({ summaries, categories, activeMonth, on
   return (
     <div className="glass-card p-5 shadow-none">
       
-        {/* Header — Similarity: same icon+title+meta pattern as AlertsPanel */}
+        {/* Header, Similarity: same icon+title+meta pattern as AlertsPanel */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <PieChart className="w-4 h-4 text-slate-500" />
@@ -88,7 +88,7 @@ export default function CategoryBudgets({ summaries, categories, activeMonth, on
           <span className="text-xs text-slate-400">{entries.length} categories</span>
         </div>
 
-        {/* List — Proximity: each category row is its own visual unit */}
+        {/* List, Proximity: each category row is its own visual unit */}
         <div className="space-y-3">
           {displayEntries.map(({ category, amount, limit, color }) => {
             const hasLimit = limit > 0;
@@ -118,7 +118,7 @@ export default function CategoryBudgets({ summaries, categories, activeMonth, on
                 className="cursor-pointer group"
                 onClick={() => onCategoryClick(category)}
               >
-                {/* Label + amount — grouped by proximity above the bar */}
+                {/* Label + amount, grouped by proximity above the bar */}
                 <div className="flex justify-between text-sm mb-1">
                   <div className="flex items-center gap-2">
                     <div
@@ -159,7 +159,7 @@ export default function CategoryBudgets({ summaries, categories, activeMonth, on
                         )}
                         <span>
                           {trend.direction === 'flat'
-                            ? '—'
+                            ? '-'
                             : `${Math.abs(trend.changePct).toFixed(0)}%`}
                         </span>
                       </span>
@@ -183,7 +183,7 @@ export default function CategoryBudgets({ summaries, categories, activeMonth, on
                   </span>
                   </div>
                 </div>
-                {/* shadcn Progress — Common Region: consistent progress treatment */}
+                {/* shadcn Progress, Common Region: consistent progress treatment */}
                 <Progress
                   value={pct}
                   className="h-1.5 bg-slate-200 dark:bg-slate-700"

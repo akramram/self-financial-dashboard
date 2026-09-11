@@ -256,7 +256,7 @@ export default function SpendingRhythm() {
           <div className="flex items-center gap-2 text-xs text-mint-600 dark:text-mint-400 mb-1">
             <Zap className="w-3.5 h-3.5" /> Peak Day
           </div>
-          <p className="text-2xl font-bold text-mint-700 dark:text-mint-300">{data.peakDay?.label ?? '—'}</p>
+          <p className="text-2xl font-bold text-mint-700 dark:text-mint-300">{data.peakDay?.label ?? '-'}</p>
           <p className="text-xs text-mint-500/70 mt-0.5">{data.peakDay ? `${formatIdr(data.peakDay.avgPerDay)}/day avg` : 'no data'}</p>
         </div>
 
@@ -267,7 +267,7 @@ export default function SpendingRhythm() {
           <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-300">
             {data.peakHour !== null
               ? `${data.peakHour === 0 ? 12 : data.peakHour > 12 ? data.peakHour - 12 : data.peakHour} ${data.peakHour < 12 ? 'AM' : 'PM'}`
-              : '—'}
+              : '-'}
           </p>
           <p className="text-xs text-emerald-500/70 mt-0.5">most active time</p>
         </div>

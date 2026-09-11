@@ -82,20 +82,28 @@ export async function fetchNetworth(): Promise<NetworthRecord[]> {
   return res.json();
 }
 
-export async function createNetworth(record: NetworthRecord): Promise<void> {
-  await fetch('/api/networth', {
+export interface NetworthSaveResult {
+  success: boolean;
+  milestones?: { target: number; label: string; tier: string; icon: string }[];
+  nextMilestone?: { target: number; label: string; tier: string; icon: string } | null;
+}
+
+export async function createNetworth(record: NetworthRecord): Promise<NetworthSaveResult> {
+  const res = await fetch('/api/networth', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(record),
   });
+  return res.json().catch(() => ({ success: res.ok }));
 }
 
-export async function updateNetworthApi(periodId: number, record: Partial<NetworthRecord>): Promise<void> {
-  await fetch(`/api/networth/${periodId}`, {
+export async function updateNetworthApi(periodId: number, record: Partial<NetworthRecord>): Promise<NetworthSaveResult> {
+  const res = await fetch(`/api/networth/${periodId}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(record),
   });
+  return res.json().catch(() => ({ success: res.ok }));
 }
 
 export async function deleteNetworthApi(periodId: number): Promise<void> {

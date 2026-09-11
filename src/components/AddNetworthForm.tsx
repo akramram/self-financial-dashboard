@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createNetworth, fetchNetworth } from '../lib/api';
 import { notifyDataChanged } from '../lib/dataSync';
+import MilestoneCelebration, { type CrossedMilestone } from './MilestoneCelebration';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -29,6 +30,11 @@ export default function AddNetworthForm() {
     'Cash': 0,
   });
   const [message, setMessage] = useState('');
+  const [celebration, setCelebration] = useState<{
+    milestones: CrossedMilestone[];
+    next: { target: number; label: string } | null;
+    total: number;
+  } | null>(null);
 
   useEffect(() => {
     fetchNetworth().then((all) => {
@@ -75,7 +81,7 @@ export default function AddNetworthForm() {
     const date = `${year}-${String(monthIdx).padStart(2, '0')}-21`;
     const total = Object.values(breakdown).reduce((s, v) => s + v, 0);
 
-    await createNetworth({
+    const result = await createNetworth({
       month: monthName,
       date,
       total,
@@ -85,14 +91,26 @@ export default function AddNetworthForm() {
       breakdown: { ...breakdown },
     });
 
-    setMessage('Networth entry added successfully!');
+    if (result?.milestones?.length) {
+      setCelebration({ milestones: result.milestones, next: result.nextMilestone ?? null, total });
+    } else {
+      setMessage('Networth entry added successfully!');
+      setTimeout(() => setMessage(''), 3000);
+    }
     notifyDataChanged('networth');
-    setTimeout(() => setMessage(''), 3000);
   };
 
   return (
     <div className="glass-card p-5">
-      
+      {celebration && (
+        <MilestoneCelebration
+          milestones={celebration.milestones}
+          next={celebration.next}
+          total={celebration.total}
+          onClose={() => setCelebration(null)}
+        />
+      )}
+
         <h3 className="text-slate-800 dark:text-white/80">Add / Update Networth</h3>
       
       

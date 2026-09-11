@@ -145,7 +145,7 @@ export default function GoalTrajectory() {
           <div className="rounded-md border border-gold-400/20 dark:border-gold-700/40/60 bg-gold-500/5 dark:bg-gold-700/20 px-3 py-2 text-xs text-gold-700 dark:text-gold-300 flex items-start gap-2">
             <Info className="w-3.5 h-3.5 mt-0.5 shrink-0" />
             <span>
-              Data networth belum cukup (butuh minimal 2 entri). Proyeksi tidak dapat dihitung —
+              Data networth belum cukup (butuh minimal 2 entri). Proyeksi tidak dapat dihitung -
               tambahkan entri networth secara berkala untuk mengaktifkan fitur ini.
             </span>
           </div>
@@ -205,7 +205,7 @@ function statusMeta(status: TrajectoryStatus): {
 }
 
 function formatDelta(days: number | null): string {
-  if (days === null) return '—';
+  if (days === null) return '-';
   const abs = Math.abs(Math.round(days));
   if (abs === 0) return 'tepat waktu';
   const weeks = Math.round(abs / 7);
@@ -216,7 +216,7 @@ function formatDelta(days: number | null): string {
 }
 
 function formatDate(dateStr: string | null): string {
-  if (!dateStr) return '—';
+  if (!dateStr) return '-';
   try {
     return new Date(dateStr).toLocaleDateString('id-ID', {
       year: 'numeric',
@@ -237,7 +237,7 @@ function GoalTrajectoryRowCard({ goal, hasData }: { goal: GoalTrajectoryRow; has
     ? goal.monthly_savings / goal.required_monthly
     : null;
   const paceLabel = paceRatio === null
-    ? '—'
+    ? '-'
     : paceRatio >= 1
       ? `${(paceRatio * 100).toFixed(0)}% dari kebutuhan`
       : `${(paceRatio * 100).toFixed(0)}% dari kebutuhan`;
@@ -292,7 +292,7 @@ function GoalTrajectoryRowCard({ goal, hasData }: { goal: GoalTrajectoryRow; has
         <Metric
           icon={<TrendingUp className="w-3.5 h-3.5 text-mint-400" />}
           label="Proyeksi selesai"
-          value={hasData ? formatDate(goal.projected_date) : '—'}
+          value={hasData ? formatDate(goal.projected_date) : '-'}
           valueClassName={
             !hasData
               ? ''
@@ -306,12 +306,12 @@ function GoalTrajectoryRowCard({ goal, hasData }: { goal: GoalTrajectoryRow; has
         <Metric
           icon={<Minus className="w-3.5 h-3.5 text-slate-500 dark:text-white/40" />}
           label="Selisih waktu"
-          value={hasData ? formatDelta(goal.days_delta) : '—'}
+          value={hasData ? formatDelta(goal.days_delta) : '-'}
         />
         <Metric
           icon={<Gauge className="w-3.5 h-3.5 text-slate-500 dark:text-white/40" />}
           label="Pace vs kebutuhan"
-          value={hasData ? paceLabel : '—'}
+          value={hasData ? paceLabel : '-'}
           valueClassName={
             hasData && paceRatio !== null && paceRatio < 1
               ? 'text-gold-600 dark:text-gold-400'

@@ -521,7 +521,7 @@ export default function SpendingDna() {
                         : 'border-rose-300 text-rose-700 dark:text-rose-400'
                     }`}
                   >
-                    {entry.savings_rate !== null ? `${entry.savings_rate}%` : '—'}
+                    {entry.savings_rate !== null ? `${entry.savings_rate}%` : '-'}
                   </Badge>
                 </div>
                 <div className="mt-1">

@@ -91,7 +91,7 @@ function generateInsights(data: WeeklySpendingResult): { icon: React.ReactNode; 
     const pct = Math.round((weeks[0].total / totalSpend) * 100);
     insights.push({
       icon: <Zap className="w-4 h-4 text-coral-500/50" />,
-      text: `${pct}% of all spending happened in Week 1 — a "kickoff spike" pattern. Consider spreading early-month payments.`,
+      text: `${pct}% of all spending happened in Week 1, a "kickoff spike" pattern. Consider spreading early-month payments.`,
       type: 'info',
     });
   }
@@ -105,7 +105,7 @@ function generateInsights(data: WeeklySpendingResult): { icon: React.ReactNode; 
     if (cv > 80) {
       insights.push({
         icon: <TrendingDown className="w-4 h-4 text-red-500" />,
-        text: `Highly irregular weekly spending (CV: ${cv.toFixed(0)}%). Your weeks swing wildly — consider a more consistent budget plan.`,
+        text: `Highly irregular weekly spending (CV: ${cv.toFixed(0)}%). Your weeks swing wildly, consider a more consistent budget plan.`,
         type: 'bad',
       });
     } else if (cv < 30) {
@@ -582,7 +582,7 @@ export default function WeeklyTracker() {
                 const prev = weeklyData.weeks[idx];
                 if (!prev) return null;
                 const change = w.avgDaily - prev.avgDaily;
-                const changePct = prev.avgDaily > 0 ? ((change / prev.avgDaily) * 100).toFixed(0) : '—';
+                const changePct = prev.avgDaily > 0 ? ((change / prev.avgDaily) * 100).toFixed(0) : '-';
                 return (
                   <div key={w.weekNum} className="flex items-center gap-2 text-xs mb-1">
                     <span className="text-slate-500 dark:text-white/40">W{prev.weekNum} → W{w.weekNum}</span>
@@ -664,7 +664,7 @@ export default function WeeklyTracker() {
                           const val = w.categoryTotals[cat] || 0;
                           return (
                             <TableCell key={w.weekNum} className="text-xs text-right">
-                              {val > 0 ? formatIdr(val) : <span className="text-slate-500 dark:text-white/30">—</span>}
+                              {val > 0 ? formatIdr(val) : <span className="text-slate-500 dark:text-white/30">-</span>}
                             </TableCell>
                           );
                         })}

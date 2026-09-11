@@ -51,7 +51,7 @@ export default function QuickAddFAB() {
 
   return (
     <>
-      {/* Floating Action Button — desktop only (mobile uses bottom-tab center button) */}
+      {/* Floating Action Button, desktop only (mobile uses bottom-tab center button) */}
       <button
         onClick={() => { setPresetDate(null); setOpen(true); }}
         className="hidden lg:flex fixed bottom-8 right-8 z-40 w-14 h-14 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg hover:shadow-xl transition-all hover:scale-110 items-center justify-center group"

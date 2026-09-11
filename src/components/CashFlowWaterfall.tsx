@@ -326,7 +326,7 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
                     <p className="text-xs text-muted-foreground">Categories</p>
                     <p className="text-lg font-semibold">{categoryBreakdown.length}</p>
                     <p className="text-[10px] text-muted-foreground">
-                      {largestCategory ? `Largest: ${largestCategory.name}` : '—'}
+                      {largestCategory ? `Largest: ${largestCategory.name}` : '-'}
                     </p>
                   </div>
                 </div>
@@ -352,7 +352,7 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
             <div className="glass-card p-5">
               <h3 className="text-base font-semibold flex items-center gap-2 text-slate-800 dark:text-white/80">
                   <ArrowDown className="w-4 h-4 text-slate-500" />
-                  Cash Flow Waterfall — {selectedMonth}
+                  Cash Flow Waterfall - {selectedMonth}
                 </h3>
               <p className="text-xs text-muted-foreground mb-4">
                   Shows how your income flows through each spending category to your remaining savings.

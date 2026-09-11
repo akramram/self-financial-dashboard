@@ -604,7 +604,7 @@ export default function CreditCardTracker() {
                     <TableCell className="text-slate-600 dark:text-white/50 text-sm">
                       {tx.created_time
                         ? new Date(tx.created_time).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-                        : '—'}
+                        : '-'}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -655,7 +655,7 @@ export default function CreditCardTracker() {
                       ) : trend < 0 ? (
                         <TrendingUp className="w-4 h-4 text-emerald-500 inline rotate-180" />
                       ) : (
-                        <span className="text-slate-500 dark:text-white/40">—</span>
+                        <span className="text-slate-500 dark:text-white/40">-</span>
                       )}
                     </TableCell>
                   </TableRow>

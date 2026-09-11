@@ -262,7 +262,7 @@ export default function FireCalculator() {
               {formatYears(yearsToFi)}
             </p>
             <p className="text-xs text-slate-500 dark:text-white/40 mt-1">
-              {projectedFiDate || '—'}
+              {projectedFiDate || '-'}
             </p>
           </div>
 
@@ -466,7 +466,7 @@ export default function FireCalculator() {
                   )}
                   <li>Invest in low-cost index funds to maximize your expected return</li>
                   <li>Consider side income streams to boost your monthly savings</li>
-                  <li>Track your progress monthly — consistency beats timing the market</li>
+                  <li>Track your progress monthly, consistency beats timing the market</li>
                 </ul>
               </div>
             </div>
@@ -477,7 +477,7 @@ export default function FireCalculator() {
         <div className="glass-card p-5 border-emerald-300 dark:border-emerald-700 bg-emerald-50/50 dark:bg-emerald-900/10">
           <Flame className="w-10 h-10 text-emerald-500 mx-auto mb-2" />
             <h3 className="text-lg font-bold text-emerald-700 dark:text-emerald-300">
-              🎉 Congratulations — You're Financially Independent!
+              🎉 Congratulations, You're Financially Independent!
             </h3>
             <p className="text-sm text-emerald-600 dark:text-emerald-400 mt-1">
               Your networth of {formatIdr(currentNetworth)} exceeds your FIRE number of {formatIdr(fireNumber)}.

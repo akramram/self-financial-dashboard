@@ -314,7 +314,7 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded, presetDate
         body: JSON.stringify(payload),
       });
       if (res.ok) {
-        toast.success(`${tx.title} — ${formatIdr(tx.amount)} added`);
+        toast.success(`${tx.title} - ${formatIdr(tx.amount)} added`);
         notifyDataChanged('transactions');
         onAdded?.();
         onOpenChange(false);
@@ -362,7 +362,7 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded, presetDate
           </DialogDescription>
         </DialogHeader>
 
-        {/* Quick Repeat — Recent Transactions */}
+        {/* Quick Repeat, Recent Transactions */}
         {recentTxs.length > 0 && (
           <div className="space-y-2 mb-1">
             <div className="flex items-center gap-1.5 text-[11px] font-medium text-slate-400 dark:text-white/30 uppercase tracking-wider">
@@ -472,7 +472,7 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded, presetDate
                     setCategoryUserTouched(true);
                   }}
                   className="inline-flex items-center gap-1 text-[11px] font-medium text-mint-500 dark:text-mint-400 hover:text-mint-600 dark:hover:text-mint-300 transition"
-                  title="Suggested based on your history — click to clear"
+                  title="Suggested based on your history: click to clear"
                 >
                   <Sparkles className="w-3 h-3" />
                   Auto: {suggestedCategory}
@@ -531,7 +531,7 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded, presetDate
             </div>
           </div>
 
-          {/* Notes — collapsible to keep dialog compact */}
+          {/* Notes, collapsible to keep dialog compact */}
           <div>
             {!showNotes ? (
               <button
@@ -576,7 +576,7 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded, presetDate
           )}
           {status === 'duplicate' && (
             <Badge variant="outline" className="w-full justify-start px-3 py-2 rounded-lg bg-gold-500/5 dark:bg-gold-700/20 text-gold-700 dark:text-gold-300 border-gold-400/20 dark:border-gold-700/40">
-              Possible duplicate detected — similar entry in last 24h.
+              Possible duplicate detected, similar entry in last 24h.
             </Badge>
           )}
           {status === 'success' && (

@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { getNetworthByPeriod, upsertNetworth, deleteNetworth, recalcNetworthMoM } from '../../../lib/db';
+import { getNetworthByPeriod, upsertNetworth, deleteNetworth, recalcNetworthMoM, getNetworthMilestoneCrossing } from '../../../lib/db';
 
 export const GET: APIRoute = async ({ params }) => {
   const id = parseInt(params.id as string, 10);
@@ -19,9 +19,15 @@ export const PUT: APIRoute = async ({ params, request }) => {
     return new Response(JSON.stringify({ error: 'Invalid period_id' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
   }
   const body = await request.json();
+  // Milestone check BEFORE the write — needs the pre-existing peak
+  const crossing = getNetworthMilestoneCrossing(id, Number(body.total) || 0);
   upsertNetworth({ ...body, period_id: id });
   recalcNetworthMoM();
-  return new Response(JSON.stringify({ success: true }), { headers: { 'Content-Type': 'application/json' } });
+  return new Response(JSON.stringify({
+    success: true,
+    milestones: crossing.crossed,
+    nextMilestone: crossing.next,
+  }), { headers: { 'Content-Type': 'application/json' } });
 };
 
 export const DELETE: APIRoute = async ({ params }) => {

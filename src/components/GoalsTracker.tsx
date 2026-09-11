@@ -388,7 +388,7 @@ export default function GoalsTracker({ networth }: Props) {
           <p className="text-sm text-muted-foreground">
             {activeGoals.length > 0
               ? `Track your progress across ${activeGoals.length} active goal${activeGoals.length !== 1 ? 's' : ''}`
-              : 'No active goals yet — create one to get started'}
+              : 'No active goals yet, create one to get started'}
           </p>
         </div>
         <Button onClick={openCreateDialog} className="bg-mint-600 hover:bg-mint-700 text-slate-900 dark:text-white gap-2">

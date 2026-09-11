@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { fetchNetworth, updateNetworthApi } from '../lib/api';
 import { formatIdr } from '../lib/utils';
+import MilestoneCelebration, { type CrossedMilestone } from './MilestoneCelebration';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -11,6 +12,11 @@ export default function NetworthEditForm() {
   const [breakdown, setBreakdown] = useState<Record<string, number>>({});
   const [message, setMessage] = useState('');
   const [loaded, setLoaded] = useState(false);
+  const [celebration, setCelebration] = useState<{
+    milestones: CrossedMilestone[];
+    next: { target: number; label: string } | null;
+    total: number;
+  } | null>(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -48,9 +54,13 @@ export default function NetworthEditForm() {
     e.preventDefault();
     if (!month) return;
     const total = Object.values(breakdown).reduce((s, v) => s + v, 0);
-    await updateNetworthApi(month, { month, date: '', total, currency: 'IDR', breakdown });
-    setMessage('Networth updated successfully!');
-    setTimeout(() => setMessage(''), 3000);
+    const result = await updateNetworthApi(month, { month, date: '', total, currency: 'IDR', breakdown });
+    if (result?.milestones?.length) {
+      setCelebration({ milestones: result.milestones, next: result.nextMilestone ?? null, total });
+    } else {
+      setMessage('Networth updated successfully!');
+      setTimeout(() => setMessage(''), 3000);
+    }
   };
 
   const total = Object.values(breakdown).reduce((s, v) => s + v, 0);
@@ -61,7 +71,15 @@ export default function NetworthEditForm() {
 
   return (
     <div className="glass-card p-5 max-w-xl">
-      
+      {celebration && (
+        <MilestoneCelebration
+          milestones={celebration.milestones}
+          next={celebration.next}
+          total={celebration.total}
+          onClose={() => setCelebration(null)}
+        />
+      )}
+
         <h3 className="text-slate-800 dark:text-white/80">Edit Networth</h3>
       
       

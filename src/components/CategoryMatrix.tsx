@@ -131,7 +131,7 @@ function TrendBadge({ trendPct }: { trendPct: number | null }) {
   if (trendPct === null) {
     return (
       <span className="inline-flex items-center gap-0.5 text-xs text-slate-400">
-        <Minus className="w-3 h-3" /> —
+        <Minus className="w-3 h-3" /> -
       </span>
     );
   }
@@ -376,7 +376,7 @@ export default function CategoryMatrix({}: Props) {
                   <TableCell className="text-right">
                     {formatShort(matrix.categories.reduce((s, r) => s + r.total, 0))}
                   </TableCell>
-                  <TableCell className="text-right text-slate-400">—</TableCell>
+                  <TableCell className="text-right text-slate-400">-</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
@@ -496,7 +496,7 @@ export default function CategoryMatrix({}: Props) {
             </DialogTitle>
             <DialogDescription>
               Transactions in {drillPeriod?.month ?? ''}
-              {drillTxs.length > 0 && ` — ${drillTxs.length} total`}
+              {drillTxs.length > 0 && ` - ${drillTxs.length} total`}
             </DialogDescription>
           </DialogHeader>
 

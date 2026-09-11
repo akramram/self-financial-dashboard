@@ -142,7 +142,7 @@ export default function MonthlyReport({
 
   return (
     <div className="monthly-report">
-      {/* Controls — hidden when printing */}
+      {/* Controls, hidden when printing */}
       <div className="print:hidden flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <div className="flex items-center gap-3">
           <Select
@@ -400,7 +400,7 @@ export default function MonthlyReport({
                             {cat.pct.toFixed(1)}%
                           </TableCell>
                           <TableCell className="text-right text-sm text-slate-600 dark:text-white/50">
-                            {cat.limit > 0 ? formatIdr(cat.limit) : '—'}
+                            {cat.limit > 0 ? formatIdr(cat.limit) : '-'}
                           </TableCell>
                           <TableCell>
                             {cat.limit > 0 ? (

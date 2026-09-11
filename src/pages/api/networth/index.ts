@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { getNetworth, upsertNetworth, recalcNetworthMoM, ensurePeriod } from '../../../lib/db';
+import { getNetworth, upsertNetworth, recalcNetworthMoM, ensurePeriod, getNetworthMilestoneCrossing } from '../../../lib/db';
 
 export const GET: APIRoute = async () => {
   const rows = getNetworth();
@@ -19,9 +19,15 @@ export const POST: APIRoute = async ({ request }) => {
       headers: { 'Content-Type': 'application/json' },
     });
   }
+  // Milestone check BEFORE the write — needs the pre-existing peak
+  const crossing = getNetworthMilestoneCrossing(body.period_id, Number(body.total) || 0);
   upsertNetworth(body);
   recalcNetworthMoM();
-  return new Response(JSON.stringify({ success: true }), {
+  return new Response(JSON.stringify({
+    success: true,
+    milestones: crossing.crossed,
+    nextMilestone: crossing.next,
+  }), {
     status: 201,
     headers: { 'Content-Type': 'application/json' },
   });
