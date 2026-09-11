@@ -8,6 +8,7 @@ import {
   createGoalApi,
   updateGoalApi,
   deleteGoalApi,
+  fetchRecurringTransactions,
 } from '../lib/api';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -137,6 +138,7 @@ function CircularProgress({ progress, color, size = 80, strokeWidth = 6 }: { pro
 
 export default function GoalsTracker({ networth }: Props) {
   const [goals, setGoals] = useState<FinancialGoal[]>([]);
+  const [autoSources, setAutoSources] = useState<Map<number, { title: string; amount: number }>>(new Map());
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingGoal, setEditingGoal] = useState<FinancialGoal | null>(null);
@@ -149,8 +151,14 @@ export default function GoalsTracker({ networth }: Props) {
   const loadGoals = useCallback(async () => {
     try {
       setLoading(true);
-      const data = await fetchGoals();
+      const [data, recurring] = await Promise.all([fetchGoals(), fetchRecurringTransactions()]);
       setGoals(data);
+      // Map goal_id → active linked recurring (source of auto-contribution)
+      const src = new Map<number, { title: string; amount: number }>();
+      for (const r of recurring) {
+        if (r.active && r.goal_id != null) src.set(r.goal_id, { title: r.title, amount: r.amount });
+      }
+      setAutoSources(src);
     } catch (err) {
       console.error('Failed to load goals:', err);
     } finally {
@@ -500,6 +508,14 @@ export default function GoalsTracker({ networth }: Props) {
                         <span className="text-muted-foreground">Target</span>
                         <span className="font-medium">{formatIdr(goal.target_amount)}</span>
                       </div>
+                      {autoSources.get(goal.id) && (
+                        <div className="flex items-center gap-1.5 text-[11px] text-gold-600 dark:text-gold-400">
+                          <Target className="w-3 h-3 shrink-0" />
+                          <span className="truncate">
+                            Auto: {formatIdr(autoSources.get(goal.id)!.amount)}/period via {autoSources.get(goal.id)!.title}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
 
