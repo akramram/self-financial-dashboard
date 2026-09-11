@@ -23,7 +23,6 @@ import {
   Store,
   Hash,
   TrendingUp,
-  Sparkles,
   ArrowUpDown,
   BarChart3,
   Clock,
@@ -368,7 +367,7 @@ export default function MerchantAnalysis({
           </div>
         <div className="glass-card p-5">
           <h3 className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5 text-slate-800 dark:text-white/80">
-              <Sparkles className="w-3.5 h-3.5" />
+              <Store className="w-3.5 h-3.5" />
               Top Merchant
             </h3>
           <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate" title={stats.topMerchant?.title}>
@@ -386,7 +385,7 @@ export default function MerchantAnalysis({
       {newMerchants.length > 0 && viewMode === 'period' && (
         <div className="glass-card p-5 border-gold-400/20 dark:border-gold-700/40 bg-gold-500/5 dark:bg-gold-700/20">
           <h3 className="text-sm font-semibold text-gold-700 dark:text-gold-300 flex items-center gap-2 text-slate-800 dark:text-white/80">
-              <Sparkles className="w-4 h-4" />
+              <Store className="w-4 h-4" />
               New Merchants This Period
             </h3>
             <p className="text-xs text-gold-600 dark:text-gold-400 text-slate-600 dark:text-white/50">
