@@ -181,7 +181,7 @@ export default function SpendingStreaks() {
             <p className="text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-white/50">
               Current Streak
             </p>
-            <Flame className={`w-5 h-5 ${data.currentStreak > 0 ? 'text-coral-500/50' : 'text-slate-500 dark:text-white/30'}`} />
+            <Flame className={`w-5 h-5 ${data.currentStreak > 0 ? 'text-coral-500/50' : 'text-slate-500 dark:text-white/40'}`} />
           </div>
           <p className={`text-4xl font-bold mt-3 ${data.currentStreak > 0 ? 'text-coral-500 dark:text-coral-400' : 'text-slate-500 dark:text-white/40'}`}>
             {data.currentStreak}

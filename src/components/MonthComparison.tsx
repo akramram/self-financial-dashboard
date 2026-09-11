@@ -411,7 +411,7 @@ export default function MonthComparison({ transactions, networth, summaries, cat
                   </div>
                 ))}
               {leftTxs.length === 0 && (
-                <p className="text-sm text-slate-500 dark:text-white/30 text-center py-4">No transactions</p>
+                <p className="text-sm text-slate-500 dark:text-white/40 text-center py-4">No transactions</p>
               )}
             </div>
           </div>
@@ -431,7 +431,7 @@ export default function MonthComparison({ transactions, networth, summaries, cat
                   </div>
                 ))}
               {rightTxs.length === 0 && (
-                <p className="text-sm text-slate-500 dark:text-white/30 text-center py-4">No transactions</p>
+                <p className="text-sm text-slate-500 dark:text-white/40 text-center py-4">No transactions</p>
               )}
             </div>
           </div>

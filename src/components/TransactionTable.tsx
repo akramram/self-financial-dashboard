@@ -323,7 +323,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
         <div className="flex flex-col sm:flex-row gap-3">
           {/* Search */}
           <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 dark:text-white/30 pointer-events-none" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 dark:text-white/40 pointer-events-none" />
             <Input
               placeholder="Search title, category, notes..."
               value={search}
@@ -333,7 +333,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
             {search && (
               <button
                 onClick={() => { setSearch(''); setPage(1); }}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-white/30 hover:text-slate-600 dark:text-white/60"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-white/40 hover:text-slate-600 dark:text-white/60"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -541,7 +541,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                 <div className="flex flex-col sm:flex-row gap-4">
                   {/* Date range */}
                   <div className="flex-1">
-                    <label className="text-[10px] font-medium text-slate-500 dark:text-white/30 uppercase tracking-wider mb-2 block">
+                    <label className="text-[10px] font-medium text-slate-500 dark:text-white/40 uppercase tracking-wider mb-2 block">
                       Date Range
                     </label>
                     <div className="flex items-center gap-2">
@@ -551,7 +551,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                         onChange={(e) => { setDateFrom(e.target.value); setPage(1); }}
                         className="flex-1 bg-slate-100 dark:bg-white/[0.04] border-slate-300 dark:border-white/[0.08] text-slate-700 dark:text-white/70 text-xs h-8"
                       />
-                      <span className="text-slate-400 dark:text-white/20 text-xs">→</span>
+                      <span className="text-slate-400 dark:text-white/40 text-xs">→</span>
                       <Input
                         type="date"
                         value={dateTo}
@@ -563,12 +563,12 @@ export default function TransactionTable({ transactions, showMonth = true, perio
 
                   {/* Amount range */}
                   <div className="flex-1">
-                    <label className="text-[10px] font-medium text-slate-500 dark:text-white/30 uppercase tracking-wider mb-2 block">
+                    <label className="text-[10px] font-medium text-slate-500 dark:text-white/40 uppercase tracking-wider mb-2 block">
                       Amount Range
                     </label>
                     <div className="flex items-center gap-2">
                       <div className="relative flex-1">
-                        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white/20 text-xs">Rp</span>
+                        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white/40 text-xs">Rp</span>
                         <Input
                           type="number"
                           placeholder="Min"
@@ -577,9 +577,9 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                           className="pl-8 bg-slate-100 dark:bg-white/[0.04] border-slate-300 dark:border-white/[0.08] text-slate-700 dark:text-white/70 text-xs h-8"
                         />
                       </div>
-                      <span className="text-slate-400 dark:text-white/20 text-xs">→</span>
+                      <span className="text-slate-400 dark:text-white/40 text-xs">→</span>
                       <div className="relative flex-1">
-                        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white/20 text-xs">Rp</span>
+                        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white/40 text-xs">Rp</span>
                         <Input
                           type="number"
                           placeholder="Max"
@@ -628,25 +628,25 @@ export default function TransactionTable({ transactions, showMonth = true, perio
 
       {/* ─── Summary Bar ────────────────────────────────────────── */}
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mb-4">
-        <p className="text-xs text-slate-500 dark:text-white/30">
+        <p className="text-xs text-slate-500 dark:text-white/40">
           <span className="text-slate-600 dark:text-white/60 font-semibold">{filtered.length.toLocaleString()}</span> transaction{filtered.length !== 1 ? 's' : ''}
           {filtered.length !== transactions.length && (
-            <span className="text-slate-400 dark:text-white/20"> / {transactions.length.toLocaleString()} total</span>
+            <span className="text-slate-400 dark:text-white/40"> / {transactions.length.toLocaleString()} total</span>
           )}
         </p>
         {filtered.length > 0 && (
           <>
-            <span className="text-xs text-slate-500 dark:text-white/30">
+            <span className="text-xs text-slate-500 dark:text-white/40">
               Outflow <span className="font-semibold text-slate-700 dark:text-white/80">{formatIdr(total)}</span>
             </span>
-            <span className="text-xs text-slate-500 dark:text-white/30">
+            <span className="text-xs text-slate-500 dark:text-white/40">
               Cash <span className="font-semibold text-mint-600 dark:text-mint-400">{formatIdr(cash)}</span>
             </span>
-            <span className="text-xs text-slate-500 dark:text-white/30">
+            <span className="text-xs text-slate-500 dark:text-white/40">
               Credit <span className="font-semibold text-coral-600 dark:text-coral-400">{formatIdr(credit)}</span>
             </span>
             {unpaidCount > 0 && (
-              <span className="text-xs text-slate-500 dark:text-white/30">
+              <span className="text-xs text-slate-500 dark:text-white/40">
                 Unpaid <span className="font-semibold text-gold-600 dark:text-gold-400">{unpaidCount} · {formatIdr(unpaid)}</span>
               </span>
             )}
@@ -817,7 +817,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                     </TableCell>
                     <TableCell className="py-2.5">
                       <div className="flex justify-end">
-                        <ChevronRight className="w-4 h-4 text-slate-400 dark:text-white/30" />
+                        <ChevronRight className="w-4 h-4 text-slate-400 dark:text-white/40" />
                       </div>
                     </TableCell>
                   </TableRow>
@@ -830,7 +830,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
 
       {/* ─── Pagination ─────────────────────────────────────────── */}
       <div className="flex items-center justify-between mt-4">
-        <p className="text-xs text-slate-500 dark:text-white/30">
+        <p className="text-xs text-slate-500 dark:text-white/40">
           {filtered.length > 0
             ? `Showing ${(safePage - 1) * rowsPerPage + 1}–${Math.min(safePage * rowsPerPage, filtered.length)} of ${filtered.length}`
             : 'No results'}

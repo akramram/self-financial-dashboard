@@ -325,7 +325,7 @@ export default function WeeklyTracker() {
   if (!weeklyData || weeklyData.weeks.length === 0) {
     return (
       <div className="text-center py-16">
-        <CalendarDays className="w-12 h-12 mx-auto mb-4 text-slate-500 dark:text-white/30" />
+        <CalendarDays className="w-12 h-12 mx-auto mb-4 text-slate-500 dark:text-white/40" />
         <p className="text-slate-600 dark:text-white/50">No spending data for this period.</p>
         <p className="text-sm text-slate-500 dark:text-white/40 mt-1">Add transactions to see your weekly breakdown.</p>
       </div>
@@ -586,7 +586,7 @@ export default function WeeklyTracker() {
                 return (
                   <div key={w.weekNum} className="flex items-center gap-2 text-xs mb-1">
                     <span className="text-slate-500 dark:text-white/40">W{prev.weekNum} → W{w.weekNum}</span>
-                    <ArrowRight className="w-3 h-3 text-slate-500 dark:text-white/30" />
+                    <ArrowRight className="w-3 h-3 text-slate-500 dark:text-white/40" />
                     {change >= 0 ? (
                       <TrendingUp className="w-3 h-3 text-red-500" />
                     ) : (
@@ -664,7 +664,7 @@ export default function WeeklyTracker() {
                           const val = w.categoryTotals[cat] || 0;
                           return (
                             <TableCell key={w.weekNum} className="text-xs text-right">
-                              {val > 0 ? formatIdr(val) : <span className="text-slate-500 dark:text-white/30">-</span>}
+                              {val > 0 ? formatIdr(val) : <span className="text-slate-500 dark:text-white/40">-</span>}
                             </TableCell>
                           );
                         })}

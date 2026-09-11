@@ -210,7 +210,7 @@ export default function SpendingCalendar({ transactions, periods }: Props) {
   };
 
   const getHeatColor = (total: number) => {
-    if (total === 0) return 'bg-slate-100 dark:bg-white/[0.02] text-slate-400 dark:text-white/20';
+    if (total === 0) return 'bg-slate-100 dark:bg-white/[0.02] text-slate-400 dark:text-white/40';
     if (maxDaily === 0) return 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400';
     const ratio = total / maxDaily;
     if (ratio <= 0.25) return 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400';
@@ -283,13 +283,13 @@ export default function SpendingCalendar({ transactions, periods }: Props) {
         <h3 className="text-base font-semibold flex items-center gap-2 text-slate-800 dark:text-white/80">
           <CalendarDays className="w-4 h-4 text-slate-500 dark:text-white/40" />
           Spending Heatmap - {periodLabel}
-          <span className="text-xs font-normal text-slate-500 dark:text-white/30">
+          <span className="text-xs font-normal text-slate-500 dark:text-white/40">
             ({selectedMonth} salary period)
           </span>
         </h3>
         <div className="grid grid-cols-7 gap-1 mt-4">
           {WEEKDAYS.map((wd) => (
-            <div key={wd} className="text-center text-xs font-medium text-slate-500 dark:text-white/30 py-2">
+            <div key={wd} className="text-center text-xs font-medium text-slate-500 dark:text-white/40 py-2">
               {wd}
             </div>
           ))}
@@ -440,7 +440,7 @@ export default function SpendingCalendar({ transactions, periods }: Props) {
               </Table>
             </div>
           ) : (
-            <div className="py-8 text-center text-sm text-slate-500 dark:text-white/30">
+            <div className="py-8 text-center text-sm text-slate-500 dark:text-white/40">
               No transactions recorded for this day.
             </div>
           )}

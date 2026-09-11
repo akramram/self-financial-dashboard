@@ -288,7 +288,7 @@ export default function Achievements({ data }: Props) {
                 </div>
               )}
             </div>
-            <ChevronRight className="w-5 h-5 text-slate-500 dark:text-white/30 flex-shrink-0" />
+            <ChevronRight className="w-5 h-5 text-slate-500 dark:text-white/40 flex-shrink-0" />
           
         </div>
       )}

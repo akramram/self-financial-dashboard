@@ -133,7 +133,7 @@ export default function UpcomingBills({ recurring, transactions, activePeriodId,
                   <p className="text-[11px] text-slate-500 dark:text-white/40 flex items-center gap-1">
                     <CalendarClock className="w-3 h-3" />
                     due {b.dueDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                    {b.endLabel && <span className="text-slate-400 dark:text-white/30">· ends {b.endLabel}</span>}
+                    {b.endLabel && <span className="text-slate-400 dark:text-white/40">· ends {b.endLabel}</span>}
                   </p>
                 </div>
               </div>
@@ -151,8 +151,8 @@ export default function UpcomingBills({ recurring, transactions, activePeriodId,
                   <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-gold-500/15 text-gold-400">{daysLeft === 0 ? 'TODAY' : `${daysLeft}d`}</span>
                 ) : (
                   <span className="flex items-center gap-1.5">
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-medium text-slate-500 dark:text-white/30">{daysLeft}d</span>
-                    {toggleable && <Circle className="w-4 h-4 text-slate-300 dark:text-white/20" strokeWidth={1.8} />}
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-medium text-slate-500 dark:text-white/40">{daysLeft}d</span>
+                    {toggleable && <Circle className="w-4 h-4 text-slate-300 dark:text-white/40" strokeWidth={1.8} />}
                   </span>
                 )}
               </div>

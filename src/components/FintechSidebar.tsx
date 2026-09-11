@@ -188,7 +188,7 @@ export default function FintechSidebar({ balance, alerts: initialAlerts = 0 }: P
             className={`relative flex items-center rounded-xl transition-colors hover:bg-slate-100 dark:bg-white/5 no-underline ${collapsed ? 'p-2 justify-center' : 'px-3 py-2 gap-3'}`}
           >
             <Bell
-              className={`w-5 h-5 ${alerts > 0 ? 'text-mint-500' : 'text-slate-400 dark:text-white/30'}`}
+              className={`w-5 h-5 ${alerts > 0 ? 'text-mint-500' : 'text-slate-400 dark:text-white/40'}`}
               strokeWidth={1.8}
             />
             {alerts > 0 && (
