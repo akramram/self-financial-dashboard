@@ -494,7 +494,7 @@ export default function WhatIfPlanner() {
                     type="text"
                     value={evt.label}
                     onChange={(e) => updateOneTimeEvent(evt.id, 'label', e.target.value)}
-                    className="flex-1 min-w-0 bg-transparent text-sm border-0 focus:outline-none focus:ring-1 focus:ring-ring rounded px-1 py-0.5"
+                    className="flex-1 min-w-0 bg-transparent text-sm border-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus:ring-1 focus:ring-ring rounded px-1 py-0.5"
                     placeholder="Event name"
                   />
                   <input

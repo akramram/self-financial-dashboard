@@ -389,7 +389,7 @@ export default function CommandPalette() {
             <input
               ref={inputRef}
               type="text"
-              className="flex-1 bg-transparent text-sm outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500 text-slate-800 dark:text-slate-100"
+              className="flex-1 bg-transparent text-sm outline-none rounded-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-slate-800 dark:text-slate-100"
               placeholder="Search pages, actions, transactions..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}

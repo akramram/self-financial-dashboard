@@ -562,7 +562,7 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded, presetDate
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="e.g. lunch with Budi, installment 3/12..."
                   rows={2}
-                  className="w-full rounded-lg border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-white/[0.03] px-3 py-2 text-sm text-slate-900 dark:text-white/80 placeholder:text-slate-400 dark:placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-mint-500/40 focus:border-mint-500/40 resize-none transition-colors"
+                  className="w-full rounded-lg border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-white/[0.03] px-3 py-2 text-sm text-slate-900 dark:text-white/80 placeholder:text-slate-400 dark:placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-mint-500/60 focus:border-mint-500/40 resize-none transition-colors"
                 />
               </div>
             )}
