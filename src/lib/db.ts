@@ -118,6 +118,20 @@ export function initSchema() {
   try { db.exec(`ALTER TABLE transactions ADD COLUMN notes TEXT DEFAULT ''`); } catch (_) { /* already exists */ }
   try { db.exec('ALTER TABLE recurring_transactions ADD COLUMN end_date TEXT'); } catch (_) { /* already exists */ }
   try { db.exec('ALTER TABLE recurring_transactions ADD COLUMN created_at TEXT DEFAULT CURRENT_TIMESTAMP'); } catch (_) { /* already exists */ }
+  try { db.exec('ALTER TABLE recurring_transactions ADD COLUMN goal_id INTEGER REFERENCES goals(id)'); } catch (_) { /* already exists */ }
+
+  // Goal contribution ledger: one row per (goal, recurring, period) — idempotent kickoff
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS goal_contributions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      goal_id INTEGER NOT NULL REFERENCES goals(id),
+      recurring_id INTEGER NOT NULL REFERENCES recurring_transactions(id),
+      period_id INTEGER NOT NULL REFERENCES periods(id),
+      amount REAL NOT NULL,
+      contributed_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
+  try { db.exec('CREATE UNIQUE INDEX IF NOT EXISTS idx_goal_contrib_unique ON goal_contributions(goal_id, recurring_id, period_id)'); } catch (_) { /* already exists */ }
 
   // Auth tables
   db.exec(`
@@ -553,7 +567,33 @@ export function deleteMonthlyIncome(periodId: number) {
 // ─── Recurring Transactions ─────────────────────────────────────────────────
 
 export function getRecurringTransactions() {
-  return db.prepare('SELECT * FROM recurring_transactions ORDER BY active DESC, created_at ASC').all() as any[];
+  return db.prepare(`
+    SELECT r.*, g.name AS goal_name
+    FROM recurring_transactions r
+    LEFT JOIN goals g ON g.id = r.goal_id
+    ORDER BY r.active DESC, r.created_at ASC
+  `).all() as any[];
+}
+
+/**
+ * Idempotent goal contribution: insert-or-ignore into ledger, bump goal
+ * current_amount only when the ledger row is new. Skips completed goals.
+ * ponytail: single-recurring-per-goal links; migrate to a link table if a
+ * recurring ever needs to feed multiple goals.
+ */
+export function contributeToGoal(goalId: number, recurringId: number, periodId: number, amount: number): boolean {
+  const goal = db.prepare('SELECT completed, target_amount, current_amount FROM goals WHERE id = ?').get(goalId) as any;
+  if (!goal || goal.completed === 1) return false;
+  const res = db.prepare(`
+    INSERT OR IGNORE INTO goal_contributions (goal_id, recurring_id, period_id, amount)
+    VALUES (?, ?, ?, ?)
+  `).run(goalId, recurringId, periodId, amount);
+  if (res.changes === 0) return false; // already contributed this period
+  const newCurrent = Number(goal.current_amount) + Number(amount);
+  const nowCompleted = newCurrent >= Number(goal.target_amount) ? 1 : 0;
+  db.prepare('UPDATE goals SET current_amount = ?, completed = COALESCE(?, completed), updated_at = CURRENT_TIMESTAMP WHERE id = ?')
+    .run(newCurrent, nowCompleted, goalId);
+  return true;
 }
 
 export function getRecurringTransactionById(id: number) {
@@ -562,8 +602,8 @@ export function getRecurringTransactionById(id: number) {
 
 export function insertRecurringTransaction(tx: Omit<any, 'id'>) {
   const stmt = db.prepare(`
-    INSERT INTO recurring_transactions (title, category, amount, type, payment_method, done, active, end_date, created_at)
-    VALUES (@title, @category, @amount, @type, @payment_method, @done, @active, @end_date, @created_at)
+    INSERT INTO recurring_transactions (title, category, amount, type, payment_method, done, active, end_date, created_at, goal_id)
+    VALUES (@title, @category, @amount, @type, @payment_method, @done, @active, @end_date, @created_at, @goal_id)
   `);
   const result = stmt.run({
     title: tx.title,
@@ -575,6 +615,7 @@ export function insertRecurringTransaction(tx: Omit<any, 'id'>) {
     active: tx.active !== false ? 1 : 0,
     end_date: tx.end_date || null,
     created_at: tx.created_at || new Date().toISOString(),
+    goal_id: tx.goal_id ?? null,
   });
   return result.lastInsertRowid as number;
 }

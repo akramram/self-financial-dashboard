@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { db, getRecurringTransactions, insertTransaction, upsertMonthlyIncome, getMonthlyIncome, ensurePeriod, getPeriodByMonth } from '../../lib/db';
+import { db, getRecurringTransactions, insertTransaction, upsertMonthlyIncome, getMonthlyIncome, ensurePeriod, getPeriodByMonth, contributeToGoal } from '../../lib/db';
 
 // Resolve a recurring item's day-of-month (created_at, 1-28) to a created_time ISO string
 // inside the given period ("September 2026" = Aug 21 → Sep 20). Days >= 21 belong to the
@@ -35,6 +35,7 @@ async function kickoffIntoPeriod(opts: {
   }
 
   let added = 0;
+  let goalContributions = 0;
   for (const r of recurring) {
     if (existingTitles?.has(r.title)) continue;
     insertTransaction({
@@ -44,6 +45,10 @@ async function kickoffIntoPeriod(opts: {
       done: r.done ? 1 : 0, created_time: recurringCreatedTime(r.created_at, month),
     });
     added++;
+    // Scheduled transfer confirmed (done) → iterate linked goal, idempotent per period
+    if (r.goal_id && r.done) {
+      if (contributeToGoal(r.goal_id, r.id, period_id, r.amount)) goalContributions++;
+    }
   }
 
   // Auto-generate credit card payment from previous period's credit expenses
@@ -73,6 +78,7 @@ async function kickoffIntoPeriod(opts: {
     success: true, month, period_id, salary,
     preloaded: added,
     skippedExisting: recurring.length - added,
+    goalContributions,
     ccPaymentAmount,
     ccPaymentNote: ccPaymentAmount > 0 ? 'Added CC Payment from previous period' : null,
   }), { status: 201, headers: { 'Content-Type': 'application/json' } });
