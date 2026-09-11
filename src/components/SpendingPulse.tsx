@@ -174,7 +174,7 @@ export default function SpendingPulse({ summaries, activeMonth }: Props) {
           </div>
 
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            {cfg.label} — you've spent {pulse.pacePct.toFixed(0)}% of the expected amount for this point in the period.
+            {cfg.label} - you've spent {pulse.pacePct.toFixed(0)}% of the expected amount for this point in the period.
           </p>
 
           {/* Key metrics */}

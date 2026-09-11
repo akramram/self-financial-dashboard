@@ -313,7 +313,7 @@ export default function YearlyReport({ summaries, categories }: Props) {
           <div className="glass-card p-5">
             <h3 className="text-base font-semibold flex items-center gap-2 text-slate-800 dark:text-white/80">
                 <CalendarDays className="w-4 h-4 text-slate-600 dark:text-white/50" />
-                Monthly Breakdown — {selectedYear}
+                Monthly Breakdown - {selectedYear}
               </h3>
             <div className="relative h-80">
                 <Bar data={barChartData} options={barOptions} />
@@ -440,7 +440,7 @@ export default function YearlyReport({ summaries, categories }: Props) {
                                   )}
                                 </span>
                               ) : (
-                                <span className="text-xs text-muted-foreground">—</span>
+                                <span className="text-xs text-muted-foreground">-</span>
                               )}
                             </TableCell>
                           </TableRow>

@@ -705,7 +705,7 @@ export default function DataImport() {
                         <SelectValue placeholder="Ignore" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="__none__">— Ignore —</SelectItem>
+                        <SelectItem value="__none__">- Ignore -</SelectItem>
                         {Object.entries(fieldMap).map(([key, label]) => (
                           <SelectItem key={key} value={key}>
                             {label} {requiredFields.includes(key) ? '*' : ''}
@@ -754,7 +754,7 @@ export default function DataImport() {
                         {Object.keys(fieldMap).map((field) => (
                           <TableCell key={field} className="text-xs max-w-[120px] truncate">
                             {row.data[field] || (
-                              <span className="text-slate-300 dark:text-slate-600">—</span>
+                              <span className="text-slate-300 dark:text-slate-600">-</span>
                             )}
                           </TableCell>
                         ))}
@@ -787,7 +787,7 @@ export default function DataImport() {
               {validCount === 0 ? (
                 <span className="text-red-500 flex items-center gap-1">
                   <AlertTriangle className="w-4 h-4" />
-                  No valid rows — check required field mappings
+                  No valid rows, check required field mappings
                 </span>
               ) : (
                 <span>

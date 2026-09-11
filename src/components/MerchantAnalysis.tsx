@@ -372,7 +372,7 @@ export default function MerchantAnalysis({
               Top Merchant
             </h3>
           <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate" title={stats.topMerchant?.title}>
-              {stats.topMerchant?.title ?? '—'}
+              {stats.topMerchant?.title ?? '-'}
             </p>
             {stats.topMerchant && (
               <p className="text-xs text-slate-500">
@@ -421,7 +421,7 @@ export default function MerchantAnalysis({
               <h3 className="text-base font-semibold flex items-center gap-2 text-slate-800 dark:text-white/80">
                 <Store className="w-4 h-4 text-slate-500" />
                 {viewMode === 'period'
-                  ? `Merchants — ${selectedPeriodLabel}`
+                  ? `Merchants - ${selectedPeriodLabel}`
                   : 'All-Time Merchant Summary'}
               </h3>
               <p className="text-xs mt-0.5 text-slate-600 dark:text-white/50">

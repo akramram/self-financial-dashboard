@@ -237,11 +237,11 @@ export default function RecurringCostAnalyzer() {
                   <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">Largest Recurring Cost</span>
                 </div>
                 <p className="text-sm text-slate-600 dark:text-slate-300">
-                  <span className="font-medium">{largestItem.title}</span> —{' '}
+                  <span className="font-medium">{largestItem.title}</span> -{' '}
                   <span className="font-semibold text-red-600 dark:text-red-400">{formatIdr(largestItem.amount)}</span>/month
                 </p>
                 <p className="text-[11px] text-slate-400 mt-0.5">
-                  That's {formatIdr(largestItem.amount * 12)}/year — {((largestItem.amount / monthlyTotal) * 100).toFixed(0)}% of your recurring total.
+                  That's {formatIdr(largestItem.amount * 12)}/year - {((largestItem.amount / monthlyTotal) * 100).toFixed(0)}% of your recurring total.
                 </p>
               </div>
             )}

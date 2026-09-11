@@ -207,7 +207,7 @@ export default function AddTransactionForm() {
               onChange={(d, t) => { handleDateChange(d); setTxTime(t); }}
             />
             <p className="text-xs text-slate-600 dark:text-white/50">
-              Tanggal transaksi sebenarnya — ubah kalau input untuk hari sebelumnya. Period menyesuaikan otomatis.
+              Tanggal transaksi sebenarnya, ubah kalau input untuk hari sebelumnya. Period menyesuaikan otomatis.
             </p>
           </div>
 
@@ -233,7 +233,7 @@ export default function AddTransactionForm() {
                     setCategoryUserTouched(true);
                   }}
                   className="inline-flex items-center gap-1 text-[11px] font-medium text-mint-500 dark:text-mint-400 hover:text-mint-600 dark:hover:text-mint-300 transition"
-                  title="Suggested based on your history — click to clear"
+                  title="Suggested based on your history: click to clear"
                 >
                   <Sparkles className="w-3 h-3" />
                   Auto: {suggestedCategory}
@@ -266,7 +266,7 @@ export default function AddTransactionForm() {
             </datalist>
             <p className="text-xs text-slate-600 dark:text-white/50">
               {isAutoFilled && !categoryUserTouched
-                ? 'Category auto-suggested from your history — override anytime'
+                ? 'Category auto-suggested from your history, override anytime'
                 : 'Pick an existing category or type a new one'}
             </p>
           </div>

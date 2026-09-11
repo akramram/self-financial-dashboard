@@ -162,12 +162,12 @@ export default function DailyBudgetIndicator({ transactions, income, spent, acti
       {status === 'over' && (
         <p className="mt-2 text-[11px] text-slate-500 dark:text-white/40 flex items-center gap-1">
           <TrendingDown className="w-3 h-3" style={{ color: '#ef4444' }} />
-          Over today's budget — try to spend less tomorrow to compensate.
+          Over today's budget, try to spend less tomorrow to compensate.
         </p>
       )}
       {status === 'warning' && (
         <p className="mt-2 text-[11px] text-slate-500 dark:text-white/40 flex items-center gap-1">
-          Approaching today's limit — consider postponing non-essential purchases.
+          Approaching today's limit, consider postponing non-essential purchases.
         </p>
       )}
     </div>

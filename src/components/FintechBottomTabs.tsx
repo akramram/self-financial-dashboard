@@ -32,7 +32,7 @@ export default function FintechBottomTabs() {
         if (idx === 2) {
           return (
             <React.Fragment key="center-btn">
-              {/* Center + button — opens QuickAddDialog */}
+              {/* Center + button, opens QuickAddDialog */}
               <button
                 onClick={openQuickAdd}
                 className="flex items-center justify-center w-12 h-12 rounded-full -mt-6 shrink-0 mx-0.5 transition-transform active:scale-90 border-0 cursor-pointer"

@@ -191,9 +191,9 @@ export default function SpendingStreaks() {
             {data.currentStreak > 0
               ? data.todayIsNoSpend
                 ? '🔥 Keep it going today!'
-                : 'Ended yesterday — start a new one!'
+                : 'Ended yesterday, start a new one!'
               : data.todayIsNoSpend
-                ? 'Today counts — spend nothing to start!'
+                ? 'Today counts, spend nothing to start!'
                 : 'Spend nothing today to begin'}
           </p>
         </div>
@@ -328,7 +328,7 @@ export default function SpendingStreaks() {
                       />
                     </div>
                     <span className="text-[10px] text-slate-500 dark:text-white/40 w-16 text-right">
-                      {d.avgPerSpendDay > 0 ? formatIdr(d.avgPerSpendDay) : '—'}
+                      {d.avgPerSpendDay > 0 ? formatIdr(d.avgPerSpendDay) : '-'}
                     </span>
                   </div>
                 </div>
@@ -422,7 +422,7 @@ export default function SpendingStreaks() {
         <p className="text-xs text-slate-600 dark:text-white/50 leading-relaxed">
           <strong>How it works:</strong> A <em>no-spend day</em> is any calendar day with zero
           discretionary spending (cash or credit-card purchases). Credit-card
-          <em> payments</em> don't count — they're just moving money between accounts, not real spending.
+          <em> payments</em> don't count, they're just moving money between accounts, not real spending.
           Streaks reset the moment you make a purchase. Tracking started
           {data.firstTrackedDate ? ` ${new Date(data.firstTrackedDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}` : ' recently'}
           {data.totalDaysTracked > 0 && ` · ${data.totalDaysTracked} days tracked`}.

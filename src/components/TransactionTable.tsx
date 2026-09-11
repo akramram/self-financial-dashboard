@@ -901,7 +901,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
             const res = await repeatTransactionApi(tx);
             if (!res.ok) throw new Error();
             setDetailTx(null);
-            toast.success(`${tx.title} — ${formatIdr(tx.amount)} repeated`);
+            toast.success(`${tx.title} - ${formatIdr(tx.amount)} repeated`);
             notifyDataChanged('transactions');
           } catch {
             toast.error('Failed to repeat transaction');

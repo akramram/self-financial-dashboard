@@ -59,7 +59,7 @@ function DeltaBadge({ current, previous, isPct, inverse }: DeltaProps) {
 
 function DeltaValue({ current, previous, isPct, inverse }: DeltaProps) {
   if (previous === 0 && current === 0) {
-    return <span className="text-xs text-slate-500 dark:text-white/40">—</span>;
+    return <span className="text-xs text-slate-500 dark:text-white/40">-</span>;
   }
   if (previous === 0) {
     return <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">New</span>;
@@ -366,7 +366,7 @@ export default function MonthComparison({ transactions, networth, summaries, cat
                             {isUp ? '+' : ''}{pct.toFixed(1)}%
                           </span>
                         ) : (
-                          <span className="text-sm text-muted-foreground">—</span>
+                          <span className="text-sm text-muted-foreground">-</span>
                         )}
                       </TableCell>
                       <TableCell>
@@ -396,7 +396,7 @@ export default function MonthComparison({ transactions, networth, summaries, cat
       {/* Top Transactions */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="glass-card p-5">
-          <h3 className="text-base font-semibold text-slate-800 dark:text-white/80">Top Transactions — {leftMonth}</h3>
+          <h3 className="text-base font-semibold text-slate-800 dark:text-white/80">Top Transactions - {leftMonth}</h3>
           <div className="space-y-2">
               {[...leftTxs]
                 .sort((a, b) => b.amount - a.amount)
@@ -416,7 +416,7 @@ export default function MonthComparison({ transactions, networth, summaries, cat
             </div>
           </div>
         <div className="glass-card p-5">
-          <h3 className="text-base font-semibold text-slate-800 dark:text-white/80">Top Transactions — {rightMonth}</h3>
+          <h3 className="text-base font-semibold text-slate-800 dark:text-white/80">Top Transactions - {rightMonth}</h3>
           <div className="space-y-2">
               {[...rightTxs]
                 .sort((a, b) => b.amount - a.amount)

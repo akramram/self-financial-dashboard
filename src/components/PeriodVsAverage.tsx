@@ -213,7 +213,7 @@ export default function PeriodVsAverage({
               </div>
               {v.count < lookbackPeriods && v.current > 0 && (
                 <p className="text-[10px] text-slate-500 dark:text-white/30 ml-5">
-                  New category — only {v.count} historical period{v.count !== 1 ? 's' : ''} for comparison
+                  New category, only {v.count} historical period{v.count !== 1 ? 's' : ''} for comparison
                 </p>
               )}
             </div>

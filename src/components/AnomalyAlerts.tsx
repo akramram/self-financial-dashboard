@@ -80,7 +80,7 @@ export default function AnomalyAlerts({ month }: Props) {
     ? visible.filter((a) => a.severity === severityFilter)
     : visible;
 
-  if (loading) return null; // Silent loading — don't show spinner for this
+  if (loading) return null; // Silent loading, don't show spinner for this
 
   if (visible.length === 0) return null; // Nothing to show
 

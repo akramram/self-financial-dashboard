@@ -175,7 +175,7 @@ export default function MobileSidebar({ balance, alerts: initialAlerts = 0 }: Pr
           </div>
         )}
 
-        {/* Nav — scrollable */}
+        {/* Nav, scrollable */}
         <nav className="flex-1 py-3 space-y-0.5 px-2 overflow-y-auto sidebar-scroll">
           {PRIMARY.map((item) => (
             <NavRow key={item.path} item={item} active={isActive(item.path)} onClick={close} />

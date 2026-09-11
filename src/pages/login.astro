@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="Login — Financial Dashboard">
+<Layout title="Login: Financial Dashboard">
   <div class="min-h-[60vh] flex items-center justify-center">
     <div class="w-full max-w-sm">
       <div class="text-center mb-8">
@@ -80,7 +80,7 @@ import Layout from '../layouts/Layout.astro';
       sessionStorage.setItem('fin_user', JSON.stringify(data));
       window.location.href = '/';
     } catch {
-      errorEl.textContent = 'Network error — try again';
+      errorEl.textContent = 'Network error, try again';
       errorEl.classList.remove('hidden');
     }
   });

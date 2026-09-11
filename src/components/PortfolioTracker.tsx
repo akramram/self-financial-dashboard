@@ -471,7 +471,7 @@ export default function PortfolioTracker() {
                       <TableRow key={inv.id}>
                         <TableCell className="font-medium text-sm">{inv.name}</TableCell>
                         <TableCell className="text-xs text-slate-500 dark:text-slate-400 font-mono">
-                          {inv.ticker || '—'}
+                          {inv.ticker || '-'}
                         </TableCell>
                         <TableCell>
                           <Badge

@@ -232,7 +232,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
     <LazyMotion features={domAnimation}>
       <div className="space-y-5">
 
-        {/* ═══════════ SECTION 1: PULSE — "Gimana kondisi sekarang?" ═══════════ */}
+        {/* ═══════════ SECTION 1: PULSE - "Gimana kondisi sekarang?" ═══════════ */}
         <InView as="section" y={16} blur={6}>
           {/* Period filter pill */}
           <div className="flex items-center justify-between mb-3">
@@ -306,7 +306,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
           )}
         </InView>
 
-        {/* ═══════════ SECTION 2: FLOW — "Ke mana duit?" ═══════════ */}
+        {/* ═══════════ SECTION 2: FLOW - "Ke mana duit?" ═══════════ */}
         <InView as="section" delay={0.05}>
           <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/40 mb-3">Flow</p>
 
@@ -360,14 +360,14 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
             </GlassCard>
           </div>
 
-          {/* Top Merchants — merchant/title-level spend breakdown */}
+          {/* Top Merchants, merchant/title-level spend breakdown */}
           <GlassCard className="mb-4">
             <h3 className="text-sm font-semibold text-slate-800 dark:text-white/80 mb-3">Top Merchants</h3>
             <TopMerchantsMini transactions={filteredTransactions} activePeriodId={activeSummary?.period_id ?? null} />
           </GlassCard>
         </InView>
 
-        {/* ═══════════ SECTION 3: ACT — "Apa yang harus dilakukan?" ═══════════ */}
+        {/* ═══════════ SECTION 3: ACT - "Apa yang harus dilakukan?" ═══════════ */}
         <InView as="section" delay={0.1}>
           <div className="flex items-center justify-between mb-3">
             <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/40">Act</p>
@@ -402,7 +402,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
             )}
           </div>
 
-          {/* Upcoming Bills — recurring schedule for active period (paid state synced to generated tx, tap-to-toggle) */}
+          {/* Upcoming Bills, recurring schedule for active period (paid state synced to generated tx, tap-to-toggle) */}
           <GlassCard className="mb-4">
             <UpcomingBills
               recurring={recurringAll}
@@ -427,7 +427,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
           <MonthKickoffModal open={kickoffOpen} onOpenChange={setKickoffOpen} nextMonth={kickoffBanner?.nextMonth || ''} recurringCount={kickoffBanner?.recurringCount || 0} onSuccess={() => { setKickoffBanner(null); window.location.reload(); }} />
         </InView>
 
-        {/* ═══════════ SECTION 4: INSIGHTS — "Pahami lebih dalam" ═══════════ */}
+        {/* ═══════════ SECTION 4: INSIGHTS - "Pahami lebih dalam" ═══════════ */}
         <InView as="section" delay={0.15}>
           <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/40 mb-3">Insights</p>
 
@@ -462,7 +462,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
                     <Shield className="w-5 h-5 text-slate-400 dark:text-white/20" strokeWidth={1.8} />
                   </div>
                   <div>
-                    <p className="text-2xl font-bold text-slate-300 dark:text-white/20">—</p>
+                    <p className="text-2xl font-bold text-slate-300 dark:text-white/20">-</p>
                     <p className="text-xs text-slate-500 dark:text-white/40">months of emergency fund</p>
                   </div>
                 </div>
@@ -470,13 +470,13 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
             </GlassCard>
           </div>
 
-          {/* Financial Insights — compact */}
+          {/* Financial Insights, compact */}
           <GlassCard className="mb-4">
             <FinancialInsights transactions={localTransactions} networth={networth} summaries={summaries} categories={categories} activeMonth={activeSummary?.month} />
           </GlassCard>
         </InView>
 
-        {/* ═══════════ SECTION 5: FEED — Recent transactions ═══════════ */}
+        {/* ═══════════ SECTION 5: FEED, Recent transactions ═══════════ */}
         <InView as="section" delay={0.2}>
           <div className="flex items-center justify-between mb-3">
             <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/40">Feed</p>
@@ -570,7 +570,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
 
             <EditTransactionDialog open={editingId !== null} transaction={editForm} onChange={handleChange} onSave={saveEdit} onCancel={cancelEdit} periods={summaries.map(s => ({ period_id: s.period_id, month: s.month }))} categories={categories.map(c => c.name)} />
 
-            {/* Transaction detail sheet — row tap target */}
+            {/* Transaction detail sheet, row tap target */}
             <TransactionDetailSheet
               open={!!detailTx}
               transaction={localTransactions.find(t => t.id === detailTx?.id) ?? detailTx}
@@ -595,7 +595,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
                   const res = await repeatTransactionApi(tx);
                   if (!res.ok) throw new Error();
                   setDetailTx(null);
-                  toast.success(`${tx.title} — ${formatIdr(tx.amount)} repeated`);
+                  toast.success(`${tx.title} - ${formatIdr(tx.amount)} repeated`);
                   notifyDataChanged('transactions');
                 } catch {
                   toast.error('Failed to repeat transaction');
@@ -628,7 +628,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
           </GlassCard>
         </InView>
 
-        {/* ═══════════ CHARTS — lower section ═══════════ */}
+        {/* ═══════════ CHARTS, lower section ═══════════ */}
         <InView as="section" delay={0.25}>
           <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/40 mb-3">Charts</p>
           <div className="glass-card p-5 bg-slate-100 dark:bg-white/[0.02] border-slate-200 dark:border-white/[0.06] mb-4">
@@ -647,7 +647,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto bg-slate-100 dark:bg-navy-800 border-slate-300 dark:border-white/[0.08]">
             <DialogHeader>
-              <DialogTitle className="text-slate-900 dark:text-white">{selectedCategory} — {activeSummary?.month}</DialogTitle>
+              <DialogTitle className="text-slate-900 dark:text-white">{selectedCategory} - {activeSummary?.month}</DialogTitle>
               <DialogDescription className="text-slate-500 dark:text-white/40">
                 {(() => { const catTxs = localTransactions.filter(t => t.category === selectedCategory && t.period_id === activeSummary?.period_id); const total = catTxs.reduce((sum, t) => sum + t.amount, 0); return `${catTxs.length} transaction${catTxs.length !== 1 ? 's' : ''} • Total: ${formatIdr(total)}`; })()}
               </DialogDescription>

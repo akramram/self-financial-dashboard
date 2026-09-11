@@ -397,13 +397,13 @@ export default function BudgetReport({ summaries, categories }: Props) {
                         </div>
                       </TableCell>
                       <TableCell className="text-right text-muted-foreground">
-                        {hasLimit ? formatIdr(row.limit) : '—'}
+                        {hasLimit ? formatIdr(row.limit) : '-'}
                       </TableCell>
                       <TableCell className="text-right font-medium">
                         {formatIdr(row.spent)}
                       </TableCell>
                       <TableCell className={`text-right font-medium ${row.remaining < 0 ? 'text-red-400' : 'text-emerald-400'}`}>
-                        {hasLimit ? formatIdr(row.remaining) : '—'}
+                        {hasLimit ? formatIdr(row.remaining) : '-'}
                       </TableCell>
                       <TableCell className="text-right">
                         {hasLimit ? (
@@ -453,7 +453,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Receipt className="w-5 h-5 text-slate-500" />
-              {selectedCategory} — Transactions
+              {selectedCategory} - Transactions
             </DialogTitle>
             <DialogDescription>
               {isAllTime ? 'All months' : filterMonth} · {categoryTransactions.length} transaction{categoryTransactions.length !== 1 ? 's' : ''} · Total {formatIdr(dialogTotal)}

@@ -145,7 +145,7 @@ export default function DashboardSummaryCards({ summaries, networth, activeMonth
           key={card.label}
           className="glass-card p-5 relative overflow-hidden hover:shadow-md transition-shadow pt-6"
         >
-          {/* Subtle color bar at top — figure/ground accent */}
+          {/* Subtle color bar at top, figure/ground accent */}
           <div
             className="absolute top-0 left-0 right-0 h-1"
             style={{ backgroundColor: card.color }}
@@ -153,7 +153,7 @@ export default function DashboardSummaryCards({ summaries, networth, activeMonth
 
             <div className="flex items-start justify-between">
               <div className="flex-1 min-w-0">
-                {/* Label row — similarity: same icon+label pattern across all 4 cards */}
+                {/* Label row, similarity: same icon+label pattern across all 4 cards */}
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-slate-400 dark:text-slate-500">{card.icon}</span>
                   <p className="text-sm font-medium text-slate-500 dark:text-slate-400 truncate">
@@ -161,10 +161,10 @@ export default function DashboardSummaryCards({ summaries, networth, activeMonth
                   </p>
                 </div>
 
-                {/* Value — focal point (figure) */}
+                {/* Value, focal point (figure) */}
                 <p className="text-2xl font-bold mt-1 truncate">{card.value}</p>
 
-                {/* Delta — grouped by proximity under value */}
+                {/* Delta, grouped by proximity under value */}
                 <div className="flex items-center gap-1.5 mt-1">
                   <span
                     className={`inline-flex items-center gap-0.5 text-xs font-semibold ${
@@ -194,7 +194,7 @@ export default function DashboardSummaryCards({ summaries, networth, activeMonth
                 </div>
               </div>
 
-              {/* Sparkline — right-aligned, visually paired with value via proximity */}
+              {/* Sparkline, right-aligned, visually paired with value via proximity */}
               <div className="ml-2 shrink-0 self-end">
                 <Sparkline data={card.sparklineData} color={card.color} height={40} width={72} />
               </div>

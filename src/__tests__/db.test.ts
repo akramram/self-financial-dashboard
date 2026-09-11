@@ -1344,3 +1344,78 @@ describe('DB — getTopTitles', () => {
     expect(topTitlesQuery(db, 3).length).toBe(3);
   });
 });
+
+// ─── getNetworthMilestoneCrossing (inline SQL mirror) ────────────────────────
+
+/**
+ * Local mirror of getNetworthMilestoneCrossing's peak query for testing
+ * against an isolated DB (db.ts connects to the real DB at import time).
+ */
+function milestoneCrossingMirror(db: any, periodId: number, newTotal: number, thresholds: number[]) {
+  const peakRow = db.prepare(`
+    SELECT MAX(n.total) AS peak
+    FROM networth n JOIN periods p ON n.period_id = p.id
+    WHERE n.period_id != ?
+  `).get(periodId) as { peak: number | null } | undefined;
+  const prevPeak = peakRow?.peak ?? 0;
+  const crossed = thresholds.filter((t) => prevPeak < t && newTotal >= t);
+  const next = thresholds.find((t) => newTotal < t) ?? null;
+  return { crossed, prevPeak, next };
+}
+
+const TEST_THRESHOLDS = [10_000_000, 25_000_000, 50_000_000];
+
+describe('DB — Networth milestone crossing', () => {
+  let db: any, cleanup: () => void;
+  let p1: any, p2: any;
+
+  const seedNw = (periodId: number, total: number) => {
+    db.prepare('INSERT INTO networth (period_id, date, total, currency) VALUES (?, ?, ?, ?)')
+      .run(periodId, '2026-07-21', total, 'IDR');
+  };
+
+  beforeEach(() => {
+    const t = createTestDb();
+    db = t.db; cleanup = t.cleanup;
+    p1 = seedPeriod(db, 'July 2026');
+    p2 = seedPeriod(db, 'August 2026');
+  });
+
+  afterEach(() => cleanup());
+
+  it('detects a single crossed milestone', () => {
+    seedNw(p1.id, 41_000_000);
+    const r = milestoneCrossingMirror(db, p2.id, 50_500_000, TEST_THRESHOLDS);
+    expect(r.crossed).toEqual([50_000_000]);
+    expect(r.prevPeak).toBe(41_000_000);
+    expect(r.next).toBeUndefined(); // 50M is the last threshold in test set
+  });
+
+  it('detects multiple milestones crossed in one jump', () => {
+    seedNw(p1.id, 8_000_000);
+    const r = milestoneCrossingMirror(db, p2.id, 30_000_000, TEST_THRESHOLDS);
+    expect(r.crossed).toEqual([10_000_000, 25_000_000]);
+    expect(r.next).toBe(50_000_000);
+  });
+
+  it('returns empty when the peak already covered the milestone', () => {
+    seedNw(p1.id, 52_000_000);
+    const r = milestoneCrossingMirror(db, p2.id, 51_000_000, TEST_THRESHOLDS);
+    expect(r.crossed).toEqual([]);
+  });
+
+  it('excludes the current period row from the peak (edit does not self-cross)', () => {
+    seedNw(p1.id, 30_000_000);
+    seedNw(p2.id, 35_000_000);
+    const r = milestoneCrossingMirror(db, p2.id, 50_000_000, TEST_THRESHOLDS);
+    expect(r.prevPeak).toBe(30_000_000);
+    expect(r.crossed).toEqual([50_000_000]);
+  });
+
+  it('first-ever entry counts all milestones up to the total', () => {
+    const r = milestoneCrossingMirror(db, p1.id, 12_000_000, TEST_THRESHOLDS);
+    expect(r.prevPeak).toBe(0);
+    expect(r.crossed).toEqual([10_000_000]);
+    expect(r.next).toBe(25_000_000);
+  });
+});

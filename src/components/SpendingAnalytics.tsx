@@ -501,7 +501,7 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
             <div className={`text-lg font-bold ${velocityUp ? 'text-red-400' : 'text-emerald-400'}`}>{velocityUp ? '+' : ''}{velocity.velocity_vs_history.toFixed(1)}%</div>
             <div className="flex items-center justify-center gap-1 mt-1">
               {velocityUp ? <TrendingUp className="w-4 h-4 text-red-400" /> : <TrendingDown className="w-4 h-4 text-emerald-400" />}
-              <span className="text-xs text-slate-500 dark:text-white/40">{Math.abs(velocity.velocity_vs_history) > 20 ? (velocityUp ? 'Spending significantly higher than usual' : 'Great — spending well below average') : Math.abs(velocity.velocity_vs_history) > 5 ? (velocityUp ? 'Slightly above your typical pace' : 'Slightly below your typical pace') : 'On track with your historical average'}</span>
+              <span className="text-xs text-slate-500 dark:text-white/40">{Math.abs(velocity.velocity_vs_history) > 20 ? (velocityUp ? 'Spending significantly higher than usual' : 'Great, spending well below average') : Math.abs(velocity.velocity_vs_history) > 5 ? (velocityUp ? 'Slightly above your typical pace' : 'Slightly below your typical pace') : 'On track with your historical average'}</span>
             </div>
           </div>
         </div>
@@ -514,7 +514,7 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
             <Hash className="w-4 h-4 text-slate-500 dark:text-white/40" />
             Top Merchants
           </h3>
-          <p className="text-xs text-slate-500 dark:text-white/30 mb-3">Where your money went this period — grouped by transaction title.</p>
+          <p className="text-xs text-slate-500 dark:text-white/30 mb-3">Where your money went this period, grouped by transaction title.</p>
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
             {merchantChartData && (
               <div className="lg:col-span-3 h-[320px]">

@@ -86,7 +86,7 @@ export default function TransactionDetailSheet({ open, transaction, onClose, onT
 
   return (
     <Dialog open={open} onOpenChange={(o) => { if (!o) onClose(); }}>
-      {/* bottom-sheet via positioning classes on DialogContent — no separate
+      {/* bottom-sheet via positioning classes on DialogContent, no separate
           Sheet primitive needed; swipe gesture implemented inline above. */}
       <DialogContent
         ref={contentRef}
@@ -135,11 +135,11 @@ export default function TransactionDetailSheet({ open, transaction, onClose, onT
         <div className="px-6 py-4 space-y-3">
           <div className="flex items-center justify-between text-sm">
             <span className="text-slate-500 dark:text-white/40">Category</span>
-            <Badge variant="secondary">{transaction.category || '—'}</Badge>
+            <Badge variant="secondary">{transaction.category || '-'}</Badge>
           </div>
           <div className="flex items-center justify-between text-sm">
             <span className="text-slate-500 dark:text-white/40">Payment Method</span>
-            <span className="font-medium text-slate-800 dark:text-white/80">{transaction.payment_method || '—'}</span>
+            <span className="font-medium text-slate-800 dark:text-white/80">{transaction.payment_method || '-'}</span>
           </div>
           <div className="flex items-center justify-between text-sm">
             <span className="text-slate-500 dark:text-white/40">Date</span>
@@ -163,7 +163,7 @@ export default function TransactionDetailSheet({ open, transaction, onClose, onT
             }`}
           >
             {transaction.done ? <CheckCircle2 className="w-5 h-5" /> : <Circle className="w-5 h-5" />}
-            {transaction.done ? 'Paid — tap to mark unpaid' : 'Unpaid — tap to mark paid'}
+            {transaction.done ? 'Paid, tap to mark unpaid' : 'Unpaid, tap to mark paid'}
           </button>
         </div>
 
