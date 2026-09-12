@@ -1388,7 +1388,7 @@ describe('DB — Networth milestone crossing', () => {
     const r = milestoneCrossingMirror(db, p2.id, 50_500_000, TEST_THRESHOLDS);
     expect(r.crossed).toEqual([50_000_000]);
     expect(r.prevPeak).toBe(41_000_000);
-    expect(r.next).toBeUndefined(); // 50M is the last threshold in test set
+    expect(r.next).toBeNull(); // 50M is the last threshold in test set
   });
 
   it('detects multiple milestones crossed in one jump', () => {
