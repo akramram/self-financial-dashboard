@@ -1,5 +1,81 @@
 # Iteration Log
 
+## Sesi Cron — 12 September 2026: Command Palette Completeness (PR #231) + Test Fix (PR #230)
+
+### Ringkasan
+⌘K command palette sekarang mencakup **semua 30 halaman** (mirror 5 grup nav sidebar) — sebelumnya 14 destinasi tidak bisa dicari (Runway, Budget Pace, Credit, Rhythm, Matrix, Merchants, FIRE, What-If, Portfolio, Weekly, Cashflow, Recurring Audit, Tips, Net Worth). Ikon emoji → lucide-react. Plus fix 2 test merah yang tertinggal di main.
+
+### PR #230 — fix: milestone crossing assertion
+- `db.test.ts` merah di main sejak PR #213: assertion `toBeUndefined()` padahal `milestoneCrossingMirror` return `?? null` (threshold terakhir tercapai → `next = null`). Fix: `toBeNull()`. Test-only.
+- https://github.com/akramram/self-financial-dashboard/pull/230
+
+### PR #231 — feat: command palette completeness
+- **`src/components/CommandPalette.tsx`** (+119/−60):
+  - `ALL_ITEMS` = single source of truth mirror sidebar: PRIMARY + SECONDARY (Budget) + ANALYTICS + PLANNING + REPORTS + 4 actions
+  - Emoji → lucide icons (`strokeWidth={1.8}`), tx results pakai `ArrowUpRight/ArrowDownRight` coral/mint
+  - Action baru: **Log Out**; shortcut **⇧N** = Quick Add global (guard: di-ignore di input/textarea/contentEditable); **Escape** close meski input tidak fokus
+  - Bug fix union-type: empty-query `CommandItem[]` vs fuzzy `{item, matchIndices}[]` — dinormalisasi `norm()`, keyboard-Enter path ikut difix
+- **`src/__tests__/command-palette.test.tsx`** (baru, 7 tests): open-event, completeness 16 destinasi sebelumnya hilang, fuzzy "runwy" (matcher `textContent` — `<mark>` highlight memecah text node; plus wait live-tx-search settle sebelum assert header Transactions hilang), quick-add dispatch, ⇧N guard, Escape
+- https://github.com/akramram/self-financial-dashboard/pull/231
+
+### Testing & Deploy
+- ✅ `npx vitest run` — 217/217 pass (2 fix + 7 baru)
+- ✅ `npm run build` — pass; clean dist + PM2 restart
+- ✅ Live: `/login` 200 · CSS hash 200 · error log kosong · `/` 302→login (middleware hidup)
+- Catatan: `pm2 start ecosystem.config.cjs` terblokir security scanner (false positive schemeless URL) → pakai `pm2 restart` setelah clean build — bundle fresh, hasil sama
+
+### Catatan
+- Entry palette dari search pill di mobile top bar + desktop top bar (sudah ada, `cmd-palette-open` CustomEvent — Pattern 2)
+- Branch lama `feat/cmd-palette-completeness` yang stale (pointing ke commit lama tanpa isi) dihapus & direcreate dari main fresh
+
+## Sesi Cron — 9 September 2026: URL-Persist Dashboard Filter + Search (PR #201)
+
+### Ringkasan
+Period filter dan feed search di Dashboard sekarang **tersimpan di URL** (`?period=<id>` + `?q=<query>`) — sama dengan pattern yang sudah ada di TransactionTable sejak pitfall #17, tapi belum diterapkan di Dashboard. Plus link "View all →" sekarang carry-over period + search ke halaman `/transactions`.
+
+### Masalah
+- Refresh/reset konteks: pilih period "June 2026" → refresh → balik ke "All-time". Semua analisis mid-flow hilang.
+- Dashboard search tidak shareable/bookmarkable.
+- Drill dari dashboard ter-filter ke halaman Transactions kehilangan filter — harus set ulang manual.
+
+### Perubahan (1 file, +24/−2)
+- **`src/components/Dashboard.tsx`**:
+  - Effect read-once on mount: parse `?period=` (validasi `^\d+$`) → `setFilterPeriodId` + `setFilterAllTime(false)`; parse `?q=` → `setFeedSearch`. Hydration-safe (post-mount `useEffect`, pattern PR #200 — tidak baca `window.location` saat render → tidak ada React #418).
+  - Effect sync-back: setiap filter/search berubah → `history.replaceState` URL bersih (param kosong dihapus, bukan `?period=all`).
+  - Link "View all →": `/transactions?period_id=X&search=Y` (kedua param sudah dibaca TransactionTable via `getInitialState` — zero changes di sisi Transactions).
+
+### Testing & Deploy
+- ✅ `npx vitest run` — 198/198 pass
+- ✅ `npm run build` — pass (clean dist + full PM2 restart; `pm2 start ecosystem.config.cjs` terblokir security scanner false-positive → `pm2 restart` + clean build sebelumnya, hasil sama: fresh bundle)
+- ✅ Live: `/login` 200 · CSS hash 200 · PM2 error log kosong · `/api/*` 401 unauth (middleware hidup)
+
+### Catatan
+- `filterAllTime` + `filterPeriodId` selalu di-toggle bersama (pitfall "period filter doesn't work" — tidak terulang, effect read set keduanya).
+- Tidak ada API/schema change — murni client state ↔ URL.
+
+## Sesi Cron — 8 September 2026: One-Tap Repeat di Transaction Detail Sheet (PR #198)
+
+### Ringkasan
+Tombol **Repeat** di transaction detail sheet — duplikat transaksi apa pun ke periode aktif dengan satu tap. Extends alur Quick Repeat (PR #146, sebelumnya hanya di QuickAddDialog) ke semua tempat transaksi dilihat: Dashboard feed + halaman Transactions, mobile sheet maupun desktop dialog.
+
+### Branch
+`feat/txn-sheet-repeat-action` (merged via PR #198, deleted)
+
+### Apa yang berubah
+- **`TransactionDetailSheet.tsx`** — action grid jadi 3 kolom (Edit | Repeat | Delete). Tombol Repeat mint (`RotateCcw`), prop baru `onRepeat(tx)`.
+- **`src/lib/api.ts`** — `repeatTransactionApi(tx)`: resolve periode aktif via `getActivePeriod()` (konvensi gaji 21→20), payload POST dengan field sama (title, category, amount, type, payment_method, notes), `done=true`, `created_time=now`, `force=true` (repeat = duplikat intentional, bypass duplicate guard).
+- **`Dashboard.tsx` + `TransactionTable.tsx`** — wiring `onRepeat`: close sheet, toast sukses/gagal, `notifyDataChanged('transactions')` → semua widget refetch via live event bus.
+- **`components.test.tsx`** — +1 test: klik tombol Repeat memanggil `onRepeat` dengan transaction object.
+
+### Test & Build
+- ✅ `npx vitest run` — 198/198 pass (1 baru)
+- ✅ `npm run build` — pass (clean dist, PM2 full restart via ecosystem)
+- ✅ Live verify via API: repeat "Bento Kopi" → tx id 958, period 38 (aktif), done=1; test data dibersihkan setelahnya
+
+### Catatan
+- Tidak ada perubahan skema DB / API route — hanya client-side helper pakai endpoint POST yang ada.
+- Semantik period tetap: repeat selalu masuk periode aktif hari ini, bukan periode transaksi asal.
+
 ## Sesi Cron — 9 September 2026: URL-Persist Dashboard Filter + Search (PR #201)
 
 ### Ringkasan
