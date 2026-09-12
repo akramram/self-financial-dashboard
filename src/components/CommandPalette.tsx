@@ -1,4 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import {
+  LayoutDashboard, ArrowRightLeft, PieChart, Target, Settings,
+  TrendingUp, Calendar, Shield, Wallet, CreditCard,
+  Trophy, Zap, Heart, BarChart3, FlaskConical, Briefcase, PiggyBank,
+  Repeat, Search, FileText, GitCompare, Activity, Layers, CalendarDays, Grid3x3,
+  Plus, LogOut, Flame, Moon, ArrowUpRight, ArrowDownRight,
+} from 'lucide-react';
 import { formatIdr } from '../lib/utils';
 
 interface TxResult {
@@ -10,48 +17,63 @@ interface TxResult {
   done?: number | boolean;
 }
 
+type IconType = React.ComponentType<{ className?: string }>;
+
 interface CommandItem {
   id: string;
   label: string;
   description?: string;
   shortcut?: string;
-  icon: string;
+  icon: IconType;
   group: 'pages' | 'actions';
   href: string;
 }
 
+// Single source of truth: mirrors the FintechSidebar nav groups (30 pages).
 const ALL_ITEMS: CommandItem[] = [
-  // Pages
-  { id: 'dashboard', label: 'Dashboard', description: 'Overview of income, outcome, and networth', icon: '📊', group: 'pages', href: '/' },
-  { id: 'transactions', label: 'Transactions', description: 'View and manage all transactions', icon: '📋', group: 'pages', href: '/transactions' },
-  { id: 'networth', label: 'Net Worth', description: 'Track net worth over time', icon: '💎', group: 'pages', href: '/networth' },
-  { id: 'budget', label: 'Budget Report', description: 'Category budget tracking', icon: '📑', group: 'pages', href: '/budget' },
-  { id: 'spending-mix', label: 'Spending Mix', description: 'Recurring vs discretionary breakdown', icon: '🔀', group: 'pages', href: '/spending-mix' },
-  { id: 'compare', label: 'Month Comparison', description: 'Compare spending across months', icon: '⚖️', group: 'pages', href: '/compare' },
-  { id: 'savings-rate', label: 'Savings Rate Tracker', description: 'Track savings rate, benchmarks & milestones', icon: '💰', group: 'pages', href: '/savings-rate' },
-  { id: 'analytics', label: 'Spending Analytics', description: 'Daily trends and category drill-down', icon: '📈', group: 'pages', href: '/analytics' },
-  { id: 'matrix', label: 'Spending Matrix', description: 'Category × period heatmap of all spending', icon: '🔳', group: 'pages', href: '/matrix' },
-  { id: 'cashflow', label: 'Cash Flow', description: 'Income vs outcome waterfall', icon: '💸', group: 'pages', href: '/cashflow' },
-  { id: 'calendar', label: 'Spending Calendar', description: 'Calendar heatmap of daily spending', icon: '📅', group: 'pages', href: '/calendar' },
-  { id: 'streaks', label: 'Spending Streaks', description: 'No-spend day streaks, badges & patterns', icon: '🔥', group: 'pages', href: '/streaks' },
-  { id: 'achievements', label: 'Achievements & Milestones', description: 'Trophy case, net worth, savings & discipline badges', icon: '🏆', group: 'pages', href: '/achievements' },
-  { id: 'goals', label: 'Goals Tracker', description: 'Track financial goals progress', icon: '🎯', group: 'pages', href: '/goals' },
-  { id: 'recurring', label: 'Recurring', description: 'Manage recurring transactions', icon: '🔄', group: 'pages', href: '/recurring' },
-  { id: 'recurring-audit', label: 'Recurring Cost Analyzer', description: 'Audit subscription costs, monthly & annual totals, savings insights', icon: '📊', group: 'pages', href: '/recurring-audit' },
-  { id: 'yearly', label: 'Yearly Report', description: 'Annual spending summary', icon: '📆', group: 'pages', href: '/yearly' },
-  { id: 'health', label: 'Health Score', description: 'Financial health assessment', icon: '❤️', group: 'pages', href: '/health' },
-  { id: 'forecast', label: 'Forecast', description: 'Spending predictions and projections', icon: '🔮', group: 'pages', href: '/forecast' },
-  { id: 'dna', label: 'Spending DNA', description: 'Financial personality profile & behavioral analysis', icon: '🧬', group: 'pages', href: '/dna' },
-  { id: 'fire', label: 'FIRE Calculator', description: 'Financial Independence Retire Early calculator', icon: '🔥', group: 'pages', href: '/fire' },
-  { id: 'what-if', label: 'What-If Planner', description: 'Simulate spending & income changes, see net worth impact', icon: '🔮', group: 'pages', href: '/what-if' },
-  { id: 'report', label: 'Monthly Report', description: 'Printable monthly financial report', icon: '📄', group: 'pages', href: '/report' },
-  { id: 'settings', label: 'Settings', description: 'Categories, income, and preferences', icon: '⚙️', group: 'pages', href: '/settings' },
+  // Pages — PRIMARY
+  { id: 'dashboard', label: 'Dashboard', description: 'Overview of income, outcome, and networth', icon: LayoutDashboard, group: 'pages', href: '/' },
+  { id: 'transactions', label: 'Transactions', description: 'View and manage all transactions', icon: ArrowRightLeft, group: 'pages', href: '/transactions' },
+  { id: 'analytics', label: 'Analytics', description: 'Daily trends and category drill-down', icon: PieChart, group: 'pages', href: '/analytics' },
+  { id: 'goals', label: 'Planning', description: 'Goals tracker and financial planning', icon: Target, group: 'pages', href: '/goals' },
+  { id: 'settings', label: 'Settings', description: 'Categories, income, and preferences', icon: Settings, group: 'pages', href: '/settings' },
+  // Pages — SECONDARY (Budget)
+  { id: 'budget', label: 'Budget', description: 'Category budget tracking', icon: Wallet, group: 'pages', href: '/budget' },
+  { id: 'budget-pace', label: 'Budget Pace', description: 'Spending pace vs budget timeline', icon: Activity, group: 'pages', href: '/budget-pace' },
+  { id: 'savings-rate', label: 'Savings', description: 'Savings rate, benchmarks & milestones', icon: TrendingUp, group: 'pages', href: '/savings-rate' },
+  { id: 'calendar', label: 'Calendar', description: 'Spending heatmap by salary period', icon: CalendarDays, group: 'pages', href: '/calendar' },
+  { id: 'runway', label: 'Runway', description: 'Months of expenses covered by liquid assets', icon: Shield, group: 'pages', href: '/runway' },
+  { id: 'credit-card', label: 'Credit', description: 'Credit card spending & payment tracking', icon: CreditCard, group: 'pages', href: '/credit-card' },
+  // Pages — ANALYTICS
+  { id: 'streaks', label: 'Streaks', description: 'No-spend day streaks, badges & patterns', icon: Zap, group: 'pages', href: '/streaks' },
+  { id: 'achievements', label: 'Achievements', description: 'Trophy case, net worth, savings & discipline badges', icon: Trophy, group: 'pages', href: '/achievements' },
+  { id: 'health', label: 'Health Score', description: 'Financial health assessment', icon: Heart, group: 'pages', href: '/health' },
+  { id: 'spending-mix', label: 'Spending Mix', description: 'Recurring vs discretionary breakdown', icon: Layers, group: 'pages', href: '/spending-mix' },
+  { id: 'spending-rhythm', label: 'Rhythm', description: 'Spending rhythm by day of week', icon: BarChart3, group: 'pages', href: '/spending-rhythm' },
+  { id: 'dna', label: 'Spending DNA', description: 'Financial personality profile & behavioral analysis', icon: FlaskConical, group: 'pages', href: '/dna' },
+  { id: 'matrix', label: 'Category Matrix', description: 'Category × period heatmap of all spending', icon: Grid3x3, group: 'pages', href: '/matrix' },
+  { id: 'merchants', label: 'Merchants', description: 'Top merchants and spending patterns', icon: Search, group: 'pages', href: '/merchants' },
+  // Pages — PLANNING
+  { id: 'fire', label: 'FIRE', description: 'Financial Independence Retire Early calculator', icon: Flame, group: 'pages', href: '/fire' },
+  { id: 'what-if', label: 'What-If', description: 'Simulate spending & income changes', icon: FlaskConical, group: 'pages', href: '/what-if' },
+  { id: 'forecast', label: 'Forecast', description: 'Spending predictions and projections', icon: TrendingUp, group: 'pages', href: '/forecast' },
+  { id: 'portfolio', label: 'Portfolio', description: 'Investment portfolio allocation', icon: Briefcase, group: 'pages', href: '/portfolio' },
+  { id: 'networth', label: 'Net Worth', description: 'Track net worth over time', icon: PiggyBank, group: 'pages', href: '/networth' },
+  // Pages — REPORTS
+  { id: 'weekly', label: 'Weekly', description: 'Weekly spending report', icon: Calendar, group: 'pages', href: '/weekly' },
+  { id: 'report', label: 'Monthly Report', description: 'Printable monthly financial report', icon: FileText, group: 'pages', href: '/report' },
+  { id: 'yearly', label: 'Yearly', description: 'Annual spending summary', icon: CalendarDays, group: 'pages', href: '/yearly' },
+  { id: 'compare', label: 'Compare', description: 'Compare spending across months', icon: GitCompare, group: 'pages', href: '/compare' },
+  { id: 'cashflow', label: 'Cashflow', description: 'Income vs outcome waterfall', icon: BarChart3, group: 'pages', href: '/cashflow' },
+  { id: 'recurring', label: 'Recurring', description: 'Manage recurring transactions', icon: Repeat, group: 'pages', href: '/recurring' },
+  { id: 'recurring-audit', label: 'Recurring Audit', description: 'Subscription costs, monthly & annual totals', icon: Search, group: 'pages', href: '/recurring-audit' },
+  { id: 'recommendations', label: 'Tips', description: 'Budget recommendations and savings tips', icon: Trophy, group: 'pages', href: '/recommendations' },
   // Actions
-  { id: 'add-data', label: 'Add Data', description: 'Add transaction or net worth entry', shortcut: '⌘N', icon: '➕', group: 'actions', href: '/add' },
-  { id: 'quick-add', label: 'Quick Add Transaction', description: 'Fast add a transaction from any page', shortcut: '⇧N', icon: '⚡', group: 'actions', href: '__quick_add__' },
-  { id: 'toggle-theme', label: 'Toggle Dark Mode', description: 'Switch between light and dark theme', icon: '🌓', group: 'actions', href: '__toggle_theme__' },
+  { id: 'add-data', label: 'Add Data', description: 'Add transaction or net worth entry', shortcut: '⌘N', icon: Plus, group: 'actions', href: '/add' },
+  { id: 'quick-add', label: 'Quick Add Transaction', description: 'Fast add a transaction from any page', shortcut: '⇧N', icon: Zap, group: 'actions', href: '__quick_add__' },
+  { id: 'toggle-theme', label: 'Toggle Dark Mode', description: 'Switch between light and dark theme', icon: Moon, group: 'actions', href: '__toggle_theme__' },
+  { id: 'logout', label: 'Log Out', description: 'End this session', icon: LogOut, group: 'actions', href: '__logout__' },
 ];
-
 const MAX_RECENT = 5;
 const RECENT_KEY = 'cmd-palette-recent';
 
@@ -153,6 +175,14 @@ export default function CommandPalette() {
         saveRecentId('add-data');
         window.location.href = '/add';
       }
+      // ⇧N opens the Quick Add dialog from any page
+      if (e.shiftKey && !e.metaKey && !e.ctrlKey && !e.altKey && e.key.toLowerCase() === 'n') {
+        const t = e.target as HTMLElement | null;
+        if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+        e.preventDefault();
+        saveRecentId('quick-add');
+        window.dispatchEvent(new CustomEvent('quick-add-open'));
+      }
     };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
@@ -164,6 +194,16 @@ export default function CommandPalette() {
     window.addEventListener('cmd-palette-open', openPalette);
     return () => window.removeEventListener('cmd-palette-open', openPalette);
   }, []);
+
+  // Escape closes even when the input is not focused (mouse users)
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false);
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [open]);
 
   // Live transaction search (debounced, only when open, ≥3 chars, not searching for pages/actions keywords)
   useEffect(() => {
@@ -271,6 +311,14 @@ export default function CommandPalette() {
       return;
     }
 
+    if (item.href === '__logout__') {
+      setOpen(false);
+      fetch('/api/auth/logout', { method: 'POST' }).finally(() => {
+        window.location.href = '/login';
+      });
+      return;
+    }
+
     // Save to recent
     saveRecentId(item.id);
 
@@ -304,8 +352,8 @@ export default function CommandPalette() {
               const item = filteredItems.recent[idx - txResults.length];
               if (item) handleSelect(item);
             } else {
-              const result = flatItems[idx - txResults.length - filteredItems.recent.length] as { item: CommandItem } | undefined;
-              if (result) handleSelect(result.item);
+              const entry = flatItems[idx - txResults.length - filteredItems.recent.length] as CommandItem | { item: CommandItem; matchIndices: number[] } | undefined;
+              if (entry) handleSelect('item' in entry ? entry.item : entry);
             }
           }
           break;
@@ -351,7 +399,7 @@ export default function CommandPalette() {
               onMouseEnter={() => setSelectedIndex(globalIdx)}
               onClick={() => handleSelect(item)}
             >
-              <span className="text-lg shrink-0">{item.icon}</span>
+              {(() => { const Icon = item.icon; return <Icon className="w-4 h-4 shrink-0 text-slate-400" strokeWidth={1.8} />; })()}
               <div className="min-w-0 flex-1">
                 <div className="text-sm font-medium truncate">{item.label}</div>
                 {item.description && (
@@ -365,8 +413,12 @@ export default function CommandPalette() {
     );
   };
 
-  const pages = flatItems.filter((r) => r.item.group === 'pages');
-  const actions = flatItems.filter((r) => r.item.group === 'actions');
+  // Normalize: empty-query returns raw CommandItem[], fuzzy search returns {item, matchIndices}[].
+  // ponytail: discriminated union if groups ever grow beyond pages/actions.
+  const norm = (r: CommandItem | { item: CommandItem; matchIndices: number[] }) =>
+    'item' in r ? r.item : r;
+  const pages = flatItems.filter((r) => norm(r).group === 'pages');
+  const actions = flatItems.filter((r) => norm(r).group === 'actions');
   const recentCount = filteredItems.recent.length;
   const txCount = txResults.length;
 
@@ -427,7 +479,10 @@ export default function CommandPalette() {
                       onMouseEnter={() => setSelectedIndex(globalIdx)}
                       onClick={() => handleSelectTx(tx)}
                     >
-                      <span className="text-lg shrink-0">{isExpense ? '💸' : '💰'}</span>
+                      {(() => {
+                        const TxIcon = isExpense ? ArrowUpRight : ArrowDownRight;
+                        return <TxIcon className={`w-4 h-4 shrink-0 ${isExpense ? 'text-coral-500' : 'text-mint-500'}`} strokeWidth={2} />;
+                      })()}
                       <div className="min-w-0 flex-1">
                         <div className="text-sm font-medium truncate">{tx.title}</div>
                         <div className="text-xs text-slate-500 dark:text-slate-400 truncate">
@@ -456,11 +511,13 @@ export default function CommandPalette() {
                     Pages
                   </div>
                 )}
-                {pages.map((result, idx) => {
+                {pages.map((entry, idx) => {
+                  const result = norm(entry);
+                  const matchIndices = 'item' in entry ? entry.matchIndices : [];
                   const globalIdx = txCount + recentCount + idx;
                   return (
                     <div
-                      key={result.item.id}
+                      key={result.id}
                       ref={(el) => { itemRefs.current[globalIdx] = el; }}
                       className={`
                         flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-colors text-left
@@ -469,32 +526,32 @@ export default function CommandPalette() {
                           : 'hover:bg-slate-50 dark:hover:bg-slate-700/50'}
                       `}
                       onMouseEnter={() => setSelectedIndex(globalIdx)}
-                      onClick={() => handleSelect(result.item)}
+                      onClick={() => handleSelect(result)}
                     >
-                      <span className="text-lg shrink-0">{result.item.icon}</span>
+                      {(() => { const Icon = result.icon; return <Icon className="w-4 h-4 shrink-0 text-slate-400" strokeWidth={1.8} />; })()}
                       <div className="min-w-0 flex-1">
                         <div className="text-sm font-medium truncate">
                           {query.trim().length > 0
-                            ? highlightMatch(result.item.label, result.matchIndices)
-                            : result.item.label}
+                            ? highlightMatch(result.label, matchIndices)
+                            : result.label}
                         </div>
-                        {result.item.description && (
+                        {result.description && (
                           <div className="text-xs text-slate-500 dark:text-slate-400 truncate">
-                            {query.trim().length > 0 && result.item.description
+                            {query.trim().length > 0 && result.description
                               ? (() => {
                                   // Try to highlight description too
-                                  const descMatch = fuzzyMatch(query.trim().toLowerCase(), result.item.description);
+                                  const descMatch = fuzzyMatch(query.trim().toLowerCase(), result.description);
                                   return descMatch
-                                    ? highlightMatch(result.item.description, descMatch.matchIndices)
-                                    : result.item.description;
+                                    ? highlightMatch(result.description, descMatch.matchIndices)
+                                    : result.description;
                                 })()
-                              : result.item.description}
+                              : result.description}
                           </div>
                         )}
                       </div>
-                      {result.item.shortcut && (
+                      {result.shortcut && (
                         <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.5 rounded-md border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-[10px] font-mono text-slate-500 dark:text-slate-400">
-                          {result.item.shortcut}
+                          {result.shortcut}
                         </kbd>
                       )}
                     </div>
@@ -509,12 +566,14 @@ export default function CommandPalette() {
                 <div className="px-2 py-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   Actions
                 </div>
-                {actions.map((result, idx) => {
+                {actions.map((entry, idx) => {
+                  const result = norm(entry);
+                  const matchIndices = 'item' in entry ? entry.matchIndices : [];
                   const pagesLen = pages.length;
                   const globalIdx = txCount + recentCount + pagesLen + idx;
                   return (
                     <div
-                      key={result.item.id}
+                      key={result.id}
                       ref={(el) => { itemRefs.current[globalIdx] = el; }}
                       className={`
                         flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-colors text-left
@@ -523,22 +582,22 @@ export default function CommandPalette() {
                           : 'hover:bg-slate-50 dark:hover:bg-slate-700/50'}
                       `}
                       onMouseEnter={() => setSelectedIndex(globalIdx)}
-                      onClick={() => handleSelect(result.item)}
+                      onClick={() => handleSelect(result)}
                     >
-                      <span className="text-lg shrink-0">{result.item.icon}</span>
+                      {(() => { const Icon = result.icon; return <Icon className="w-4 h-4 shrink-0 text-slate-400" strokeWidth={1.8} />; })()}
                       <div className="min-w-0 flex-1">
                         <div className="text-sm font-medium truncate">
                           {query.trim().length > 0
-                            ? highlightMatch(result.item.label, result.matchIndices)
-                            : result.item.label}
+                            ? highlightMatch(result.label, matchIndices)
+                            : result.label}
                         </div>
-                        {result.item.description && (
-                          <div className="text-xs text-slate-500 dark:text-slate-400 truncate">{result.item.description}</div>
+                        {result.description && (
+                          <div className="text-xs text-slate-500 dark:text-slate-400 truncate">{result.description}</div>
                         )}
                       </div>
-                      {result.item.shortcut && (
+                      {result.shortcut && (
                         <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.5 rounded-md border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-[10px] font-mono text-slate-500 dark:text-slate-400">
-                          {result.item.shortcut}
+                          {result.shortcut}
                         </kbd>
                       )}
                     </div>
