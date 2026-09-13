@@ -1,5 +1,23 @@
 # Iteration Log
 
+## Sesi Cron — 13 September 2026: Kickoff Tanpa Page Reload (PR #233)
+
+### Ringkasan
+`window.location.reload()` terakhir di seluruh app (P0 design critique) dihapus — kickoff bulan baru sekarang update data in-place via event bus `dataSync` yang sudah dipakai semua mutasi lain. Modal tutup → data refresh → tanpa white flash, filter/search/scroll preserved.
+
+### Perubahan (1 file, +2/−1)
+- **`src/components/Dashboard.tsx`**:
+  - `MonthKickoffModal.onSuccess`: `window.location.reload()` → `notifyDataChanged('summaries')` — listener `onDataChanged` existing refetch transactions + summaries + networth
+  - Listener juga sekarang refetch **`/api/runway`** (sebelumnya hanya fetch sekali di mount — runway snapshot kini live-sync setelah mutasi apa pun)
+  - Kickoff banner re-derive otomatis dari summaries fresh (effect `[summaries]` → `/api/kickoff` → `hasNextMonth` → banner hidden)
+  - `grep -r "window.location.reload" src/` → **0 hasil** — app bebas full reload total
+
+### Testing & Deploy
+- ✅ `npx vitest run` — 217/217 pass
+- ✅ `npm run build` — pass; clean dist + PM2 restart (`pm2 start ecosystem.config.cjs` terblokir security scanner false-positive lagi → `pm2 restart` setelah clean build, bundle fresh)
+- ✅ Live: `/login` 200 · CSS hash 200 · PM2 error log kosong
+- https://github.com/akramram/self-financial-dashboard/pull/233
+
 ## Sesi Cron — 12 September 2026: Command Palette Completeness (PR #231) + Test Fix (PR #230)
 
 ### Ringkasan
