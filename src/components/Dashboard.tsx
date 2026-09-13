@@ -151,6 +151,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
     fetchTransactions().then(setLocalTransactions).catch(() => {});
     fetch('/api/summary').then(r => r.json()).then(setSummaries).catch(() => {});
     fetch('/api/networth').then(r => r.json()).then(setNetworth).catch(() => {});
+    fetch('/api/runway').then(r => r.json()).then(d => setRunwayData(d)).catch(() => {});
   }), []);
   useEffect(() => { const today = new Date(); if (today.getDate() < 21) return; const latest = summaries[summaries.length - 1]; if (!latest) return; const latestDate = new Date(latest.month + ' 1'); const nextDate = new Date(latestDate); nextDate.setMonth(nextDate.getMonth() + 1); const nextMonthStr = nextDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }); fetch('/api/kickoff').then(res => res.json()).then((status: any) => { if (status.hasNextMonth) { setKickoffBanner(null); return; } fetchRecurringTransactions().then(recurring => { setKickoffBanner({ show: true, currentMonth: latest.month, nextMonth: status.nextMonth || nextMonthStr, recurringCount: recurring.filter(r => r.active).length }); }).catch(() => {}); }).catch(() => {}); }, [summaries]);
 
@@ -425,7 +426,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
             />
           </GlassCard>
 
-          <MonthKickoffModal open={kickoffOpen} onOpenChange={setKickoffOpen} nextMonth={kickoffBanner?.nextMonth || ''} recurringCount={kickoffBanner?.recurringCount || 0} onSuccess={() => { setKickoffBanner(null); window.location.reload(); }} />
+          <MonthKickoffModal open={kickoffOpen} onOpenChange={setKickoffOpen} nextMonth={kickoffBanner?.nextMonth || ''} recurringCount={kickoffBanner?.recurringCount || 0} onSuccess={() => { setKickoffBanner(null); notifyDataChanged('summaries'); }} />
         </InView>
 
         {/* ═══════════ SECTION 4: INSIGHTS - "Pahami lebih dalam" ═══════════ */}
