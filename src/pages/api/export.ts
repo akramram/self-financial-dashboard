@@ -81,7 +81,8 @@ export const GET: APIRoute = async ({ request }) => {
       for (const s of monthlySummary) {
         const income = incomeMap.get(s.period_id) || 0;
         s.income = income;
-        s.savings = income - s.outcome.total;
+        const invest = s.invest_total ?? 0;
+        s.savings = income - (s.outcome.total - invest);
         s.savings_rate_pct = income > 0 ? Number(((s.savings / income) * 100).toFixed(2)) : 0;
       }
       const headers = ['period_id', 'month', 'date', 'income', 'outcome_cash', 'outcome_credit_payment', 'outcome_credit_expenses', 'outcome_total', 'savings', 'savings_rate_pct', 'networth'];
@@ -122,7 +123,8 @@ export const GET: APIRoute = async ({ request }) => {
   for (const s of monthlySummary) {
     const income = incomeMap.get(s.period_id) || 0;
     s.income = income;
-    s.savings = income - s.outcome.total;
+    const invest = s.invest_total ?? 0;
+    s.savings = income - (s.outcome.total - invest);
     s.savings_rate_pct = income > 0 ? Number(((s.savings / income) * 100).toFixed(2)) : 0;
   }
 

@@ -63,8 +63,11 @@ export default function SavingsRateChart({ data }: { data: MonthlySummary[] }) {
             const idx = ctx.dataIndex;
             const summary = sortedData[idx];
             if (!summary) return '';
-            const savings = summary.income - summary.outcome.total;
-            return `Savings: ${savings >= 0 ? '' : '-'}IDR ${Math.abs(savings).toLocaleString('id-ID')}`;
+            const invest = summary.invest_total ?? 0;
+            const savings = summary.income - (summary.outcome.total - invest);
+            const lines = [`Savings: ${savings >= 0 ? '' : '-'}IDR ${Math.abs(savings).toLocaleString('id-ID')}`];
+            if (invest > 0) lines.push(`Invest (counts as saving): IDR ${invest.toLocaleString('id-ID')}`);
+            return lines;
           },
         },
       },
