@@ -4,6 +4,9 @@ import path from 'path';
 
 const DB_PATH = path.resolve('./data/financial.db');
 
+// Category treated as saving (not expense) in savings-rate math (#235)
+export const INVEST_CATEGORY = 'Invest';
+
 export const db = new Database(DB_PATH);
 db.pragma('journal_mode = WAL');
 
@@ -493,6 +496,8 @@ export function getMonthlySummary() {
     const credit_payment = tx.filter((t) => t.type === 'credit_payment').reduce((s, t) => s + t.amount, 0);
     const credit_expenses = tx.filter((t) => t.type === 'credit_expense').reduce((s, t) => s + t.amount, 0);
     const total_outcome = cash + credit_payment;
+    // Invest category is saving, not expense — track separately (#235)
+    const invest_total = tx.filter((t) => t.category === INVEST_CATEGORY).reduce((s, t) => s + t.amount, 0);
 
     const nw = db.prepare('SELECT total FROM networth WHERE period_id = ?').get(p.id) as any;
 
@@ -509,6 +514,7 @@ export function getMonthlySummary() {
       end_date: p.end_date,
       income: 0,
       outcome: { cash, credit_payment, credit_expenses, total: total_outcome },
+      invest_total,
       savings: 0,
       savings_rate_pct: 0,
       networth: nw?.total || 0,
@@ -2048,12 +2054,24 @@ export function getSavingsRate(): SavingsRateResult {
     outcomeMap.set(r.period_id, r.outcome || 0);
   }
 
+  // Invest category is saving, not expense — subtract back out (#235)
+  const investRows = db.prepare(`
+    SELECT period_id, SUM(amount) AS invest
+    FROM transactions
+    WHERE done = 1 AND type IN ('cash', 'credit_payment') AND category = ?
+    GROUP BY period_id
+  `).all(INVEST_CATEGORY) as { period_id: number; invest: number }[];
+  const investMap = new Map<number, number>();
+  for (const r of investRows) {
+    investMap.set(r.period_id, r.invest || 0);
+  }
+
   const periods: SavingsRatePeriod[] = [];
   for (const p of periodRows) {
     const income = incomeMap.get(p.id) || 0;
     const outcome = outcomeMap.get(p.id) || 0;
     if (income <= 0) continue; // skip periods with no income — can't compute a rate
-    const savings = income - outcome;
+    const savings = income - (outcome - (investMap.get(p.id) || 0));
     const rate = (savings / income) * 100;
     periods.push({
       period_id: p.id,
@@ -2560,10 +2578,18 @@ export function getAchievements(): AchievementsResult {
   const incomeByPeriod = new Map(incomeRows.map((r) => [r.period_id, r.income + (r.other_income || 0)]));
 
   // Per-period savings (income - total outflow) and savings rate
+  // Invest category counts as saving — excluded from outcome (#235)
+  const investRows = db.prepare(`
+    SELECT period_id, SUM(amount) AS invest
+    FROM transactions
+    WHERE done = 1 AND type IN ('cash', 'credit_payment') AND category = ?
+    GROUP BY period_id
+  `).all(INVEST_CATEGORY) as any[];
+  const investByPeriod = new Map(investRows.map((r) => [r.period_id, r.invest || 0]));
   const perPeriod = summaryRows.map((s) => {
     const outcome = (s.cash || 0) + (s.credit_payment || 0);
     const income = incomeByPeriod.get(s.period_id) || 0;
-    const savings = income - outcome;
+    const savings = income - (outcome - (investByPeriod.get(s.period_id) || 0));
     const rate = income > 0 ? (savings / income) * 100 : 0;
     return { ...s, income, outcome, savings, rate };
   });

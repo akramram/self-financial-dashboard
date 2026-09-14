@@ -151,7 +151,9 @@ export function recalcSummaries() {
 
     const existing = initialMonthlySummary.find((m) => m.month === month);
     const income = existing?.income ?? 0;
-    const savings = income - total_outcome;
+    // Invest category is saving, not expense — exclude from savings math (#235)
+    const invest = monthTx.filter((t) => t.category === 'Invest').reduce((s, t) => s + t.amount, 0);
+    const savings = income - (total_outcome - invest);
     const savings_rate = income > 0 ? Number(((savings / income) * 100).toFixed(2)) : 0;
 
     const category_totals: Record<string, number> = {};
@@ -179,6 +181,7 @@ export function recalcSummaries() {
       },
       savings,
       savings_rate_pct: savings_rate,
+      invest_total: invest,
       networth: nw?.total ?? 0,
       category_totals,
     };

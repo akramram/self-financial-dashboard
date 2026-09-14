@@ -44,6 +44,7 @@ export interface MonthlySummary {
   };
   savings: number;
   savings_rate_pct: number;
+  invest_total?: number;
   networth: number;
   category_totals: Record<string, number>;
 }

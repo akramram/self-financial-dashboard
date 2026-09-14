@@ -60,7 +60,8 @@ export const GET: APIRoute = async ({ url }) => {
   for (const s of summaries) {
     const income = incomeByPeriodId.get(s.period_id) || incomeByMonth.get(s.month) || 0;
     s.income = income;
-    s.savings = income - s.outcome.total;
+    const invest = s.invest_total ?? 0;
+    s.savings = income - (s.outcome.total - invest);
     s.savings_rate_pct = income > 0 ? Number(((s.savings / income) * 100).toFixed(2)) : 0;
   }
 
