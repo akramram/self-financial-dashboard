@@ -43,6 +43,7 @@ import DailyBudgetIndicator from './DailyBudgetIndicator';
 import TopMerchantsMini from './TopMerchantsMini';
 import UpcomingBills from './UpcomingBills';
 import TransactionDetailSheet from './TransactionDetailSheet';
+import HealthChip from './HealthChip';
 
 function parseCreatedTime(tx: Transaction): Date {
   if (tx.created_time) {
@@ -97,6 +98,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
   const [kickoffBanner, setKickoffBanner] = useState<{ show: boolean; currentMonth: string; nextMonth: string; recurringCount: number } | null>(null);
   const [kickoffOpen, setKickoffOpen] = useState(false);
   const [runwayData, setRunwayData] = useState<{ runway_months: number; status: string; tips?: string[] } | null>(null);
+  const [healthData, setHealthData] = useState<{ overall: number; grade: string; gradeColor: string; trend?: string; prevScore?: number | null } | null>(null);
   const [detailTx, setDetailTx] = useState<Transaction | null>(null);
 
   // ── Derived ───────────────────────────────────────────────────
@@ -143,7 +145,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
   }, [activeSummary, summaries, networth]);
 
   // ── Effects ───────────────────────────────────────────────────
-  useEffect(() => { fetchCategories().then(setCategories).catch(() => {}); fetchRecurringTransactions().then(r => { setRecurringTitles(r.filter(rx => rx.active).map(rx => rx.title)); setRecurringAll(r); }).catch(() => {}); fetch('/api/runway').then(r => r.json()).then(d => setRunwayData(d)).catch(() => {}); }, []);
+  useEffect(() => { fetchCategories().then(setCategories).catch(() => {}); fetchRecurringTransactions().then(r => { setRecurringTitles(r.filter(rx => rx.active).map(rx => rx.title)); setRecurringAll(r); }).catch(() => {}); fetch('/api/runway').then(r => r.json()).then(d => setRunwayData(d)).catch(() => {}); fetch('/api/health').then(r => r.json()).then(d => setHealthData(d)).catch(() => {}); }, []);
 
   // Live data sync: refetch server truth when another component mutates data
   // (quick add dialog, command palette, other widgets)
@@ -152,6 +154,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
     fetch('/api/summary').then(r => r.json()).then(setSummaries).catch(() => {});
     fetch('/api/networth').then(r => r.json()).then(setNetworth).catch(() => {});
     fetch('/api/runway').then(r => r.json()).then(d => setRunwayData(d)).catch(() => {});
+    fetch('/api/health').then(r => r.json()).then(d => setHealthData(d)).catch(() => {});
   }), []);
   useEffect(() => { const today = new Date(); if (today.getDate() < 21) return; const latest = summaries[summaries.length - 1]; if (!latest) return; const latestDate = new Date(latest.month + ' 1'); const nextDate = new Date(latestDate); nextDate.setMonth(nextDate.getMonth() + 1); const nextMonthStr = nextDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }); fetch('/api/kickoff').then(res => res.json()).then((status: any) => { if (status.hasNextMonth) { setKickoffBanner(null); return; } fetchRecurringTransactions().then(recurring => { setKickoffBanner({ show: true, currentMonth: latest.month, nextMonth: status.nextMonth || nextMonthStr, recurringCount: recurring.filter(r => r.active).length }); }).catch(() => {}); }).catch(() => {}); }, [summaries]);
 
@@ -325,12 +328,13 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
             </GlassCard>
           )}
 
-          {/* 3 Glance Chips */}
+          {/* 4 Glance Chips: Income, Spent, Net Worth, Health */}
           {glance && (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               <StatCard label="Income" value={formatIdr(glance.income)} delta={glance.prevIncome !== 0 ? `${glance.income >= glance.prevIncome ? '+' : ''}${formatIdr(glance.income - glance.prevIncome)}` : undefined} isPositive={glance.income >= glance.prevIncome} color="#34d399" icon={<DollarSign className="w-4 h-4" />} sparkline={<MiniSparkline data={glance.last6Income} color="#34d399" />} />
               <StatCard label="Spent" value={formatIdr(glance.spending)} delta={glance.prevSpending !== 0 ? `${glance.spending <= glance.prevSpending ? '' : '+'}${formatIdr(glance.spending - glance.prevSpending)}` : undefined} isPositive={glance.spending <= glance.prevSpending} color="#ef4444" icon={<Wallet className="w-4 h-4" />} sparkline={<MiniSparkline data={glance.last6Spending} color="#ef4444" />} />
               <StatCard emphasis label="Net Worth" value={formatIdr(glance.nw)} isPositive={glance.nw >= glance.prevNw} color="#f59e0b" icon={<BarChart3 className="w-4 h-4" />} sparkline={<MiniSparkline data={glance.last6Nw} color="#f59e0b" />} />
+              <HealthChip data={healthData} />
             </div>
           )}
         </InView>

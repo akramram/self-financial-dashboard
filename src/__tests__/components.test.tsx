@@ -46,6 +46,7 @@ import DashboardSummaryCards from '../components/DashboardSummaryCards';
 import SpendingPulse from '../components/SpendingPulse';
 import AlertsPanel from '../components/AlertsPanel';
 import FinancialInsights from '../components/FinancialInsights';
+import HealthChip from '../components/HealthChip';
 
 // ─── Shared test data helpers ────────────────────────────────────────────────
 
@@ -308,6 +309,36 @@ describe('SpendingPulse', () => {
 });
 
 // ─── AlertsPanel tests ───────────────────────────────────────────────────────
+
+describe('HealthChip', () => {
+  afterEach(() => { vi.restoreAllMocks(); });
+
+  it('renders score, grade, and trend delta from supplied data', () => {
+    render(
+      <HealthChip data={{ overall: 56, grade: 'C', gradeColor: 'amber', trend: 'up', prevScore: 49 }} />,
+    );
+    expect(screen.getByText('56')).toBeInTheDocument();
+    expect(screen.getByText('C')).toBeInTheDocument();
+    expect(screen.getByText(/7 pts/)).toBeInTheDocument();
+  });
+
+  it('fetches /api/health when no data prop supplied', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve({ overall: 78, grade: 'B', gradeColor: 'green' }) });
+    vi.stubGlobal('fetch', fetchMock);
+    render(<HealthChip />);
+    await waitFor(() => expect(screen.getByText('78')).toBeInTheDocument());
+    expect(fetchMock).toHaveBeenCalledWith('/api/health');
+    vi.unstubAllGlobals();
+  });
+
+  it('shows loading dash while fetch pending and no crash on failure', async () => {
+    const fetchMock = vi.fn().mockReturnValue(new Promise(() => {}));
+    vi.stubGlobal('fetch', fetchMock);
+    render(<HealthChip />);
+    expect(screen.getByText('—')).toBeInTheDocument();
+    vi.unstubAllGlobals();
+  });
+});
 
 describe('AlertsPanel', () => {
   beforeEach(() => {
