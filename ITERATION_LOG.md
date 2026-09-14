@@ -1993,3 +1993,37 @@ Sistem **Smart Category Suggestion** yang otomatis mengisi kategori transaksi be
 - Integrasi hanya di 2 form: QuickAddDialog & AddTransactionForm (jarang dipakai untuk title baru di EditTransactionDialog).
 - Algoritma sengaja sederhana (exact + prefix match) — tidak butuh ML/fuzzy matching karena 98% data historis sudah konsisten.
 - Memakai shadcn/ui + lucide-react (Sparkles, X, Loader2) — konsisten dengan standar proyek. Tidak ada LegionUI.
+
+
+## Sesi Cron — 14 September 2026: Health Score Glance Chip di Dashboard
+
+### Ringkasan
+Health Score (skor komposit 0-100: savings rate, budget adherence, networth growth, spending control, consistency) sebelumnya hanya ada di page `/health` — tersembunyi, jarang dilihat. Sekarang tampil sebagai chip ke-4 di PULSE section dashboard utama, sejajar Income/Spent/Net Worth.
+
+### PR
+[#237 — feat: health score glance chip on dashboard PULSE section](https://github.com/akramram/self-financial-dashboard/pull/237) (merged)
+
+### Branch
+`feat/dashboard-health-chip` (merged and deleted)
+
+### Apa yang berubah
+**File baru:** `src/components/HealthChip.tsx` — chip glance dengan desain senada StatCard:
+- Mini SVG ring gauge 38px, arc berwarna sesuai skor (>=80 emerald, >=65 mint, >=50 amber, <50 red)
+- Skor + `/100` + badge grade (A/B/C) + trend delta (up 7 pts vs last) dengan animasi masuk
+- Ikon HeartPulse berwarna skor, hover radar glow, motion spring hover/tap
+- Klik -> navigasi ke `/health` untuk breakdown lengkap
+- Bisa dipakai standalone (fetch sendiri `/api/health`) atau menerima data via prop dari parent
+
+**File dimodifikasi:**
+- `src/components/Dashboard.tsx` — grid PULSE jadi 4 chip (`sm:grid-cols-2 lg:grid-cols-4`): Income, Spent, Net Worth, Health. Fetch `/api/health` on-mount + live-sync via `onDataChanged` (refetch saat mutasi transaksi di komponen lain).
+- `src/__tests__/components.test.tsx` — +3 test: render skor/grade/trend dari prop, fetch standalone, state loading.
+
+### Data nyata saat verifikasi
+September 2026: skor 56 (C), trend up +7 pts dari Agustus (49). Factor terlemah: Spending Control (116% of income).
+
+### Test dan Build
+220/220 tests passing (~1.7s). Build clean. PM2 restart via ecosystem config. /login 200, CSS hash 200, tidak ada error di PM2 logs. SSR render loading-state chip dengan benar (skor masuk via client fetch).
+
+### Catatan
+- Chip menerima data via prop dari Dashboard — tidak ada duplikat API call; fallback fetch sendiri hanya saat standalone.
+- Desain dual-mode penuh (slate light / white-dark) sesuai standar tema.
