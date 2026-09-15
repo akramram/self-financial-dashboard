@@ -1,5 +1,25 @@
 # Iteration Log
 
+## Sesi Cron — 15 September 2026: Pace-Aware Category Budgets (PR #239)
+
+### Ringkasan
+Widget Category Budgets di Dashboard sekarang **pace-aware** — bar tidak lagi menilai spending statis terhadap limit, tapi terhadap posisi waktu periode aktif (expected-by-now). Sebelumnya: Belanja Pribadi 362% di hari ke-26 terlihat sama buruknya dengan 362% di hari ke-2; sekarang ada garis marker posisi yang seharusnya + proyeksi akhir periode.
+
+### Perubahan (2 file, +249/−20)
+- **`src/components/CategoryBudgets.tsx`**:
+  - **Expected-by-now marker** — garis vertikal di tiap budget bar (`expected_pct` dari `/api/budget-pace`, lib `getBudgetPace` existing — zero backend change)
+  - **Projected note** — over-limit → `over limit · projected X`; belum over tapi proyeksi akhir periode > limit → `On pace to exceed: projected X`
+  - **Pace-aware colour** — bar amber saat spending > 105% proyeksi (early warning sebelum over limit)
+  - Header: `Day 27/32 · pace-aware` menggantikan `N categories` saat periode aktif
+  - Pace refetch via dep `summaries` (ikut dataSync); period lampau tetap statis; API gagal → fallback tanpa marker
+- **`src/__tests__/category-budgets.test.tsx`** (baru, 6 tests): static view period closed, pace marker + day counter, projected-exceed note, over-limit+projected, API-failure degradation, sort/TOP_N/Show-all
+
+### Testing & Deploy
+- ✅ `npx vitest run` — 226/226 pass (220 + 6 baru)
+- ✅ `npm run build` — pass; clean dist + `pm2 restart` (`pm2 start ecosystem.config.cjs` terblokir security scanner false-positive lagi — known workaround)
+- ✅ Live browser verify (viewer login): marker ×5 ter-render, `IDR 3.490.000 over limit · projected IDR 6.506.667`, `On pace to exceed: projected IDR 3.743.961`, header `Day 27/32 · pace-aware` · `/login` 200 · CSS hash 200 · error log kosong
+- https://github.com/akramram/self-financial-dashboard/pull/239
+
 ## Sesi Cron — 13 September 2026: Kickoff Tanpa Page Reload (PR #233)
 
 ### Ringkasan
