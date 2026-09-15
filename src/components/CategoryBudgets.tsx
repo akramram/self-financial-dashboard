@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import type { MonthlySummary, Category } from '../lib/data';
 import { formatIdr } from '../lib/utils';
 import { PieChart, TrendingUp, TrendingDown, Minus } from 'lucide-react';
@@ -12,6 +12,16 @@ interface Props {
   onCategoryClick: (category: string) => void;
 }
 
+interface PaceCategory {
+  category: string;
+  limit: number;
+  spent: number;
+  expected_pct: number;
+  projected_total: number;
+  days_elapsed: number;
+  days_total: number;
+}
+
 const TOP_N = 6;
 
 interface CategoryTrend {
@@ -22,8 +32,31 @@ interface CategoryTrend {
 
 export default function CategoryBudgets({ summaries, categories, activeMonth, onCategoryClick }: Props) {
   const [showAll, setShowAll] = useState(false);
+  // Pace context for the active period — null when API fails or period is closed
+  const [pace, setPace] = useState<PaceCategory[] | null>(null);
 
-  const { categoryMap, entries, trends } = useMemo(() => {
+  // Pace only exists for the ACTIVE period (days_elapsed < days_total). For
+  // past periods the static spent/limit view is already the whole truth.
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/budget-pace')
+      .then((r) => r.json())
+      .then((d: { categories?: PaceCategory[]; days_elapsed?: number; days_total?: number }) => {
+        if (cancelled) return;
+        const inProgress = (d.days_elapsed ?? 0) < (d.days_total ?? 0) && (d.days_total ?? 0) > 0;
+        setPace(inProgress ? d.categories ?? null : null);
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [summaries]);
+
+  const paceByCat = useMemo(() => {
+    const map: Record<string, PaceCategory> = {};
+    pace?.forEach((p) => { map[p.category] = p; });
+    return map;
+  }, [pace]);
+
+  const { entries, trends } = useMemo(() => {
     const map: Record<string, Category> = {};
     categories.forEach((c) => { map[c.name] = c; });
 
@@ -31,7 +64,7 @@ export default function CategoryBudgets({ summaries, categories, activeMonth, on
       ? summaries.find((s) => s.month === activeMonth)
       : summaries[summaries.length - 1];
 
-    if (!activeSummary?.category_totals) return { categoryMap: map, entries: [] as { category: string; amount: number; limit: number; color: string | undefined }[], trends: {} as Record<string, CategoryTrend> };
+    if (!activeSummary?.category_totals) return { entries: [] as { category: string; amount: number; limit: number; color: string | undefined }[], trends: {} as Record<string, CategoryTrend> };
 
     // Build a sorted index of summaries by start_date for period comparison
     const sortedSummaries = [...summaries].sort(
@@ -69,7 +102,7 @@ export default function CategoryBudgets({ summaries, categories, activeMonth, on
       }))
       .sort((a, b) => b.amount - a.amount);
 
-    return { categoryMap: map, entries: items, trends: trendMap };
+    return { entries: items, trends: trendMap };
   }, [summaries, categories, activeMonth]);
 
   if (entries.length === 0) return null;
@@ -78,14 +111,16 @@ export default function CategoryBudgets({ summaries, categories, activeMonth, on
 
   return (
     <div className="glass-card p-5 shadow-none">
-      
+
         {/* Header, Similarity: same icon+title+meta pattern as AlertsPanel */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <PieChart className="w-4 h-4 text-slate-500" />
             <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">Category Budgets</h3>
           </div>
-          <span className="text-xs text-slate-400">{entries.length} categories</span>
+          <span className="text-xs text-slate-400">
+            {pace ? `Day ${pace[0]?.days_elapsed ?? 0}/${pace[0]?.days_total ?? 0} · pace-aware` : `${entries.length} categories`}
+          </span>
         </div>
 
         {/* List, Proximity: each category row is its own visual unit */}
@@ -95,22 +130,33 @@ export default function CategoryBudgets({ summaries, categories, activeMonth, on
             const pct = hasLimit ? Math.min(100, (amount / limit) * 100) : 100;
             const isOver = hasLimit && amount > limit;
             const trend = trends[category];
+            const pc = paceByCat[category];
+
+            // Pace semantics (active period only): bar colour judges spending
+            // vs the expected-by-now marker, not just the hard limit.
+            const expectedPct = hasLimit && pc ? Math.min(100, pc.expected_pct) : 0;
+            const overPace = hasLimit && pc ? amount > pc.projected_total * 1.05 : false;
+            const projectedOver = hasLimit && pc ? pc.projected_total > limit : false;
 
             const barColor = !hasLimit
               ? (color || '#94a3b8')
               : isOver
                 ? '#ef4444'
-                : pct > 80
+                : overPace
                   ? '#f59e0b'
-                  : '#10b981';
+                  : pct > 80
+                    ? '#f59e0b'
+                    : '#10b981';
 
             const textColor = !hasLimit
               ? ''
               : isOver
                 ? 'text-red-600 dark:text-red-400'
-                : pct > 80
+                : overPace
                   ? 'text-gold-600 dark:text-gold-400'
-                  : 'text-emerald-600 dark:text-emerald-400';
+                  : pct > 80
+                    ? 'text-gold-600 dark:text-gold-400'
+                    : 'text-emerald-600 dark:text-emerald-400';
 
             return (
               <div
@@ -183,17 +229,32 @@ export default function CategoryBudgets({ summaries, categories, activeMonth, on
                   </span>
                   </div>
                 </div>
-                {/* shadcn Progress, Common Region: consistent progress treatment */}
-                <Progress
-                  value={pct}
-                  className="h-1.5 bg-slate-200 dark:bg-slate-700"
-                  indicatorStyle={{ backgroundColor: barColor }}
-                />
-                {isOver && (
+                {/* shadcn Progress + pace marker (active period only) */}
+                <div className="relative">
+                  <Progress
+                    value={pct}
+                    className="h-1.5 bg-slate-200 dark:bg-slate-700"
+                    indicatorStyle={{ backgroundColor: barColor }}
+                  />
+                  {/* Expected-by-now marker: where the bar SHOULD be today */}
+                  {expectedPct > 0 && expectedPct < 100 && (
+                    <div
+                      className="absolute top-0 h-[6px] w-0.5 bg-slate-900/70 dark:bg-white/70 pointer-events-none"
+                      style={{ left: `calc(${expectedPct}% - 1px)` }}
+                      aria-hidden="true"
+                    />
+                  )}
+                </div>
+                {/* Over-limit / pace projection note */}
+                {isOver ? (
                   <p className="text-[11px] text-red-500 dark:text-red-400 mt-0.5 ml-[18px]">
-                    {formatIdr(amount - limit)} over limit
+                    {formatIdr(amount - limit)} over limit{pc && projectedOver ? ` · projected ${formatIdr(pc.projected_total)}` : ''}
                   </p>
-                )}
+                ) : pc && projectedOver ? (
+                  <p className="text-[11px] text-gold-600 dark:text-gold-400 mt-0.5 ml-[18px]">
+                    On pace to exceed: projected {formatIdr(pc.projected_total)}
+                  </p>
+                ) : null}
               </div>
             );
           })}
@@ -211,7 +272,7 @@ export default function CategoryBudgets({ summaries, categories, activeMonth, on
               : `Show all ${entries.length} categories`}
           </Button>
         )}
-      
+
     </div>
   );
 }
