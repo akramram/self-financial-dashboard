@@ -29,6 +29,7 @@ const mockInsertGoal = vi.fn();
 const mockGetRecurringCostAnalysis = vi.fn();
 const mockSuggestCategory = vi.fn();
 const mockGetTopAmounts = vi.fn();
+const mockEnsureCategory = vi.fn();
 
 vi.mock('../lib/db', () => ({
   db: {},
@@ -54,6 +55,7 @@ vi.mock('../lib/db', () => ({
   getRecurringCostAnalysis: mockGetRecurringCostAnalysis,
   suggestCategory: mockSuggestCategory,
   getTopAmounts: mockGetTopAmounts,
+  ensureCategory: mockEnsureCategory,
 }));
 
 async function parseJson(res: Response) {
@@ -132,6 +134,22 @@ describe('API — POST /api/transactions', () => {
     const body = await parseJson(res);
     expect(body.id).toBe(42);
     expect(mockInsertTransaction).toHaveBeenCalledTimes(1);
+    expect(mockEnsureCategory).toHaveBeenCalledWith('Transport');
+  });
+
+  it('auto-registers derived category when category omitted', async () => {
+    mockFindDuplicateTransaction.mockReturnValue(null);
+    mockInsertTransaction.mockReturnValue(43);
+
+    const res = await POST({
+      request: makeRequest('/api/transactions', {
+        method: 'POST',
+        body: JSON.stringify({ period_id: 1, title: 'Kopi Kenangan Hojicha', amount: 28000, type: 'cash', payment_method: 'Cash' }),
+      }),
+    });
+
+    expect(res.status).toBe(201);
+    expect(mockEnsureCategory).toHaveBeenCalledWith('Kopi');
   });
 
   it('returns 409 for duplicate transaction', async () => {

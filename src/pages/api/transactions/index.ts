@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { db, getTransactions, insertTransaction, updateTransaction, deleteTransaction, deleteTransactionsBulk, updateTransactionsBulk, getTransactionById, findDuplicateTransaction, ensurePeriod, getPeriodByMonth } from '../../../lib/db';
+import { db, getTransactions, insertTransaction, updateTransaction, deleteTransaction, deleteTransactionsBulk, updateTransactionsBulk, getTransactionById, findDuplicateTransaction, ensurePeriod, getPeriodByMonth, ensureCategory } from '../../../lib/db';
 
 export const GET: APIRoute = async ({ request }) => {
   const url = new URL(request.url);
@@ -25,10 +25,12 @@ export const GET: APIRoute = async ({ request }) => {
 
 export const POST: APIRoute = async ({ request }) => {
   const body = await request.json();
+  const finalCategory = (body.category || body.title.split(' ')[0] || '').trim();
+  if (finalCategory) ensureCategory(finalCategory);
   const duplicateId = findDuplicateTransaction({
     title: body.title,
     amount: Number(body.amount),
-    category: body.category || body.title.split(' ')[0],
+    category: finalCategory,
     type: body.type,
   });
   if (duplicateId && !body.force) {
