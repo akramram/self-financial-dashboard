@@ -152,8 +152,10 @@ export default function TransactionTable({ transactions, showMonth = true, perio
   }, []);
 
   // Live data sync: refetch when another component mutates data (quick add dialog, etc.)
+  // Includes categories: server auto-registers new categories on insert (ensureCategory).
   useEffect(() => onDataChanged(() => {
     fetchTransactions().then(setLocalTx).catch(() => {});
+    fetchCategories().then(setCategories).catch(() => {});
   }), []);
 
   useEffect(() => {

@@ -453,6 +453,26 @@ export function getActiveAlertCount(): number {
   }
 }
 
+const CATEGORY_COLORS = [
+  '#ef4444', '#f97316', '#f59e0b', '#84cc16', '#22c55e',
+  '#10b981', '#14b8a6', '#06b6d4', '#0ea5e9', '#3b82f6',
+  '#6366f1', '#8b5cf6', '#a855f7', '#d946ef', '#ec4899',
+  '#f43f5e', '#78716c', '#475569',
+];
+
+// ponytail: deterministic hash color; upgrade = smarter palette (oklch spread) when categories > 18
+export function ensureCategory(name: string): number | null {
+  const trimmed = name.trim();
+  if (!trimmed) return null;
+  const existing = db.prepare('SELECT id FROM categories WHERE name = ?').get(trimmed) as { id: number } | undefined;
+  if (existing) return existing.id;
+  let hash = 0;
+  for (let i = 0; i < trimmed.length; i++) hash = (hash * 31 + trimmed.charCodeAt(i)) >>> 0;
+  const color = CATEGORY_COLORS[hash % CATEGORY_COLORS.length];
+  const result = db.prepare('INSERT INTO categories (name, color, monthly_limit) VALUES (?, ?, 0)').run(trimmed, color);
+  return result.lastInsertRowid as number;
+}
+
 export function insertCategory(cat: { name: string; color: string; monthly_limit?: number }) {
   const stmt = db.prepare(`
     INSERT INTO categories (name, color, monthly_limit)

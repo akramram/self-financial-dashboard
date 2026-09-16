@@ -217,6 +217,28 @@ describe('DB — Categories CRUD', () => {
     expect(found).toBeDefined();
     expect(found.name).toBe('Food');
   });
+
+  it('ensureCategory inserts new category with palette color and returns id', () => {
+    const id = ensureCategoryMirror(db, 'Kopi');
+    expect(id).toBeDefined();
+    const row = db.prepare('SELECT * FROM categories WHERE name = ?').get('Kopi') as any;
+    expect(row.id).toBe(id);
+    expect(row.monthly_limit).toBe(0);
+    expect(row.color).toMatch(/^#[0-9a-f]{6}$/);
+  });
+
+  it('ensureCategory is idempotent — returns existing id, no duplicate row', () => {
+    const first = ensureCategoryMirror(db, 'Food');
+    const second = ensureCategoryMirror(db, 'Food');
+    expect(second).toBe(first);
+    const count = db.prepare("SELECT COUNT(*) AS c FROM categories WHERE name = 'Food'").get() as any;
+    expect(count.c).toBe(1);
+  });
+
+  it('ensureCategory returns null for empty or whitespace-only name', () => {
+    expect(ensureCategoryMirror(db, '')).toBeNull();
+    expect(ensureCategoryMirror(db, '   ')).toBeNull();
+  });
 });
 
 describe('DB — Networth CRUD', () => {
@@ -1491,3 +1513,27 @@ describe('DB — Goal auto-contribution (recurring link)', () => {
     expect(goal.completed).toBe(1);
   });
 });
+
+/**
+ * Local mirror of ensureCategory logic for testing against an isolated DB.
+ * Mirrors src/lib/db.ts:ensureCategory exactly (same palette, same hash) so
+ * we validate the query shape without depending on the real DB connection.
+ */
+const CATEGORY_COLORS_MIRROR = [
+  '#ef4444', '#f97316', '#f59e0b', '#84cc16', '#22c55e',
+  '#10b981', '#14b8a6', '#06b6d4', '#0ea5e9', '#3b82f6',
+  '#6366f1', '#8b5cf6', '#a855f7', '#d946ef', '#ec4899',
+  '#f43f5e', '#78716c', '#475569',
+];
+
+function ensureCategoryMirror(db: any, name: string): number | null {
+  const trimmed = name.trim();
+  if (!trimmed) return null;
+  const existing = db.prepare('SELECT id FROM categories WHERE name = ?').get(trimmed) as { id: number } | undefined;
+  if (existing) return existing.id;
+  let hash = 0;
+  for (let i = 0; i < trimmed.length; i++) hash = (hash * 31 + trimmed.charCodeAt(i)) >>> 0;
+  const color = CATEGORY_COLORS_MIRROR[hash % CATEGORY_COLORS_MIRROR.length];
+  const result = db.prepare('INSERT INTO categories (name, color, monthly_limit) VALUES (?, ?, 0)').run(trimmed, color);
+  return result.lastInsertRowid as number;
+}

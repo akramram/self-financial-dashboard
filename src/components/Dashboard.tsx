@@ -149,8 +149,10 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
 
   // Live data sync: refetch server truth when another component mutates data
   // (quick add dialog, command palette, other widgets)
+  // Includes categories: server auto-registers new categories on insert (ensureCategory).
   useEffect(() => onDataChanged(() => {
     fetchTransactions().then(setLocalTransactions).catch(() => {});
+    fetchCategories().then(setCategories).catch(() => {});
     fetch('/api/summary').then(r => r.json()).then(setSummaries).catch(() => {});
     fetch('/api/networth').then(r => r.json()).then(setNetworth).catch(() => {});
     fetch('/api/runway').then(r => r.json()).then(d => setRunwayData(d)).catch(() => {});

@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { updateTransaction, deleteTransaction, getTransactionById } from '../../../lib/db';
+import { updateTransaction, deleteTransaction, getTransactionById, ensureCategory } from '../../../lib/db';
 
 export const GET: APIRoute = async ({ params }) => {
   const id = Number(params.id);
@@ -13,6 +13,7 @@ export const GET: APIRoute = async ({ params }) => {
 export const PUT: APIRoute = async ({ params, request }) => {
   const id = Number(params.id);
   const body = await request.json();
+  if (typeof body.category === 'string' && body.category.trim()) ensureCategory(body.category);
   updateTransaction(id, body);
   return new Response(JSON.stringify({ success: true }), { headers: { 'Content-Type': 'application/json' } });
 };
