@@ -1,5 +1,28 @@
 # Iteration Log
 
+## Sesi Cron — 16 September 2026: Auto-Register Categories (PR #241)
+
+### Ringkasan
+Kategori baru kini **teregistrasi otomatis** di tabel `categories` setiap kali transaksi dibuat atau diedit — tidak perlu lagi tambah kategori manual di Settings dulu sebelum memakainya. Warna kategori baru ditentukan deterministik dari 18-preset palette (hash nama → warna stabil).
+
+### Masalah
+- Flow lama: ketik kategori baru di QuickAdd/EditDialog → transaksi masuk, tapi kategori tidak ada di tabel `categories` → autocomplete berikutnya tidak menawarkan kategori itu, filter Category di halaman Transactions juga tidak menampilkannya, sampai user manual tambahkan di Settings.
+- Pernah terjadi backfill manual (pitfall #28 di skill) untuk populate `categories` dari data transaksi — root cause sama.
+
+### Perubahan (7 file, +94/−3)
+- **`src/lib/db.ts`**: `ensureCategory(name)` — idempotent (SELECT dulu, INSERT hanya jika belum ada), warna dari hash nama terhadap 18 warna preset CategorySettings, `monthly_limit` 0. Return id atau null (nama kosong).
+- **`src/pages/api/transactions/index.ts`** (POST): resolve kategori final (eksplisit atau kata pertama title — pola existing) → `ensureCategory` sebelum insert. Dipanggil sebelum duplicate-check supaya kategori tetap teregistrasi walau POST ditolak 409.
+- **`src/pages/api/transactions/[id].ts`** (PUT): `ensureCategory` saat body membawa `category` string non-empty.
+- **`src/components/Dashboard.tsx` + `src/components/TransactionTable.tsx`**: listener `onDataChanged` kini juga refetch `fetchCategories` → autocomplete + filter dropdown live update setelah quick add, tanpa reload.
+- **`src/__tests__/db.test.ts`**: +3 test via local mirror pattern (insert + palette color regex, idempotensi tanpa duplikat row, empty/whitespace → null).
+- **`src/__tests__/api.test.ts`**: +1 test — POST tanpa `category` → `ensureCategory('Kopi')` dipanggil dengan kata pertama title.
+
+### Testing & Deploy
+- ✅ `npx vitest run` — 230/230 pass (226 + 4 baru)
+- ✅ `npm run build` pass; clean dist + `pm2 restart`; `/login` 200
+- ✅ Live verify (admin login): POST transaksi kategori baru `TesAutoKategori` → muncul di `GET /api/categories` dengan warna `#3b82f6`, `monthly_limit: 0` (data test dibersihkan dari DB setelah verify; tx test tidak ter-insert — hanya kategorinya yang terbuat, sesuai desain ensure-before-dup-check)
+- https://github.com/akramram/self-financial-dashboard/pull/241
+
 ## Sesi Cron — 15 September 2026: Pace-Aware Category Budgets (PR #239)
 
 ### Ringkasan
