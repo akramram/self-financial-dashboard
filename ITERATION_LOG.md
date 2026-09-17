@@ -1,26 +1,5 @@
 # Iteration Log
 
-## Sesi Cron — 17 September 2026: Quick Capture — Web Share Target + App Shortcuts (PR #243)
-
-### Ringkasan
-Android share sheet → "FinDash" → Quick Add terbuka dengan title + amount ter-extract otomatis dari teks yang di-share (dukung syntax `25rb`, `1,5jt`, `35.000`). Plus app shortcut long-press icon → "Quick Add".
-
-### PR
-[#243](https://github.com/akramram/self-financial-dashboard/pull/243) (merged)
-
-### Apa yang berubah
-- `public/manifest.json` — `share_target` (GET `/share-target`) + `shortcuts` (Quick Add → `/?quick-add=1`, Transactions)
-- `src/pages/share-target.astro` + `src/components/ShareCapture.tsx` — landing publik; `extractShared()` parse title+amount dari teks share via `parseQuickAmount`
-- `src/components/QuickAddDialog.tsx` — props `presetTitle`/`presetAmount` (prefill saat open)
-- `src/components/QuickAddFAB.tsx` — auto-open saat `?quick-add=1` (app shortcut)
-- `public/sw.js` v3 — POST `/share-target` → 303 GET bridge (Chrome lama)
-- `src/middleware.ts` — `/share-target` halaman publik; API insert tetap authed
-- 7 unit test baru (`share-capture.test.tsx`) — total 237 pass, build clean
-
-### Catatan
-- Perlu update PWA di Android (SW v3 auto-update dalam ~30 menit atau reinstall) sebelum FinDash muncul di share sheet.
-- Prior work hari ini sudah deploy: build bersih via `pm2 delete` + fresh `pm2 start ecosystem.config.cjs`, CSS 200, PM2 logs bersih.
-
 ## Sesi Cron — 16 September 2026: Auto-Register Categories (PR #241)
 
 ### Ringkasan
