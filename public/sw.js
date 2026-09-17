@@ -1,5 +1,5 @@
-// Service Worker v2 — auto-update + network-first for pages
-const CACHE_NAME = 'findash-v2';
+// Service Worker v3 — auto-update + network-first for pages + share-target bridge
+const CACHE_NAME = 'findash-v3';
 const PRECACHE_URLS = [
   '/',
   '/manifest.json',
@@ -43,6 +43,23 @@ self.addEventListener('message', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   const pathname = url.pathname;
+
+  // Share Target bridge: manifest declares GET, but if a POST /share-target
+  // ever arrives (older Chrome builds / future manifest change), forward the
+  // form body to the GET landing page so the share never dead-ends.
+  if (event.request.method === 'POST' && pathname === '/share-target') {
+    event.respondWith(
+      event.request.formData().then((data) => {
+        const params = new URLSearchParams();
+        for (const key of ['title', 'text']) {
+          const v = data.get(key);
+          if (v) params.set(key, String(v));
+        }
+        return Response.redirect(`/share-target?${params.toString()}`, 303);
+      })
+    );
+    return;
+  }
 
   // API + auth calls: network-only (don't cache)
   if (pathname.startsWith('/api/')) {

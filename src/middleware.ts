@@ -8,6 +8,10 @@ export interface Locals {
 // Public paths that don't require auth
 const PUBLIC_PATHS = ['/login', '/api/auth/login', '/api/auth/me', '/api/auth/logout'];
 const PUBLIC_PREFIXES = ['/sw.js', '/manifest.json', '/favicon.svg', '/icons/', '/_astro/', '/data/', '/prototype-'];
+// Share-target landing is public: Android shares arrive as plain GETs without
+// a session cookie only when the PWA was resumed from background — the page
+// itself renders a read-only bridge and Quick Add still hits authed APIs.
+const PUBLIC_PAGES = ['/share-target'];
 
 export const onRequest = defineMiddleware(async ({ cookies, request, url, locals, redirect }, next) => {
   // Clean expired sessions occasionally (on login page access is a good trigger)
@@ -20,6 +24,9 @@ export const onRequest = defineMiddleware(async ({ cookies, request, url, locals
     return next();
   }
   if (PUBLIC_PREFIXES.some(p => url.pathname.startsWith(p))) {
+    return next();
+  }
+  if (PUBLIC_PAGES.includes(url.pathname)) {
     return next();
   }
 
