@@ -43,6 +43,11 @@ export default function QuickAddFAB() {
     };
     window.addEventListener('quick-add-open', handleQuickAddOpen);
 
+    // App shortcut "Quick Add" (long-press icon) → /?quick-add=1 opens dialog.
+    if (window.location.search.includes('quick-add=1')) {
+      setPresetDate(null);
+      setOpen(true);
+    }
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('quick-add-open', handleQuickAddOpen);

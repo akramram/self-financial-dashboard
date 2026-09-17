@@ -41,6 +41,10 @@ interface QuickAddDialogProps {
   onAdded?: () => void;
   /** YYYY-MM-DD — when set, the transaction is placed on this day (period + created_time). */
   presetDate?: string | null;
+  /** Pre-filled title (Quick Capture share). User can still edit. */
+  presetTitle?: string | null;
+  /** Pre-filled quick-amount digits (Quick Capture share), e.g. "25000". */
+  presetAmount?: string | null;
 }
 
 const todayLocal = () => new Date().toLocaleDateString('en-CA');
@@ -49,7 +53,7 @@ const nowLocal = () => new Date().toTimeString().slice(0, 5);
 // date must survive; explicit local parse keeps it exact)
 const localToIso = (d: string, t: string) => new Date(`${d}T${t}:00`).toISOString();
 
-export default function QuickAddDialog({ open, onOpenChange, onAdded, presetDate }: QuickAddDialogProps) {
+export default function QuickAddDialog({ open, onOpenChange, onAdded, presetDate, presetTitle, presetAmount }: QuickAddDialogProps) {
   // Transaction date (YYYY-MM-DD) + time (HH:mm). Defaults to now (or the
   // calendar-pinned day); drives the target period and created_time (backdating).
   const [txDate, setTxDate] = useState('');
@@ -169,6 +173,11 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded, presetDate
       }).catch(() => {});
       setTxDate(presetDate ?? todayLocal());
       setTxTime(nowLocal());
+      // Quick Capture prefill — arrives from share-target; counts as a title
+      // "match" so the smart suggestion doesn't immediately overwrite category.
+      setTitle(presetTitle ?? '');
+      setAmount(presetAmount ?? '');
+      setTitleMatched(Boolean(presetTitle));
       setStatus('idle');
       setErrorMsg('');
       setShowForceBtn(false);

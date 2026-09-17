@@ -1,0 +1,15 @@
+---
+// Quick Capture — Web Share Target landing page.
+// Android "Share → FinDash" hits POST /share-target (handled by the service
+// worker fetch handler → GET here). The shared text is parsed into a
+// title + quick-amount (e.g. "Kopi 25rb") and handed to Quick Add.
+import Layout from '../layouts/Layout.astro';
+import ShareCapture from '../components/ShareCapture';
+
+const title = Astro.url.searchParams.get('title') || '';
+const text = Astro.url.searchParams.get('text') || '';
+---
+
+<Layout title="Quick Capture - Financial Dashboard">
+  <ShareCapture client:load shareTitle={title} shareText={text} />
+</Layout>
