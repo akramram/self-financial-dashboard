@@ -151,6 +151,17 @@ export default function TransactionTable({ transactions, showMonth = true, perio
     fetchCategories().then(setCategories).catch(() => {});
   }, []);
 
+  // Deep link: /transactions?tid=<id> opens the detail sheet for that exact tx
+  // (CommandPalette results, dashboard drill-down links). Consumed once — the
+  // URL-sync effect below drops `tid` on the first replaceState.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const tid = new URLSearchParams(window.location.search).get('tid');
+    if (!tid) return;
+    const tx = localTx.find((t) => t.id === parseInt(tid, 10));
+    if (tx) setDetailTx(tx);
+  }, [localTx]);
+
   // Live data sync: refetch when another component mutates data (quick add dialog, etc.)
   // Includes categories: server auto-registers new categories on insert (ensureCategory).
   useEffect(() => onDataChanged(() => {

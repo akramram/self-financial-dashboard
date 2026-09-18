@@ -33,6 +33,8 @@ vi.mock('lucide-react', () => {
 
 import CommandPalette from '../components/CommandPalette';
 
+const originalLocation = window.location;
+
 describe('CommandPalette', () => {
   beforeEach(() => {
     vi.stubGlobal('fetch', vi.fn(() => Promise.resolve({ ok: true, json: () => [] })));
@@ -113,5 +115,26 @@ describe('CommandPalette', () => {
     await waitFor(() => expect(screen.getByText('Quick Add Transaction')).toBeInTheDocument());
     fireEvent.keyDown(document, { key: 'Escape' });
     await waitFor(() => expect(screen.queryByText('Quick Add Transaction')).not.toBeInTheDocument());
+  });
+
+  it('tx result navigates to /transactions?tid=<id> deep link', async () => {
+    (globalThis.fetch as any).mockImplementation(() =>
+      Promise.resolve({ ok: true, json: () => [{ id: 42, title: 'Warung', category: 'Makan', amount: 15000, type: 'cash' }] }),
+    );
+    // jsdom doesn't navigate on href assignment — capture it via a stubbed location
+    const hrefSetter = vi.fn();
+    Object.defineProperty(window, 'location', { value: { ...window.location, set href(v: string) { hrefSetter(v); } }, writable: true });
+    try {
+      render(<CommandPalette />);
+      window.dispatchEvent(new CustomEvent('cmd-palette-open'));
+      const input = await screen.findByPlaceholderText('Search pages, actions, transactions...');
+      await userEvent.type(input, 'warung');
+      const row = await screen.findByText('Warung');
+      fireEvent.click(row);
+      expect(hrefSetter).toHaveBeenCalledWith('/transactions?tid=42');
+    } finally {
+      // restore real location for subsequent tests in this file
+      (window as any).location = originalLocation;
+    }
   });
 });
