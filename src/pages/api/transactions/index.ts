@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { db, getTransactions, insertTransaction, updateTransaction, deleteTransaction, deleteTransactionsBulk, updateTransactionsBulk, getTransactionById, findDuplicateTransaction, ensurePeriod, getPeriodByMonth, ensureCategory } from '../../../lib/db';
+import { db, getTransactions, insertTransaction, updateTransaction, deleteTransaction, deleteTransactionsBulk, updateTransactionsBulk, getTransactionById, findDuplicateTransaction, ensurePeriod, getPeriodByMonth, getPeriodById, ensureCategory } from '../../../lib/db';
 
 export const GET: APIRoute = async ({ request }) => {
   const url = new URL(request.url);
@@ -47,6 +47,13 @@ export const POST: APIRoute = async ({ request }) => {
   }
   const txData = { ...body, period_id };
   delete txData.month; // remove legacy month field
+  // `date` is NOT NULL in the schema — clients that omit it (share-target
+  // bridge, older cached bundles) previously crashed insertTransaction with
+  // `Missing named parameter "date"`. Default to the period's start_date.
+  if (!txData.date && period_id) {
+    const period = getPeriodById(period_id);
+    if (period) txData.date = period.start_date;
+  }
 
   const id = insertTransaction(txData);
   return new Response(JSON.stringify({ id, ...body }), {

@@ -14,6 +14,7 @@ const mockDeleteTransactionsBulk = vi.fn();
 const mockFindDuplicateTransaction = vi.fn();
 const mockEnsurePeriod = vi.fn();
 const mockGetPeriodByMonth = vi.fn();
+const mockGetPeriodById = vi.fn(() => ({ id: 1, month: 'September 2026', start_date: '2026-08-21', end_date: '2026-09-20' }));
 const mockGetTransactionById = vi.fn();
 const mockUpdateTransaction = vi.fn();
 const mockDeleteTransaction = vi.fn();
@@ -40,6 +41,7 @@ vi.mock('../lib/db', () => ({
   findDuplicateTransaction: mockFindDuplicateTransaction,
   ensurePeriod: mockEnsurePeriod,
   getPeriodByMonth: mockGetPeriodByMonth,
+  getPeriodById: mockGetPeriodById,
   getTransactionById: mockGetTransactionById,
   updateTransaction: mockUpdateTransaction,
   deleteTransaction: mockDeleteTransaction,

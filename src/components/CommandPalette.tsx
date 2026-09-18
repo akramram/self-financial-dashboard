@@ -294,7 +294,9 @@ export default function CommandPalette() {
 
   const handleSelectTx = useCallback((tx: TxResult) => {
     setOpen(false);
-    window.location.href = `/transactions?search=${encodeURIComponent(tx.title)}`;
+    // Deep link to the exact transaction — search-by-title is ambiguous when
+    // titles repeat (e.g. 50+ "Warung"); the tid opens the detail sheet directly.
+    window.location.href = `/transactions?tid=${tx.id}`;
   }, []);
 
   const handleSelect = useCallback((item: CommandItem) => {

@@ -414,7 +414,7 @@ export default function SpendingCalendar({ transactions, periods }: Props) {
                       const typeLabel =
                         tx.type === 'cash' ? 'Cash' : tx.type === 'credit_payment' ? 'Credit Pay' : 'Credit';
                       return (
-                        <TableRow key={tx.id}>
+                        <TableRow key={tx.id} onClick={() => { window.location.href = `/transactions?tid=${tx.id}`; }} className="cursor-pointer hover:bg-slate-100 dark:hover:bg-white/[0.05] transition-colors">
                           <TableCell className="font-medium">{tx.title}</TableCell>
                           <TableCell>
                             <Badge variant="secondary">{tx.category}</Badge>
