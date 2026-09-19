@@ -1,5 +1,24 @@
 # Iteration Log
 
+## Sesi Cron — 19 September 2026: Paid/Unpaid Filter Chips + Bulk Mark Paid (PR #246)
+
+### Ringkasan
+Halaman Transactions sekarang punya chip filter **Unpaid/Paid** (dengan live count) dan bulk action **Mark Paid / Mark Unpaid**. Alur tutup tagihan period jadi 3 klik: klik chip Unpaid → select all → Mark Paid.
+
+### PR
+[#246 — feat: paid/unpaid filter chips + bulk mark paid/unpaid](https://github.com/akramram/self-financial-dashboard/pull/246) (merged)
+
+### Branch
+`feat/unpaid-filter-bulk-paid` (merged and deleted)
+
+### Apa yang berubah
+Satu file: `src/components/TransactionTable.tsx` (+67/-2).
+- **Filter chips Unpaid / Paid** di baris filter kedua — toggle, aktif = gold (unpaid) / emerald (paid), count basis seluruh data (selalu terlihat berapa yang belum dibayar). Persist di URL `?paid=`, ikut `Clear (N)` count.
+- **Bulk Mark Paid / Mark Unpaid** di bulk action bar — pakai `updateTransactionsBulk` API existing, hanya ID yang statusnya benar-benar berubah yang dikirim, no-op → info toast. Optimistic update + `notifyDataChanged`.
+
+### Verifikasi
+Build clean, 238/238 vitest pass. Live browser: chips render (Paid 894 / Unpaid 0 — DB sedang 0 unpaid), filter mengubah summary bar (0/894 vs 894/894), URL param tersinkron, clear bekerja. Bulk API path diverifikasi end-to-end dengan dummy tx (insert → update → verify → delete). PM2 clean restart, `/login` 200, CSS hash 200, `/` dan `/transactions` 302 (auth redirect, benar).
+
 ## Sesi Cron — 17 September 2026: Quick Capture — Web Share Target + App Shortcuts (PR #243)
 
 ### Ringkasan
