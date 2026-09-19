@@ -92,13 +92,14 @@ export default function TransactionTable({ transactions, showMonth = true, perio
   }, [periods]);
 
   const getInitialState = () => {
-    if (typeof window === 'undefined') return { page: 1, filterType: 'all', filterPeriodId: 'all', filterCategory: 'all', search: '', dateFrom: '', dateTo: '', amountMin: '', amountMax: '' };
+    if (typeof window === 'undefined') return { page: 1, filterType: 'all', filterPeriodId: 'all', filterCategory: 'all', filterPaid: 'all', search: '', dateFrom: '', dateTo: '', amountMin: '', amountMax: '' };
     const params = new URLSearchParams(window.location.search);
     return {
       page: Math.max(1, parseInt(params.get('page') || '1', 10) || 1),
       filterType: params.get('type') || 'all',
       filterPeriodId: params.get('period_id') || 'all',
       filterCategory: params.get('category') || 'all',
+      filterPaid: params.get('paid') === 'unpaid' || params.get('paid') === 'paid' ? params.get('paid')! : 'all',
       search: params.get('search') || '',
       dateFrom: params.get('dateFrom') || '',
       dateTo: params.get('dateTo') || '',
@@ -112,6 +113,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
   const [filterType, setFilterType] = useState<string>(initial.filterType);
   const [filterPeriodId, setFilterPeriodId] = useState<string>(initial.filterPeriodId);
   const [filterCategory, setFilterCategory] = useState<string>(initial.filterCategory);
+  const [filterPaid, setFilterPaid] = useState<string>(initial.filterPaid);
   const [search, setSearch] = useState(initial.search);
   const [dateFrom, setDateFrom] = useState(initial.dateFrom);
   const [dateTo, setDateTo] = useState(initial.dateTo);
@@ -176,6 +178,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
     if (filterType !== 'all') params.set('type', filterType); else params.delete('type');
     if (filterPeriodId !== 'all') params.set('period_id', filterPeriodId); else params.delete('period_id');
     if (filterCategory !== 'all') params.set('category', filterCategory); else params.delete('category');
+    if (filterPaid !== 'all') params.set('paid', filterPaid); else params.delete('paid');
     if (search.trim()) params.set('search', search.trim()); else params.delete('search');
     if (dateFrom) params.set('dateFrom', dateFrom); else params.delete('dateFrom');
     if (dateTo) params.set('dateTo', dateTo); else params.delete('dateTo');
@@ -184,7 +187,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
     const qs = params.toString();
     const url = window.location.pathname + (qs ? '?' + qs : '');
     window.history.replaceState(null, '', url);
-  }, [page, filterType, filterPeriodId, filterCategory, search, dateFrom, dateTo, amountMin, amountMax]);
+  }, [page, filterType, filterPeriodId, filterCategory, filterPaid, search, dateFrom, dateTo, amountMin, amountMax]);
 
   const sorted = useMemo(() => {
     return sortData(localTx, getCellValue, (data) =>
@@ -195,6 +198,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
   let filtered = sorted;
   if (filterType !== 'all') filtered = filtered.filter((t) => t.type === filterType);
   if (filterCategory !== 'all') filtered = filtered.filter((t) => t.category === filterCategory);
+  if (filterPaid !== 'all') filtered = filtered.filter((t) => (filterPaid === 'paid' ? t.done : !t.done));
   if (filterPeriodId !== 'all') {
     const pid = parseInt(filterPeriodId, 10);
     filtered = filtered.filter((t) => t.period_id === pid);
@@ -226,6 +230,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
     filterType !== 'all',
     filterPeriodId !== 'all',
     filterCategory !== 'all',
+    filterPaid !== 'all',
     search.trim() !== '',
     dateFrom !== '',
     dateTo !== '',
@@ -239,6 +244,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
     setFilterType('all');
     setFilterPeriodId('all');
     setFilterCategory('all');
+    setFilterPaid('all');
     setSearch('');
     setDateFrom('');
     setDateTo('');
@@ -258,6 +264,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
     if (t.type === 'cash') cash += t.amount; else credit += t.amount;
     if (!t.done) { unpaid += t.amount; unpaidCount++; }
   }
+  const allUnpaidCount = useMemo(() => localTx.filter((t) => !t.done).length, [localTx]);
 
   // ── Bulk actions ───────────────────────────────────────────────
 
@@ -323,6 +330,24 @@ export default function TransactionTable({ transactions, showMonth = true, perio
       notifyDataChanged('transactions');
     } catch {
       toast.error('Failed to update categories');
+    }
+  };
+
+  const handleBulkPaid = async (done: boolean) => {
+    const ids = Array.from(selected).filter((id) => {
+      const t = localTx.find((tx) => tx.id === id);
+      return t ? !!t.done !== done : false;
+    });
+    if (ids.length === 0) { toast.info(`Selected transactions are already marked ${done ? 'paid' : 'unpaid'}`); return; }
+    const count = ids.length;
+    try {
+      await updateTransactionsBulkApi(ids, { done });
+      setLocalTx(prev => prev.map(t => ids.includes(t.id) ? { ...t, done } as Transaction : t));
+      setSelected(new Set());
+      toast.success(`${count} marked as ${done ? 'paid' : 'unpaid'}`);
+      notifyDataChanged('transactions');
+    } catch {
+      toast.error(`Failed to mark as ${done ? 'paid' : 'unpaid'}`);
     }
   };
 
@@ -492,6 +517,30 @@ export default function TransactionTable({ transactions, showMonth = true, perio
 
         {/* Advanced filters toggle */}
         <div className="flex items-center gap-2">
+          {/* Paid/Unpaid filter chips */}
+          {(['unpaid', 'paid'] as const).map((value) => {
+            const active = filterPaid === value;
+            const count = value === 'unpaid' ? allUnpaidCount : localTx.length - allUnpaidCount;
+            return (
+              <button
+                key={value}
+                onClick={() => { setFilterPaid(active ? 'all' : value); setPage(1); }}
+                aria-pressed={active}
+                className={`h-7 px-2.5 rounded-full text-[11px] font-medium inline-flex items-center gap-1.5 transition-colors border ${
+                  active
+                    ? value === 'unpaid'
+                      ? 'bg-gold-500/15 border-gold-500/40 text-gold-600 dark:text-gold-400'
+                      : 'bg-emerald-500/15 border-emerald-500/40 text-emerald-600 dark:text-emerald-400'
+                    : 'bg-slate-100 dark:bg-white/[0.04] border-slate-300 dark:border-white/[0.08] text-slate-500 dark:text-white/40 hover:text-slate-700 dark:hover:text-white/70'
+                }`}
+              >
+                <span className={`w-1.5 h-1.5 rounded-full ${value === 'unpaid' ? 'bg-gold-400' : 'bg-emerald-400'}`} />
+                {value === 'unpaid' ? 'Unpaid' : 'Paid'}
+                {count > 0 && <span className="opacity-60">{count}</span>}
+              </button>
+            );
+          })}
+
           <Button
             size="sm"
             variant="ghost"
@@ -699,6 +748,22 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                 className="h-8 text-xs text-slate-500 dark:text-white/40 hover:text-slate-700 dark:text-white/70"
               >
                 Deselect
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => handleBulkPaid(true)}
+                className="h-8 text-xs text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10"
+              >
+                Mark Paid
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => handleBulkPaid(false)}
+                className="h-8 text-xs text-gold-400 hover:text-gold-300 hover:bg-gold-500/10"
+              >
+                Mark Unpaid
               </Button>
               <Button
                 size="sm"
