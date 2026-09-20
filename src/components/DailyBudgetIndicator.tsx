@@ -72,6 +72,26 @@ export default function DailyBudgetIndicator({ transactions, income, spent, acti
     const remainingToday = dailyAllowance - spentToday;
     const pctToday = dailyAllowance > 0 ? Math.min(100, Math.round((spentToday / dailyAllowance) * 100)) : (spentToday > 0 ? 100 : 0);
 
+    // Spent per day over the last 7 days (inclusive of today, local dates)
+    const dayKeys: string[] = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      dayKeys.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`);
+    }
+    const localDate = (iso: string) => {
+      const d = new Date(iso);
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    };
+    const last7: { key: string; spent: number }[] = dayKeys.map(key => ({ key, spent: 0 }));
+    const idxByKey = new Map(last7.map((d, i) => [d.key, i]));
+    for (const t of transactions) {
+      if (!t.created_time || !t.done || (t.type !== 'cash' && t.type !== 'credit_expense')) continue;
+      const k = localDate(t.created_time);
+      const i = idxByKey.get(k);
+      if (i !== undefined) last7[i].spent += t.amount;
+    }
+
     // Status
     let status: 'safe' | 'warning' | 'danger' | 'over';
     if (remainingToday < 0) status = 'over';
@@ -79,12 +99,12 @@ export default function DailyBudgetIndicator({ transactions, income, spent, acti
     else if (pctToday >= 70) status = 'warning';
     else status = 'safe';
 
-    return { dailyAllowance, spentToday, remainingToday, pctToday, status, daysRemaining, remaining };
+    return { dailyAllowance, spentToday, remainingToday, pctToday, status, daysRemaining, remaining, last7 };
   }, [transactions, income, spent, activeMonth]);
 
   if (!data) return null;
 
-  const { dailyAllowance, spentToday, remainingToday, pctToday, status, daysRemaining, remaining } = data;
+  const { dailyAllowance, spentToday, remainingToday, pctToday, status, daysRemaining, remaining, last7 } = data;
 
   const statusColors = {
     safe: { bg: 'rgba(52,211,153,0.10)', text: '#34d399', border: 'rgba(52,211,153,0.25)', icon: <CheckCircle2 className="w-4 h-4" style={{ color: '#34d399' }} /> },
@@ -141,11 +161,43 @@ export default function DailyBudgetIndicator({ transactions, income, spent, acti
           </div>
         </div>
 
-        {/* Spent today summary */}
-        <div className="flex flex-col gap-2 sm:w-48">
+        {/* 7-day burn bars vs daily allowance */}
+        <div className="flex flex-col gap-2 sm:w-56">
           <div className="rounded-lg p-3 bg-slate-100 dark:bg-white/[0.04]">
-            <p className="text-[11px] text-slate-500 dark:text-white/40">Spent Today</p>
-            <p className="text-sm font-bold text-slate-800 dark:text-white/90">{formatIdr(spentToday)}</p>
+            <div className="flex items-baseline justify-between mb-2">
+              <p className="text-[11px] text-slate-500 dark:text-white/40">Last 7 Days</p>
+              <p className="text-[10px] text-slate-400 dark:text-white/30">line = allowance</p>
+            </div>
+            <div className="relative flex items-end gap-1 h-16">
+              {/* Allowance reference line — bars are scaled so 100% allowance = 80% of track height; bars crossing the line = over */}
+              <div
+                className="absolute left-0 right-0 border-t border-dashed"
+                style={{ borderColor: 'rgba(100,116,139,0.5)', bottom: '80%' }}
+              />
+              {last7.map((d) => {
+                const pct = dailyAllowance > 0 ? Math.min(100, (d.spent / dailyAllowance) * 80) : (d.spent > 0 ? 100 : 0);
+                const over = d.spent > dailyAllowance;
+                const isToday = d.key === last7[last7.length - 1].key;
+                return (
+                  <div key={d.key} className="flex-1 flex flex-col items-center justify-end h-full relative" title={`${d.key}: ${formatIdr(d.spent)}`}>
+                    <div
+                      className={`w-full rounded-sm transition-all duration-500 ${isToday ? 'ring-1 ring-slate-400/40 dark:ring-white/20' : ''}`}
+                      style={{
+                        height: `${Math.max(pct, d.spent > 0 ? 4 : 2)}%`,
+                        backgroundColor: over ? '#ef4444' : isToday ? barColor : 'rgba(52,211,153,0.45)',
+                      }}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+            <div className="flex gap-1 mt-1">
+              {last7.map((d) => (
+                <span key={d.key} className="flex-1 text-center text-[9px] text-slate-400 dark:text-white/30">
+                  {new Date(d.key + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'narrow' })}
+                </span>
+              ))}
+            </div>
           </div>
           <div className="rounded-lg p-3 bg-slate-100 dark:bg-white/[0.04]">
             <p className="text-[11px] text-slate-500 dark:text-white/40">
