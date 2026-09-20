@@ -1,5 +1,22 @@
 # Iteration Log
 
+## Sesi Cron — 20 September 2026: 7-Day Burn Bars di Today's Budget (PR #248)
+
+### Ringkasan
+Widget "Today's Budget" di Dashboard (section FLOW) sekarang menampilkan **bar chart 7 hari terakhir** menggantikan angka statis "Spent Today": 7 bar mini (per hari, tanggal lokal WIB), garis putus-putus referensi daily allowance, bar merah untuk hari yang over allowance, dan ring halus di bar hari ini.
+
+### PR
+[#248](https://github.com/akramram/self-financial-dashboard/pull/248) (merged)
+
+### Apa yang berubah
+- `src/components/DailyBudgetIndicator.tsx` — hitung spend per hari (7 hari, inklusif hari ini) dari prop `transactions` existing: filter `done` + tipe `cash`/`credit_expense`, mapping `created_time` ke tanggal **lokal** (WIB-safe). Render bar dengan skala 100% allowance = 80% tinggi track (bar melewati garis = over). Edge case allowance 0 (budget habis) → semua spending render full-height merah. Tooltip per bar `YYYY-MM-DD: IDR <nominal>`. Dual-mode (light/dark).
+- `src/__tests__/daily-budget-indicator.test.tsx` (baru, 3 test) — 7 bar render + header, agregasi dua tx hari sama + warna merah over-allowance, filter unpaid/credit_payment.
+- **Zero backend/API change** — semua dari props existing.
+
+### Verifikasi
+Build clean, **241/241 vitest pass** (238 + 3 baru). Live browser (admin): widget render dengan data real — 4 hari over-allowance tampak merah di periode September 2026, hari ini ber-ring mint, tooltip nominal benar. PM2 clean restart via ecosystem (`delete` → `start`), `/login` 200, CSS hash 200.
+
+
 ## Sesi Cron — 19 September 2026: Paid/Unpaid Filter Chips + Bulk Mark Paid (PR #246)
 
 ### Ringkasan
