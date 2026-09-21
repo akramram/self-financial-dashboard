@@ -141,8 +141,12 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
     const nwPrev = nwPrevIdx > 0 ? nwSorted[nwPrevIdx - 1] : null;
     const nw = nwCurrent?.total ?? 0;
     const prevNw = nwPrev?.total ?? 0;
-    return { income, spending, balance, prevBalance, prevIncome, prevSpending, nw, prevNw, last6Income: sorted.slice(-6).map(s => s.income ?? 0), last6Spending: sorted.slice(-6).map(s => s.outcome?.total ?? 0), last6Nw: nwSorted.slice(-6).map(n => n.total ?? 0) };
-  }, [activeSummary, summaries, networth]);
+    const unpaidTransactions = filteredTransactions.filter(t => !t.done && (t.type === 'cash' || t.type === 'credit_payment'));
+    const unpaidTotal = unpaidTransactions.reduce((s, t) => s + t.amount, 0);
+    const unpaidCount = unpaidTransactions.length;
+    const projectedBalance = balance - unpaidTotal;
+    return { income, spending, balance, prevBalance, prevIncome, prevSpending, nw, prevNw, unpaidTotal, unpaidCount, projectedBalance, last6Income: sorted.slice(-6).map(s => s.income ?? 0), last6Spending: sorted.slice(-6).map(s => s.outcome?.total ?? 0), last6Nw: nwSorted.slice(-6).map(n => n.total ?? 0) };
+  }, [activeSummary, summaries, networth, filteredTransactions]);
 
   // ── Effects ───────────────────────────────────────────────────
   useEffect(() => { fetchCategories().then(setCategories).catch(() => {}); fetchRecurringTransactions().then(r => { setRecurringTitles(r.filter(rx => rx.active).map(rx => rx.title)); setRecurringAll(r); }).catch(() => {}); fetch('/api/runway').then(r => r.json()).then(d => setRunwayData(d)).catch(() => {}); fetch('/api/health').then(r => r.json()).then(d => setHealthData(d)).catch(() => {}); }, []);
@@ -265,6 +269,23 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-slate-500 dark:text-white/40 mb-1">Available Balance</p>
                   <AnimatedCounter value={glance.balance} formatFn={formatIdr} className="text-4xl font-bold text-slate-900 dark:text-white tracking-tight" />
+                  {glance.unpaidCount > 0 ? (
+                    <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mt-1.5 text-xs">
+                      <span className="text-slate-500 dark:text-white/50">Est. after unpaid:</span>
+                      <span className={`font-semibold ${glance.projectedBalance >= 0 ? 'text-slate-700 dark:text-white/90' : 'text-rose-600 dark:text-coral-400'}`}>
+                        {formatIdr(glance.projectedBalance)}
+                      </span>
+                      <span className="text-[11px] text-slate-500 dark:text-white/40">
+                        ({glance.unpaidCount} unpaid • -{formatIdr(glance.unpaidTotal)})
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-1.5 mt-1.5 text-xs text-slate-500 dark:text-white/40">
+                      <span>Est. after unpaid:</span>
+                      <span className="font-semibold text-slate-700 dark:text-white/70">{formatIdr(glance.balance)}</span>
+                      <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">(all paid)</span>
+                    </div>
+                  )}
                   <div className="flex items-center gap-3 mt-3">
                     {glance.prevBalance !== 0 && (
                       <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold" style={{ backgroundColor: 'rgba(52,211,153,0.12)', color: '#34d399' }}>
