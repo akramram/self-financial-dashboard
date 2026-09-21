@@ -24,6 +24,15 @@ function getPeriodDates(activeMonth: string): { start: Date; end: Date } | null 
   return { start: new Date(startYear, startMonth, 21), end: new Date(year, monthIdx, 20, 23, 59, 59, 999) };
 }
 
+/** Local-date timestamp of a transaction (created_time preferred, date fallback) — same rule as SpendingCalendar. */
+function parseCreatedTimeLocal(t: Transaction): Date {
+  if (t.created_time) {
+    const d = new Date(t.created_time);
+    if (!isNaN(d.getTime())) return d;
+  }
+  return new Date(t.date);
+}
+
 interface Bill {
   id: number;
   title: string;
@@ -35,6 +44,8 @@ interface Bill {
   /** id of the generated transaction in the active period, if any (enables tap-to-toggle) */
   txId: number | null;
   endLabel: string | null;
+  /** true when this is a one-off unpaid transaction (not from a recurring template) */
+  oneOff: boolean;
 }
 
 export default function UpcomingBills({ recurring, transactions, activePeriodId, activeMonth, onTogglePaid }: Props) {
@@ -80,8 +91,37 @@ export default function UpcomingBills({ recurring, transactions, activePeriodId,
           paid: tx ? Boolean(tx.done) : false,
           txId: tx ? tx.id : null,
           endLabel: r.end_date ? MONTHS[new Date(r.end_date + '-01T12:00:00Z').getUTCMonth()] + ' ' + r.end_date.slice(0, 4) : null,
+          oneOff: false,
         });
       }
+    }
+
+    // One-off unpaid obligations in the active period — transactions with no
+    // recurring template behind them (e.g. kickoff-generated "CC Payment — <month>").
+    // They appear in the hero's unpaid projection, so they must be visible here too.
+    const recurringTitles = new Set(recurring.filter((r) => r.active).map((r) => r.title.trim().toLowerCase()));
+    let nextOneOffId = -1;
+    for (const t of periodTxs) {
+      if (t.done) continue;
+      if (t.type !== 'cash' && t.type !== 'credit_payment') continue;
+      if (recurringTitles.has(t.title.trim().toLowerCase())) continue; // covered by a template above
+      const dueDate = parseCreatedTimeLocal(t);
+      const fallback = range ? new Date(range.end) : new Date();
+      if (isNaN(dueDate.getTime()) || dueDate < range!.start || dueDate > fallback) {
+        // Missing/out-of-range timestamp → park at period end (it's owed within this period)
+        dueDate.setTime(fallback.getTime());
+      }
+      all.push({
+        id: nextOneOffId--,
+        title: t.title,
+        amount: t.amount,
+        type: t.type,
+        dueDate,
+        paid: false,
+        txId: t.id,
+        endLabel: null,
+        oneOff: true,
+      });
     }
 
     // Sort: unpaid first, then by due date
@@ -112,7 +152,9 @@ export default function UpcomingBills({ recurring, transactions, activePeriodId,
 
       <ul className="space-y-1.5">
         {bills.map((b) => {
-          const daysLeft = Math.ceil((b.dueDate.getTime() - today.getTime()) / 86400000);
+          // Calendar-day diff (strip time) so a bill due later today shows "TODAY", not "1d"
+          const dueStart = new Date(b.dueDate.getFullYear(), b.dueDate.getMonth(), b.dueDate.getDate());
+          const daysLeft = Math.round((dueStart.getTime() - today.getTime()) / 86400000);
           const overdue = !b.paid && daysLeft < 0;
           const imminent = !b.paid && !overdue && daysLeft <= 3;
           const toggleable = Boolean(onTogglePaid) && b.txId != null;
@@ -129,7 +171,10 @@ export default function UpcomingBills({ recurring, transactions, activePeriodId,
                   {b.type === 'cash' ? <Wallet className="w-3.5 h-3.5 text-mint-500" strokeWidth={1.8} /> : <CreditCard className="w-3.5 h-3.5 text-gold-400" strokeWidth={1.8} />}
                 </span>
                 <div className="min-w-0">
-                  <p className={`text-sm font-medium truncate ${b.paid ? 'text-slate-400 dark:text-white/35 line-through' : 'text-slate-800 dark:text-white/80'}`}>{b.title}</p>
+                  <p className={`text-sm font-medium truncate ${b.paid ? 'text-slate-400 dark:text-white/35 line-through' : 'text-slate-800 dark:text-white/80'}`}>
+                    {b.title}
+                    {b.oneOff && <span className="ml-1.5 px-1.5 py-0.5 rounded text-[9px] font-semibold uppercase tracking-wide bg-slate-200 dark:bg-white/[0.08] text-slate-500 dark:text-white/40 align-middle">one-off</span>}
+                  </p>
                   <p className="text-[11px] text-slate-500 dark:text-white/40 flex items-center gap-1">
                     <CalendarClock className="w-3 h-3" />
                     due {b.dueDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
