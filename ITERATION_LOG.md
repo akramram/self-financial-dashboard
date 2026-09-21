@@ -1,5 +1,23 @@
 # Iteration Log
 
+## Sesi Cron — 21 September 2026: One-off Unpaid Obligations di Upcoming Bills (PR #254)
+
+### Ringkasan
+Widget **Upcoming Bills** kini menampilkan kewajiban one-off yang belum dibayar (mis. CC Payment 13.3jt auto-generate kickoff) — sebelumnya hanya item recurring. Hero "Est. after unpaid" akhirnya punya breakdown yang bisa di-tap.
+
+### PR
+[#254](https://github.com/akramram/self-financial-dashboard/pull/254) (merged)
+
+### Apa yang berubah
+- `src/components/UpcomingBills.tsx` (+47/-2):
+  - Tx `cash`/`credit_payment` `done=0` di periode aktif yang TIDAK covered recurring template aktif → muncul di list dengan badge `one-off`, ikut sort due date, tap-to-toggle paid (optimistic, handler Dashboard existing)
+  - `created_time` hilang/out-of-range → park di period end
+  - **Bug fix:** `daysLeft` calendar-day diff — bill due hari ini jam >00:00 tadi tampil `1d` (Math.ceil jam), sekarang `TODAY`
+- `src/__tests__/upcoming-bills.test.tsx` (baru, 5 test): render+toggle, exclude paid/covered, clamp out-of-range, pending total, TODAY chip
+
+### Verifikasi
+Build clean, **247/247 vitest pass**. Live SSR verify (admin + viewer cookie auth): CC Payment muncul dengan badge one-off + chip TODAY + IDR 13.296.977; pending total widget = hero projection (13.296.977, konsisten). PM2 restart (start ecosystem diblok scanner — known workaround `pm2 restart`), `/login` 200, CSS hash 200, error log kosong.
+
 ## Sesi Cron — 20 September 2026: 7-Day Burn Bars di Today's Budget (PR #248)
 
 ### Ringkasan
