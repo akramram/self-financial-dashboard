@@ -47,6 +47,7 @@ import SpendingPulse from '../components/SpendingPulse';
 import AlertsPanel from '../components/AlertsPanel';
 import FinancialInsights from '../components/FinancialInsights';
 import HealthChip from '../components/HealthChip';
+import { formatIdr } from '../lib/utils';
 
 // ─── Shared test data helpers ────────────────────────────────────────────────
 
@@ -305,6 +306,34 @@ describe('SpendingPulse', () => {
       />,
     );
     expect(screen.getByText(/Projected period total/)).toBeInTheDocument();
+  });
+
+  it('filters out future transactions when transactions array is provided', () => {
+    const summary = makeSummary('October 2026', 10_000_000, 5_500_000);
+    const txPast = makeTx({
+      amount: 500_000,
+      type: 'cash',
+      done: true,
+      created_time: '2026-09-21T01:00:00.000Z',
+    });
+    const txFuture = makeTx({
+      amount: 5_000_000,
+      type: 'cash',
+      done: true,
+      created_time: '2026-10-15T01:00:00.000Z',
+    });
+
+    render(
+      <SpendingPulse
+        summaries={[summary]}
+        activeMonth="October 2026"
+        transactions={[txPast, txFuture]}
+      />,
+    );
+
+    // Spend vs Expected should show 500_000 instead of 5_500_000
+    expect(screen.getAllByText(formatIdr(500_000)).length).toBeGreaterThanOrEqual(1);
+    expect(screen.queryByText(formatIdr(5_500_000))).not.toBeInTheDocument();
   });
 });
 

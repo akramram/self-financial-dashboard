@@ -347,7 +347,11 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
 
           {/* Spending Pulse + Safe to Spend merged */}
           <GlassCard className="mb-4">
-            <SpendingPulse summaries={summaries} activeMonth={activeSummary?.month} />
+            <SpendingPulse
+              summaries={summaries}
+              activeMonth={activeSummary?.month}
+              transactions={filteredTransactions}
+            />
           </GlassCard>
 
           {/* Daily Budget Indicator */}

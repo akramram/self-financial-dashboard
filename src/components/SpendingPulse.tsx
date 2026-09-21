@@ -1,11 +1,12 @@
 import React, { useMemo } from 'react';
-import type { MonthlySummary } from '../lib/data';
+import type { MonthlySummary, Transaction } from '../lib/data';
 import { formatIdr } from '../lib/utils';
 import { Activity, Clock, TrendingDown, TrendingUp, Gauge, CreditCard } from 'lucide-react';
 
 interface Props {
   summaries: MonthlySummary[];
   activeMonth: string;
+  transactions?: Transaction[];
 }
 
 interface PulseData {
@@ -55,7 +56,15 @@ function getPeriodDates(activeMonth: string): { start: Date; end: Date } {
   return { start, end };
 }
 
-export default function SpendingPulse({ summaries, activeMonth }: Props) {
+function parseCreatedTime(tx: Transaction): Date {
+  if (tx.created_time) {
+    const d = new Date(tx.created_time);
+    if (!isNaN(d.getTime())) return d;
+  }
+  return new Date(tx.date);
+}
+
+export default function SpendingPulse({ summaries, activeMonth, transactions }: Props) {
   const pulse = useMemo((): PulseData | null => {
     const summary = summaries.find((s) => s.month === activeMonth);
     if (!summary) return null;
@@ -76,9 +85,20 @@ export default function SpendingPulse({ summaries, activeMonth }: Props) {
     const pctTimeElapsed = Math.min(100, (daysElapsed / daysTotal) * 100);
     const dailyBudget = income / daysTotal;
     const expectedSpend = dailyBudget * daysElapsed;
-    const actualSpend = summary.outcome?.total ?? 0;
-    const cash = summary.outcome?.cash ?? 0;
-    const credit = summary.outcome?.credit_payment ?? 0;
+
+    let actualSpend = summary.outcome?.total ?? 0;
+    let cash = summary.outcome?.cash ?? 0;
+    let credit = summary.outcome?.credit_payment ?? 0;
+
+    if (transactions) {
+      const cutoff = new Date(effectiveNow);
+      cutoff.setHours(23, 59, 59, 999);
+      const elapsedTxs = transactions.filter((t) => Boolean(t.done) && parseCreatedTime(t) <= cutoff);
+      cash = elapsedTxs.filter((t) => t.type === 'cash').reduce((s, t) => s + t.amount, 0);
+      credit = elapsedTxs.filter((t) => t.type === 'credit_payment').reduce((s, t) => s + t.amount, 0);
+      actualSpend = cash + credit;
+    }
+
     const pacePct = expectedSpend > 0 ? (actualSpend / expectedSpend) * 100 : 0;
     const projectedTotal = daysElapsed > 0 ? (actualSpend / daysElapsed) * daysTotal : 0;
 
@@ -101,7 +121,7 @@ export default function SpendingPulse({ summaries, activeMonth }: Props) {
       cash,
       credit,
     };
-  }, [summaries, activeMonth]);
+  }, [summaries, activeMonth, transactions]);
 
   if (!pulse) return null;
 
