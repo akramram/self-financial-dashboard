@@ -44,6 +44,7 @@ import TopMerchantsMini from './TopMerchantsMini';
 import UpcomingBills from './UpcomingBills';
 import TransactionDetailSheet from './TransactionDetailSheet';
 import HealthChip from './HealthChip';
+import SectionNavRail from './SectionNavRail';
 
 function parseCreatedTime(tx: Transaction): Date {
   if (tx.created_time) {
@@ -73,6 +74,16 @@ interface Props {
   networth: NetworthRecord[];
   summaries: MonthlySummary[];
 }
+
+// Dashboard sections in scroll order — drives SectionNavRail (sticky chips + scroll-spy)
+const SECTIONS = [
+  { id: 'pulse', label: 'Pulse' },
+  { id: 'flow', label: 'Flow' },
+  { id: 'act', label: 'Act' },
+  { id: 'insights', label: 'Insights' },
+  { id: 'feed', label: 'Feed' },
+  { id: 'charts', label: 'Charts' },
+];
 
 export default function Dashboard({ transactions: txProps, networth: nwProps, summaries: sumProps }: Props) {
   const { confirm: confirmAction } = useConfirm();
@@ -241,9 +252,10 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
   return (
     <LazyMotion features={domAnimation}>
       <div className="space-y-5">
+        <SectionNavRail sections={SECTIONS} />
 
         {/* ═══════════ SECTION 1: PULSE - "Gimana kondisi sekarang?" ═══════════ */}
-        <InView as="section" y={16} blur={6}>
+        <InView as="section" y={16} blur={6} data-section="pulse">
           {/* Period filter pill */}
           <div className="flex items-center justify-between mb-3">
             <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/40">Pulse</p>
@@ -363,7 +375,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
         </InView>
 
         {/* ═══════════ SECTION 2: FLOW - "Ke mana duit?" ═══════════ */}
-        <InView as="section" delay={0.05}>
+        <InView as="section" delay={0.05} data-section="flow">
           <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/40 mb-3">Flow</p>
 
           {/* Spending Pulse + Safe to Spend merged */}
@@ -401,7 +413,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
         </InView>
 
         {/* ═══════════ SECTION 3: ACT - "Apa yang harus dilakukan?" ═══════════ */}
-        <InView as="section" delay={0.1}>
+        <InView as="section" delay={0.1} data-section="act">
           <div className="flex items-center justify-between mb-3">
             <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/40">Act</p>
             {/* Alert bell */}
@@ -461,7 +473,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
         </InView>
 
         {/* ═══════════ SECTION 4: INSIGHTS - "Pahami lebih dalam" ═══════════ */}
-        <InView as="section" delay={0.15}>
+        <InView as="section" delay={0.15} data-section="insights">
           <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/40 mb-3">Insights</p>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
@@ -510,7 +522,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
         </InView>
 
         {/* ═══════════ SECTION 5: FEED, Recent transactions ═══════════ */}
-        <InView as="section" delay={0.2}>
+        <InView as="section" delay={0.2} data-section="feed">
           <div className="flex items-center justify-between mb-3">
             <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/40">Feed</p>
             <a href={`/transactions${!filterAllTime && filterPeriodId != null ? `?period_id=${filterPeriodId}` : ''}${feedSearch.trim() ? `${!filterAllTime && filterPeriodId != null ? '&' : '?'}search=${encodeURIComponent(feedSearch.trim())}` : ''}`} className="text-xs text-slate-500 dark:text-white/40 hover:text-slate-700 dark:hover:text-white/70 no-underline">View all →</a>
@@ -662,7 +674,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
         </InView>
 
         {/* ═══════════ CHARTS, lower section ═══════════ */}
-        <InView as="section" delay={0.25}>
+        <InView as="section" delay={0.25} data-section="charts">
           <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/40 mb-3">Charts</p>
           <div className="glass-card p-5 bg-slate-100 dark:bg-white/[0.02] border-slate-200 dark:border-white/[0.06] mb-4">
             <h3 className="text-base font-semibold text-slate-800 dark:text-white/80">Cash Outcome vs Credit Payment</h3><OutcomeChart data={filteredSummaries} /></div>
