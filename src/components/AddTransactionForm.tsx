@@ -257,7 +257,7 @@ export default function AddTransactionForm() {
               }}
               placeholder={isAutoFilled && !categoryUserTouched ? 'Auto-suggested' : 'e.g. 🏠 Kontrakan'}
               list="category-list"
-              className={isAutoFilled && !categoryUserTouched ? 'border-mint-400/30 bg-mint-500/5 dark:bg-mint-500/10' : ''}
+              className={isAutoFilled && !categoryUserTouched ? 'border-mint-400/40 dark:border-mint-500/30 bg-mint-500/10 dark:bg-mint-950/40 text-slate-900 dark:text-mint-200' : ''}
             />
             <datalist id="category-list">
               {categories.map((c) => (
