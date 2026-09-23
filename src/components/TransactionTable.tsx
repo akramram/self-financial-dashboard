@@ -778,8 +778,9 @@ export default function TransactionTable({ transactions, showMonth = true, perio
         )}
       </AnimatePresence>
 
-      {/* ─── Table ───────────────────────────────────────────────── */}
-      <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-white/[0.06]">
+      {/* ─── Table (desktop) + card list (mobile) ────────────────── */}
+      <div className="rounded-xl border border-slate-200 dark:border-white/[0.06] overflow-hidden">
+        <div className="hidden md:block overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow className="bg-slate-100 dark:bg-white/[0.02] border-slate-200 dark:border-white/[0.06] hover:bg-slate-100 dark:bg-white/[0.02]">
@@ -904,6 +905,88 @@ export default function TransactionTable({ transactions, showMonth = true, perio
             )}
           </TableBody>
         </Table>
+        </div>
+
+        {/* Mobile card list — no horizontal scroll, tap opens detail sheet */}
+        <div className="md:hidden divide-y divide-slate-200 dark:divide-white/[0.05]">
+          {pageRows.length === 0 ? (
+            <div className="py-12 text-center text-slate-400 dark:text-white/25 text-sm">
+              <Filter className="w-8 h-8 mx-auto mb-3 opacity-30" />
+              No transactions found
+              {activeFilterCount > 0 && (
+                <div className="mt-1">
+                  <button onClick={clearFilters} className="text-emerald-400 text-xs hover:underline">
+                    Clear all filters
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            pageRows.map((row) => {
+              const createdDate = parseCreatedTime(row);
+              const dateStr = isNaN(createdDate.getTime())
+                ? row.date
+                : createdDate.toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' });
+              const typeColorClass =
+                row.type === 'cash' ? 'text-mint-500 dark:text-mint-400'
+                : row.type === 'credit_payment' ? 'text-gold-600 dark:text-gold-400'
+                : 'text-coral-500 dark:text-coral-400';
+              const typeLabel =
+                row.type === 'cash' ? 'Cash' : row.type === 'credit_payment' ? 'Credit Pay' : 'Credit';
+              return (
+                <div
+                  key={row.id}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => setDetailTx(row)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setDetailTx(row); } }}
+                  className="flex items-center gap-3 px-4 py-3 cursor-pointer active:bg-slate-100 dark:active:bg-white/[0.05] transition-colors"
+                >
+                  <button
+                    onClick={async (e) => {
+                      e.stopPropagation();
+                      const newDone = !row.done;
+                      setLocalTx(prev => prev.map(t => t.id === row.id ? { ...t, done: newDone ? 1 : 0 } as Transaction : t));
+                      try {
+                        await toggleTransactionDoneApi(row.id, newDone);
+                        toast.success(newDone ? 'Marked as paid' : 'Marked as unpaid');
+                        notifyDataChanged('transactions');
+                      } catch {
+                        setLocalTx(prev => prev.map(t => t.id === row.id ? { ...t, done: newDone ? 0 : 1 } as Transaction : t));
+                        toast.error('Failed to update payment status');
+                      }
+                    }}
+                    aria-label={row.done ? `Mark ${row.title} unpaid` : `Mark ${row.title} paid`}
+                    className={`shrink-0 h-6 text-[10px] font-semibold px-2 rounded-md transition-colors ${
+                      row.done
+                        ? 'bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25'
+                        : 'bg-red-500/10 text-red-400 hover:bg-red-500/20'
+                    }`}
+                  >
+                    {row.done ? 'Paid' : 'Unpaid'}
+                  </button>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-1">
+                      <p className="text-sm font-medium text-slate-800 dark:text-white/80 truncate">{row.title}</p>
+                      {row.notes && (
+                        <StickyNote className="shrink-0 w-3 h-3 text-gold-400" title={row.notes} />
+                      )}
+                    </div>
+                    <p className="text-xs text-slate-500 dark:text-white/40 truncate">
+                      {row.category} · {dateStr} · <span className={typeColorClass}>{typeLabel}</span>
+                    </p>
+                  </div>
+                  <div className="shrink-0 text-right">
+                    <p className="text-sm font-semibold text-slate-800 dark:text-white/80 tabular-nums whitespace-nowrap">{formatIdr(row.amount)}</p>
+                    {showMonth && (
+                      <p className="text-[11px] text-slate-400 dark:text-white/30 truncate">{periodIdToMonth.get(row.period_id) || ''}</p>
+                    )}
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
       </div>
 
       {/* ─── Pagination ─────────────────────────────────────────── */}
