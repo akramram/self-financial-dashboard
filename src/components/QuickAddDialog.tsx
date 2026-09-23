@@ -507,7 +507,7 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded, presetDate
               placeholder={isAutoFilled && !categoryUserTouched ? 'Auto-suggested' : 'Auto from title or pick existing'}
               list="qa-category-list"
               autoComplete="off"
-              className={isAutoFilled && !categoryUserTouched ? 'border-mint-400/30 dark:border-mint-500/20 bg-mint-500/5/40 dark:bg-mint-500/10/20' : ''}
+              className={isAutoFilled && !categoryUserTouched ? 'border-mint-400/40 dark:border-mint-500/30 bg-mint-500/10 dark:bg-mint-950/40 text-slate-900 dark:text-mint-200' : ''}
             />
             <datalist id="qa-category-list">
               {categories.map((c) => (
