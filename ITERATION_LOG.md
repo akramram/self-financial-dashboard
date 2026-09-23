@@ -1,5 +1,24 @@
 # Iteration Log
 
+## Sesi Cron — 23 September 2026: Mobile Card List di Transactions (PR #259)
+
+### Ringkasan
+Halaman `/transactions` di mobile (< md / 768px) sekarang merender **card list** menggantikan tabel 9-kolom yang sebelumnya wajib horizontal scroll. Tap card → `TransactionDetailSheet` (bottom sheet), sama seperti pola Dashboard feed.
+
+### PR
+[#259](https://github.com/akramram/self-financial-dashboard/pull/259) (merged)
+
+### Apa yang berubah
+Satu file: `src/components/TransactionTable.tsx` (+85/-2).
+- Table wrapper jadi `hidden md:block` (desktop tak berubah), card list baru `md:hidden divide-y` di dalam container border yang sama
+- Card row: chip Paid/Unpaid (tap-to-toggle, optimistic + toast, a11y label) · title truncate + icon notes · meta line `category · date · type` · amount + period label
+- Tap/Enter/Space card → `setDetailTx(row)` → TransactionDetailSheet existing (swipe-dismiss, Repeat, Edit, Delete)
+- Pagination, bulk select, filter chips, advanced filters, deep-link `?tid` — semua shared antara table & card list (pageRows sama)
+- Empty state card list punya "Clear all filters" seperti table
+
+### Verifikasi
+Build clean, **251/251 vitest pass**. Live browser (admin, cookie auth): viewport 390px → table `display:none`, card list `block`, 25 cards render ("Cicilan Tyranno · Tagihan · 17 Okt 2026 · Credit · IDR 1.293.194"), tap card → sheet terbuka dengan detail lengkap; viewport 1440px → table `block` 25 rows, card `none`. PM2 restart, `/login` 200, CSS hash 200, error log bersih.
+
 ## Sesi Cron — 21 September 2026: One-off Unpaid Obligations di Upcoming Bills (PR #254)
 
 ### Ringkasan
