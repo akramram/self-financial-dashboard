@@ -42,6 +42,7 @@ import PeriodVsAverage from './PeriodVsAverage';
 import DailyBudgetIndicator from './DailyBudgetIndicator';
 import TopMerchantsMini from './TopMerchantsMini';
 import UpcomingBills from './UpcomingBills';
+import GoalsSnapshot from './GoalsSnapshot';
 import TransactionDetailSheet from './TransactionDetailSheet';
 import HealthChip from './HealthChip';
 import SectionNavRail from './SectionNavRail';
@@ -476,9 +477,9 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
         <InView as="section" delay={0.15} data-section="insights">
           <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/40 mb-3">Insights</p>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             {/* Net Worth mini chart */}
-            <GlassCard className="lg:col-span-2">
+            <GlassCard className="sm:col-span-2">
               <h3 className="text-sm font-semibold text-slate-800 dark:text-white/80 mb-2">Net Worth Trend</h3>
               <div className="h-48">
                 <NetworthChart data={filteredNetworth} />
@@ -511,7 +512,12 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
                     <p className="text-xs text-slate-500 dark:text-white/40">months of emergency fund</p>
                   </div>
                 </div>
-              )}
+                )}
+            </GlassCard>
+
+            {/* Goals snapshot — active goals progress + ETA (live-synced) */}
+            <GlassCard>
+              <GoalsSnapshot />
             </GlassCard>
           </div>
 
