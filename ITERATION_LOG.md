@@ -1,5 +1,23 @@
 # Iteration Log
 
+## Sesi Cron — 25 September 2026: Mobile Card List + Inline Edit di Recurring (PR #262)
+
+### Ringkasan
+Halaman `/recurring` di mobile (< md / 768px) sekarang merender **card list** menggantikan tabel 10-kolom yang wajib horizontal scroll — pola sama dengan PR #259 (transactions). Plus **inline edit form versi card**: sebelumnya tombol Edit di mobile membuka form yang ter-trap di tabel desktop tersembunyi.
+
+### PR
+[#262](https://github.com/akramram/self-financial-dashboard/pull/262) (merged), Issue #261
+
+### Apa yang berubah
+Satu file: `src/components/RecurringManager.tsx` (+152/-2), plus 3 test baru.
+- Table wrapper jadi `hidden md:block` (desktop tak berubah), card list baru `md:hidden divide-y` di container border yang sama
+- Card: checkbox toggle active (aria-label), title truncate + goal badge gold, meta line `category · type · until <end> · Paid`, amount tabular-nums, label `Tgl N`, tombol Edit/Delete
+- **Inline edit form 2-kolom** render in-place di posisi card: Title, Category, Amount, Type, Tgl, End Date, Goal, Active/Paid checkbox, Save/Cancel — sebelumnya edit mobile tidak mungkin
+- Item inactive → `opacity-60` (par dengan tabel), dual-mode light/dark
+
+### Verifikasi
+Build clean, **258/258 vitest pass** (3 baru). Live browser admin (390px): 10 cards render, no horizontal scroll, tabel hidden; tap Edit → form in-place muncul; ubah amount → Save → persist terverifikasi end-to-end (lalu di-revert). Desktop 1440px: tabel 10 rows utuh. PM2 clean restart, `/login` 200, CSS hash 200.
+
 ## Sesi Cron — 23 September 2026: Mobile Card List di Transactions (PR #259)
 
 ### Ringkasan
