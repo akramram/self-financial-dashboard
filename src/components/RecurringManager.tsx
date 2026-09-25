@@ -301,7 +301,8 @@ export default function RecurringManager() {
           </div>
         )}
 
-        <div className="rounded-xl border">
+        {/* Desktop table (≥md) — unchanged */}
+        <div className="hidden md:block rounded-xl border">
           <Table>
             <TableHeader>
               <TableRow>
@@ -495,7 +496,154 @@ export default function RecurringManager() {
             </TableBody>
           </Table>
         </div>
-      
+
+        {/* Mobile card list (<md) - mirrors TransactionTable mobile pattern (PR #259) */}
+        <div className="md:hidden rounded-xl border divide-y border-slate-200 dark:border-white/[0.06]">
+          {loading ? (
+            <div className="px-4 py-6 text-center text-sm text-muted-foreground">Loading...</div>
+          ) : recurring.length === 0 ? (
+            <div className="px-4 py-6 text-center text-sm text-muted-foreground">
+              No recurring transactions yet. Add one above.
+            </div>
+          ) : (
+            recurring.map((item) => {
+              const typeLabel = item.type === 'cash' ? 'Cash' : item.type === 'credit_expense' ? 'Credit' : 'Credit Pay';
+              const isEditing = editingId === item.id;
+              if (isEditing) {
+                return (
+                  <div key={item.id} className="px-4 py-3 bg-muted/30">
+                    <div className="grid grid-cols-2 gap-2.5">
+                      <Label className="col-span-2 text-xs">Title</Label>
+                      <Input
+                        type="text"
+                        value={editForm.title ?? ''}
+                        onChange={(e) => setEditForm((p) => ({ ...p, title: e.target.value }))}
+                        className="col-span-2 h-9 text-sm"
+                      />
+                      <Label className="text-xs">Category</Label>
+                      <Label className="text-xs">Amount</Label>
+                      <Select value={editForm.category ?? ''} onValueChange={(v) => setEditForm((p) => ({ ...p, category: v }))}>
+                        <SelectTrigger className="h-9 text-xs"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          {categories.map((c) => (
+                            <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Input
+                        type="number"
+                        value={editForm.amount ?? 0}
+                        onChange={(e) => setEditForm((p) => ({ ...p, amount: Number(e.target.value) }))}
+                        className="h-9 text-sm text-right"
+                      />
+                      <Label className="text-xs">Type</Label>
+                      <Label className="text-xs">Tgl (1-28)</Label>
+                      <Select value={editForm.type ?? 'cash'} onValueChange={(v) => setEditForm((p) => ({ ...p, type: v as any }))}>
+                        <SelectTrigger className="h-9 text-xs"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          {TYPE_OPTIONS.map((opt) => (
+                            <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Input
+                        type="number"
+                        min={1}
+                        max={28}
+                        value={editForm.created_at ?? defaultDay()}
+                        onChange={(e) => setEditForm((p) => ({ ...p, created_at: e.target.value }))}
+                        className="h-9 text-sm"
+                      />
+                      <Label className="col-span-2 text-xs">End Date (optional)</Label>
+                      <Input
+                        type="month"
+                        value={editForm.end_date ?? ''}
+                        onChange={(e) => setEditForm((p) => ({ ...p, end_date: e.target.value || null }))}
+                        className="col-span-2 h-9 text-sm"
+                      />
+                      <Label className="col-span-2 text-xs">Goal</Label>
+                      <Select
+                        value={editForm.goal_id != null ? String(editForm.goal_id) : 'none'}
+                        onValueChange={(v) => setEditForm((p) => ({ ...p, goal_id: v === 'none' ? null : Number(v) }))}
+                      >
+                        <SelectTrigger className="h-9 text-xs w-full"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">No goal</SelectItem>
+                          {goals.filter((g) => !g.completed || g.id === editForm.goal_id).map((g) => (
+                            <SelectItem key={g.id} value={String(g.id)}>{g.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <div className="col-span-2 flex items-center gap-4 pt-1">
+                        <label className="flex items-center gap-2 text-xs text-slate-600 dark:text-white/60">
+                          <Checkbox checked={!!editForm.active} onCheckedChange={(v) => setEditForm((p) => ({ ...p, active: !!v }))} />
+                          Active
+                        </label>
+                        <label className="flex items-center gap-2 text-xs text-slate-600 dark:text-white/60">
+                          <Checkbox checked={!!editForm.done} onCheckedChange={(v) => setEditForm((p) => ({ ...p, done: !!v }))} />
+                          Paid
+                        </label>
+                      </div>
+                    </div>
+                    <div className="flex justify-end gap-2 mt-3">
+                      <Button size="sm" variant="secondary" className="h-9 text-xs" onClick={cancelEdit}>Cancel</Button>
+                      <Button size="sm" className="h-9 text-xs" onClick={saveEdit}>Save</Button>
+                    </div>
+                  </div>
+                );
+              }
+              return (
+                <div
+                  key={item.id}
+                  className={`px-4 py-3 flex flex-col gap-2 ${!item.active ? 'opacity-60' : ''}`}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <Checkbox
+                          checked={!!item.active}
+                          onCheckedChange={() => toggleActive(item)}
+                          aria-label={`Toggle ${item.title}`}
+                          className="mt-0.5"
+                        />
+                        <span className="font-medium text-sm text-slate-900 dark:text-white/90 truncate">{item.title}</span>
+                        {item.goal_name && (
+                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-medium text-gold-600 dark:text-gold-400 bg-gold-500/10">
+                            <Target className="w-3 h-3 shrink-0" />
+                            {item.goal_name}
+                          </span>
+                        )}
+                      </div>
+                      <p className="mt-1 text-xs text-slate-500 dark:text-white/40 truncate">
+                        {item.category} · {typeLabel}{item.end_date ? ` · until ${item.end_date}` : ''}{item.done ? ' · Paid' : ''}
+                      </p>
+                    </div>
+                    <span className="text-sm font-semibold tabular-nums whitespace-nowrap text-slate-900 dark:text-white/90">
+                      {formatIdr(item.amount)}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] text-slate-400 dark:text-white/30">Tgl {item.created_at || '—'}</span>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => startEdit(item)}
+                        className="h-8 px-3 rounded-lg text-xs font-medium text-mint-500 hover:bg-mint-500/10 transition-colors"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(item.id)}
+                        className="h-8 px-3 rounded-lg text-xs font-medium text-red-500 hover:bg-red-500/10 transition-colors"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
     </div>
   );
 }
