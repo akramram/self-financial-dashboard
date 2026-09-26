@@ -1,5 +1,23 @@
 # Iteration Log
 
+## Sesi Cron — 26 September 2026: Mobile Card Lists + Inline Edit di Settings (PR #263)
+
+### Ringkasan
+Halaman `/settings` adalah tabel terakhir yang belum dimigrasi ke mobile — tabel income 5-kolom dan kategori 4-kolom wajib horizontal scroll di ponsel. Keduanya sekarang merender **card list** (< md/768px) dengan **inline edit form**, pola sama dengan PR #259 (transactions) dan #262 (recurring).
+
+### PR
+[#263](https://github.com/akramram/self-financial-dashboard/pull/263) (merged)
+
+### Apa yang berubah
+Dua file komponen + 1 file test (+265/-2):
+- `IncomeSettings.tsx` — card list: month, meta `Income IDR X · Other IDR Y`, total tabular-nums; inline edit 2-kolom (Income, Other) dengan Total live
+- `CategorySettings.tsx` — card list: color dot, name, limit (`No limit` untuk 0); inline edit (name full-width, limit + color picker)
+- Tabel desktop tak berubah (`hidden md:block`); loading/empty state shared
+- 5 test baru (`settings-mobile-cards.test.tsx`): render dual, inline edit Save→API, Delete→API
+
+### Verifikasi
+Build clean, **263/263 vitest pass** (5 baru). Live browser admin (cookie auth): 38 income cards + 18 category cards render dengan data real, color dot ada; tap Edit card income → form inline muncul (labels Income/Other Income, Total live), Cancel menutup; desktop table 38 rows utuh. PM2 clean restart, `/login` 200, CSS hash 200, error log kosong.
+
 ## Sesi Cron — 25 September 2026: Mobile Card List + Inline Edit di Recurring (PR #262)
 
 ### Ringkasan
