@@ -181,7 +181,7 @@ export default function CategorySettings() {
           </div>
         )}
 
-        <div className="rounded-xl border">
+        <div className="hidden md:block rounded-xl border">
           <Table>
             <TableHeader>
               <TableRow>
@@ -271,6 +271,83 @@ export default function CategorySettings() {
               )}
             </TableBody>
           </Table>
+        </div>
+
+        <div className="md:hidden rounded-xl border divide-y border-slate-200 dark:border-white/[0.06]">
+          {loading ? (
+            <div className="px-4 py-6 text-center text-sm text-muted-foreground">Loading...</div>
+          ) : categories.length === 0 ? (
+            <div className="px-4 py-6 text-center text-sm text-muted-foreground">
+              No categories yet. Add one above.
+            </div>
+          ) : (
+            categories.map((cat) => {
+              const isEditing = editingId === cat.id;
+              if (isEditing) {
+                return (
+                  <div key={cat.id} className="px-4 py-3 bg-muted/30">
+                    <div className="grid grid-cols-2 gap-2.5">
+                      <Label className="col-span-2 text-xs">Name</Label>
+                      <Input
+                        type="text"
+                        value={editForm.name ?? ''}
+                        onChange={(e) => setEditForm((p) => ({ ...p, name: e.target.value }))}
+                        className="col-span-2 h-9 text-sm"
+                      />
+                      <Label className="text-xs">Monthly Limit</Label>
+                      <Label className="text-xs">Color</Label>
+                      <Input
+                        type="number"
+                        value={editForm.monthly_limit ?? 0}
+                        onChange={(e) => setEditForm((p) => ({ ...p, monthly_limit: Number(e.target.value) }))}
+                        className="h-9 text-sm"
+                      />
+                      <input
+                        type="color"
+                        value={editForm.color || '#3b82f6'}
+                        onChange={(e) => setEditForm((p) => ({ ...p, color: e.target.value }))}
+                        className="h-9 w-full rounded cursor-pointer border-0 p-0 bg-transparent"
+                      />
+                    </div>
+                    <div className="flex justify-end gap-2 mt-3">
+                      <Button size="sm" variant="secondary" className="h-9 text-xs" onClick={cancelEdit}>Cancel</Button>
+                      <Button size="sm" className="h-9 text-xs" onClick={saveEdit}>Save</Button>
+                    </div>
+                  </div>
+                );
+              }
+              return (
+                <div key={cat.id} className="px-4 py-3 flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <div
+                      className="h-5 w-5 rounded-full border border-slate-200 dark:border-white/[0.06] shrink-0"
+                      style={{ backgroundColor: cat.color }}
+                    />
+                    <div className="min-w-0">
+                      <p className="font-medium text-sm text-slate-900 dark:text-white/90 truncate">{cat.name}</p>
+                      <p className="text-xs text-slate-500 dark:text-white/40">
+                        {cat.monthly_limit > 0 ? formatIdr(cat.monthly_limit) : 'No limit'}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 shrink-0">
+                    <button
+                      onClick={() => startEdit(cat)}
+                      className="h-8 px-3 rounded-lg text-xs font-medium text-mint-500 hover:bg-mint-500/10 transition-colors"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(cat.id)}
+                      className="h-8 px-3 rounded-lg text-xs font-medium text-red-500 hover:bg-red-500/10 transition-colors"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              );
+            })
+          )}
         </div>
       
     </div>

@@ -165,7 +165,7 @@ export default function IncomeSettings() {
         ) : sortedIncomes.length === 0 ? (
           <p className="text-sm text-muted-foreground">No income entries yet.</p>
         ) : (
-          <div className="rounded-xl border">
+          <div className="hidden md:block rounded-xl border">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -232,6 +232,74 @@ export default function IncomeSettings() {
                 })}
               </TableBody>
             </Table>
+          </div>
+        )}
+
+        {/* Mobile card list */}
+        {loading || sortedIncomes.length === 0 ? null : (
+          <div className="md:hidden rounded-xl border divide-y border-slate-200 dark:border-white/[0.06]">
+            {sortedIncomes.map((row) => {
+              const isEditing = editingMonth === row.month;
+              if (isEditing) {
+                return (
+                  <div key={row.month} className="px-4 py-3 bg-muted/30">
+                    <p className="text-sm font-medium mb-2.5 text-slate-900 dark:text-white/90">{row.month}</p>
+                    <div className="grid grid-cols-2 gap-2.5">
+                      <Label className="text-xs">Income</Label>
+                      <Label className="text-xs">Other Income</Label>
+                      <Input
+                        type="number"
+                        value={editForm.income ?? 0}
+                        onChange={(e) => setEditForm((prev) => ({ ...prev, income: Number(e.target.value) }))}
+                        className="h-9 text-sm"
+                      />
+                      <Input
+                        type="number"
+                        value={editForm.other_income ?? 0}
+                        onChange={(e) => setEditForm((prev) => ({ ...prev, other_income: Number(e.target.value) }))}
+                        className="h-9 text-sm"
+                      />
+                      <p className="col-span-2 text-xs text-muted-foreground">
+                        Total: {formatIdr((editForm.income ?? 0) + (editForm.other_income ?? 0))}
+                      </p>
+                    </div>
+                    <div className="flex justify-end gap-2 mt-3">
+                      <Button size="sm" variant="secondary" className="h-9 text-xs" onClick={cancelEdit}>Cancel</Button>
+                      <Button size="sm" className="h-9 text-xs" onClick={saveEdit}>Save</Button>
+                    </div>
+                  </div>
+                );
+              }
+              return (
+                <div key={row.month} className="px-4 py-3 flex items-center justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium text-sm text-slate-900 dark:text-white/90">{row.month}</p>
+                    <p className="text-xs text-slate-500 dark:text-white/40 truncate">
+                      Income {formatIdr(row.income)} · Other {formatIdr(row.other_income ?? 0)}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3 shrink-0">
+                    <span className="text-sm font-semibold tabular-nums text-slate-900 dark:text-white/90">
+                      {formatIdr(row.income + (row.other_income ?? 0))}
+                    </span>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => startEdit(row)}
+                        className="h-8 px-3 rounded-lg text-xs font-medium text-mint-500 hover:bg-mint-500/10 transition-colors"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(row.month)}
+                        className="h-8 px-3 rounded-lg text-xs font-medium text-red-500 hover:bg-red-500/10 transition-colors"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
       
