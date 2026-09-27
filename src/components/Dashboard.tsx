@@ -282,7 +282,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-slate-500 dark:text-white/40 mb-1">Available Balance</p>
                   <AnimatedCounter value={glance.balance} formatFn={formatIdr} className="text-4xl font-bold text-slate-900 dark:text-white tracking-tight" />
-                  {glance.unpaidCount > 0 ? (
+                  {glance.unpaidCount > 0 && (
                     <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mt-1.5 text-xs">
                       <span className="text-slate-500 dark:text-white/50">Est. after unpaid:</span>
                       <span className={`font-semibold ${glance.projectedBalance >= 0 ? 'text-slate-700 dark:text-white/90' : 'text-rose-600 dark:text-coral-400'}`}>
@@ -291,12 +291,6 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
                       <span className="text-[11px] text-slate-500 dark:text-white/40">
                         ({glance.unpaidCount} unpaid • -{formatIdr(glance.unpaidTotal)})
                       </span>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-1.5 mt-1.5 text-xs text-slate-500 dark:text-white/40">
-                      <span>Est. after unpaid:</span>
-                      <span className="font-semibold text-slate-700 dark:text-white/70">{formatIdr(glance.balance)}</span>
-                      <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">(all paid)</span>
                     </div>
                   )}
                   <div className="flex items-center gap-3 mt-3">
