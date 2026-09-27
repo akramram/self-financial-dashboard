@@ -1,5 +1,40 @@
 # Iteration Log
 
+## Sesi Cron — 27 September 2026: Mobile Card List di Networth Monthly History (PR #266)
+
+### Ringkasan
+Lanjutan seri mobile card lists (PR #259 transactions, #262 recurring, #263 settings). Section Monthly History di `/networth` adalah table 5-kolom terakhir yang belum punya tampilan mobile — sekarang jadi card list di layar <md, tanpa horizontal scroll.
+
+### PR
+[#266 — feat(#265): mobile card list for networth monthly history](https://github.com/akramram/self-financial-dashboard/pull/266) (merged)
+
+### Issue
+[#265](https://github.com/akramram/self-financial-dashboard/issues/265)
+
+### Branch
+`feat/networth-mobile-cards` (merged dan dihapus)
+
+### Apa yang berubah
+**`src/components/NetworthTable.tsx`:**
+- Desktop table jadi `hidden md:block` (semua fitur sort tetap utuh)
+- Card list `md:hidden` baru: month + total + MoM delta berwarna (▲/▼ + nilai absolut + pct dalam satu chip) + tombol Edit ke `/networth/edit?month=...`
+- Extract helper `changeClass()` untuk dedup kelas warna emerald/red dual-mode
+- Empty state "No networth records yet." di card list
+
+**`src/pages/networth.astro`:**
+- Hapus wrapper `overflow-x-auto` — tidak dibutuhkan lagi karena tidak ada table yang scroll di mobile
+
+### Verifikasi
+- Build clean, vitest 263/263 passing (~4s)
+- SSR check via cookie auth: `/networth` 200, mobile container `md:hidden divide-y` render, desktop table render, 24 edit links (12 record × 2 view)
+- CSS hash HTTP 200, tidak ada error di PM2 logs
+- Deploy: PM2 stop → rm dist → build → start via ecosystem config → pm2 save
+
+### Catatan
+- Pattern identik dengan RecurringManager/TransactionTable mobile card — konsistensi serial dijaga
+- Tap target Edit 32px, `text-mint-500 hover:bg-mint-500/10` — senada dengan aksi mobile lain
+- Dual-mode penuh: slate-900/white-90 teks, divide slate-200/white-05
+
 ## Sesi Cron — 26 September 2026: Mobile Card Lists + Inline Edit di Settings (PR #263)
 
 ### Ringkasan
