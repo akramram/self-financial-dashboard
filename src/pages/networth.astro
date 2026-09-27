@@ -28,13 +28,11 @@ const networthReversed = [...networth].reverse();
   <!-- Portfolio Composition (Donut + Metrics + Stacked Bar) -->
   <NetworthComposition data={networth} client:load />
 
-  <!-- Monthly History Table -->
+  <!-- Monthly History Table (desktop) / Card list (mobile) -->
   <div class="mt-6 glass-card overflow-hidden">
     <div class="p-6 border-b border-slate-200 dark:border-white/[0.06]">
       <h2 class="text-lg font-semibold">Monthly History</h2>
     </div>
-    <div class="overflow-x-auto">
-      <NetworthTable networth={networth} client:load />
-    </div>
+    <NetworthTable networth={networth} client:load />
   </div>
 </Layout>
