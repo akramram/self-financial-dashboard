@@ -106,4 +106,30 @@ describe('DailyBudgetIndicator — 7-day burn bars', () => {
     );
     expect(document.querySelectorAll('[title^="2026-"]').length).toBe(7);
   });
+
+  it('subtracts unpaid obligations (cash + credit_payment) from the daily allowance', () => {
+    // income 1M, done spent 300k, unpaid 200k cash + 100k credit_payment in period
+    // → remaining 400k; daysRemaining 2 (component counts end-of-day 23:59:59.999) → allowance 200k
+    // (pre-fix: remaining 700k → 350k)
+    const txs = [
+      mk(1, day(0), 300000),                             // done today → spent
+      mk(2, day(1), 200000, false),                      // unpaid cash (tomorrow, same period)
+      mk(3, day(1, 9), 100000, false, 'credit_payment'), // unpaid credit payment
+      mk(4, day(-2), 50000),                             // done, past day
+    ];
+    render(
+      <DailyBudgetIndicator transactions={txs} income={1000000} spent={300000} activeMonth="September 2026" />
+    );
+    expect(screen.getAllByText('IDR 200.000').length).toBeGreaterThan(0);
+  });
+
+  it('does not double-count unpaid in today burn bars (allowance hit instead)', () => {
+    // unpaid today stays out of today's bar; only allowance drops
+    const txs = [mk(1, day(0), 300000), mk(2, day(0, 9), 100000, false)];
+    render(
+      <DailyBudgetIndicator transactions={txs} income={1000000} spent={300000} activeMonth="September 2026" />
+    );
+    const todayBar = document.querySelector(`[title^="2026-09-20"]`);
+    expect(todayBar!.getAttribute('title')).toContain('300.000');
+  });
 });

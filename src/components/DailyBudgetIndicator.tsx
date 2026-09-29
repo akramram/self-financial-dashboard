@@ -10,6 +10,14 @@ interface Props {
   activeMonth: string;
 }
 
+/** Unpaid obligations: not-yet-paid cash + not-yet-paid credit payments in this period.
+ *  Mirrors the projected-balance definition in Dashboard (glance.unpaidTotal). */
+export function getUnpaidTotal(transactions: Transaction[]): number {
+  return transactions
+    .filter(t => !t.done && (t.type === 'cash' || t.type === 'credit_payment'))
+    .reduce((sum, t) => sum + t.amount, 0);
+}
+
 function getPeriodDates(activeMonth: string): { start: Date; end: Date } {
   const parts = activeMonth.split(' ');
   const monthNames = [
@@ -49,8 +57,9 @@ export default function DailyBudgetIndicator({ transactions, income, spent, acti
     // Days remaining (including today)
     const daysRemaining = Math.max(1, Math.ceil((end.getTime() - today.getTime()) / 86400000) + 1);
 
-    // Remaining budget
-    const remaining = Math.max(0, income - spent);
+    // Remaining budget after done spending AND unpaid obligations in the same period
+    const unpaidTotal = getUnpaidTotal(transactions);
+    const remaining = Math.max(0, income - spent - unpaidTotal);
 
     // Daily allowance = remaining / days remaining
     const dailyAllowance = Math.round(remaining / daysRemaining);
