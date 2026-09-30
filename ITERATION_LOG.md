@@ -1,5 +1,51 @@
 # Iteration Log
 
+## Sesi Cron — 30 September 2026: Quick-Add Modal dari Dashboard — Mobile Bottom Sheet (PR #273)
+
+### Ringkasan
+Eksekusi KUR-17 (brief hasil Daily Standup KUR-15). Sebelumnya satu-satunya cara menambah transaksi dari dashboard adalah pindah ke `/add`. Sekarang tombol "Add Transaction" di section ACT membuka modal langsung: isi → submit → close → transaksi muncul di feed, tanpa pindah halaman.
+
+### PR
+[#273 — feat(KUR-15): Quick-Add Modal from Dashboard (Mobile Bottom Sheet)](https://github.com/akramram/self-financial-dashboard/pull/273) (merged)
+
+Closes GitHub issue [#272](https://github.com/akramram/self-financial-dashboard/issues/272).
+
+### Branch
+`feat/272-quick-add-modal` (merged)
+
+### Apa yang berubah
+**File baru:**
+- `src/hooks/useTransactionForm.ts` — seluruh state + submit logic yang diekstrak dari AddTransactionForm (345 baris): quick-amount parsing (`1.5jt`/`25k`), category auto-suggest + tracking override manual, snap period 21→20 saat tanggal diubah, duplicate 409 guard, `notifyDataChanged()` setelah sukses.
+- `src/components/TransactionFormFields.tsx` — fields presentational bersama, dua variant: `sheet` (modal: tap target ≥44px, font 16px anti zoom iOS, autofocus amount) dan `page` (ukuran klasik `/add`, perilaku tidak berubah).
+- `src/components/QuickAddTransactionModal.tsx` — modal quick-add. Mobile (<md): bottom sheet full-width, rounded-t-2xl, max-h 90dvh, scroll di dalam sheet, tombol submit sticky di footer. Desktop: dialog terpusat max-w-md. Sukses → close otomatis 800ms.
+
+**File dimodifikasi:**
+- `src/components/AddTransactionForm.tsx` — kini komposisi tipis hook + fields (~30 baris), tanpa duplikasi logika; `/add` tetap berfungsi identik.
+- `src/components/Dashboard.tsx` — tombol quick-action jadi pembuka modal (bukan link ke `/add`); link kecil "Full form →" tetap menyediakan akses ke `/add`.
+
+### Design guideline (dari Pixel Painter, standup KUR-15)
+- Amount: autofocus + `inputMode="decimal"`, font-size 16px (anti zoom iOS).
+- Tap target ≥44px untuk semua kontrol di sheet; type pakai Select 3 opsi eksisting; kategori via `useCategorySuggestion`.
+- Date/time default now; chip "⏱ Just now" tampil bila tidak diubah.
+- Preview hasil parse quick-amount ("Rp1.500.000" saat mengetik `1.5jt`).
+- Sukses: close ≤800ms + `notifyDataChanged()` — feed dashboard refresh tanpa reload. Error inline di modal (badge merah), bukan toast.
+- Duplicate-guard dialog (409) tetap berfungsi di dalam modal — ikut pattern bottom sheet di mobile.
+
+### Test results
+✅ 278/278 tests passing (13 test baru: 9 untuk hook useTransactionForm, 4 untuk modal QuickAddTransactionModal — termasuk assertion class bottom sheet dan auto-close ≤800ms).
+
+### Build & deploy
+✅ `npm run build` clean. tsc: 0 error baru vs main (56 = 56 pre-existing di file test lama).
+✅ SSR smoke (server staging port 4399, cookie auth admin): `/` 200 dengan markup modal di chunk Dashboard, `/add` 200 dengan form hasil refactor.
+✅ PM2 restart + `pm2 save` via `ecosystem.config.cjs` — chunk baru (`Dashboard.BD8jA8FB.js`) terverifikasi di server live :4321, login redirect normal.
+
+### Catatan
+- `/add` page tetap ada dan tidak berubah perilakunya (backward compatible sesuai batasan issue) — kini hanya memakai komponen bersama yang sama dengan modal.
+- Tanpa dependensi baru; modal memakai shadcn Dialog eksisting, bukan overlay buatan.
+- `data/`, `src/lib/db.ts`, dan URL API eksisting tidak disentuh.
+- Header Layout "+ Add" dan link deep-link lain sengaja tidak diubah (hanya di luar scope Dashboard).
+
+
 ## Sesi Cron — 27 September 2026: Mobile Card List di Networth Monthly History (PR #266)
 
 ### Ringkasan
