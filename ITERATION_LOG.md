@@ -1,5 +1,29 @@
 # Iteration Log
 
+## Sesi KUR-23 — Daily Health-Check & API Hardening (PR #276)
+
+### Ringkasan
+Eksekusi KUR-23 (health-check harian). Dashboard online (PM2 `financial-dashboard`, port 4321, auth redirect normal). Pemeriksaan log PM2 menemukan 2 bug nyata: (1) `DELETE /api/transactions` crash 500 (`SyntaxError: Unexpected end of JSON input`) saat body kosong/truncated, (2) warning berulang `No API Route handler exists for the method "OPTIONS"` di `/api/auth/login`. Diperbaiki, di-deploy, digabung lewat PR.
+
+### PR
+[#276 — fix(#275): return 400 on malformed JSON bodies; add OPTIONS to auth routes](https://github.com/akramram/self-financial-dashboard/pull/276) (merged)
+
+Closes GitHub issue [#275](https://github.com/akramram/self-financial-dashboard/issues/275).
+
+### Branch
+`fix/275-api-json-400` (merged)
+
+### Apa yang berubah
+- **File baru:** `src/lib/http.ts` — `parseJsonBody()` (null pada JSON kosong/rusak), `jsonError()`, `jsonPreflight()` (204 OPTIONS).
+- **11 route file** (`transactions`, `networth`, `categories`, `income`, `recurring` — masing-masing `index.ts` + `[id].ts` — plus `kickoff.ts`): `request.json()` tanpa guard diganti `parseJsonBody()` → HTTP 400, bukan 500.
+- **Auth routes** (`login`, `logout`, `me`): handler `OPTIONS` 204 baru.
+- **Test baru:** body JSON kosong & truncated → 400, `deleteTransactionsBulk` tidak terpanggil.
+
+### Verifikasi
+- 279/279 tests pass (2 baru), build clean.
+- Deploy via ecosystem config; live check: `OPTIONS /api/auth/login` → 204, `GET /login` → 200, `GET /` → 302 (auth), PM2 online.
+- Tidak ada perubahan `data/` atau skema DB.
+
 ## Sesi Cron — 30 September 2026: Quick-Add Modal dari Dashboard — Mobile Bottom Sheet (PR #273)
 
 ### Ringkasan
