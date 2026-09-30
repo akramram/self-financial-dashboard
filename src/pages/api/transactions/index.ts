@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { db, getTransactions, insertTransaction, updateTransaction, deleteTransaction, deleteTransactionsBulk, updateTransactionsBulk, getTransactionById, findDuplicateTransaction, ensurePeriod, getPeriodByMonth, getPeriodById, ensureCategory } from '../../../lib/db';
+import { parseJsonBody, jsonError } from '../../../lib/http';
 
 export const GET: APIRoute = async ({ request }) => {
   const url = new URL(request.url);
@@ -24,7 +25,8 @@ export const GET: APIRoute = async ({ request }) => {
 };
 
 export const POST: APIRoute = async ({ request }) => {
-  const body = await request.json();
+  const body = await parseJsonBody(request);
+  if (!body) return jsonError('Invalid JSON body');
   const finalCategory = (body.category || body.title.split(' ')[0] || '').trim();
   if (finalCategory) ensureCategory(finalCategory);
   const duplicateId = findDuplicateTransaction({
@@ -63,7 +65,8 @@ export const POST: APIRoute = async ({ request }) => {
 };
 
 export const PUT: APIRoute = async ({ request }) => {
-  const body = await request.json();
+  const body = await parseJsonBody(request);
+  if (!body) return jsonError('Invalid JSON body');
   const ids = body.ids as number[];
   const updates = body.updates;
   if (!Array.isArray(ids) || ids.length === 0) {
@@ -85,7 +88,8 @@ export const PUT: APIRoute = async ({ request }) => {
 };
 
 export const DELETE: APIRoute = async ({ request }) => {
-  const body = await request.json();
+  const body = await parseJsonBody(request);
+  if (!body) return jsonError('Invalid JSON body');
   const ids = body.ids as number[];
   if (!Array.isArray(ids) || ids.length === 0) {
     return new Response(JSON.stringify({ error: 'ids array required' }), {

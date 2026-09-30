@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { parseJsonBody, jsonError } from '../../../lib/http';
 import { getNetworthByPeriod, upsertNetworth, deleteNetworth, recalcNetworthMoM, getNetworthMilestoneCrossing } from '../../../lib/db';
 
 export const GET: APIRoute = async ({ params }) => {
@@ -18,7 +19,8 @@ export const PUT: APIRoute = async ({ params, request }) => {
   if (isNaN(id)) {
     return new Response(JSON.stringify({ error: 'Invalid period_id' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
   }
-  const body = await request.json();
+  const body = await parseJsonBody(request);
+  if (!body) return jsonError('Invalid JSON body');
   // Milestone check BEFORE the write — needs the pre-existing peak
   const crossing = getNetworthMilestoneCrossing(id, Number(body.total) || 0);
   upsertNetworth({ ...body, period_id: id });

@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { parseJsonBody, jsonError } from '../../../lib/http';
 import { updateCategory, deleteCategory, getCategoryById, getCategoryByName } from '../../../lib/db';
 
 export const GET: APIRoute = async ({ params }) => {
@@ -12,7 +13,8 @@ export const GET: APIRoute = async ({ params }) => {
 
 export const PUT: APIRoute = async ({ params, request }) => {
   const id = Number(params.id);
-  const body = await request.json();
+  const body = await parseJsonBody(request);
+  if (!body) return jsonError('Invalid JSON body');
   if (body.name) {
     const existing = getCategoryByName(body.name);
     if (existing && existing.id !== id) {

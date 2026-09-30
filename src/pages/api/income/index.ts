@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { parseJsonBody, jsonError } from '../../../lib/http';
 import { getMonthlyIncome, upsertMonthlyIncome, ensurePeriod, getPeriodByMonth } from '../../../lib/db';
 
 export const GET: APIRoute = async () => {
@@ -9,7 +10,8 @@ export const GET: APIRoute = async () => {
 };
 
 export const POST: APIRoute = async ({ request }) => {
-  const body = await request.json();
+  const body = await parseJsonBody(request);
+  if (!body) return jsonError('Invalid JSON body');
 
   // Resolve period_id: accept period_id directly, or convert from month
   let period_id = body.period_id;

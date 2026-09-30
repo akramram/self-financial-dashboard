@@ -288,6 +288,24 @@ describe('API — DELETE /api/transactions (bulk delete)', () => {
 
     expect(res.status).toBe(400);
   });
+
+  it('returns 400 (not 500) on empty or malformed JSON body (#275)', async () => {
+    const empty = await DELETE({
+      request: makeRequest('/api/transactions', { method: 'DELETE' }),
+    });
+    expect(empty.status).toBe(400);
+
+    const malformed = await DELETE({
+      request: makeRequest('/api/transactions', {
+        method: 'DELETE',
+        body: '{"ids": [1,2',
+      }),
+    });
+    expect(malformed.status).toBe(400);
+    const body = await parseJson(malformed);
+    expect(body.error).toBe('Invalid JSON body');
+    expect(mockDeleteTransactionsBulk).not.toHaveBeenCalled();
+  });
 });
 
 // ─── GET /api/transactions/:id ──────────────────────────────────────────────
