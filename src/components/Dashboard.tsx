@@ -46,6 +46,7 @@ import GoalsSnapshot from './GoalsSnapshot';
 import TransactionDetailSheet from './TransactionDetailSheet';
 import HealthChip from './HealthChip';
 import SectionNavRail from './SectionNavRail';
+import QuickAddTransactionModal from './QuickAddTransactionModal';
 
 function parseCreatedTime(tx: Transaction): Date {
   if (tx.created_time) {
@@ -112,6 +113,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
   const [runwayData, setRunwayData] = useState<{ runway_months: number; status: string; tips?: string[] } | null>(null);
   const [healthData, setHealthData] = useState<{ overall: number; grade: string; gradeColor: string; trend?: string; prevScore?: number | null } | null>(null);
   const [detailTx, setDetailTx] = useState<Transaction | null>(null);
+  const [quickAddOpen, setQuickAddOpen] = useState(false);
 
   // ── Derived ───────────────────────────────────────────────────
   const periodOptions = useMemo(() => {
@@ -430,10 +432,17 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
             </GlassCard>
           )}
 
-          {/* Quick Actions */}
-          <div className="flex flex-wrap gap-3 mb-4">
-            <a href="/add" className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-900 dark:text-white transition-all hover:scale-105 no-underline" style={{ background: 'linear-gradient(135deg, #34d399, #0ea5e9)' }}>
+          {/* Quick Actions — primary opens the quick-add modal (no page nav); /add stays for the full form */}
+          <div className="flex flex-wrap items-center gap-3 mb-4">
+            <button
+              onClick={() => setQuickAddOpen(true)}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-900 dark:text-white transition-all hover:scale-105"
+              style={{ background: 'linear-gradient(135deg, #34d399, #0ea5e9)' }}
+            >
               <Plus className="w-4 h-4" /> Add Transaction
+            </button>
+            <a href="/add" className="text-sm font-medium text-slate-500 dark:text-white/50 hover:text-slate-700 dark:hover:text-white/70 transition no-underline">
+              Full form →
             </a>
             {kickoffBanner?.show && (
               <Button onClick={() => setKickoffOpen(true)} variant="secondary" size="sm" className="bg-slate-200/60 dark:bg-white/[0.08] text-slate-800 dark:text-white/80 hover:bg-slate-300/50 dark:bg-white/[0.15] border-slate-300 dark:border-white/[0.1] h-auto py-2.5 px-4 rounded-xl">
@@ -465,6 +474,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
           </GlassCard>
 
           <MonthKickoffModal open={kickoffOpen} onOpenChange={setKickoffOpen} nextMonth={kickoffBanner?.nextMonth || ''} recurringCount={kickoffBanner?.recurringCount || 0} onSuccess={() => { setKickoffBanner(null); notifyDataChanged('summaries'); }} />
+          <QuickAddTransactionModal open={quickAddOpen} onOpenChange={setQuickAddOpen} />
         </InView>
 
         {/* ═══════════ SECTION 4: INSIGHTS - "Pahami lebih dalam" ═══════════ */}
