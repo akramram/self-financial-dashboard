@@ -1,5 +1,8 @@
 import type { APIRoute } from 'astro';
 import { deleteSession } from '../../../lib/auth';
+import { jsonPreflight } from '../../../lib/http';
+
+export const OPTIONS: APIRoute = async () => jsonPreflight();
 
 export const POST: APIRoute = async ({ cookies }) => {
   const token = cookies.get('fin_session')?.value;

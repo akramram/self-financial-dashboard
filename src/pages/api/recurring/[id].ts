@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { parseJsonBody, jsonError } from '../../../lib/http';
 import { getRecurringTransactionById, updateRecurringTransaction, deleteRecurringTransaction } from '../../../lib/db';
 
 export const GET: APIRoute = async ({ params }) => {
@@ -17,7 +18,8 @@ export const GET: APIRoute = async ({ params }) => {
 
 export const PUT: APIRoute = async ({ request, params }) => {
   const id = Number(params.id);
-  const body = await request.json();
+  const body = await parseJsonBody(request);
+  if (!body) return jsonError('Invalid JSON body');
   updateRecurringTransaction(id, body);
   return new Response(JSON.stringify({ success: true }), {
     headers: { 'Content-Type': 'application/json' },

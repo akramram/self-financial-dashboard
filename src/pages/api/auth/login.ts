@@ -1,5 +1,8 @@
 import type { APIRoute } from 'astro';
 import { getUserByUsername, verifyPassword, createSession } from '../../../lib/auth';
+import { jsonPreflight } from '../../../lib/http';
+
+export const OPTIONS: APIRoute = async () => jsonPreflight();
 
 export const POST: APIRoute = async ({ request, cookies }) => {
   try {

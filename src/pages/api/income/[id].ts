@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { parseJsonBody, jsonError } from '../../../lib/http';
 import { getMonthlyIncomeByPeriod, upsertMonthlyIncome, deleteMonthlyIncome } from '../../../lib/db';
 
 export const GET: APIRoute = async ({ params }) => {
@@ -29,7 +30,8 @@ export const PUT: APIRoute = async ({ request, params }) => {
       headers: { 'Content-Type': 'application/json' },
     });
   }
-  const body = await request.json();
+  const body = await parseJsonBody(request);
+  if (!body) return jsonError('Invalid JSON body');
   if (typeof body.income !== 'number') {
     return new Response(JSON.stringify({ error: 'Income must be a number' }), {
       status: 400,
