@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
 import { Skeleton } from './ui/skeleton';
-import { onDataChanged } from '../lib/dataSync';
+import { onDataChanged, notifyDataChanged } from '../lib/dataSync';
 
 /**
  * AKSes (KSEI) live asset card (KUR-40, replaces BbriCard from KUR-29).
@@ -11,6 +11,11 @@ import { onDataChanged } from '../lib/dataSync';
  * EOD snapshot). Hierarchy: total portfolio value (largest) → snapshot date →
  * per-type breakdown bars (EKUITAS, REKSADANA, …). No toasts; inline error
  * line only.
+ *
+ * Token rotation (KUR-40 follow-up): when the AKSes bearer token expires the
+ * card shows a red badge + an inline paste field that accepts the raw JWT or
+ * a full "copy as cURL" command; saving it POSTs to /api/ksei/token which
+ * persists + hot-applies the token and refreshes the snapshot immediately.
  */
 
 export interface KseiCardData {
@@ -71,6 +76,16 @@ export default function KseiCard({ data }: Props) {
   const ref = useRef<KseiCardData | null>(portfolio);
   ref.current = portfolio;
 
+  // Token rotation (KUR-40): inline paste field, auto-shown while the AKSes
+  // token is expired. Accepts a raw JWT or a full "copy as cURL" command —
+  // extraction + validation happen server-side at POST /api/ksei/token.
+  const [tokenFormOpen, setTokenFormOpen] = useState(false);
+  const [tokenDismissed, setTokenDismissed] = useState(false);
+  const [tokenInput, setTokenInput] = useState('');
+  const [tokenSaving, setTokenSaving] = useState(false);
+  const [tokenMsg, setTokenMsg] = useState<string | null>(null);
+  const [tokenError, setTokenError] = useState<string | null>(null);
+
   useEffect(() => {
     if (data === undefined) return; // dashboard supplies data
     setPortfolio(data ?? null);
@@ -107,8 +122,60 @@ export default function KseiCard({ data }: Props) {
   const now = Date.now();
   const total = portfolio?.total_value ?? null;
   const staleDays = portfolio?.stale ? daysOld(portfolio.fetched_at, now) : null;
+  const tokenExpired = portfolio?.tokenExpired === true;
 
-  // Breakdown sorted descending by amount; zero-amount slices are hidden.
+  // Auto-open the rotation form while the token is expired (unless dismissed).
+  useEffect(() => {
+    if (tokenExpired && !tokenDismissed) setTokenFormOpen(true);
+  }, [tokenExpired, tokenDismissed]);
+
+  const submitToken = async () => {
+    if (tokenSaving) return;
+    const input = tokenInput.trim();
+    if (!input) {
+      setTokenError('Paste token atau curl dulu.');
+      return;
+    }
+    setTokenSaving(true);
+    setTokenError(null);
+    setTokenMsg(null);
+    try {
+      const res = await fetch('/api/ksei/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: input, refresh: true }),
+      });
+      const d = await res.json().catch(() => null);
+      if (!res.ok || !d?.ok) {
+        setTokenError(d?.error ?? 'Gagal menyimpan token.');
+        return;
+      }
+      if (d.refreshed) {
+        setTokenMsg(`Token aktif · exp ${d.expires ?? '—'} · data diperbarui`);
+      } else {
+        setTokenMsg(`Token tersimpan · exp ${d.expires ?? '—'}${d.error ? ` · ${d.error}` : ''}`);
+      }
+      setTokenInput('');
+      setTokenFormOpen(false);
+      setTokenDismissed(false);
+      notifyDataChanged('transactions'); // dashboard + other tabs refetch /api/ksei
+      // Belt & braces: refetch locally too, in case no listener is mounted.
+      fetch('/api/ksei')
+        .then(r => (r.ok ? r.json() : null))
+        .then((d2: KseiCardData | null) => {
+          if (d2) {
+            setPortfolio(d2);
+            setFetchError(null);
+          }
+        })
+        .catch(() => {});
+    } catch {
+      setTokenError('Gagal menghubungi server — coba lagi.');
+    } finally {
+      setTokenSaving(false);
+    }
+  };
+
   const breakdown = [...(portfolio?.breakdown ?? [])]
     .filter(s => s.amount > 0)
     .sort((a, b) => b.amount - a.amount);
@@ -134,18 +201,74 @@ export default function KseiCard({ data }: Props) {
             </span>
           )}
           {portfolio?.tokenExpired && (
-            <span
+            <button
+              type="button"
               data-testid="ksei-token-expired"
-              className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-rose-500/15 text-rose-500"
+              onClick={() => setTokenFormOpen(o => !o)}
+              className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-rose-500/15 text-rose-500 cursor-pointer hover:bg-rose-500/25"
+              aria-label="Token kedaluwarsa — klik untuk memperbarui"
             >
               token kedaluwarsa
-            </span>
+            </button>
           )}
         </div>
         <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-slate-200/70 dark:bg-white/[0.06] text-slate-500 dark:text-white/50">
           EOD
         </span>
       </div>
+
+      {/* Token rotation form (KUR-40) — inline, no modal. Auto-shown while
+          the token is expired; toggleable via the badge afterwards. */}
+      {tokenFormOpen && (
+        <div data-testid="ksei-token-form" className="mt-2 rounded-xl bg-slate-200/50 dark:bg-white/[0.04] p-2.5">
+          <textarea
+            data-testid="ksei-token-input"
+            value={tokenInput}
+            onChange={e => setTokenInput(e.target.value)}
+            placeholder="Paste JWT atau full curl dari devtools AKSes di sini…"
+            rows={3}
+            autoComplete="off"
+            spellCheck={false}
+            className="w-full text-[11px] font-mono rounded-lg bg-white dark:bg-white/[0.06] border border-slate-300 dark:border-white/10 px-2 py-1.5 text-slate-700 dark:text-white/80 placeholder:text-slate-400 dark:placeholder:text-white/30 focus:outline-none focus:border-emerald-500/60 resize-y"
+          />
+          <div className="flex items-center gap-1.5 mt-1.5">
+            <button
+              type="button"
+              data-testid="ksei-token-save"
+              onClick={submitToken}
+              disabled={tokenSaving}
+              className="text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
+            >
+              {tokenSaving ? 'Menyimpan…' : 'Simpan & refresh'}
+            </button>
+            <button
+              type="button"
+              data-testid="ksei-token-cancel"
+              onClick={() => {
+                setTokenFormOpen(false);
+                setTokenDismissed(true);
+              }}
+              className="text-[11px] px-2 py-1 rounded-lg text-slate-500 dark:text-white/50 hover:bg-slate-200 dark:hover:bg-white/[0.06] cursor-pointer"
+            >
+              Nanti
+            </button>
+          </div>
+          {tokenError && (
+            <p data-testid="ksei-token-error" className="text-[10px] text-rose-500 mt-1.5">
+              {tokenError}
+            </p>
+          )}
+          <p className="text-[10px] text-slate-400 dark:text-white/30 mt-1.5">
+            DevTools AKSes → Network → request myportofolio → copy "Authorization: Bearer …"
+          </p>
+        </div>
+      )}
+
+      {tokenMsg && (
+        <p data-testid="ksei-token-msg" className="text-[11px] text-emerald-600 dark:text-emerald-400/80 mt-1.5">
+          {tokenMsg}
+        </p>
+      )}
 
       {loading ? (
         <div className="space-y-2" data-testid="ksei-skeleton">
