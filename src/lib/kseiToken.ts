@@ -7,6 +7,9 @@
  * scripts/rotate-ksei-token.sh).
  */
 
+import fs from 'node:fs';
+import path from 'node:path';
+
 export interface KseiTokenFile {
   token?: string;
   note?: string;
@@ -14,14 +17,11 @@ export interface KseiTokenFile {
   expires?: string;
 }
 
-/** Read gitignored data/ksei.json (relative to cwd). Null when absent/corrupt. */
+/** Read gitignored data/ksei.json (relative to cwd). Null when absent/corrupt.
+ *  Static ESM imports — bare require() is undefined in Astro's bundled .mjs
+ *  server output and silently swallowed by the catch (KUR-40 hotfix). */
 export function readKseiTokenFile(): KseiTokenFile | null {
   try {
-    // Lazy require — keeps this module importable in node test env.
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const fs = require('node:fs') as typeof import('node:fs');
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const path = require('node:path') as typeof import('node:path');
     const file = path.join(process.cwd(), 'data', 'ksei.json');
     if (!fs.existsSync(file)) return null;
     return JSON.parse(fs.readFileSync(file, 'utf8')) as KseiTokenFile;
