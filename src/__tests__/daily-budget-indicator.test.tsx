@@ -132,4 +132,35 @@ describe('DailyBudgetIndicator — 7-day burn bars', () => {
     const todayBar = document.querySelector(`[title^="2026-09-20"]`);
     expect(todayBar!.getAttribute('title')).toContain('300.000');
   });
+
+  it('shows "− X unpaid" note when unpaid obligations exist', () => {
+    // income 1M, spent 300k, unpaid 100k cash + 50k credit_payment → remaining 550k, 1 day left
+    const txs = [
+      mk(1, day(0), 300000),
+      mk(2, day(0, 9), 100000, false),
+      mk(3, day(0, 10), 50000, false, 'credit_payment'),
+    ];
+    render(
+      <DailyBudgetIndicator transactions={txs} income={1000000} spent={300000} activeMonth="September 2026" />
+    );
+    expect(screen.getByText((_, el) => el?.textContent === '− IDR 150.000 unpaid')).toBeInTheDocument();
+    // allowance reflects the deduction: 550k remaining / 2 days (component counts end-of-day) = 275k
+    expect(screen.getAllByText('IDR 275.000').length).toBeGreaterThan(0);
+  });
+
+  it('hides the unpaid note when there are no unpaid obligations', () => {
+    const txs = [mk(1, day(0), 300000)];
+    render(
+      <DailyBudgetIndicator transactions={txs} income={1000000} spent={300000} activeMonth="September 2026" />
+    );
+    expect(screen.queryByText((_, el) => el?.textContent?.endsWith('unpaid') ?? false)).toBeNull();
+  });
+
+  it('unpaid credit_expense alone does not trigger the unpaid note', () => {
+    const txs = [mk(1, day(0), 300000), mk(2, day(0, 9), 200000, false, 'credit_expense')];
+    render(
+      <DailyBudgetIndicator transactions={txs} income={1000000} spent={300000} activeMonth="September 2026" />
+    );
+    expect(screen.queryByText((_, el) => el?.textContent?.endsWith('unpaid') ?? false)).toBeNull();
+  });
 });

@@ -108,12 +108,12 @@ export default function DailyBudgetIndicator({ transactions, income, spent, acti
     else if (pctToday >= 70) status = 'warning';
     else status = 'safe';
 
-    return { dailyAllowance, spentToday, remainingToday, pctToday, status, daysRemaining, remaining, last7 };
+    return { dailyAllowance, spentToday, remainingToday, pctToday, status, daysRemaining, remaining, unpaidTotal, last7 };
   }, [transactions, income, spent, activeMonth]);
 
   if (!data) return null;
 
-  const { dailyAllowance, spentToday, remainingToday, pctToday, status, daysRemaining, remaining, last7 } = data;
+  const { dailyAllowance, spentToday, remainingToday, pctToday, status, daysRemaining, remaining, unpaidTotal, last7 } = data;
 
   const statusColors = {
     safe: { bg: 'rgba(52,211,153,0.10)', text: '#34d399', border: 'rgba(52,211,153,0.25)', icon: <CheckCircle2 className="w-4 h-4" style={{ color: '#34d399' }} /> },
@@ -149,6 +149,11 @@ export default function DailyBudgetIndicator({ transactions, income, spent, acti
               <p className="text-[11px] text-slate-500 dark:text-white/40 mt-1">
                 {daysRemaining} day{daysRemaining !== 1 ? 's' : ''} left • {formatIdr(remaining)} remaining
               </p>
+              {unpaidTotal > 0 && (
+                <p className="text-[11px] text-slate-500 dark:text-white/40">
+                  − {formatIdr(unpaidTotal)} unpaid
+                </p>
+              )}
             </div>
             {colors.icon}
           </div>

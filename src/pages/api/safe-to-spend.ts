@@ -7,11 +7,16 @@ import { db } from '../../lib/db';
  * Computes the daily "safe-to-spend" allowance for the active (or specified) salary period.
  *
  * Formula:
- *   remainingBudget = income − totalSpent
+ *   unpaidObligations = Σ(done = 0 AND type IN ('cash','credit_payment')) — same period.
+ *     Mirrors the projected-balance definition (glance.unpaidTotal). Unpaid
+ *     credit_expense is NOT included: it is already counted when the expense
+ *     is created (including it here would double count).
+ *   remainingBudget = income − totalSpent − unpaidObligations
  *   daysRemaining   = period end date − today (minimum 0)
  *   dailySafeToSpend = remainingBudget / max(1, daysRemaining)
  *
  * Also returns:
+ *   unpaidObligations — sum of unpaid cash + unpaid credit_payment this period
  *   spentToday       — sum of done spending transactions created today
  *   leftToday        — dailySafeToSpend − spentToday
  *   avg7d            — average daily spending over the last 7 days
@@ -25,6 +30,7 @@ interface SafeToSpendResponse {
   end_date: string;
   income: number;
   total_spent: number;
+  unpaid_obligations: number;
   remaining_budget: number;
   days_elapsed: number;
   days_total: number;
@@ -76,6 +82,20 @@ export const GET: APIRoute = async ({ url }) => {
     .get(period.id) as { total: number };
   const totalSpent = spentRow.total;
 
+  // --- Unpaid obligations (committed spend, not yet paid) ---
+  // done = 0 AND type IN ('cash','credit_payment') — same definition as the
+  // projected balance in Dashboard (glance.unpaidTotal). Unpaid credit_expense
+  // is deliberately excluded: it is already counted when the expense is
+  // created (including it here would double count).
+  const unpaidRow = db
+    .prepare(
+      `SELECT COALESCE(SUM(amount), 0) as total
+       FROM transactions
+       WHERE period_id = ? AND done = 0 AND type IN ('cash', 'credit_payment')`
+    )
+    .get(period.id) as { total: number };
+  const unpaidObligations = unpaidRow.total;
+
   // --- Period days computation ---
   const startDate = new Date(period.start_date + 'T00:00:00');
   const endDate = new Date(period.end_date + 'T23:59:59');
@@ -90,7 +110,7 @@ export const GET: APIRoute = async ({ url }) => {
   const daysRemaining = Math.max(0, daysTotal - daysElapsed);
 
   // --- Core computation ---
-  const remainingBudget = income - totalSpent;
+  const remainingBudget = income - totalSpent - unpaidObligations;
   const dailySafeToSpend = daysRemaining > 0 ? remainingBudget / daysRemaining : remainingBudget;
 
   // --- Spent today ---
@@ -137,6 +157,7 @@ export const GET: APIRoute = async ({ url }) => {
     end_date: period.end_date,
     income,
     total_spent: totalSpent,
+    unpaid_obligations: Math.round(unpaidObligations),
     remaining_budget: remainingBudget,
     days_elapsed: daysElapsed,
     days_total: daysTotal,
