@@ -1,5 +1,21 @@
 # Iteration Log
 
+## Sesi KUR-29 (lanjutan) — Fix fetch Yahoo: URL host ganda + UA diblokir (PR #278-fix)
+
+### Ringkasan
+Card BBRI dari PR #278 ternyata tidak pernah berhasil fetch live: cache selalu kosong dan `/api/bbri` selalu 502 "fetch failed". Debugging menemukan 2 bug di `src/lib/bbri.ts`:
+1. **URL host ganda** — `chartUrl()` menempel `.finance.yahoo.com` di template lalu mengganti placeholder dengan hostname lengkap dari `HOSTS`, menghasilkan `query2.finance.yahoo.com.finance.yahoo.com` → `ENOTFOUND` untuk kedua host. Terlewat karena test me-mock `fetch` sepenuhnya.
+2. **UA panjang diblokir Yahoo** — full Chrome UA string memicu HTTP 429, sementara token minimal `Mozilla/5.0` dilayani 200 (diverifikasi langsung 1 Okt 2026; price 3130, prevClose 3150).
+
+### Perbaikan
+- Placeholder host (`__HOST__`) kini menggantikan seluruh authority URL, bukan substring "query1".
+- `BROWSER_UA` → `'Mozilla/5.0'` (dengan komentar penjelasan).
+- `src/__tests__/bbri-lib.test.ts` ikut di-commit (sebelumnya tertinggal untracked dari run timeout) + 1 test regresi URL yang menegaskan format `https://query[12].finance.yahoo.com/...`.
+
+### Verifikasi
+- 294/294 tests pass, build clean.
+- Live end-to-end di port throwaway: `/api/bbri` mengembalikan data nyata — price 3130, prev_close 3150, TTM 346 IDR (event 2026-04-21: 209, 2025-12-30: 137), `stale:false refreshed:true`; call kedua cache hit (`refreshed:false`) — min-interval 60 menit bekerja.
+
 ## Sesi KUR-29 — BBRI Dividend Yield & 32-Lot Tracking Card (PR #278)
 
 ### Ringkasan

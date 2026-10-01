@@ -37,23 +37,25 @@ export interface BbriResult extends BbriQuote {
 }
 
 const SYMBOL = 'BBRI.JK';
-const BROWSER_UA =
-  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36';
+// Yahoo returns 403/429 for long spoofed Chrome UA strings but serves requests
+// with a minimal `Mozilla/5.0` token (verified 1 Okt 2026: full Chrome UA =
+// 429, "Mozilla/5.0" = 200 with live quote).
+const BROWSER_UA = 'Mozilla/5.0';
 const TIMEOUT_MS = 10_000;
 export const MIN_REFRESH_INTERVAL_MS = 60 * 60 * 1000; // 1 hour
 const HOSTS = ['query1.finance.yahoo.com', 'query2.finance.yahoo.com'];
+const HOST_PLACEHOLDER = '__HOST__';
 
 function chartUrl(range: string, interval: string, events: boolean): string {
   const ev = events ? '&events=div' : '';
-  return `https://query1.finance.yahoo.com/v8/finance/chart/${SYMBOL}?range=${range}&interval=${interval}${ev}`
-    .replace('query1', '__HOST__');
+  return `https://${HOST_PLACEHOLDER}/v8/finance/chart/${SYMBOL}?range=${range}&interval=${interval}${ev}`;
 }
 
 /** Fetch one chart URL, trying query1 then query2. Throws when both fail. */
 async function fetchChart(range: string, interval: string, events: boolean): Promise<any> {
   let lastErr: unknown = new Error('no attempt');
   for (const host of HOSTS) {
-    const url = chartUrl(range, interval, events).replace('__HOST__', host);
+    const url = chartUrl(range, interval, events).replace(HOST_PLACEHOLDER, host);
     try {
       const res = await fetch(url, {
         headers: { 'User-Agent': BROWSER_UA, Accept: 'application/json' },
