@@ -1,5 +1,28 @@
 # Iteration Log
 
+## Sesi KUR-29 — BBRI Dividend Yield & 32-Lot Tracking Card (PR #278)
+
+### Ringkasan
+Eksekusi KUR-29 (tiket dari standup KUR-28, 1 Okt 2026). Dashboard kini punya section BBRI tepat setelah PULSE: yield TTM sebagai angka terbesar (+ badge TTM), harga + delta harian (emerald/merah), nilai holding 32 lot (3.200 shares), dan baris kecil total dividen 12 bulan + tanggal event terakhir. Klik card membuka histori dividen per event inline. Data selalu dirender dari cache SQLite (`bbri_quotes`, tabel additive baru); fetch Yahoo Finance berjalan server-side on-demand dengan min-interval 60 menit, fallback query1→query2, dan fallback ke cache saat keduanya gagal.
+
+### PR
+[#278 — feat(KUR-29): BBRI Dividend Yield & 32-Lot Tracking Card](https://github.com/akramram/self-financial-dashboard/pull/278) (merged)
+
+### Branch
+`feat/bbri-dividend-card` (merged)
+
+### Apa yang berubah
+- **File baru:** `src/lib/bbri.ts` (fetch + cache-first logic), `src/pages/api/bbri.ts` (GET /api/bbri), `src/components/BbriCard.tsx`, `src/__tests__/bbri-card.test.tsx`, `src/__tests__/bbri-lib.test.ts`.
+- **`src/lib/db.ts`:** migrasi additive `bbri_quotes` (symbol PK, price, prev_close, ttm_dividend, fetched_at, last_dividend_date, dividends_json) + helper `getCachedBbriQuote`/`saveBbriQuote`. Skema & data eksisting tidak disentuh.
+- **`src/components/Dashboard.tsx`:** section BBRI (full-width mobile, setengah lebar desktop) + chip nav baru, terhubung ke initial fetch dan live-sync `onDataChanged`.
+- State UI: skeleton saat cache kosong; stale → data tetap tampil + chip amber "data X hr lalu"; error fetch → pesan inline satu baris (tanpa toast).
+- NOL dependensi baru.
+
+### Verifikasi
+- 293/293 tests pass (14 baru: 7 komponen + 7 lib), build clean, tsc 0 error di file baru/ubah.
+- Live check di port throwaway (salinan DB, bukan production): cache stale + Yahoo down → `stale:true` + data tetap tampil; cache fresh → 2 ms tanpa network; SSR halaman memuat `data-section="bbri"`.
+- Catatan: selama sesi ini Yahoo memblokir IP mesin dev ("Too Many Requests" di query1 & query2, ~10 retry / 30 menit) sehingga verifikasi data live memakai nilai hasil verifikasi standup KUR-28 (price 3140, prevClose 3150, TTM 346 = 137+209). Card otomatis refresh pada request pertama setelah blokir terangkat.
+
 ## Sesi KUR-23 — Daily Health-Check & API Hardening (PR #276)
 
 ### Ringkasan
