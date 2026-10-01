@@ -166,6 +166,19 @@ export function initSchema() {
     db.prepare('INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)').run('chowderlatte', adminHash, 'admin');
     db.prepare('INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)').run('viewer', viewerHash, 'viewer');
   }
+
+  // KUR-29: BBRI.JK quote + TTM dividend cache (additive — existing tables untouched)
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS bbri_quotes (
+      symbol TEXT PRIMARY KEY,
+      price REAL NOT NULL,
+      prev_close REAL NOT NULL,
+      ttm_dividend REAL NOT NULL DEFAULT 0,
+      fetched_at TEXT NOT NULL,
+      last_dividend_date TEXT,
+      dividends_json TEXT
+    );
+  `);
 }
 
 // ─── Period helpers ─────────────────────────────────────────────────────────
@@ -3334,4 +3347,53 @@ export function getBudgetPace(periodId?: number): BudgetPaceResult {
     overall_status,
     categories: paceCategories,
   };
+}
+
+// ─── BBRI quote cache (KUR-29) ──────────────────────────────────────────────
+
+export interface BbriQuoteRow {
+  symbol: string;
+  price: number;
+  prev_close: number;
+  ttm_dividend: number;
+  fetched_at: string;
+  last_dividend_date: string | null;
+  dividends_json: string | null;
+}
+
+export function getCachedBbriQuote(symbol: string): BbriQuoteRow | null {
+  const row = db
+    .prepare('SELECT * FROM bbri_quotes WHERE symbol = ?')
+    .get(symbol) as BbriQuoteRow | undefined;
+  return row ?? null;
+}
+
+export function saveBbriQuote(q: {
+  symbol: string;
+  price: number;
+  prev_close: number;
+  ttm_dividend: number;
+  fetched_at: string;
+  last_dividend_date?: string | null;
+  dividends?: { date: string; amount: number }[];
+}): void {
+  db.prepare(
+    `INSERT INTO bbri_quotes (symbol, price, prev_close, ttm_dividend, fetched_at, last_dividend_date, dividends_json)
+     VALUES (?, ?, ?, ?, ?, ?, ?)
+     ON CONFLICT(symbol) DO UPDATE SET
+       price = excluded.price,
+       prev_close = excluded.prev_close,
+       ttm_dividend = excluded.ttm_dividend,
+       fetched_at = excluded.fetched_at,
+       last_dividend_date = excluded.last_dividend_date,
+       dividends_json = excluded.dividends_json`
+  ).run(
+    q.symbol,
+    q.price,
+    q.prev_close,
+    q.ttm_dividend,
+    q.fetched_at,
+    q.last_dividend_date ?? null,
+    q.dividends ? JSON.stringify(q.dividends) : null
+  );
 }
