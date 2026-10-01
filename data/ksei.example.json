@@ -1,0 +1,5 @@
+{
+  "token": "PASTE_NEW_AKSES_BEARER_TOKEN_HERE",
+  "note": "Copy to data/ksei.json (gitignored) with the real token from akses.ksei.co.id myportofolio session. PM2 injects it as KSEI_BEARER_TOKEN (see ecosystem.config.cjs). JWT exp field marks expiry — rotate when the card shows 'token kedaluwarsa'.",
+  "updated": "YYYY-MM-DD"
+}

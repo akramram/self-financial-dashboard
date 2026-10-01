@@ -45,7 +45,7 @@ import UpcomingBills from './UpcomingBills';
 import GoalsSnapshot from './GoalsSnapshot';
 import TransactionDetailSheet from './TransactionDetailSheet';
 import HealthChip from './HealthChip';
-import BbriCard, { type BbriCardData } from './BbriCard';
+import KseiCard, { type KseiCardData } from './KseiCard';
 import SectionNavRail from './SectionNavRail';
 import QuickAddTransactionModal from './QuickAddTransactionModal';
 
@@ -81,7 +81,7 @@ interface Props {
 // Dashboard sections in scroll order — drives SectionNavRail (sticky chips + scroll-spy)
 const SECTIONS = [
   { id: 'pulse', label: 'Pulse' },
-  { id: 'bbri', label: 'BBRI' },
+  { id: 'ksei', label: 'Assets' },
   { id: 'flow', label: 'Flow' },
   { id: 'act', label: 'Act' },
   { id: 'insights', label: 'Insights' },
@@ -114,7 +114,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
   const [kickoffOpen, setKickoffOpen] = useState(false);
   const [runwayData, setRunwayData] = useState<{ runway_months: number; status: string; tips?: string[] } | null>(null);
   const [healthData, setHealthData] = useState<{ overall: number; grade: string; gradeColor: string; trend?: string; prevScore?: number | null } | null>(null);
-  const [bbriData, setBbriData] = useState<BbriCardData | null>(null);
+  const [kseiData, setKseiData] = useState<KseiCardData | null>(null);
   const [detailTx, setDetailTx] = useState<Transaction | null>(null);
   const [quickAddOpen, setQuickAddOpen] = useState(false);
 
@@ -166,7 +166,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
   }, [activeSummary, summaries, networth, filteredTransactions]);
 
   // ── Effects ───────────────────────────────────────────────────
-  useEffect(() => { fetchCategories().then(setCategories).catch(() => {}); fetchRecurringTransactions().then(r => { setRecurringTitles(r.filter(rx => rx.active).map(rx => rx.title)); setRecurringAll(r); }).catch(() => {}); fetch('/api/runway').then(r => r.json()).then(d => setRunwayData(d)).catch(() => {}); fetch('/api/health').then(r => r.json()).then(d => setHealthData(d)).catch(() => {}); fetch('/api/bbri').then(r => r.ok ? r.json() : Promise.reject()).then(d => setBbriData(d)).catch(() => {}); }, []);
+  useEffect(() => { fetchCategories().then(setCategories).catch(() => {}); fetchRecurringTransactions().then(r => { setRecurringTitles(r.filter(rx => rx.active).map(rx => rx.title)); setRecurringAll(r); }).catch(() => {}); fetch('/api/runway').then(r => r.json()).then(d => setRunwayData(d)).catch(() => {}); fetch('/api/health').then(r => r.json()).then(d => setHealthData(d)).catch(() => {}); fetch('/api/ksei').then(async r => { const d = await r.json().catch(() => null); if (d) setKseiData(d); }).catch(() => {}); }, []);
 
   // Live data sync: refetch server truth when another component mutates data
   // (quick add dialog, command palette, other widgets)
@@ -178,7 +178,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
     fetch('/api/networth').then(r => r.json()).then(setNetworth).catch(() => {});
     fetch('/api/runway').then(r => r.json()).then(d => setRunwayData(d)).catch(() => {});
     fetch('/api/health').then(r => r.json()).then(d => setHealthData(d)).catch(() => {});
-    fetch('/api/bbri').then(r => r.ok ? r.json() : Promise.reject()).then(d => setBbriData(d)).catch(() => {});
+    fetch('/api/ksei').then(async r => { const d = await r.json().catch(() => null); if (d) setKseiData(d); }).catch(() => {});
   }), []);
   useEffect(() => { const today = new Date(); if (today.getDate() < 21) return; const latest = summaries[summaries.length - 1]; if (!latest) return; const latestDate = new Date(latest.month + ' 1'); const nextDate = new Date(latestDate); nextDate.setMonth(nextDate.getMonth() + 1); const nextMonthStr = nextDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }); fetch('/api/kickoff').then(res => res.json()).then((status: any) => { if (status.hasNextMonth) { setKickoffBanner(null); return; } fetchRecurringTransactions().then(recurring => { setKickoffBanner({ show: true, currentMonth: latest.month, nextMonth: status.nextMonth || nextMonthStr, recurringCount: recurring.filter(r => r.active).length }); }).catch(() => {}); }).catch(() => {}); }, [summaries]);
 
@@ -375,11 +375,11 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
           )}
         </InView>
 
-        {/* ═══════════ SECTION 1b: BBRI — Dividend Yield & 32-Lot Tracking (KUR-29) ═══════════ */}
-        <InView as="section" y={16} blur={6} data-section="bbri">
-          <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/40 mb-3">BBRI</p>
+        {/* ═══════════ SECTION 1b: KSEI — Live Assets via AKSes (KUR-40) ═══════════ */}
+        <InView as="section" y={16} blur={6} data-section="ksei">
+          <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/40 mb-3">Assets</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <BbriCard data={bbriData} />
+            <KseiCard data={kseiData} />
           </div>
         </InView>
 
