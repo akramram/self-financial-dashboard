@@ -1,5 +1,21 @@
 # Iteration Log
 
+## Sesi KUR-47 — Daily Allowance memperhitungkan unpaid obligations (GH #270)
+
+### Ringkasan
+Daily Allowance di `/api/safe-to-spend` sebelumnya hanya mengurangi done spending, padahal transaksi belum dibayar di periode yang sama (`done = 0`, type `cash`/`credit_payment`) adalah committed spend yang pasti makan budget — angka allowance jadi overstate. Formula kini: `remainingBudget = income − done spending − unpaidObligations`, dengan definisi unpaid identik dengan projected balance (glance.unpaidTotal). Unpaid `credit_expense` sengaja TIDAK dihitung (sudah tercatat saat expense dibuat — mencegah double count).
+
+### Perubahan
+- **`src/pages/api/safe-to-spend.ts`** — query baru untuk unpaid obligations, dikurangkan dari remainingBudget; response menambah field `unpaid_obligations`; doc-comment formula di header diupdate.
+- **`src/components/DailyBudgetIndicator.tsx`** — keterangan kecil `− Rp X unpaid` (text-muted) di bawah "X days left • Rp Y remaining", hanya muncul saat unpaid > 0. Tanpa komponen/redesign lain.
+- **`src/__tests__/safe-to-spend.test.ts`** (baru, 6 test) — handler dieksekusi dengan `lib/db` di-mock ke temp SQLite (`createTestDb`), jam dibekukan; mencakup: (a) unpaid cash mengurangi allowance, (b) unpaid credit_payment mengurangi, (c) unpaid credit_expense TIDAK mengurangi, (d) done spending tetap penuh, plus isolasi antar-periode dan status `over` saat unpaid > income.
+- **`src/__tests__/daily-budget-indicator.test.tsx`** — +3 test UI: label unpaid tampil, sembunyi saat tidak ada unpaid, dan unpaid credit_expense saja tidak memunculkan label.
+- Status threshold healthy/tight/over tidak berubah. Data `data/` / `financial.db` tidak disentuh; tidak ada endpoint lain yang berubah.
+
+### Verifikasi
+- 330/330 tests pass (23 file), `npm run build` clean.
+- Deploy: PM2 delete full → rm dist → build → start via ecosystem.config.cjs (HOST 0.0.0.0:4321) → `/login` 200.
+
 ## Sesi KUR-29 (lanjutan) — Fix fetch Yahoo: URL host ganda + UA diblokir (PR #278-fix)
 
 ### Ringkasan
