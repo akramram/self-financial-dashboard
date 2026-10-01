@@ -179,6 +179,16 @@ export function initSchema() {
       dividends_json TEXT
     );
   `);
+
+  // KUR-40: AKSes (KSEI) portfolio snapshot cache (additive — existing tables untouched)
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS ksei_snapshots (
+      snapshot_date TEXT PRIMARY KEY,
+      total_value REAL NOT NULL,
+      breakdown_json TEXT NOT NULL,
+      fetched_at TEXT NOT NULL
+    );
+  `);
 }
 
 // ─── Period helpers ─────────────────────────────────────────────────────────
@@ -3396,4 +3406,43 @@ export function saveBbriQuote(q: {
     q.last_dividend_date ?? null,
     q.dividends ? JSON.stringify(q.dividends) : null
   );
+}
+
+// ─── AKSes (KSEI) portfolio snapshot cache (KUR-40) ─────────────────────────
+
+export interface KseiSnapshotRow {
+  snapshot_date: string;
+  total_value: number;
+  breakdown_json: string | null;
+  fetched_at: string;
+}
+
+export function getCachedKseiSnapshot(snapshotDate: string): KseiSnapshotRow | null {
+  const row = db
+    .prepare('SELECT * FROM ksei_snapshots WHERE snapshot_date = ?')
+    .get(snapshotDate) as KseiSnapshotRow | undefined;
+  return row ?? null;
+}
+
+export function getLatestKseiSnapshot(): KseiSnapshotRow | null {
+  const row = db
+    .prepare('SELECT * FROM ksei_snapshots ORDER BY snapshot_date DESC LIMIT 1')
+    .get() as KseiSnapshotRow | undefined;
+  return row ?? null;
+}
+
+export function saveKseiSnapshot(s: {
+  snapshot_date: string;
+  total_value: number;
+  breakdown: { type: string; amount: number; percent: number }[];
+  fetched_at: string;
+}): void {
+  db.prepare(
+    `INSERT INTO ksei_snapshots (snapshot_date, total_value, breakdown_json, fetched_at)
+     VALUES (?, ?, ?, ?)
+     ON CONFLICT(snapshot_date) DO UPDATE SET
+       total_value = excluded.total_value,
+       breakdown_json = excluded.breakdown_json,
+       fetched_at = excluded.fetched_at`
+  ).run(s.snapshot_date, s.total_value, JSON.stringify(s.breakdown), s.fetched_at);
 }
