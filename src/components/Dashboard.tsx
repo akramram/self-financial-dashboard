@@ -375,13 +375,15 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
           )}
         </InView>
 
-        {/* ═══════════ SECTION 1b: KSEI — Live Assets via AKSes (KUR-40) ═══════════ */}
+        {/* ═══════════ SECTION 1b: KSEI — Live Assets via AKSes (KUR-40) [HIDDEN] ═══════════ */}
+        {/*
         <InView as="section" y={16} blur={6} data-section="ksei">
           <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/40 mb-3">Assets</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <KseiCard data={kseiData} />
           </div>
         </InView>
+        */}
 
         {/* ═══════════ SECTION 2: FLOW - "Ke mana duit?" ═══════════ */}
         <InView as="section" delay={0.05} data-section="flow">
