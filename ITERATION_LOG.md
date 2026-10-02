@@ -2360,3 +2360,29 @@ September 2026: skor 56 (C), trend up +7 pts dari Agustus (49). Factor terlemah:
 ### Catatan
 - Chip menerima data via prop dari Dashboard — tidak ada duplikat API call; fallback fetch sendiri hanya saat standalone.
 - Desain dual-mode penuh (slate light / white-dark) sesuai standar tema.
+
+## Sesi KUR-59 — 3 Oktober 2026: FIN-016 finish — sticky header, touch target 44px, tabular-nums
+
+### Ringkasan
+Audit KUR-59/FIN-015+016: foundation shadcn + migrasi tabel & form ternyata sudah ter-merge di main sejak April (PR #7 dst). Yang tersisa adalah gap spesifik vs spek: sticky header belum ada, touch target mobile < 44px, dan beberapa kolom angka belum tabular-nums. Dikerjakan sebagai polish FIN-016 (GitHub issue #287).
+
+### PR
+[#288 — feat(FIN-016): sticky table headers, 44px mobile touch targets, tabular-nums](https://github.com/akramram/self-financial-dashboard/pull/288) (merged)
+
+### Apa yang berubah
+- `src/components/ui/table.tsx` — prop additive `wrapperClassName` pada `Table`: scroll container dan sticky header harus SATU elemen (position:sticky mati di dalam ancestor overflow mana pun). Backward compatible, komponen lain tidak terdampak.
+- `src/components/TransactionTable.tsx` — sticky `thead` di dalam wrapper `max-h-[70vh] overflow-y-auto` (desktop), toggle paid/unpaid mobile jadi 44x44px (dari 24px), tombol pagination 44px di mobile (kompact kembali di `md:`), hit area tombol clear-search diperbesar, `data-testid="transactions-table"`.
+- `src/components/NetworthTable.tsx` — sticky header dengan row opaque (`bg-background`, tanpa bleed-through), `tabular-nums` di kolom Total/MoM, link Edit mobile 44x44px, `data-testid="networth-table"`.
+- Pola mobile card-list DIPERTAHANKAN (tanpa horizontal scroll di ponsel), quick-add tetap modal inline, motion tidak berubah.
+
+### Test
+- 8 test baru `src/__tests__/kur59-table-polish.test.tsx`: sticky wrapper + thead, alignment Rupiah kanan + tabular-nums, touch target 44px, baris card mobile, empty state.
+- Suite penuh **338/338 hijau** (baseline sebelum branch: 330). Build clean.
+
+### Deploy
+- PM2 delete + start via `ecosystem.config.cjs`, online.
+- Verifikasi: `/login` 200, `/`, `/transactions`, `/networth` 200 (authenticated), kedua `data-testid` baru ada di SSR HTML (build baru benar-benar live), tidak ada error di PM2 logs.
+
+### Catatan
+- FIN-015 sudah lengkap sejak April: semua 8 komponen spek (Button, Input, Card, Table, Dialog, Select, Label, Checkbox) ada di `src/components/ui/`, tokens Tailwind mode extend dengan mapping CSS variables dual-theme. Tidak ada pekerjaan foundation yang tersisa.
+- Sticky header sengaja bounded-scroll (max-h 70vh), bukan page-scroll, agar tidak bentrok dengan top bar mobile fixed (h-14) dan tidak mengubah layout halaman.
