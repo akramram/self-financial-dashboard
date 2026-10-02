@@ -371,7 +371,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
             {search && (
               <button
                 onClick={() => { setSearch(''); setPage(1); }}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-white/40 hover:text-slate-600 dark:text-white/60"
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-2 -m-2 text-slate-500 dark:text-white/40 hover:text-slate-600 dark:text-white/60"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -780,9 +780,12 @@ export default function TransactionTable({ transactions, showMonth = true, perio
 
       {/* ─── Table (desktop) + card list (mobile) ────────────────── */}
       <div className="rounded-xl border border-slate-200 dark:border-white/[0.06] overflow-hidden">
-        <div className="hidden md:block overflow-x-auto">
-        <Table>
-          <TableHeader>
+        <div className="hidden md:block">
+        <Table
+          wrapperClassName="max-h-[70vh] overflow-y-auto"
+          data-testid="transactions-table"
+        >
+          <TableHeader className="sticky top-0 z-10">
             <TableRow className="bg-slate-100 dark:bg-white/[0.02] border-slate-200 dark:border-white/[0.06] hover:bg-slate-100 dark:bg-white/[0.02]">
               <TableHead className="w-10 py-3">
                 <Checkbox
@@ -957,7 +960,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                       }
                     }}
                     aria-label={row.done ? `Mark ${row.title} unpaid` : `Mark ${row.title} paid`}
-                    className={`shrink-0 h-6 text-[10px] font-semibold px-2 rounded-md transition-colors ${
+                    className={`shrink-0 min-h-[44px] min-w-[44px] inline-flex items-center justify-center text-xs font-semibold px-3 rounded-md transition-colors ${
                       row.done
                         ? 'bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25'
                         : 'bg-red-500/10 text-red-400 hover:bg-red-500/20'
@@ -1002,7 +1005,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
             variant="outline"
             onClick={() => setPage(1)}
             disabled={safePage <= 1}
-            className="h-7 text-xs border-slate-300 dark:border-white/[0.08] text-slate-500 dark:text-white/40 hover:bg-slate-200/60 dark:bg-white/[0.06] disabled:opacity-20"
+            className="min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0 h-7 md:h-7 text-xs border-slate-300 dark:border-white/[0.08] text-slate-500 dark:text-white/40 hover:bg-slate-200/60 dark:bg-white/[0.06] disabled:opacity-20"
           >
             First
           </Button>
@@ -1011,7 +1014,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
             variant="outline"
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={safePage <= 1}
-            className="h-7 text-xs border-slate-300 dark:border-white/[0.08] text-slate-500 dark:text-white/40 hover:bg-slate-200/60 dark:bg-white/[0.06] disabled:opacity-20"
+            className="min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0 h-7 md:h-7 text-xs border-slate-300 dark:border-white/[0.08] text-slate-500 dark:text-white/40 hover:bg-slate-200/60 dark:bg-white/[0.06] disabled:opacity-20"
           >
             Prev
           </Button>
@@ -1023,7 +1026,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
             variant="outline"
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={safePage >= totalPages}
-            className="h-7 text-xs border-slate-300 dark:border-white/[0.08] text-slate-500 dark:text-white/40 hover:bg-slate-200/60 dark:bg-white/[0.06] disabled:opacity-20"
+            className="min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0 h-7 md:h-7 text-xs border-slate-300 dark:border-white/[0.08] text-slate-500 dark:text-white/40 hover:bg-slate-200/60 dark:bg-white/[0.06] disabled:opacity-20"
           >
             Next
           </Button>
@@ -1032,7 +1035,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
             variant="outline"
             onClick={() => setPage(totalPages)}
             disabled={safePage >= totalPages}
-            className="h-7 text-xs border-slate-300 dark:border-white/[0.08] text-slate-500 dark:text-white/40 hover:bg-slate-200/60 dark:bg-white/[0.06] disabled:opacity-20"
+            className="min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0 h-7 md:h-7 text-xs border-slate-300 dark:border-white/[0.08] text-slate-500 dark:text-white/40 hover:bg-slate-200/60 dark:bg-white/[0.06] disabled:opacity-20"
           >
             Last
           </Button>

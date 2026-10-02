@@ -40,11 +40,11 @@ export default function NetworthTable({ networth }: Props) {
 
   return (
     <>
-      {/* Desktop table (>=md) */}
+      {/* Desktop table (>=md) — sticky header inside bounded scroll area */}
       <div className="hidden md:block">
-        <Table>
-          <TableHeader>
-            <TableRow>
+        <Table wrapperClassName="max-h-[70vh] overflow-y-auto" data-testid="networth-table">
+          <TableHeader className="sticky top-0 z-10">
+            <TableRow className="bg-background hover:bg-background border-b border-slate-200 dark:border-white/[0.06]">
               <SortableHeader sortKey="month" currentDirection={isSorted('month')} onSort={toggleSort}>Month</SortableHeader>
               <SortableHeader sortKey="total" currentDirection={isSorted('total')} onSort={toggleSort} className="text-right">Total</SortableHeader>
               <SortableHeader sortKey="change" currentDirection={isSorted('change')} onSort={toggleSort} className="text-right">MoM Change</SortableHeader>
@@ -56,8 +56,8 @@ export default function NetworthTable({ networth }: Props) {
             {sortedRows.map((row) => (
               <TableRow key={row.month}>
                 <TableCell className="font-medium">{row.month}</TableCell>
-                <TableCell className="font-medium text-right">{formatIdr(row.total)}</TableCell>
-                <TableCell className="text-right">
+                <TableCell className="font-medium text-right tabular-nums">{formatIdr(row.total)}</TableCell>
+                <TableCell className="text-right tabular-nums">
                   {row.month_over_month_change != null ? (
                     <span className={changeClass(row.month_over_month_change)}>
                       {row.month_over_month_change >= 0 ? '+' : ''}{formatIdr(row.month_over_month_change)}
@@ -112,7 +112,7 @@ export default function NetworthTable({ networth }: Props) {
                 </span>
                 <a
                   href={`/networth/edit?month=${encodeURIComponent(row.month)}`}
-                  className="h-8 px-3 inline-flex items-center rounded-lg text-xs font-medium text-mint-500 hover:bg-mint-500/10 transition-colors"
+                  className="min-h-[44px] min-w-[44px] px-3 inline-flex items-center justify-center rounded-lg text-xs font-medium text-mint-500 hover:bg-mint-500/10 transition-colors"
                 >
                   Edit
                 </a>
