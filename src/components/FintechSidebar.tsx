@@ -1,10 +1,11 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import {
   LayoutDashboard, ArrowRightLeft, PieChart, Target, Settings,
   TrendingUp, Calendar, Shield, Wallet, CreditCard, Menu, X, Bell,
   Trophy, Flame, Heart, BarChart3, FlaskConical, Briefcase, PiggyBank,
   Repeat, Search, FileText, GitCompare, Activity, Layers, CalendarDays, Zap, Grid3x3,
 } from 'lucide-react';
+import { openAlertsDrawer } from '../lib/alertsStore';
 
 interface Props {
   balance?: string;
@@ -61,6 +62,7 @@ const REPORTS = [
 export default function FintechSidebar({ balance, alerts: initialAlerts = 0 }: Props) {
   const [collapsed, setCollapsed] = useState(false);
   const [alerts, setAlerts] = useState(initialAlerts);
+  const bellRef = useRef<HTMLButtonElement | null>(null);
 
   // Keep layout offsets (topbar margin, main padding) in sync with width
   useEffect(() => {
@@ -181,11 +183,21 @@ export default function FintechSidebar({ balance, alerts: initialAlerts = 0 }: P
           ))}
         </nav>
 
-        {/* Alert bell */}
+        {/* Alert bell — opens the Alerts Detail Drawer (FIN-021) */}
         <div className={`px-3 pt-2 pb-3 shrink-0 ${collapsed ? 'flex justify-center' : ''}`}>
-          <a
-            href="/"
-            className={`relative flex items-center rounded-xl transition-colors hover:bg-slate-100 dark:bg-white/5 no-underline ${collapsed ? 'p-2 justify-center' : 'px-3 py-2 gap-3'}`}
+          <button
+            type="button"
+            ref={bellRef}
+            onClick={() => openAlertsDrawer(bellRef.current)}
+            disabled={alerts === 0}
+            aria-disabled={alerts === 0}
+            aria-label={alerts > 0 ? `${alerts} ${alerts !== 1 ? 'alerts' : 'alert'}` : 'No alerts'}
+            title={alerts > 0 ? `${alerts} ${alerts !== 1 ? 'alerts' : 'alert'}` : 'No alerts'}
+            className={`relative w-full flex items-center rounded-xl transition-colors no-underline ${
+              alerts === 0
+                ? 'cursor-not-allowed opacity-60'
+                : 'hover:bg-slate-100 dark:bg-white/5'
+            } ${collapsed ? 'p-2 justify-center' : 'px-3 py-2 gap-3'}`}
           >
             <Bell
               className={`w-5 h-5 ${alerts > 0 ? 'text-mint-500' : 'text-slate-400 dark:text-white/40'}`}
@@ -193,10 +205,10 @@ export default function FintechSidebar({ balance, alerts: initialAlerts = 0 }: P
             />
             {alerts > 0 && (
               <span
-                className="absolute -top-0.5 -right-0.5 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-slate-900 dark:text-white"
+                className="absolute -top-0.5 -right-0.5 min-w-[20px] h-5 px-1 rounded-full flex items-center justify-center text-[10px] font-bold text-slate-900 dark:text-white"
                 style={{ backgroundColor: '#ef4444' }}
               >
-                {alerts}
+                {alerts > 99 ? '99+' : alerts}
               </span>
             )}
             {!collapsed && (
@@ -204,7 +216,7 @@ export default function FintechSidebar({ balance, alerts: initialAlerts = 0 }: P
                 {alerts > 0 ? `${alerts} alert${alerts !== 1 ? 's' : ''}` : 'No alerts'}
               </span>
             )}
-          </a>
+          </button>
         </div>
       </aside>
 
