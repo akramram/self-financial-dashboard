@@ -19,8 +19,10 @@ const SheetOverlay = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SheetPrimitive.Overlay
     className={cn(
-      // z-[90]: above the mobile topbar (z-40) and MobileSidebar (z-[70])
-      "fixed inset-0 z-[90] bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+      // KUR-117 §3: scrim rgba(0,0,0,0.5) + 2px blur, z-[75] — above the
+      // mobile nav drawer (z-60/70), below the sheet panel (z-[80]).
+      "fixed inset-0 z-[75] bg-black/50 backdrop-blur-[2px] motion-reduce:animate-none",
+      "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=open]:duration-200 data-[state=closed]:fade-out-0 data-[state=closed]:duration-[250ms]",
       className
     )}
     {...props}
@@ -30,8 +32,9 @@ const SheetOverlay = React.forwardRef<
 SheetOverlay.displayName = SheetPrimitive.Overlay.displayName
 
 const sheetVariants = cva(
-  // z-[100]: drawer content sits above every app chrome layer
-  "fixed z-[100] gap-4 bg-background p-6 shadow-lg transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
+  // KUR-117 §4: open = 300ms cubic-bezier(0.32,0.72,0,1) slide, close =
+  // 250ms ease-in; prefers-reduced-motion → no animation at all.
+  "fixed z-[80] gap-4 bg-background p-6 shadow-lg motion-reduce:animate-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:duration-300 data-[state=open]:[animation-timing-function:cubic-bezier(0.32,0.72,0,1)] data-[state=closed]:duration-[250ms] data-[state=closed]:[animation-timing-function:ease-in]",
   {
     variants: {
       side: {
@@ -65,7 +68,9 @@ const SheetContent = React.forwardRef<
       {...props}
     >
       {children}
-      <SheetPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary">
+      {/* KUR-117 §1: 40×40 close (touch ≥44 on mobile via hit area), centered
+          in the drawer's 56px header row. */}
+      <SheetPrimitive.Close className="absolute right-3 top-2 z-10 flex h-10 w-10 items-center justify-center rounded-lg opacity-70 transition-opacity hover:bg-[hsl(var(--surface-hover))] hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none">
         <X className="h-4 w-4" />
         <span className="sr-only">Close</span>
       </SheetPrimitive.Close>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import type { MonthlySummary, Category, Transaction } from '../lib/data';
 import type { Anomaly } from '../lib/db';
 import { formatIdr } from '../lib/utils';
@@ -34,24 +34,63 @@ interface Props {
   emptyState?: React.ReactNode;
   /** Hide the built-in "Alerts" card header (drawer renders its own). */
   showHeader?: boolean;
+  /**
+   * 'card'  — dashboard surface: glass card, severity header badges,
+   *           top-5 collapse (KUR-117: collapse never inside the drawer).
+   * 'drawer' — FIN-021 drawer surface: borderless, all alerts listed,
+   *           per-card accent bar + severity chip.
+   */
+  variant?: 'card' | 'drawer';
 }
 
 // ─── Severity constants ─────────────────────────────────────────────────────
+// KUR-117 design spec: coral/gold/mint scale only (never red-*), and severity
+// is NEVER color-only — every card pairs a 3px accent bar (shape channel)
+// with an uppercase text chip (label channel) plus the type badge.
 
 type Severity = 'high' | 'medium' | 'low';
 
 const SEVERITY_ORDER: Record<Severity, number> = { high: 0, medium: 1, low: 2 };
 
-const SEVERITY_BORDER: Record<Severity, string> = {
-  high: 'border-red-300 bg-red-50 dark:border-red-800 dark:bg-red-950/30',
-  medium: 'border-gold-400/30 bg-gold-500/5 dark:border-gold-700/40 dark:bg-gold-700/10/30',
-  low: 'border-mint-400/30 bg-mint-500/5 dark:border-mint-700/40 dark:bg-mint-700/10',
+const SEVERITY_LABEL: Record<Severity, string> = {
+  high: 'OVER',
+  medium: 'APPROACHING',
+  low: 'INFO',
 };
 
+/** 3px vertical accent bar at the card's left edge (shape channel). */
+const SEVERITY_BAR: Record<Severity, string> = {
+  high: 'bg-coral-500',
+  medium: 'bg-gold-500',
+  low: 'bg-mint-500',
+};
+
+/** Uppercase 10px/700 text chip (label channel). */
+const SEVERITY_CHIP: Record<Severity, string> = {
+  high: 'bg-coral-500/10 text-coral-600 dark:text-coral-400',
+  medium: 'bg-gold-500/10 text-gold-600 dark:text-gold-400',
+  low: 'bg-mint-500/10 text-mint-600 dark:text-mint-400',
+};
+
+/** Card border + tinted background. */
+const SEVERITY_CARD: Record<Severity, string> = {
+  high: 'border-coral-500/20 bg-coral-500/5 dark:border-coral-700/40',
+  medium: 'border-gold-500/25 bg-gold-500/5 dark:border-gold-700/40',
+  low: 'border-mint-500/20 bg-mint-500/5 dark:border-mint-700/40',
+};
+
+/** Type icon inherits the severity color (spec §2). */
+const SEVERITY_ICON: Record<Severity, string> = {
+  high: 'text-coral-500',
+  medium: 'text-gold-500',
+  low: 'text-mint-500',
+};
+
+/** Muted outline badge naming the alert type (card variant only). */
 const SEVERITY_BADGE_CLASS: Record<Severity, string> = {
-  high: 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300',
-  medium: 'bg-gold-500/10 text-gold-700 dark:bg-gold-700/20/40 dark:text-gold-300',
-  low: 'bg-mint-500/10 text-mint-600 dark:bg-mint-700/20 dark:text-mint-300',
+  high: 'text-coral-600 border-coral-400/50 dark:text-coral-400 dark:border-coral-700/50',
+  medium: 'text-gold-600 border-gold-400/60 dark:text-gold-400 dark:border-gold-700/50',
+  low: 'text-mint-600 border-mint-400/60 dark:text-mint-400 dark:border-mint-700/50',
 };
 
 const ANOMALY_REASON_LABELS: Record<Anomaly['reason'], string> = {
@@ -94,6 +133,7 @@ export default function AlertsPanel({
   anomalies: anomaliesProp,
   emptyState,
   showHeader = true,
+  variant = 'card',
 }: Props) {
   // ── Anomaly data (injected by drawer, or fetched from API) ──
   const [fetchedAnomalies, setFetchedAnomalies] = useState<Anomaly[]>([]);
@@ -225,33 +265,28 @@ export default function AlertsPanel({
       }));
   }, [anomalies, dismissed.dismissedAnomalies]);
 
-  // Anomaly lookup for recency ordering
-  const anomalyById = useMemo(() => {
-    const m = new Map<string, Anomaly>();
-    anomalies.forEach((a) => m.set(`anomaly:${a.id}`, a));
-    return m;
-  }, [anomalies]);
-
-  // ── Merge & sort: severity first (critical → warning → info), most recent
-  //    first within the same severity (FIN-021 binding AC) ──
+  // ── Merge & sort: severity first (critical → warning → info), then by type
+  //    (anomaly before budget) and amount desc within the same severity
+  //    (FIN-021 binding AC + KUR-117 tie-break) ──
   const allAlerts = useMemo(() => {
     const severityRank: Record<Severity, number> = SEVERITY_ORDER;
-    const recency = (a: UnifiedAlert): number => {
-      if (a.type === 'anomaly') {
-        const raw = anomalyById.get(a.id)?.created_time;
-        const t = raw ? new Date(raw).getTime() : NaN;
-        return isNaN(t) ? 0 : t;
-      }
-      return 0;
-    };
+    const amountOf = (a: UnifiedAlert): number => a.amount ?? 0;
     const merged = [...anomalyAlerts, ...budgetAlerts];
     merged.sort((a, b) => {
       const bySeverity = severityRank[a.severity] - severityRank[b.severity];
       if (bySeverity !== 0) return bySeverity;
-      return recency(b) - recency(a);
+      if (a.type !== b.type) return a.type === 'anomaly' ? -1 : 1;
+      return amountOf(b) - amountOf(a);
     });
     return merged;
-  }, [anomalyAlerts, budgetAlerts, anomalyById]);
+  }, [anomalyAlerts, budgetAlerts]);
+
+  // ── Dismiss with exit animation (KUR-117 §4): the card plays a 200ms
+  //    fade+collapse; the optimistic shared-store dismissal then drops the
+  //    count instantly (bell updates via `alerts-count` without waiting).
+  // NOTE: hooks live above the early returns below (rules of hooks).
+  const [dismissing, setDismissing] = useState<string | null>(null);
+  const listRef = useRef<HTMLDivElement | null>(null);
 
   // ── Broadcast live count to sidebar/mobile bells (Pattern 2: CustomEvent) ──
   useEffect(() => {
@@ -276,29 +311,40 @@ export default function AlertsPanel({
     ? 'border-red-300 dark:border-red-800'
     : 'border-slate-200 dark:border-slate-700';
 
-  // ── Dismiss handlers (shared store — syncs dashboard panel + drawer) ──
-  const dismissAnomaly = (id: number) => dismissAnomalyShared(id);
-
-  const dismissBudgetAlert = (periodId: number, category: string) => {
-    dismissBudgetShared(`${periodId}:${category}`);
-  };
-
   const handleDismiss = (alert: UnifiedAlert) => {
-    if (alert.type === 'anomaly') {
-      const anomalyId = parseInt(alert.id.split(':')[1], 10);
-      dismissAnomaly(anomalyId);
-    } else {
-      const activeSummary = month
-        ? summaries.find((s) => s.month === month)
-        : summaries[summaries.length - 1];
-      const periodId = activeSummary?.period_id ?? 0;
-      const cat = alert.category ?? '';
-      dismissBudgetAlert(periodId, cat);
-    }
+    if (dismissing) return;
+    setDismissing(alert.id);
+    window.setTimeout(() => {
+      if (alert.type === 'anomaly') {
+        dismissAnomalyShared(parseInt(alert.id.split(':')[1], 10));
+      } else {
+        const activeSummary = month
+          ? summaries.find((s) => s.month === month)
+          : summaries[summaries.length - 1];
+        const periodId = activeSummary?.period_id ?? 0;
+        dismissBudgetShared(`${periodId}:${alert.category ?? ''}`);
+      }
+      // Spec §4 focus: move to the next visible card's dismiss button.
+      requestAnimationFrame(() => {
+        listRef.current
+          ?.querySelector<HTMLButtonElement>('[data-alert-dismiss]')
+          ?.focus();
+      });
+    }, 200);
   };
+
+  const isDrawer = variant === 'drawer';
+  const listAlerts = isDrawer ? allAlerts : displayItems;
 
   return (
-    <div className={`glass-card p-5 ${cardBorderClass}`}>
+    <div
+      ref={listRef}
+      className={
+        isDrawer
+          ? 'flex flex-col gap-3'
+          : `glass-card p-5 ${cardBorderClass}`
+      }
+    >
       {showHeader && (
         <div className="flex items-center justify-between">
           <h3 className="text-base font-semibold flex items-center gap-2 text-slate-800 dark:text-white/80">
@@ -331,52 +377,75 @@ export default function AlertsPanel({
         </div>
       )}
 
-        {displayItems.map((alert) => (
-          <div
-            key={alert.id}
-            className={`flex items-start gap-3 p-3 rounded-lg border ${SEVERITY_BORDER[alert.severity]} transition`}
-          >
-            <div className="shrink-0 mt-0.5">{alert.icon}</div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="font-medium text-sm text-slate-800 dark:text-slate-200 truncate">
-                  {alert.title}
-                </span>
-                <Badge
-                  variant="outline"
-                  className={`text-[10px] px-1.5 py-0 ${SEVERITY_BADGE_CLASS[alert.severity]}`}
-                >
-                  {alert.badgeLabel}
-                </Badge>
-              </div>
-              <div className="flex items-center gap-2 mt-1 text-xs text-slate-500 dark:text-slate-400">
-                {alert.amount != null && (
-                  <>
-                    <span>{formatIdr(alert.amount)}</span>
-                    {alert.category && (
+        {listAlerts.map((alert) => {
+          const isDismissing = dismissing === alert.id;
+          return (
+            <div
+              key={alert.id}
+              className={`relative overflow-hidden rounded-lg border transition-opacity duration-200 ${
+                isDismissing
+                  ? 'opacity-0'
+                  : SEVERITY_CARD[alert.severity]
+              } ${isDrawer ? '' : 'mb-2'}`}
+            >
+              {/* 3px severity accent bar (shape channel — KUR-117 §2) */}
+              <span
+                aria-hidden="true"
+                className={`absolute inset-y-0 left-0 w-[3px] ${SEVERITY_BAR[alert.severity]}`}
+              />
+              <div className="flex items-start gap-3 p-3 pl-4">
+                <div className={`shrink-0 mt-0.5 ${SEVERITY_ICON[alert.severity]}`}>{alert.icon}</div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span
+                      className={`text-[10px] font-bold uppercase tracking-[0.05em] px-1.5 py-0.5 rounded ${SEVERITY_CHIP[alert.severity]}`}
+                    >
+                      {SEVERITY_LABEL[alert.severity]}
+                    </span>
+                    <span className="font-medium text-sm text-slate-800 dark:text-slate-200 truncate">
+                      {alert.title}
+                    </span>
+                    {!isDrawer && (
+                      <Badge
+                        variant="outline"
+                        className={`text-[10px] px-1.5 py-0 ${SEVERITY_BADGE_CLASS[alert.severity]}`}
+                      >
+                        {alert.badgeLabel}
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 mt-1 text-xs text-slate-500 dark:text-slate-400 tabular-nums">
+                    {alert.amount != null && (
                       <>
-                        <span>·</span>
-                        <span>{alert.category}</span>
+                        <span>{formatIdr(alert.amount)}</span>
+                        {alert.category && (
+                          <>
+                            <span>·</span>
+                            <span>{alert.category}</span>
+                          </>
+                        )}
                       </>
                     )}
-                  </>
-                )}
+                  </div>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+                    {alert.detail}
+                  </p>
+                </div>
+                <button
+                  data-alert-dismiss
+                  onClick={() => handleDismiss(alert)}
+                  aria-label={`Dismiss: ${alert.title}`}
+                  className="shrink-0 p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700 transition"
+                  title="Dismiss"
+                >
+                  <X className="w-3.5 h-3.5 text-slate-400" />
+                </button>
               </div>
-              <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
-                {alert.detail}
-              </p>
             </div>
-            <button
-              onClick={() => handleDismiss(alert)}
-              className="shrink-0 p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700 transition"
-              title="Dismiss"
-            >
-              <X className="w-3.5 h-3.5 text-slate-400" />
-            </button>
-          </div>
-        ))}
+          );
+        })}
 
-        {allAlerts.length > VISIBLE_LIMIT && (
+        {!isDrawer && allAlerts.length > VISIBLE_LIMIT && (
           <Button
             variant="ghost"
             size="sm"
