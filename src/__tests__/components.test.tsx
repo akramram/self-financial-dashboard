@@ -46,7 +46,7 @@ import DashboardSummaryCards from '../components/DashboardSummaryCards';
 import SpendingPulse from '../components/SpendingPulse';
 import AlertsPanel from '../components/AlertsPanel';
 import AlertsDrawer from '../components/AlertsDrawer';
-import { resetAlertsState, dismissBudgetShared, dismissAnomalyShared, openAlertsDrawer } from '../lib/alertsStore';
+import { resetAlertsState, dismissBudgetShared, dismissAnomalyShared, openAlertsDrawer, resetAlertsDataCache } from '../lib/alertsStore';
 import type { Transaction } from '../lib/data';
 import FinancialInsights from '../components/FinancialInsights';
 import HealthChip from '../components/HealthChip';
@@ -700,6 +700,7 @@ describe('FIN-021 AlertsDrawer', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     resetAlertsState();
+    resetAlertsDataCache();
     const store: Record<string, string> = {};
     vi.spyOn(Storage.prototype, 'getItem').mockImplementation((key) => store[key] || null);
     vi.spyOn(Storage.prototype, 'setItem').mockImplementation((key, val) => { store[key] = val; });
@@ -764,7 +765,7 @@ describe('FIN-021 AlertsDrawer', () => {
     render(<AlertsDrawer />);
     openAlertsDrawer();
     await waitFor(() => {
-      expect(screen.getByText('Tidak ada alert untuk bulan ini')).toBeInTheDocument();
+      expect(screen.getByText("You're all caught up")).toBeInTheDocument();
     });
     expect(screen.getByRole('dialog')).toBeInTheDocument();
   });

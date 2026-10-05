@@ -127,6 +127,14 @@ import {
 
 export type AlertsDataStatus = 'idle' | 'loading' | 'ready' | 'error';
 
+// Per-month cache (KUR-118 directive #4): reopening the drawer for a month
+// already fetched renders instantly from cache instead of re-fetching.
+const alertsDataCache = new Map<string, AlertsData>();
+
+export function resetAlertsDataCache(): void {
+  alertsDataCache.clear();
+}
+
 export function useAlertsData(enabled: boolean): {
   status: AlertsDataStatus;
   data: AlertsData | null;
@@ -152,13 +160,21 @@ export function useAlertsData(enabled: boolean): {
         const month = summaries.length
           ? summaries[summaries.length - 1].month
           : '';
+        const cached = month ? alertsDataCache.get(month) : undefined;
+        if (cached) {
+          if (!cancelled) {
+            setData(cached);
+            setStatus('ready');
+          }
+          return;
+        }
         const anomaliesRes = await fetch(
           `/api/anomalies?month=${encodeURIComponent(month)}`,
         );
         const anomalies: Anomaly[] = await anomaliesRes.json();
         if (!Array.isArray(anomalies)) throw new Error('Invalid anomalies payload');
         if (cancelled) return;
-        setData({
+        const next: AlertsData = {
           month,
           summaries,
           categories,
@@ -167,7 +183,9 @@ export function useAlertsData(enabled: boolean): {
             .filter((r) => r.active)
             .map((r) => r.title),
           anomalies,
-        });
+        };
+        if (month) alertsDataCache.set(month, next);
+        setData(next);
         setStatus('ready');
       } catch {
         if (cancelled) return;

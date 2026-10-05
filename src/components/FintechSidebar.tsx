@@ -80,6 +80,15 @@ export default function FintechSidebar({ balance, alerts: initialAlerts = 0 }: P
     return () => window.removeEventListener('alerts-count', sync);
   }, []);
 
+  // Mirror drawer open/close for aria-expanded on the bell (KUR-117 §5).
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  useEffect(() => {
+    const sync = (e: Event) =>
+      setDrawerOpen(Boolean((e as CustomEvent<boolean>).detail));
+    window.addEventListener('fin-alerts-drawer-state', sync);
+    return () => window.removeEventListener('fin-alerts-drawer-state', sync);
+  }, []);
+
   // Hydration-safe current path: SSR renders '/', client sets real path after mount.
   const [currentPath, setCurrentPath] = useState('/');
   useEffect(() => {
@@ -183,21 +192,21 @@ export default function FintechSidebar({ balance, alerts: initialAlerts = 0 }: P
           ))}
         </nav>
 
-        {/* Alert bell — opens the Alerts Detail Drawer (FIN-021) */}
+        {/* Alert bell — opens the Alerts Detail Drawer (FIN-021). KUR-117 §6:
+            stays clickable at 0 alerts (reassurance + discoverability). */}
         <div className={`px-3 pt-2 pb-3 shrink-0 ${collapsed ? 'flex justify-center' : ''}`}>
           <button
             type="button"
             ref={bellRef}
             onClick={() => openAlertsDrawer(bellRef.current)}
-            disabled={alerts === 0}
-            aria-disabled={alerts === 0}
-            aria-label={alerts > 0 ? `${alerts} ${alerts !== 1 ? 'alerts' : 'alert'}` : 'No alerts'}
-            title={alerts > 0 ? `${alerts} ${alerts !== 1 ? 'alerts' : 'alert'}` : 'No alerts'}
-            className={`relative w-full flex items-center rounded-xl transition-colors no-underline ${
-              alerts === 0
-                ? 'cursor-not-allowed opacity-60'
-                : 'hover:bg-slate-100 dark:bg-white/5'
-            } ${collapsed ? 'p-2 justify-center' : 'px-3 py-2 gap-3'}`}
+            aria-haspopup="dialog"
+            aria-expanded={drawerOpen}
+            aria-label={alerts > 0 ? `Alerts, ${alerts} active` : 'Alerts, none'}
+            title={alerts > 0 ? `Alerts, ${alerts} active` : 'Alerts, none'}
+            className={`relative w-full flex items-center rounded-xl transition-colors no-underline hover:bg-slate-100 dark:hover:bg-white/5 data-[drawer=open]:bg-slate-100 dark:data-[drawer=open]:bg-white/5 ${
+              collapsed ? 'justify-center p-2' : 'px-3 py-2 gap-3'
+            }`}
+            data-drawer={drawerOpen ? 'open' : 'closed'}
           >
             <Bell
               className={`w-5 h-5 ${alerts > 0 ? 'text-mint-500' : 'text-slate-400 dark:text-white/40'}`}
@@ -205,6 +214,7 @@ export default function FintechSidebar({ balance, alerts: initialAlerts = 0 }: P
             />
             {alerts > 0 && (
               <span
+                aria-hidden="true"
                 className="absolute -top-0.5 -right-0.5 min-w-[20px] h-5 px-1 rounded-full flex items-center justify-center text-[10px] font-bold text-slate-900 dark:text-white"
                 style={{ backgroundColor: '#ef4444' }}
               >
@@ -217,6 +227,10 @@ export default function FintechSidebar({ balance, alerts: initialAlerts = 0 }: P
               </span>
             )}
           </button>
+          {/* aria-live: announce count changes without moving focus (§5) */}
+          <span aria-live="polite" className="sr-only">
+            {alerts > 0 ? `${alerts} alerts` : 'No alerts'}
+          </span>
         </div>
       </aside>
 
