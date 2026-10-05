@@ -2,6 +2,14 @@ import React, { useState, useEffect, useMemo } from 'react';
 import type { MonthlySummary, Category, Transaction } from '../lib/data';
 import type { Anomaly } from '../lib/db';
 import { formatIdr } from '../lib/utils';
+import {
+  subscribeAlerts,
+  getAlertsState,
+  getAlertsServerState,
+  dismissAnomalyShared,
+  dismissBudgetShared,
+  type AlertsSharedState,
+} from '../lib/alertsStore';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -20,6 +28,12 @@ interface Props {
   categories: Category[];
   transactions: Transaction[];
   recurringTitles: string[];
+  /** Pre-fetched anomalies (drawer mode) — skips the internal fetch. */
+  anomalies?: Anomaly[];
+  /** Rendered instead of null when there are 0 alerts (drawer empty state). */
+  emptyState?: React.ReactNode;
+  /** Hide the built-in "Alerts" card header (drawer renders its own). */
+  showHeader?: boolean;
 }
 
 // ─── Severity constants ─────────────────────────────────────────────────────
@@ -66,18 +80,8 @@ interface UnifiedAlert {
   icon: React.ReactNode;
 }
 
-// ─── Budget alert localStorage helpers (same as BudgetAlerts) ──────────────
-
-const BUDGET_STORAGE_KEY = 'budget-alerts-dismissed';
-
-function getBudgetDismissed(): Record<string, boolean> {
-  if (typeof window === 'undefined') return {};
-  try {
-    return JSON.parse(localStorage.getItem(BUDGET_STORAGE_KEY) || '{}');
-  } catch {
-    return {};
-  }
-}
+// ─── Budget dismissals live in the shared alerts store (alertsStore.ts),
+// ── which mirrors the legacy `budget-alerts-dismissed` localStorage key. ──
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
@@ -87,41 +91,48 @@ export default function AlertsPanel({
   categories,
   transactions,
   recurringTitles,
+  anomalies: anomaliesProp,
+  emptyState,
+  showHeader = true,
 }: Props) {
-  // ── Anomaly state (fetched from API) ──
-  const [anomalies, setAnomalies] = useState<Anomaly[]>([]);
-  const [loading, setLoading] = useState(true);
+  // ── Anomaly data (injected by drawer, or fetched from API) ──
+  const [fetchedAnomalies, setFetchedAnomalies] = useState<Anomaly[]>([]);
+  const [loading, setLoading] = useState(anomaliesProp == null);
+  const anomalies = anomaliesProp ?? fetchedAnomalies;
 
-  // ── Dismiss state ──
-  const [dismissedAnomalies, setDismissedAnomalies] = useState<Set<number>>(
-    new Set(),
+  // ── Shared dismiss state — single source of truth across the dashboard
+  //    panel and the sidebar alerts drawer (FIN-021) ──
+  // SSR renders the server snapshot; localStorage is hydrated on the client
+  // mount (keeps SSR HTML and first client render identical).
+  const [dismissed, setDismissed] = useState<AlertsSharedState>(() =>
+    getAlertsServerState(),
   );
-  const [dismissedBudget, setDismissedBudget] = useState<Record<string, boolean>>(
-    {},
-  );
+
+  useEffect(() => {
+    setDismissed(getAlertsState());
+    return subscribeAlerts(() => setDismissed(getAlertsState()));
+  }, []);
 
   // ── Expand/collapse ──
   const [expanded, setExpanded] = useState(false);
 
-  // ── Fetch anomalies on month change ──
+  // ── Fetch anomalies on month change (skipped when injected) ──
   useEffect(() => {
+    if (anomaliesProp != null) {
+      setLoading(false);
+      return;
+    }
     if (!month) return;
     setLoading(true);
-    setDismissedAnomalies(new Set());
     fetch(`/api/anomalies?month=${encodeURIComponent(month)}`)
       .then((res) => res.json())
       .then((data) => {
-        if (Array.isArray(data)) setAnomalies(data);
-        else setAnomalies([]);
+        if (Array.isArray(data)) setFetchedAnomalies(data);
+        else setFetchedAnomalies([]);
       })
-      .catch(() => setAnomalies([]))
+      .catch(() => setFetchedAnomalies([]))
       .finally(() => setLoading(false));
-  }, [month]);
-
-  // ── Load budget dismissed from localStorage on mount ──
-  useEffect(() => {
-    setDismissedBudget(getBudgetDismissed());
-  }, []);
+  }, [month, anomaliesProp]);
 
   // ── Compute budget alerts (same logic as BudgetAlerts) ──
   const budgetAlerts = useMemo<UnifiedAlert[]>(() => {
@@ -172,9 +183,9 @@ export default function AlertsPanel({
       if (pct < 80) continue;
       if (!isOver && isAllRecurring) continue;
 
-      // Check dismissed
+      // Check dismissed (shared store)
       const dismissKey = `${activeSummary.period_id}:${cat}`;
-      if (dismissedBudget[dismissKey]) continue;
+      if (dismissed.dismissedBudget[dismissKey]) continue;
 
       const severity: Severity = isOver ? 'high' : 'medium';
       const roundedPct = Math.round(pct * 10) / 10;
@@ -195,12 +206,12 @@ export default function AlertsPanel({
     }
 
     return results;
-  }, [summaries, categories, month, dismissedBudget, transactions, recurringTitles]);
+  }, [summaries, categories, month, dismissed.dismissedBudget, transactions, recurringTitles]);
 
-  // ── Build anomaly alerts (from fetched data) ──
+  // ── Build anomaly alerts (from injected or fetched data) ──
   const anomalyAlerts = useMemo<UnifiedAlert[]>(() => {
     return anomalies
-      .filter((a) => !dismissedAnomalies.has(a.id))
+      .filter((a) => !dismissed.dismissedAnomalies.has(a.id))
       .map((a) => ({
         id: `anomaly:${a.id}`,
         type: 'anomaly' as const,
@@ -212,14 +223,35 @@ export default function AlertsPanel({
         badgeLabel: `Anomaly: ${ANOMALY_REASON_LABELS[a.reason]}`,
         icon: ANOMALY_REASON_ICONS[a.reason],
       }));
-  }, [anomalies, dismissedAnomalies]);
+  }, [anomalies, dismissed.dismissedAnomalies]);
 
-  // ── Merge & sort by severity ──
+  // Anomaly lookup for recency ordering
+  const anomalyById = useMemo(() => {
+    const m = new Map<string, Anomaly>();
+    anomalies.forEach((a) => m.set(`anomaly:${a.id}`, a));
+    return m;
+  }, [anomalies]);
+
+  // ── Merge & sort: severity first (critical → warning → info), most recent
+  //    first within the same severity (FIN-021 binding AC) ──
   const allAlerts = useMemo(() => {
+    const severityRank: Record<Severity, number> = SEVERITY_ORDER;
+    const recency = (a: UnifiedAlert): number => {
+      if (a.type === 'anomaly') {
+        const raw = anomalyById.get(a.id)?.created_time;
+        const t = raw ? new Date(raw).getTime() : NaN;
+        return isNaN(t) ? 0 : t;
+      }
+      return 0;
+    };
     const merged = [...anomalyAlerts, ...budgetAlerts];
-    merged.sort((a, b) => SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity]);
+    merged.sort((a, b) => {
+      const bySeverity = severityRank[a.severity] - severityRank[b.severity];
+      if (bySeverity !== 0) return bySeverity;
+      return recency(b) - recency(a);
+    });
     return merged;
-  }, [anomalyAlerts, budgetAlerts]);
+  }, [anomalyAlerts, budgetAlerts, anomalyById]);
 
   // ── Broadcast live count to sidebar/mobile bells (Pattern 2: CustomEvent) ──
   useEffect(() => {
@@ -227,7 +259,7 @@ export default function AlertsPanel({
   }, [allAlerts.length]);
 
   if (loading) return null;
-  if (allAlerts.length === 0) return null;
+  if (allAlerts.length === 0) return emptyState ?? null;
 
   // ── Count badges ──
   const highCount = allAlerts.filter((a) => a.severity === 'high').length;
@@ -244,21 +276,11 @@ export default function AlertsPanel({
     ? 'border-red-300 dark:border-red-800'
     : 'border-slate-200 dark:border-slate-700';
 
-  // ── Dismiss handlers ──
-  const dismissAnomaly = (id: number) => {
-    setDismissedAnomalies((prev) => {
-      const next = new Set(prev);
-      next.add(id);
-      return next;
-    });
-  };
+  // ── Dismiss handlers (shared store — syncs dashboard panel + drawer) ──
+  const dismissAnomaly = (id: number) => dismissAnomalyShared(id);
 
   const dismissBudgetAlert = (periodId: number, category: string) => {
-    const key = `${periodId}:${category}`;
-    const dismissed = getBudgetDismissed();
-    dismissed[key] = true;
-    localStorage.setItem(BUDGET_STORAGE_KEY, JSON.stringify(dismissed));
-    setDismissedBudget(getBudgetDismissed());
+    dismissBudgetShared(`${periodId}:${category}`);
   };
 
   const handleDismiss = (alert: UnifiedAlert) => {
@@ -277,7 +299,7 @@ export default function AlertsPanel({
 
   return (
     <div className={`glass-card p-5 ${cardBorderClass}`}>
-      
+      {showHeader && (
         <div className="flex items-center justify-between">
           <h3 className="text-base font-semibold flex items-center gap-2 text-slate-800 dark:text-white/80">
             <AlertTriangle className="w-4 h-4 text-gold-500" />
@@ -307,8 +329,8 @@ export default function AlertsPanel({
             </div>
           </h3>
         </div>
-      
-      
+      )}
+
         {displayItems.map((alert) => (
           <div
             key={alert.id}

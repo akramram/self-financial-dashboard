@@ -45,6 +45,9 @@ vi.mock('../lib/utils', () => ({
 import DashboardSummaryCards from '../components/DashboardSummaryCards';
 import SpendingPulse from '../components/SpendingPulse';
 import AlertsPanel from '../components/AlertsPanel';
+import AlertsDrawer from '../components/AlertsDrawer';
+import { resetAlertsState, dismissBudgetShared, dismissAnomalyShared, openAlertsDrawer } from '../lib/alertsStore';
+import type { Transaction } from '../lib/data';
 import FinancialInsights from '../components/FinancialInsights';
 import HealthChip from '../components/HealthChip';
 import { formatIdr } from '../lib/utils';
@@ -372,6 +375,7 @@ describe('HealthChip', () => {
 describe('AlertsPanel', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    resetAlertsState();
     globalThis.fetch = mockFetch;
     mockFetch.mockResolvedValue({ json: () => Promise.resolve([]) });
     const store: Record<string, string> = {};
@@ -614,6 +618,194 @@ describe('AlertsPanel', () => {
       expect(events[events.length - 1]).toBe(0);
     });
     window.removeEventListener('alerts-count', listener);
+  });
+});
+
+// ─── FIN-021: shared dismiss store + AlertsDrawer ────────────────────────────
+
+describe('FIN-021 shared dismiss store', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    resetAlertsState();
+    globalThis.fetch = mockFetch;
+    mockFetch.mockResolvedValue({ json: () => Promise.resolve([]) });
+    const store: Record<string, string> = {};
+    vi.spyOn(Storage.prototype, 'getItem').mockImplementation((key) => store[key] || null);
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation((key, val) => { store[key] = val; });
+  });
+
+  afterEach(() => {
+    globalThis.fetch = originalFetch;
+    vi.restoreAllMocks();
+  });
+
+  const makeTx = (over: Partial<Transaction> = {}): Transaction => ({
+    id: 1,
+    period_id: 1,
+    month: 'July 2026',
+    date: '2026-07-08',
+    title: 'Steak',
+    category: 'Food',
+    amount: 600000,
+    currency: 'IDR',
+    type: 'cash',
+    payment_method: 'cash',
+    done: true,
+    created_time: '2026-07-08T09:00:00Z',
+    ...over,
+  });
+
+  const overBudgetProps = {
+    month: 'July 2026',
+    summaries: [makeSummaryWithCats('July 2026', 1, 10_000_000, 4_000_000, { Food: 600000 })],
+    categories: [makeCategory('Food', 500000)],
+    transactions: [makeTx()],
+    recurringTitles: [],
+  };
+
+  it('dismiss in one AlertsPanel instance syncs another instance (single source of truth)', async () => {
+    render(
+      <>
+        <AlertsPanel {...overBudgetProps} />
+        <AlertsPanel {...overBudgetProps} />
+      </>,
+    );
+    await waitFor(() => {
+      expect(screen.getAllByText(/Food is over budget/)).toHaveLength(2);
+    });
+    screen.getAllByTitle('Dismiss')[0].click();
+    await waitFor(() => {
+      expect(screen.queryByText(/Food is over budget/)).not.toBeInTheDocument();
+    });
+  });
+
+  it('anomaly pre-dismissed via shared store is filtered immediately', async () => {
+    dismissAnomalyShared(99);
+    mockFetch.mockResolvedValue({
+      json: () => Promise.resolve([{
+        id: 99, title: 'Big spike', category: 'Food', amount: 5000000, type: 'cash',
+        created_time: '2026-07-08', reason: 'amount_spike' as const, severity: 'high' as const,
+        detail: 'way more than usual',
+      }]),
+    });
+    render(<AlertsPanel {...overBudgetProps} />);
+    await waitFor(() => {
+      expect(screen.getByText(/Food is over budget/)).toBeInTheDocument();
+    });
+    expect(screen.queryByText('Big spike')).not.toBeInTheDocument();
+  });
+});
+
+describe('FIN-021 AlertsDrawer', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    resetAlertsState();
+    const store: Record<string, string> = {};
+    vi.spyOn(Storage.prototype, 'getItem').mockImplementation((key) => store[key] || null);
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation((key, val) => { store[key] = val; });
+  });
+
+  afterEach(() => {
+    globalThis.fetch = originalFetch;
+    vi.restoreAllMocks();
+  });
+
+  function stubFetchByRoute(routes: Record<string, unknown>) {
+    return vi.fn((input: RequestInfo | URL) => {
+      const url = String(input);
+      const match = Object.keys(routes).find((k) => url.includes(k));
+      const payload = match ? routes[match] : [];
+      return Promise.resolve({ ok: true, json: () => Promise.resolve(payload) } as any);
+    }) as any;
+  }
+
+  it('closed initially; opens via drawer-open event and fetches alerts for the active month', async () => {
+    const fetchStub = stubFetchByRoute({
+      '/api/summary': [makeSummaryWithCats('July 2026', 1, 10_000_000, 4_000_000, {})],
+      '/api/anomalies': [{
+        id: 7, title: 'Weird txn', category: 'Food', amount: 900000, type: 'cash',
+        created_time: '2026-07-09', reason: 'amount_spike' as const, severity: 'high' as const,
+        detail: 'spike',
+      }],
+    });
+    globalThis.fetch = fetchStub as any;
+
+    render(<AlertsDrawer />);
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+
+    openAlertsDrawer();
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+    });
+    await waitFor(() => {
+      expect(screen.getByText('Weird txn')).toBeInTheDocument();
+    });
+    expect(fetchStub.mock.calls.some((c: unknown[]) => String(c[0]).includes('/api/anomalies?month=July'))).toBe(true);
+  });
+
+  it('shows error state with retry when fetch fails', async () => {
+    globalThis.fetch = vi.fn(() => Promise.reject(new Error('network down'))) as any;
+    render(<AlertsDrawer />);
+    openAlertsDrawer();
+    await waitFor(() => {
+      expect(screen.getByText(/Gagal memuat alert/)).toBeInTheDocument();
+    });
+    globalThis.fetch = vi.fn(() => new Promise(() => {})) as any;
+    fireEvent.click(screen.getByRole('button', { name: /coba lagi/i }));
+    await waitFor(() => {
+      expect(screen.getByRole('status')).toBeInTheDocument();
+    });
+  });
+
+  it('renders empty state when active month has zero alerts and stays open', async () => {
+    globalThis.fetch = stubFetchByRoute({
+      '/api/summary': [makeSummaryWithCats('July 2026', 1, 10_000_000, 4_000_000, {})],
+    });
+    render(<AlertsDrawer />);
+    openAlertsDrawer();
+    await waitFor(() => {
+      expect(screen.getByText('Tidak ada alert untuk bulan ini')).toBeInTheDocument();
+    });
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+  });
+
+  it('Escape closes the drawer and focus returns to the opener bell', async () => {
+    const user = userEvent.setup();
+    globalThis.fetch = vi.fn(() => new Promise(() => {})) as any;
+    render(
+      <>
+        <button data-testid="bell" onClick={(e) => openAlertsDrawer(e.currentTarget)}>Bell</button>
+        <AlertsDrawer />
+      </>,
+    );
+    fireEvent.click(screen.getByTestId('bell'));
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+    });
+    await user.keyboard('{Escape}');
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    });
+    await waitFor(() => {
+      expect(screen.getByTestId('bell')).toHaveFocus();
+    });
+  });
+
+  it('budget dismiss inside the drawer mutates the shared store', async () => {
+    globalThis.fetch = stubFetchByRoute({
+      '/api/summary': [makeSummaryWithCats('July 2026', 1, 10_000_000, 4_000_000, { Food: 600000 })],
+      '/api/categories': [makeCategory('Food', 500000)],
+      '/api/transactions': [{ id: 1, period_id: 1, title: 'Steak', category: 'Food', amount: 600000, type: 'cash', done: 1 }],
+    });
+    render(<AlertsDrawer />);
+    openAlertsDrawer();
+    await waitFor(() => {
+      expect(screen.getByText(/Food is over budget/)).toBeInTheDocument();
+    });
+    screen.getByTitle('Dismiss').click();
+    await waitFor(() => {
+      expect(screen.queryByText(/Food is over budget/)).not.toBeInTheDocument();
+    });
   });
 });
 

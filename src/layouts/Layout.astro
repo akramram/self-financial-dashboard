@@ -120,6 +120,7 @@ const { title = 'Financial Dashboard', balance, alerts = getActiveAlertCount() }
     <script>
       import CommandPalette from '../components/CommandPalette';
       import QuickAddFAB from '../components/QuickAddFAB';
+      import AlertsDrawer from '../components/AlertsDrawer';
       import { Toaster } from '../components/ui/sonner';
       import { ConfirmProvider } from '../components/ConfirmDialog';
       const container = document.createElement('div');
@@ -134,6 +135,7 @@ const { title = 'Financial Dashboard', balance, alerts = getActiveAlertCount() }
         null,
         React.createElement(CommandPalette),
         React.createElement(QuickAddFAB),
+        React.createElement(AlertsDrawer),
         React.createElement(Toaster),
       ));
     </script>

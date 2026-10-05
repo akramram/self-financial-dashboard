@@ -1,10 +1,11 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import {
   LayoutDashboard, ArrowRightLeft, PieChart, Target, Settings,
   TrendingUp, Calendar, Shield, Wallet, CreditCard, X, Bell,
   Trophy, Flame, Heart, BarChart3, FlaskConical, Briefcase, PiggyBank,
   Repeat, Search, FileText, GitCompare, Activity, Layers, CalendarDays, Zap, Grid3x3,
 } from 'lucide-react';
+import { openAlertsDrawer } from '../lib/alertsStore';
 
 interface Props {
   balance?: string;
@@ -99,6 +100,7 @@ function GroupHeader({ label }: { label: string }) {
 export default function MobileSidebar({ balance, alerts: initialAlerts = 0 }: Props) {
   const [open, setOpen] = useState(false);
   const [alerts, setAlerts] = useState(initialAlerts);
+  const bellRef = useRef<HTMLButtonElement | null>(null);
 
   // Live alert count — same broadcast FintechSidebar listens to
   useEffect(() => {
@@ -201,12 +203,23 @@ export default function MobileSidebar({ balance, alerts: initialAlerts = 0 }: Pr
           ))}
         </nav>
 
-        {/* Alert bell */}
+        {/* Alert bell — opens the Alerts Detail Drawer (FIN-021) */}
         <div className="px-3 pt-2 pb-4 shrink-0 border-t border-slate-200 dark:border-white/[0.05]">
-          <a
-            href="/"
-            onClick={close}
-            className="relative flex items-center rounded-xl px-3 py-2 gap-3 transition-colors hover:bg-slate-100 dark:bg-white/5 no-underline"
+          <button
+            type="button"
+            ref={bellRef}
+            onClick={() => {
+              close();
+              openAlertsDrawer(bellRef.current);
+            }}
+            disabled={alerts === 0}
+            aria-disabled={alerts === 0}
+            aria-label={alerts > 0 ? `${alerts} ${alerts !== 1 ? 'alerts' : 'alert'}` : 'No alerts'}
+            className={`relative w-full flex items-center rounded-xl px-3 py-2 gap-3 transition-colors no-underline ${
+              alerts === 0
+                ? 'cursor-not-allowed opacity-60'
+                : 'hover:bg-slate-100 dark:bg-white/5'
+            }`}
           >
             <Bell
               className={`w-5 h-5 ${alerts > 0 ? 'text-mint-500' : 'text-slate-400 dark:text-white/40'}`}
@@ -217,13 +230,13 @@ export default function MobileSidebar({ balance, alerts: initialAlerts = 0 }: Pr
             </span>
             {alerts > 0 && (
               <span
-                className="ml-auto w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
+                className="ml-auto min-w-[20px] h-5 px-1 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
                 style={{ backgroundColor: '#ef4444' }}
               >
-                {alerts}
+                {alerts > 99 ? '99+' : alerts}
               </span>
             )}
-          </a>
+          </button>
         </div>
       </aside>
     </>
