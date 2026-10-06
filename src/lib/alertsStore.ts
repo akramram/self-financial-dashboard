@@ -17,7 +17,7 @@
 // (idempotent — a failed POST keeps the mirror and retries next load).
 
 import type { MonthlySummary, Category, Transaction } from './data';
-import type { Anomaly } from './db';
+import type { Anomaly, AlertPrefKey } from './db';
 
 export interface AlertsData {
   month: string;
@@ -31,6 +31,13 @@ export interface AlertsData {
 export interface AlertsSharedState {
   dismissedAnomalies: ReadonlySet<number>;
   dismissedBudget: Readonly<Record<string, boolean>>;
+  /**
+   * FIN-022 lanjutan (KUR-132 §2): alert family toggles, SQLite-backed via
+   * /api/alerts/state (AC-8 — the SSR badge reads the same table). Absent
+   * row = enabled, and the SSR initial snapshot is all-ON, so first paint is
+   * identical to the pre-prefs baseline. Prefs are a VIEW filter only.
+   */
+  prefs: Readonly<Record<AlertPrefKey, boolean>>;
 }
 
 /** Snapshot of visible alerts, for bulk mark-all + restore (AC-6). */
@@ -41,13 +48,24 @@ export interface AlertsSnapshot {
 
 const BUDGET_STORAGE_KEY = 'budget-alerts-dismissed';
 
+const DEFAULT_PREFS: Record<AlertPrefKey, boolean> = {
+  budget_over: true,
+  budget_approaching: true,
+  anomaly_amount_spike: true,
+  anomaly_new_merchant: true,
+};
+
 let state: AlertsSharedState = {
   dismissedAnomalies: new Set<number>(),
   dismissedBudget: {},
+  prefs: { ...DEFAULT_PREFS },
 };
 
 let serverLoaded = false;
 const listeners = new Set<() => void>();
+
+/** Pref keys with a PATCH in flight — their server echo is ignored on GET merge. */
+const prefsInFlight = new Set<AlertPrefKey>();
 
 function readBudgetDismissals(): Record<string, boolean> {
   if (typeof window === 'undefined') return {};
@@ -130,9 +148,8 @@ export function ensureAlertStateLoaded(): void {
 
   fetch('/api/alerts/state')
     .then((res) => (res.ok ? res.json() : Promise.reject(new Error(String(res.status)))))
-    .then((data: { dismissed?: string[] }) => {
+    .then((data: { dismissed?: string[]; prefs?: Record<string, boolean> }) => {
       const keys = Array.isArray(data?.dismissed) ? data.dismissed : [];
-      if (keys.length === 0) return;
       const anomalies = new Set(state.dismissedAnomalies);
       const budget = { ...state.dismissedBudget };
       for (const key of keys) {
@@ -141,10 +158,23 @@ export function ensureAlertStateLoaded(): void {
         if (id != null) anomalies.add(id);
         else budget[key] = true;
       }
-      publish({ dismissedAnomalies: anomalies, dismissedBudget: budget });
+      // Prefs merge (KUR-132 §2): server values win, but a toggle made while
+      // the GET was in flight is never lost — the server echoes the winning
+      // value for keys we changed, so only untouched keys are taken here.
+      const prefs = { ...state.prefs };
+      if (data?.prefs && typeof data.prefs === 'object') {
+        for (const k of Object.keys(prefs) as AlertPrefKey[]) {
+          if (!(k in prefsInFlight)) {
+            const v = data.prefs[k];
+            if (typeof v === 'boolean') prefs[k] = v;
+          }
+        }
+      }
+      publish({ dismissedAnomalies: anomalies, dismissedBudget: budget, prefs });
     })
     .catch(() => {
       // Server unreachable → in-memory + legacy behavior only (AC-2 fallback).
+      // Prefs stay all-ON (spec: failed GET must not empty the list).
     });
 }
 
@@ -172,6 +202,36 @@ export function dismissBudgetShared(key: string): void {
 }
 
 /**
+ * Toggle one alert-family preference (FIN-022 lanjutan, KUR-132 §2). Pure
+ * view filter: optimistic publish → PATCH; on failure the previous value is
+ * restored (spec: rollback optimistic). NEVER touches alert_state or
+ * localStorage — prefs live only in SQLite via /api/alerts/state.
+ */
+export function setAlertPrefShared(key: AlertPrefKey, enabled: boolean): void {
+  const cur = getAlertsState();
+  if (cur.prefs[key] === enabled) return;
+  const previous = cur.prefs[key];
+  publish({ ...cur, prefs: { ...cur.prefs, [key]: enabled } });
+  prefsInFlight.add(key);
+  void fetch('/api/alerts/state', {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ pref: key, enabled }),
+  })
+    .then((res) => {
+      if (res.ok) return;
+      throw new Error(`alert pref PATCH failed: ${res.status}`);
+    })
+    .catch(() => {
+      const rollback = getAlertsState();
+      publish({ ...rollback, prefs: { ...rollback.prefs, [key]: previous } });
+    })
+    .finally(() => {
+      prefsInFlight.delete(key);
+    });
+}
+
+/**
  * Mark all currently-visible alerts dismissed in one shot (AC-6). One bulk
  * POST (KUR-129 checklist #6) — never N requests. Returns the snapshot for
  * `restoreAlertsSnapshot`.
@@ -182,7 +242,11 @@ export function dismissAllAlertsShared(snapshot: AlertsSnapshot): void {
   for (const id of snapshot.anomalyIds) anomalies.add(id);
   const budget = { ...cur.dismissedBudget };
   for (const key of snapshot.budgetKeys) budget[key] = true;
-  publish({ dismissedAnomalies: anomalies, dismissedBudget: budget });
+  publish({
+    dismissedAnomalies: anomalies,
+    dismissedBudget: budget,
+    prefs: cur.prefs,
+  });
   const keys = [
     ...snapshot.anomalyIds.map((id) => `a:${id}`),
     ...snapshot.budgetKeys,
@@ -199,7 +263,11 @@ export function restoreAlertsSnapshot(snapshot: AlertsSnapshot): void {
   for (const id of snapshot.anomalyIds) anomalies.delete(id);
   const budget = { ...cur.dismissedBudget };
   for (const key of snapshot.budgetKeys) delete budget[key];
-  publish({ dismissedAnomalies: anomalies, dismissedBudget: budget });
+  publish({
+    dismissedAnomalies: anomalies,
+    dismissedBudget: budget,
+    prefs: cur.prefs,
+  });
   const keys = [
     ...snapshot.anomalyIds.map((id) => `a:${id}`),
     ...snapshot.budgetKeys,
@@ -216,7 +284,12 @@ export function restoreAlertsSnapshot(snapshot: AlertsSnapshot): void {
 /** Test hygiene / fresh mount: clears in-memory shared state. */
 export function resetAlertsState(): void {
   serverLoaded = false;
-  state = { dismissedAnomalies: new Set<number>(), dismissedBudget: {} };
+  prefsInFlight.clear();
+  state = {
+    dismissedAnomalies: new Set<number>(),
+    dismissedBudget: {},
+    prefs: { ...DEFAULT_PREFS },
+  };
 }
 
 // ─── Drawer open bus ────────────────────────────────────────────────────────

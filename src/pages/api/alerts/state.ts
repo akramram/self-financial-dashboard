@@ -3,28 +3,31 @@ import {
   getDismissedAlertKeys,
   dismissAlertKeys,
   restoreAlertKeys,
+  getAlertPrefs,
+  setAlertPref,
 } from '../../../lib/db';
+import { ALERT_PREF_KEYS, type AlertPrefKey } from '../../../lib/alertRules';
 import { parseJsonBody, jsonError, jsonPreflight } from '../../../lib/http';
 
 export const prerender = false;
 
 /**
- * FIN-022 (KUR-127 AC-2): persistent alert dismissal state.
+ * FIN-022 (KUR-127 AC-2) + lanjutan (KUR-132 ruling §2): persistent alert
+ * dismissal state AND alert preferences in SQLite, behind this one endpoint.
  *
- * GET    → { dismissed: string[] }
+ * GET    → { dismissed: string[], prefs: Record<prefKey, boolean> }
  * POST   → { keys: string[], dismissedAt? }  dismiss (idempotent, single tx)
  * DELETE → { keys: string[] }                restore (un-dismiss)
+ * PATCH  → { pref: prefKey, enabled: bool }  set exactly one preference
  *
  * Key formats (stable across renders/months):
  *   anomaly → `a:{transaction_id}`
  *   budget  → `{period_id}:{category}`
  *
- * Bulk mark-all and "Pulihkan semua" reuse the same POST/DELETE with a list of
- * keys (KUR-129 checklist #6: one request, one SQLite transaction — never N
- * POSTs per alert). Preferences live client-side in localStorage (AC-4) and
- * intentionally do NOT pass through this endpoint.
+ * Prefs (KUR-132 §2): exactly four flat families, stored in `alert_prefs`,
+ * absent row = enabled. GET returns them together with the dismissed list so
+ * first paint needs a single round-trip. Dismissal methods are unchanged.
  */
-
 const MAX_KEYS = 500;
 
 function normalizeKeys(body: any): string[] | null {
@@ -35,10 +38,20 @@ function normalizeKeys(body: any): string[] | null {
   return clean;
 }
 
+function normalizePref(body: any): { key: AlertPrefKey; enabled: boolean } | null {
+  const key = body?.pref;
+  if (typeof key !== 'string' || !ALERT_PREF_KEYS.includes(key as AlertPrefKey)) return null;
+  if (typeof body?.enabled !== 'boolean') return null;
+  return { key: key as AlertPrefKey, enabled: body.enabled };
+}
+
 export const GET: APIRoute = async () => {
-  return new Response(JSON.stringify({ dismissed: getDismissedAlertKeys() }), {
-    headers: { 'Content-Type': 'application/json' },
-  });
+  return new Response(
+    JSON.stringify({ dismissed: getDismissedAlertKeys(), prefs: getAlertPrefs() }),
+    {
+      headers: { 'Content-Type': 'application/json' },
+    },
+  );
 };
 
 export const POST: APIRoute = async ({ request }) => {
@@ -61,6 +74,26 @@ export const DELETE: APIRoute = async ({ request }) => {
   return new Response(JSON.stringify({ ok: true, removed }), {
     headers: { 'Content-Type': 'application/json' },
   });
+};
+
+export const PATCH: APIRoute = async ({ request }) => {
+  const body = await parseJsonBody(request);
+  if (!body) return jsonError('Invalid JSON body');
+  const pref = normalizePref(body);
+  if (!pref) {
+    return jsonError(
+      `pref must be one of ${ALERT_PREF_KEYS.join(', ')} and enabled must be a boolean`,
+    );
+  }
+  try {
+    const enabled = setAlertPref(pref.key, pref.enabled);
+    return new Response(JSON.stringify({ ok: true, pref: pref.key, enabled }), {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } catch (err) {
+    console.error('PATCH /api/alerts/state failed:', err);
+    return jsonError('Failed to save preference', 500);
+  }
 };
 
 export const OPTIONS: APIRoute = () => jsonPreflight();

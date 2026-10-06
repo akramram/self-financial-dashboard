@@ -137,6 +137,16 @@ export function createTestDb() {
       contributed_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
     CREATE UNIQUE INDEX IF NOT EXISTS idx_goal_contrib_unique ON goal_contributions(goal_id, recurring_id, period_id);
+
+    CREATE TABLE IF NOT EXISTS alert_state (
+      alert_key TEXT PRIMARY KEY,
+      dismissed_at TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS alert_prefs (
+      pref_key TEXT PRIMARY KEY,
+      enabled  INTEGER NOT NULL DEFAULT 1
+    );
   `);
 
   function cleanup() {

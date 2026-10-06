@@ -11,6 +11,7 @@ import {
   type AlertsSharedState,
   type AlertsSnapshot,
 } from '../lib/alertsStore';
+import { classifyBudgetAlert, anomalyPrefFamily } from '../lib/alertRules';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -217,28 +218,28 @@ export default function AlertsPanel({
     }
 
     const results: UnifiedAlert[] = [];
+    // FIN-022 lanjutan (KUR-132 §1): family toggles filter this list. The
+    // over/approaching decision itself comes from the shared
+    // classifyBudgetAlert() rule (single source of truth with the SSR badge).
+    const prefs = dismissed.prefs;
 
     for (const [cat, amount] of Object.entries(activeSummary.category_totals)) {
       const catDef = categoryMap[cat];
       const limit = catDef?.monthly_limit ?? 0;
       if (limit <= 0 || amount <= 0) continue;
 
-      const pct = (amount / limit) * 100;
       const discAmt = discretionarySpend[cat] || 0;
-      const discPct = (discAmt / limit) * 100;
-      const isOver = amount > limit;
-      const isAllRecurring = discAmt === 0 && amount > 0;
-
-      // Only alert at 80%+; hide "approaching" if all recurring
-      if (pct < 80) continue;
-      if (!isOver && isAllRecurring) continue;
+      const cls = classifyBudgetAlert(amount, limit, discAmt === 0);
+      if (!cls) continue;
+      if (!prefs[cls.family]) continue;
 
       // Check dismissed (shared store)
       const dismissKey = `${activeSummary.period_id}:${cat}`;
       if (dismissed.dismissedBudget[dismissKey]) continue;
 
+      const isOver = cls.family === 'budget_over';
       const severity: Severity = isOver ? 'high' : 'medium';
-      const roundedPct = Math.round(pct * 10) / 10;
+      const roundedPct = Math.round(cls.pct * 10) / 10;
 
       results.push({
         id: `budget:${cat}`,
@@ -257,12 +258,20 @@ export default function AlertsPanel({
     }
 
     return results;
-  }, [summaries, categories, month, dismissed.dismissedBudget, transactions, recurringTitles]);
+  }, [summaries, categories, month, dismissed, transactions, recurringTitles]);
 
   // ── Build anomaly alerts (from injected or fetched data) ──
   const anomalyAlerts = useMemo<UnifiedAlert[]>(() => {
+    // FIN-022 lanjutan (KUR-132 §1): family toggles filter anomalies too
+    // (amount_spike / new_merchant). category_outlier has no toggle and no
+    // producer — anomalyPrefFamily returns null for it → always shown.
+    const prefs = dismissed.prefs;
     return anomalies
-      .filter((a) => !dismissed.dismissedAnomalies.has(a.id))
+      .filter((a) => {
+        if (dismissed.dismissedAnomalies.has(a.id)) return false;
+        const family = anomalyPrefFamily(a.reason);
+        return family == null || prefs[family];
+      })
       .map((a) => ({
         id: `anomaly:${a.id}`,
         type: 'anomaly' as const,
@@ -275,7 +284,7 @@ export default function AlertsPanel({
         icon: ANOMALY_REASON_ICONS[a.reason],
         stateKey: `a:${a.id}`,
       }));
-  }, [anomalies, dismissed.dismissedAnomalies]);
+  }, [anomalies, dismissed]);
 
   // ── Merge & sort: severity first (critical → warning → info), then by type
   //    (anomaly before budget) and amount desc within the same severity

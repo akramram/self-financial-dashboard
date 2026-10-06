@@ -205,6 +205,17 @@ export function initSchema() {
       dismissed_at TEXT NOT NULL
     );
   `);
+
+  // FIN-022 lanjutan (KUR-132 ruling §2): alert preferences live in SQLite,
+  // served through the same /api/alerts/state endpoint. Absent row = enabled
+  // (ON) — the table ships empty and NO rows are seeded here, so behavior is
+  // byte-identical to pre-prefs baseline until the user toggles something.
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS alert_prefs (
+      pref_key TEXT PRIMARY KEY,
+      enabled  INTEGER NOT NULL DEFAULT 1
+    );
+  `);
 }
 
 // ─── Period helpers ─────────────────────────────────────────────────────────
@@ -454,48 +465,79 @@ export function getCategoryByName(name: string) {
 
 /**
  * Count active alerts for the current period — anomaly alerts (server-side
- * detection) + budget "over limit" alerts. Used by Layout to badge the bell.
- * Mirrors AlertsPanel logic: over-budget always counts; "approaching" (80-99%)
- * is skipped when all category spend comes from recurring transactions.
- * FIN-022 (KUR-127 AC-8): dismissals now live in the `alert_state` table, so
- * the SSR badge excludes them too — server count and client count match after
- * hydration (legacy localStorage keys are migrated server-side by the client
- * on first load, see alertsStore.ts `syncAlertStateFromLegacy`).
+ * detection) + budget alerts (over-limit AND the 80–99% "approaching" band).
+ * Used by Layout to badge the bell.
+ *
+ * FIN-022 lanjutan (KUR-132 §3): the approaching band now counts server-side
+ * under the SAME rules as AlertsPanel (≥80% of limit; approaching skipped
+ * when all category spend is recurring). The rules live in
+ * classifyBudgetAlert() — this count and the client list share one source of
+ * truth, so the SSR badge and the hydrated client count agree (AC-8).
+ *
+ * Alert preferences (KUR-132 §2) filter here too: a family toggled OFF
+ * (`alert_prefs` table, absent row = ON) drops out of the badge exactly as
+ * it drops from the client list. Dismissals (`alert_state`) are excluded.
  */
 export function getActiveAlertCount(): number {
   try {
     const periodId = getActivePeriodId();
     if (periodId == null) return 0;
 
-    let count = getAnomalies(periodId).filter(
-      (a) => !isAlertKeyDismissed(`a:${a.id}`),
-    ).length;
+    const prefs = getAlertPrefs();
 
-    const rows = db.prepare(`
-      SELECT t.category AS cat, SUM(t.amount) AS total
+    const count = getAnomalies(periodId).filter((a) => {
+      if (isAlertKeyDismissed(`a:${a.id}`)) return false;
+      // category_outlier is never produced by getAnomalies() (KUR-132 §3);
+      // anomalyPrefFamily returns null for it → stays visible, not filtered.
+      const family = anomalyPrefFamily(a.reason);
+      return family == null || prefs[family];
+    }).length;
+
+    let extra = 0;
+
+    const txRows = db.prepare(`
+      SELECT t.category AS cat, t.title AS title, t.amount AS amount
       FROM transactions t
       WHERE t.period_id = ? AND t.done = 1
         AND t.type IN ('cash', 'credit_expense')
-      GROUP BY t.category
-    `).all(periodId) as { cat: string; total: number }[];
+    `).all(periodId) as { cat: string; title: string; amount: number }[];
 
-    if (rows.length > 0) {
+    if (txRows.length > 0) {
       const limits: Record<string, number> = {};
       for (const c of getCategories() as any[]) {
         if (c.monthly_limit > 0) limits[c.name] = c.monthly_limit;
       }
-      for (const r of rows) {
-        const limit = limits[r.cat];
-        // Mirror AlertsPanel: only over-limit counts server-side (the
-        // "approaching" band is skipped when spend is all recurring; those
-        // alerts don't exist server-side at all).
-        if (limit && r.total > limit && !isAlertKeyDismissed(`${periodId}:${r.cat}`)) {
-          count++;
+
+      // Same recurring rule as AlertsPanel: active recurring titles,
+      // lowercased; a category whose spend is entirely recurring never
+      // alerts "approaching" (over-limit still alerts).
+      const recurringSet = new Set(
+        (getRecurringTransactions() as any[])
+          .filter((r) => r.active)
+          .map((r) => String(r.title).toLowerCase()),
+      );
+
+      const catTotal: Record<string, number> = {};
+      const catDiscretionary: Record<string, number> = {};
+      for (const t of txRows) {
+        catTotal[t.cat] = (catTotal[t.cat] || 0) + t.amount;
+        if (!recurringSet.has(String(t.title).toLowerCase())) {
+          catDiscretionary[t.cat] = (catDiscretionary[t.cat] || 0) + t.amount;
         }
+      }
+
+      for (const [cat, total] of Object.entries(catTotal)) {
+        const limit = limits[cat];
+        if (!limit) continue;
+        const cls = classifyBudgetAlert(total, limit, (catDiscretionary[cat] ?? 0) === 0);
+        if (!cls) continue;
+        if (!prefs[cls.family]) continue;
+        if (isAlertKeyDismissed(`${periodId}:${cat}`)) continue;
+        extra++;
       }
     }
 
-    return count;
+    return count + extra;
   } catch (err) {
     // FIN-022 (KUR-129 checklist #8): don't let a DB error masquerade as a
     // clean badge-0 — log it, then degrade to 0 as before.
@@ -545,6 +587,59 @@ export function restoreAlertKeys(keys: string[]): number {
     return n;
   });
   return run(keys);
+}
+
+// ─── Alert preferences (FIN-022 lanjutan / KUR-132 ruling §2+§3) ────────────
+// Flat allow-list of exactly the four alert families that are actually
+// produced (KUR-132 §3: no master switch, no "category outlier" —
+// getAnomalies() never pushes that reason). Absent row = enabled; the table
+// ships empty and no rows are seeded, so an untouched install behaves
+// identically to the pre-prefs baseline. Prefs are a VIEW filter only —
+// toggling never writes or deletes alert_state.
+//
+// The family keys and the ≥80%/all-recurring classification rules live in
+// alertRules.ts (client-safe, imported by AlertsPanel) — one source of truth
+// for server count and client list alike. Only the SQLite plumbing is here.
+
+export {
+  ALERT_PREF_KEYS,
+  DEFAULT_ALERT_PREFS,
+  anomalyPrefFamily,
+  classifyBudgetAlert,
+  type AlertPrefKey,
+  type BudgetAlertClass,
+} from './alertRules';
+
+import {
+  ALERT_PREF_KEYS,
+  DEFAULT_ALERT_PREFS,
+  anomalyPrefFamily,
+  classifyBudgetAlert,
+  type AlertPrefKey,
+} from './alertRules';
+
+/** Map pref_key → enabled. Absent rows default to true (absent = ON). */
+export function getAlertPrefs(): Record<AlertPrefKey, boolean> {
+  const prefs = { ...DEFAULT_ALERT_PREFS };
+  const rows = db
+    .prepare('SELECT pref_key, enabled FROM alert_prefs')
+    .all() as { pref_key: string; enabled: number }[];
+  for (const row of rows) {
+    if (row.pref_key in prefs) prefs[row.pref_key as AlertPrefKey] = row.enabled !== 0;
+  }
+  return prefs;
+}
+
+/** Set exactly one pref. Returns the persisted boolean. Unknown keys throw. */
+export function setAlertPref(key: AlertPrefKey, enabled: boolean): boolean {
+  if (!ALERT_PREF_KEYS.includes(key)) {
+    throw new Error(`Unknown alert pref key: ${key}`);
+  }
+  db.prepare(
+    'INSERT INTO alert_prefs (pref_key, enabled) VALUES (?, ?) ' +
+      'ON CONFLICT(pref_key) DO UPDATE SET enabled = excluded.enabled',
+  ).run(key, enabled ? 1 : 0);
+  return enabled;
 }
 
 const CATEGORY_COLORS = [
