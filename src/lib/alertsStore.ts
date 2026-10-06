@@ -1,13 +1,20 @@
-// ─── Alerts shared state (FIN-021) ──────────────────────────────────────────
+// ─── Alerts shared state (FIN-021 / FIN-022) ────────────────────────────────
 // Single source of truth for alert dismissal shared by every AlertsPanel
 // instance (dashboard panel + sidebar alerts drawer). Dismissing an alert in
 // one surface immediately recomputes the other and re-broadcasts `alerts-count`
 // so both sidebar bells update.
 //
-// - Anomaly dismissals are in-memory per page load (matches previous behavior;
-//   new persistence is de-scoped by the BA).
-// - Budget dismissals mirror the existing `budget-alerts-dismissed`
-//   localStorage key used by AlertsPanel/BudgetAlerts (backward compatible).
+// FIN-022 (KUR-127 AC-2): dismissals are PERSISTENT in SQLite via
+// `/api/alerts/state`, keyed by stable alert identities:
+//   anomaly → `a:{transaction_id}`
+//   budget  → `{period_id}:{category}`
+// The client store remains the synchronous view (optimistic updates); every
+// mutation is mirrored to the server. POST failures degrade to the previous
+// in-memory-only behavior (same fallback as the old localStorage try/catch).
+//
+// Legacy migration (AC-7): the pre-FIN-022 `budget-alerts-dismissed`
+// localStorage mirror is imported to the server once per browser, then removed
+// (idempotent — a failed POST keeps the mirror and retries next load).
 
 import type { MonthlySummary, Category, Transaction } from './data';
 import type { Anomaly } from './db';
@@ -26,6 +33,12 @@ export interface AlertsSharedState {
   dismissedBudget: Readonly<Record<string, boolean>>;
 }
 
+/** Snapshot of visible alerts, for bulk mark-all + restore (AC-6). */
+export interface AlertsSnapshot {
+  anomalyIds: number[];
+  budgetKeys: string[];
+}
+
 const BUDGET_STORAGE_KEY = 'budget-alerts-dismissed';
 
 let state: AlertsSharedState = {
@@ -33,7 +46,7 @@ let state: AlertsSharedState = {
   dismissedBudget: {},
 };
 
-let budgetLoaded = false;
+let serverLoaded = false;
 const listeners = new Set<() => void>();
 
 function readBudgetDismissals(): Record<string, boolean> {
@@ -52,16 +65,13 @@ export function subscribeAlerts(listener: () => void): () => void {
   };
 }
 
-/** Client snapshot — lazily hydrates budget dismissals from localStorage once. */
+/** Client snapshot — hydrates once from the server (+ legacy mirror merge). */
 export function getAlertsState(): AlertsSharedState {
-  if (!budgetLoaded) {
-    budgetLoaded = true;
-    state = { ...state, dismissedBudget: readBudgetDismissals() };
-  }
+  if (typeof window !== 'undefined') ensureAlertStateLoaded();
   return state;
 }
 
-/** Server snapshot — never touches localStorage (SSR-safe). */
+/** Server snapshot — never touches localStorage or fetch (SSR-safe). */
 export function getAlertsServerState(): AlertsSharedState {
   return state;
 }
@@ -71,31 +81,141 @@ function publish(next: AlertsSharedState): void {
   listeners.forEach((l) => l());
 }
 
+// ─── Server persistence (FIN-022 AC-2) ──────────────────────────────────────
+
+function parseAnomalyKey(key: string): number | null {
+  return key.startsWith('a:') ? parseInt(key.slice(2), 10) || null : null;
+}
+
+async function postAlertState(keys: string[]): Promise<void> {
+  const res = await fetch('/api/alerts/state', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ keys }),
+  });
+  if (!res.ok) throw new Error(`alert state POST failed: ${res.status}`);
+}
+
+/**
+ * One-time hydration: GET dismissed keys from the server, merge them into the
+ * current state (union — optimistic dismissals made while the request was in
+ * flight are never lost), and import the legacy localStorage mirror (AC-7).
+ * Any failure keeps the in-memory state (graceful degradation, no render
+ * blocking). Idempotent.
+ */
+export function ensureAlertStateLoaded(): void {
+  if (serverLoaded || typeof window === 'undefined') return;
+  serverLoaded = true;
+
+  // Legacy import first (synchronous read → optimistic merge → server write).
+  const legacy = readBudgetDismissals();
+  const legacyKeys = Object.keys(legacy).filter((k) => legacy[k]);
+  if (legacyKeys.length > 0) {
+    publish({
+      ...state,
+      dismissedBudget: { ...state.dismissedBudget, ...legacy },
+    });
+    postAlertState(legacyKeys)
+      .then(() => {
+        try {
+          localStorage.removeItem(BUDGET_STORAGE_KEY);
+        } catch {
+          // Mirror survives → retried next load (idempotent POST).
+        }
+      })
+      .catch(() => {
+        // Mirror survives → retried next load (idempotent POST).
+      });
+  }
+
+  fetch('/api/alerts/state')
+    .then((res) => (res.ok ? res.json() : Promise.reject(new Error(String(res.status)))))
+    .then((data: { dismissed?: string[] }) => {
+      const keys = Array.isArray(data?.dismissed) ? data.dismissed : [];
+      if (keys.length === 0) return;
+      const anomalies = new Set(state.dismissedAnomalies);
+      const budget = { ...state.dismissedBudget };
+      for (const key of keys) {
+        if (typeof key !== 'string') continue;
+        const id = parseAnomalyKey(key);
+        if (id != null) anomalies.add(id);
+        else budget[key] = true;
+      }
+      publish({ dismissedAnomalies: anomalies, dismissedBudget: budget });
+    })
+    .catch(() => {
+      // Server unreachable → in-memory + legacy behavior only (AC-2 fallback).
+    });
+}
+
+// ─── Mutations (optimistic + server mirror) ─────────────────────────────────
+
 export function dismissAnomalyShared(id: number): void {
   const cur = getAlertsState();
   if (cur.dismissedAnomalies.has(id)) return;
   const next = new Set(cur.dismissedAnomalies);
   next.add(id);
   publish({ ...cur, dismissedAnomalies: next });
+  void postAlertState([`a:${id}`]).catch(() => {
+    // Fallback: in-memory dismissal only (per try/catch localStorage era).
+  });
 }
 
 export function dismissBudgetShared(key: string): void {
   const cur = getAlertsState();
   if (cur.dismissedBudget[key]) return;
   const nextMap = { ...cur.dismissedBudget, [key]: true };
-  if (typeof window !== 'undefined') {
-    try {
-      localStorage.setItem(BUDGET_STORAGE_KEY, JSON.stringify(nextMap));
-    } catch {
-      // storage full/blocked — keep in-memory dismissal only
-    }
-  }
   publish({ ...cur, dismissedBudget: nextMap });
+  void postAlertState([key]).catch(() => {
+    // Fallback: in-memory dismissal only.
+  });
+}
+
+/**
+ * Mark all currently-visible alerts dismissed in one shot (AC-6). One bulk
+ * POST (KUR-129 checklist #6) — never N requests. Returns the snapshot for
+ * `restoreAlertsSnapshot`.
+ */
+export function dismissAllAlertsShared(snapshot: AlertsSnapshot): void {
+  const cur = getAlertsState();
+  const anomalies = new Set(cur.dismissedAnomalies);
+  for (const id of snapshot.anomalyIds) anomalies.add(id);
+  const budget = { ...cur.dismissedBudget };
+  for (const key of snapshot.budgetKeys) budget[key] = true;
+  publish({ dismissedAnomalies: anomalies, dismissedBudget: budget });
+  const keys = [
+    ...snapshot.anomalyIds.map((id) => `a:${id}`),
+    ...snapshot.budgetKeys,
+  ];
+  void postAlertState(keys).catch(() => {
+    // Fallback: in-memory dismissal only.
+  });
+}
+
+/** Restore (un-dismiss) a snapshot — "Pulihkan semua alert bulan ini" (AC-6). */
+export function restoreAlertsSnapshot(snapshot: AlertsSnapshot): void {
+  const cur = getAlertsState();
+  const anomalies = new Set(cur.dismissedAnomalies);
+  for (const id of snapshot.anomalyIds) anomalies.delete(id);
+  const budget = { ...cur.dismissedBudget };
+  for (const key of snapshot.budgetKeys) delete budget[key];
+  publish({ dismissedAnomalies: anomalies, dismissedBudget: budget });
+  const keys = [
+    ...snapshot.anomalyIds.map((id) => `a:${id}`),
+    ...snapshot.budgetKeys,
+  ];
+  void fetch('/api/alerts/state', {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ keys }),
+  }).catch(() => {
+    // Server restore failed → keys return on next load; in-memory restored.
+  });
 }
 
 /** Test hygiene / fresh mount: clears in-memory shared state. */
 export function resetAlertsState(): void {
-  budgetLoaded = false;
+  serverLoaded = false;
   state = { dismissedAnomalies: new Set<number>(), dismissedBudget: {} };
 }
 

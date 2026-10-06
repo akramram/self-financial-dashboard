@@ -9,6 +9,7 @@ import {
   dismissAnomalyShared,
   dismissBudgetShared,
   type AlertsSharedState,
+  type AlertsSnapshot,
 } from '../lib/alertsStore';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -41,6 +42,12 @@ interface Props {
    *           per-card accent bar + severity chip.
    */
   variant?: 'card' | 'drawer';
+  /**
+   * FIN-022: called (once per alert-list change) with a snapshot of the
+   * currently-visible alert keys, so a host surface (drawer) can offer
+   * bulk "mark all read" + restore over exactly the visible scope (AC-6).
+   */
+  onVisibleAlertsChange?: (snapshot: AlertsSnapshot) => void;
 }
 
 // ─── Severity constants ─────────────────────────────────────────────────────
@@ -117,6 +124,8 @@ interface UnifiedAlert {
   category?: string;
   badgeLabel: string; // 'Anomaly: Unusual Amount' or 'Budget: Food'
   icon: React.ReactNode;
+  /** FIN-022: stable persistence key (`a:{tx_id}` / `{period_id}:{category}`). */
+  stateKey?: string;
 }
 
 // ─── Budget dismissals live in the shared alerts store (alertsStore.ts),
@@ -134,6 +143,7 @@ export default function AlertsPanel({
   emptyState,
   showHeader = true,
   variant = 'card',
+  onVisibleAlertsChange,
 }: Props) {
   // ── Anomaly data (injected by drawer, or fetched from API) ──
   const [fetchedAnomalies, setFetchedAnomalies] = useState<Anomaly[]>([]);
@@ -242,6 +252,7 @@ export default function AlertsPanel({
         category: cat,
         badgeLabel: `Budget: ${cat}`,
         icon: <CreditCard className="w-4 h-4" />,
+        stateKey: dismissKey,
       });
     }
 
@@ -262,6 +273,7 @@ export default function AlertsPanel({
         category: a.category,
         badgeLabel: `Anomaly: ${ANOMALY_REASON_LABELS[a.reason]}`,
         icon: ANOMALY_REASON_ICONS[a.reason],
+        stateKey: `a:${a.id}`,
       }));
   }, [anomalies, dismissed.dismissedAnomalies]);
 
@@ -292,6 +304,18 @@ export default function AlertsPanel({
   useEffect(() => {
     window.dispatchEvent(new CustomEvent('alerts-count', { detail: allAlerts.length }));
   }, [allAlerts.length]);
+
+  // ── FIN-022: publish the visible-alert snapshot for the drawer's bulk
+  //    mark-all / restore (AC-6 scope = exactly what is currently shown). ──
+  const onVisibleAlertsRef = useRef(onVisibleAlertsChange);
+  onVisibleAlertsRef.current = onVisibleAlertsChange;
+  useEffect(() => {
+    if (!onVisibleAlertsRef.current) return;
+    onVisibleAlertsRef.current({
+      anomalyIds: anomalyAlerts.map((a) => parseInt(a.id.slice('anomaly:'.length), 10)),
+      budgetKeys: budgetAlerts.map((a) => a.stateKey ?? ''),
+    });
+  });
 
   if (loading) return null;
   if (allAlerts.length === 0) return emptyState ?? null;

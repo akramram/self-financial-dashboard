@@ -1119,3 +1119,265 @@ describe('TransactionDetailSheet', () => {
     expect(onClose).not.toHaveBeenCalled();
   });
 });
+
+// ─── FIN-022: persistent alert state (server-backed store) ───────────────────
+
+describe('FIN-022 persistent alert state', () => {
+  function stubRoutes(routes: Record<string, unknown>) {
+    return vi.fn((input: RequestInfo | URL) => {
+      const url = String(input);
+      const match = Object.keys(routes).find((k) => url.includes(k));
+      const payload = match ? routes[match] : [];
+      return Promise.resolve({ ok: true, json: () => Promise.resolve(payload) } as any);
+    }) as any;
+  }
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    resetAlertsState();
+    resetAlertsDataCache();
+    globalThis.fetch = mockFetch;
+    mockFetch.mockResolvedValue({ json: () => Promise.resolve([]) });
+    const store: Record<string, string> = {};
+    vi.spyOn(Storage.prototype, 'getItem').mockImplementation((key) => store[key] || null);
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation((key, val) => { store[key] = val; });
+    vi.spyOn(Storage.prototype, 'removeItem').mockImplementation((key) => { delete store[key]; });
+  });
+
+  afterEach(() => {
+    globalThis.fetch = originalFetch;
+    vi.restoreAllMocks();
+  });
+
+  const makeTx = (over: Partial<Transaction> = {}): Transaction => ({
+    id: 1,
+    period_id: 1,
+    month: 'July 2026',
+    date: '2026-07-08',
+    title: 'Steak',
+    category: 'Food',
+    amount: 600000,
+    currency: 'IDR',
+    type: 'cash',
+    payment_method: 'cash',
+    done: true,
+    created_time: '2026-07-08T09:00:00Z',
+    ...over,
+  });
+
+  const overBudgetProps = {
+    month: 'July 2026',
+    summaries: [makeSummaryWithCats('July 2026', 1, 10_000_000, 4_000_000, { Food: 600000 })],
+    categories: [makeCategory('Food', 500000)],
+    transactions: [makeTx()],
+    recurringTitles: [],
+  };
+
+  const anomalyProps = {
+    ...overBudgetProps,
+    anomalies: [{
+      id: 5, title: 'Big spike', category: 'Food', amount: 5000000, type: 'cash',
+      created_time: '2026-07-08', reason: 'amount_spike' as const, severity: 'high' as const,
+      detail: 'way more than usual',
+    }],
+  };
+
+  function postCallsToAlertsState() {
+    return mockFetch.mock.calls.filter(
+      (c: unknown[]) =>
+        String(c[0]).includes('/api/alerts/state') && (c[1] as any)?.method === 'POST',
+    );
+  }
+
+  it('anomaly dismissal uses the stable key a:{tx_id} and persists across remount', async () => {
+    const { unmount } = render(<AlertsPanel {...anomalyProps} />);
+    await waitFor(() => {
+      expect(screen.getByText('Big spike')).toBeInTheDocument();
+    });
+    screen.getAllByTitle('Dismiss')[0].click();
+    await waitFor(() => {
+      expect(screen.queryByText('Big spike')).not.toBeInTheDocument();
+    });
+    const posts = postCallsToAlertsState();
+    expect(posts.length).toBeGreaterThanOrEqual(1);
+    expect(JSON.parse((posts[0][1] as any).body)).toEqual({ keys: ['a:5'] });
+    unmount();
+
+    // Fresh module state — only the server snapshot can keep it dismissed.
+    resetAlertsState();
+    mockFetch.mockImplementation(((input: RequestInfo | URL) => {
+      if (String(input).includes('/api/alerts/state')) {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({ dismissed: ['a:5'] }) });
+      }
+      return Promise.resolve({ json: () => Promise.resolve([]) });
+    }) as any);
+    render(<AlertsPanel {...anomalyProps} />);
+    await waitFor(() => {
+      expect(screen.queryByText('Big spike')).not.toBeInTheDocument();
+    });
+    expect(screen.getByText(/Food is over budget/)).toBeInTheDocument();
+  });
+
+  it('budget dismissal persists across remount with per-period key {period_id}:{category}', async () => {
+    const { unmount } = render(<AlertsPanel {...overBudgetProps} />);
+    await waitFor(() => {
+      expect(screen.getByText(/Food is over budget/)).toBeInTheDocument();
+    });
+    screen.getAllByTitle('Dismiss')[0].click();
+    await waitFor(() => {
+      expect(screen.queryByText(/Food is over budget/)).not.toBeInTheDocument();
+    });
+    const posts = postCallsToAlertsState();
+    expect(JSON.parse((posts[0][1] as any).body)).toEqual({ keys: ['1:Food'] });
+    unmount();
+
+    resetAlertsState();
+    mockFetch.mockImplementation(((input: RequestInfo | URL) => {
+      if (String(input).includes('/api/alerts/state')) {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({ dismissed: ['1:Food'] }) });
+      }
+      return Promise.resolve({ json: () => Promise.resolve([]) });
+    }) as any);
+    render(<AlertsPanel {...overBudgetProps} />);
+    await waitFor(() => {
+      expect(screen.queryByText(/Food is over budget/)).not.toBeInTheDocument();
+    });
+  });
+
+  it('legacy localStorage mirror migrates to the server once, then is removed (AC-7)', async () => {
+    localStorage.setItem('budget-alerts-dismissed', JSON.stringify({ '1:Food': true }));
+    mockFetch.mockImplementation(((input: RequestInfo | URL, init?: any) => {
+      if (String(input).includes('/api/alerts/state')) {
+        if (init?.method === 'POST') {
+          return Promise.resolve({ ok: true, json: () => Promise.resolve({ ok: true }) });
+        }
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({ dismissed: [] }) });
+      }
+      return Promise.resolve({ json: () => Promise.resolve([]) });
+    }) as any);
+    render(<AlertsPanel {...overBudgetProps} />);
+    await waitFor(() => {
+      // Merged optimistically at hydration, before/without the server roundtrip.
+      expect(screen.queryByText(/Food is over budget/)).not.toBeInTheDocument();
+    });
+    const posts = postCallsToAlertsState();
+    expect(posts.length).toBe(1);
+    expect(JSON.parse((posts[0][1] as any).body)).toEqual({ keys: ['1:Food'] });
+    await waitFor(() => {
+      // Mirror removed only after the POST succeeded; failure keeps it (retry next load).
+      expect(localStorage.getItem('budget-alerts-dismissed')).toBeNull();
+    });
+  });
+
+  it('POST failure keeps the optimistic in-memory dismissal (degraded mode, AC-2 fallback)', async () => {
+    mockFetch.mockImplementation(((input: RequestInfo | URL, init?: any) => {
+      if (String(input).includes('/api/alerts/state') && init?.method === 'POST') {
+        return Promise.resolve({ ok: false, status: 500, json: () => Promise.resolve({}) });
+      }
+      return Promise.resolve({ json: () => Promise.resolve([]) });
+    }) as any);
+    render(
+      <>
+        <AlertsPanel {...overBudgetProps} />
+        <AlertsPanel {...overBudgetProps} />
+      </>,
+    );
+    await waitFor(() => {
+      expect(screen.getAllByText(/Food is over budget/)).toHaveLength(2);
+    });
+    screen.getAllByTitle('Dismiss')[0].click();
+    await waitFor(() => {
+      // Optimistic: drops immediately in BOTH instances.
+      expect(screen.queryByText(/Food is over budget/)).not.toBeInTheDocument();
+    });
+    // Give the failed POST a tick, then assert the dismissal is NOT rolled back
+    // (same in-memory fallback contract as the localStorage try/catch era).
+    await Promise.resolve();
+    expect(screen.queryByText(/Food is over budget/)).not.toBeInTheDocument();
+  });
+
+  it('GET failure at load keeps alerts visible (default undismissed state)', async () => {
+    mockFetch.mockImplementation(((input: RequestInfo | URL) => {
+      if (String(input).includes('/api/alerts/state')) {
+        return Promise.reject(new Error('server down'));
+      }
+      return Promise.resolve({ json: () => Promise.resolve([]) });
+    }) as any);
+    render(<AlertsPanel {...overBudgetProps} />);
+    await waitFor(() => {
+      expect(screen.getByText(/Food is over budget/)).toBeInTheDocument();
+    });
+  });
+
+  it('mark-all-read dismisses every visible alert in one bulk POST; restore reverses it (AC-6)', async () => {
+    globalThis.fetch = stubRoutes({
+      '/api/summary': [makeSummaryWithCats('July 2026', 1, 10_000_000, 4_000_000, { Food: 600000 })],
+      '/api/categories': [makeCategory('Food', 500000)],
+      '/api/transactions': [makeTx()],
+      '/api/recurring-transactions': [],
+      '/api/anomalies': [{
+        id: 7, title: 'Weird txn', category: 'Food', amount: 900000, type: 'cash',
+        created_time: '2026-07-09', reason: 'amount_spike' as const, severity: 'high' as const,
+        detail: 'spike',
+      }],
+    }) as any;
+    render(
+      <>
+        <button data-testid="bell" onClick={(e) => openAlertsDrawer(e.currentTarget)}>Bell</button>
+        <AlertsDrawer />
+      </>,
+    );
+    fireEvent.click(screen.getByTestId('bell'));
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+    });
+    await waitFor(() => {
+      expect(screen.getByText('Weird txn')).toBeInTheDocument();
+      expect(screen.getByText(/Food is over budget/)).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByTestId('mark-all-read'));
+    await waitFor(() => {
+      expect(screen.getAllByText('Semua alert ditandai').length).toBeGreaterThan(0);
+    });
+    expect(screen.queryByText('Weird txn')).not.toBeInTheDocument();
+    expect(screen.queryByText(/Food is over budget/)).not.toBeInTheDocument();
+    // Footer hidden (not disabled) at 0 alerts.
+    expect(screen.queryByTestId('mark-all-read')).not.toBeInTheDocument();
+
+    const posts = (globalThis.fetch as any).mock.calls.filter(
+      (c: unknown[]) =>
+        String(c[0]).includes('/api/alerts/state') && (c[1] as any)?.method === 'POST',
+    );
+    expect(posts.length).toBe(1); // one bulk request, never N
+    expect(JSON.parse((posts[0][1] as any).body).keys).toEqual(
+      expect.arrayContaining(['a:7', '1:Food']),
+    );
+
+    fireEvent.click(screen.getByTestId('restore-all-alerts'));
+    await waitFor(() => {
+      expect(screen.getByText('Weird txn')).toBeInTheDocument();
+      expect(screen.getByText(/Food is over budget/)).toBeInTheDocument();
+    });
+    const deletes = (globalThis.fetch as any).mock.calls.filter(
+      (c: unknown[]) =>
+        String(c[0]).includes('/api/alerts/state') && (c[1] as any)?.method === 'DELETE',
+    );
+    expect(deletes.length).toBe(1);
+  });
+
+  it('footer bulk action is absent when there are no alerts (hidden, not disabled)', async () => {
+    globalThis.fetch = stubRoutes({
+      '/api/summary': [makeSummaryWithCats('July 2026', 1, 10_000_000, 4_000_000, {})],
+      '/api/categories': [],
+      '/api/transactions': [],
+      '/api/recurring-transactions': [],
+    }) as any;
+    render(<AlertsDrawer />);
+    openAlertsDrawer();
+    await waitFor(() => {
+      expect(screen.getByText("You're all caught up")).toBeInTheDocument();
+    });
+    expect(screen.queryByTestId('mark-all-read')).not.toBeInTheDocument();
+  });
+});
