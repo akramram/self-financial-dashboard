@@ -189,6 +189,22 @@ export function initSchema() {
       fetched_at TEXT NOT NULL
     );
   `);
+
+  // FIN-022 (KUR-127 AC-2): persistent alert dismissal state (additive —
+  // existing tables untouched). One row per dismissed alert key:
+  //   anomaly → `a:{transaction_id}`   (stable SQLite row id, db.ts getAnomalies)
+  //   budget  → `{period_id}:{category}` (identical to the legacy localStorage
+  //             key format in alertsStore.ts / AlertsPanel.tsx — compatible)
+  // Single-user app: no user column. Dismissals must outlive transaction
+  // deletes/re-imports, so deliberately NO foreign keys / ON DELETE CASCADE
+  // (KUR-129 checklist #2): an orphaned key is benign — a re-imported
+  // transaction gets a new id and surfaces as a fresh alert.
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS alert_state (
+      alert_key TEXT PRIMARY KEY,
+      dismissed_at TEXT NOT NULL
+    );
+  `);
 }
 
 // ─── Period helpers ─────────────────────────────────────────────────────────
@@ -441,15 +457,19 @@ export function getCategoryByName(name: string) {
  * detection) + budget "over limit" alerts. Used by Layout to badge the bell.
  * Mirrors AlertsPanel logic: over-budget always counts; "approaching" (80-99%)
  * is skipped when all category spend comes from recurring transactions.
- * ponytail: ignores per-user localStorage dismissals (server can't see them);
- * upgrade to an API + client count if that mismatch bothers anyone.
+ * FIN-022 (KUR-127 AC-8): dismissals now live in the `alert_state` table, so
+ * the SSR badge excludes them too — server count and client count match after
+ * hydration (legacy localStorage keys are migrated server-side by the client
+ * on first load, see alertsStore.ts `syncAlertStateFromLegacy`).
  */
 export function getActiveAlertCount(): number {
   try {
     const periodId = getActivePeriodId();
     if (periodId == null) return 0;
 
-    let count = getAnomalies(periodId).length;
+    let count = getAnomalies(periodId).filter(
+      (a) => !isAlertKeyDismissed(`a:${a.id}`),
+    ).length;
 
     const rows = db.prepare(`
       SELECT t.category AS cat, SUM(t.amount) AS total
@@ -466,14 +486,65 @@ export function getActiveAlertCount(): number {
       }
       for (const r of rows) {
         const limit = limits[r.cat];
-        if (limit && r.total > limit) count++;
+        // Mirror AlertsPanel: only over-limit counts server-side (the
+        // "approaching" band is skipped when spend is all recurring; those
+        // alerts don't exist server-side at all).
+        if (limit && r.total > limit && !isAlertKeyDismissed(`${periodId}:${r.cat}`)) {
+          count++;
+        }
       }
     }
 
     return count;
-  } catch {
+  } catch (err) {
+    // FIN-022 (KUR-129 checklist #8): don't let a DB error masquerade as a
+    // clean badge-0 — log it, then degrade to 0 as before.
+    console.error('getActiveAlertCount failed:', err);
     return 0;
   }
+}
+
+// ─── Alert dismissal state (FIN-022 / KUR-127 AC-2) ─────────────────────────
+// Single-user persistence for dismissed alerts. Keys are stable across
+// renders and months: anomaly `a:{tx_id}`, budget `{period_id}:{category}`.
+
+export function getDismissedAlertKeys(): string[] {
+  return db
+    .prepare('SELECT alert_key FROM alert_state')
+    .all()
+    .map((r: any) => r.alert_key as string);
+}
+
+export function isAlertKeyDismissed(key: string): boolean {
+  return (
+    db.prepare('SELECT 1 FROM alert_state WHERE alert_key = ?').get(key) != null
+  );
+}
+
+/** Dismiss a batch of alert keys (idempotent; single transaction). */
+export function dismissAlertKeys(keys: string[], dismissedAt?: string): void {
+  if (!keys.length) return;
+  const ts = dismissedAt ?? new Date().toISOString();
+  const stmt = db.prepare(
+    'INSERT INTO alert_state (alert_key, dismissed_at) VALUES (?, ?) ' +
+      'ON CONFLICT(alert_key) DO NOTHING',
+  );
+  const run = db.transaction((ks: string[]) => {
+    for (const k of ks) stmt.run(k, ts);
+  });
+  run(keys);
+}
+
+/** Restore (un-dismiss) a batch of alert keys. Returns rows removed. */
+export function restoreAlertKeys(keys: string[]): number {
+  if (!keys.length) return 0;
+  const stmt = db.prepare('DELETE FROM alert_state WHERE alert_key = ?');
+  const run = db.transaction((ks: string[]) => {
+    let n = 0;
+    for (const k of ks) n += stmt.run(k).changes;
+    return n;
+  });
+  return run(keys);
 }
 
 const CATEGORY_COLORS = [

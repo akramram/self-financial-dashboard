@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Bell, AlertTriangle, CheckCircle2, RefreshCw } from 'lucide-react';
+import { Bell, AlertTriangle, CheckCircle2, CheckCheck, RefreshCw } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -13,6 +13,9 @@ import AlertsPanel from './AlertsPanel';
 import {
   ALERTS_DRAWER_OPEN_EVENT,
   useAlertsData,
+  dismissAllAlertsShared,
+  restoreAlertsSnapshot,
+  type AlertsSnapshot,
 } from '../lib/alertsStore';
 
 /**
@@ -76,11 +79,57 @@ export default function AlertsDrawer() {
   useEffect(() => {
     const onCount = (e: Event) => {
       const n = (e as CustomEvent<number>).detail;
-      if (typeof n === 'number' && n >= 0) setLiveCount(n);
+      if (typeof n === 'number' && n >= 0) {
+        setLiveCount(n);
+        // Fresh alerts arrived after a mark-all — leave the "marked" state.
+        if (n > 0) setJustMarkedAll(false);
+      }
     };
     window.addEventListener('alerts-count', onCount);
     return () => window.removeEventListener('alerts-count', onCount);
   }, []);
+
+  // ── FIN-022 (AC-6): bulk mark-all-read + "Pulihkan semua alert bulan ini".
+  // The visible-alert snapshot comes from the drawer's own AlertsPanel
+  // instance; content-equality guard keeps the snapshot callback loop-free.
+  // markedSnapshotRef keeps the exact pre-batch scope: after the list empties,
+  // AlertsPanel re-publishes an empty snapshot, so restore must not read the
+  // live one anymore.
+  const visibleSnapshotRef = useRef<AlertsSnapshot | null>(null);
+  const markedSnapshotRef = useRef<AlertsSnapshot | null>(null);
+  const [justMarkedAll, setJustMarkedAll] = useState(false);
+  const [, forceSnapshotSync] = useState(0);
+  const handleVisibleAlerts = useCallback((snap: AlertsSnapshot) => {
+    const prev = visibleSnapshotRef.current;
+    if (
+      prev &&
+      prev.anomalyIds.length === snap.anomalyIds.length &&
+      prev.budgetKeys.length === snap.budgetKeys.length &&
+      prev.anomalyIds.every((v, i) => v === snap.anomalyIds[i]) &&
+      prev.budgetKeys.every((v, i) => v === snap.budgetKeys[i])
+    ) {
+      return;
+    }
+    visibleSnapshotRef.current = snap;
+    forceSnapshotSync((n) => n + 1);
+  }, []);
+
+  const handleMarkAllRead = useCallback(() => {
+    const snap = visibleSnapshotRef.current;
+    if (!snap || snap.anomalyIds.length + snap.budgetKeys.length === 0) return;
+    dismissAllAlertsShared(snap);
+    markedSnapshotRef.current = snap;
+    setJustMarkedAll(true);
+  }, []);
+
+  const handleRestoreAll = useCallback(() => {
+    const snap = markedSnapshotRef.current ?? visibleSnapshotRef.current;
+    if (!snap || (snap.anomalyIds.length === 0 && snap.budgetKeys.length === 0)) return;
+    restoreAlertsSnapshot(snap);
+    markedSnapshotRef.current = null;
+    setJustMarkedAll(false);
+  }, []);
+
 
   return (
     <Sheet open={open} onOpenChange={handleOpenChange}>
@@ -149,33 +198,92 @@ export default function AlertsDrawer() {
               anomalies={data.anomalies}
               showHeader={false}
               variant="drawer"
+              onVisibleAlertsChange={handleVisibleAlerts}
               emptyState={
-                <div
-                  className="flex min-h-[240px] flex-col items-center justify-center gap-2 text-center"
-                  data-testid="alerts-empty-state"
-                >
-                  <span className="flex h-[72px] w-[72px] items-center justify-center rounded-full bg-mint-500/10">
-                    <CheckCircle2 className="h-10 w-10 text-mint-500 opacity-40 motion-reduce:transition-none" />
-                  </span>
-                  <p className="text-[15px] font-semibold text-slate-800 dark:text-white/80">
-                    You're all caught up
-                  </p>
-                  <p className="text-[13px] text-[hsl(var(--muted-foreground))]">
-                    No budget or anomaly alerts this month.
-                  </p>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="mt-2"
-                    onClick={() => handleOpenChange(false)}
+                justMarkedAll ? (
+                  <div
+                    className="flex min-h-[240px] flex-col items-center justify-center gap-2 text-center"
+                    data-testid="alerts-empty-state"
                   >
-                    Tutup
-                  </Button>
-                </div>
+                    <span className="flex h-[72px] w-[72px] items-center justify-center rounded-full bg-mint-500/10">
+                      <CheckCheck className="h-10 w-10 text-mint-500 opacity-40 motion-reduce:transition-none" />
+                    </span>
+                    <p className="text-[15px] font-semibold text-slate-800 dark:text-white/80">
+                      Semua alert ditandai
+                    </p>
+                    <p className="text-[13px] text-[hsl(var(--muted-foreground))]">
+                      Kamu bisa memulihkan semua alert bulan ini.
+                    </p>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="mt-2"
+                      onClick={handleRestoreAll}
+                      data-testid="restore-all-alerts"
+                    >
+                      Pulihkan semua alert bulan ini
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleOpenChange(false)}
+                    >
+                      Tutup
+                    </Button>
+                  </div>
+                ) : (
+                  <div
+                    className="flex min-h-[240px] flex-col items-center justify-center gap-2 text-center"
+                    data-testid="alerts-empty-state"
+                  >
+                    <span className="flex h-[72px] w-[72px] items-center justify-center rounded-full bg-mint-500/10">
+                      <CheckCircle2 className="h-10 w-10 text-mint-500 opacity-40 motion-reduce:transition-none" />
+                    </span>
+                    <p className="text-[15px] font-semibold text-slate-800 dark:text-white/80">
+                      You're all caught up
+                    </p>
+                    <p className="text-[13px] text-[hsl(var(--muted-foreground))]">
+                      No budget or anomaly alerts this month.
+                    </p>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="mt-2"
+                      onClick={() => handleOpenChange(false)}
+                    >
+                      Tutup
+                    </Button>
+                  </div>
+                )
               }
             />
           )}
         </div>
+
+        {/* FIN-022 (AC-6): sticky footer bulk action — only while the list is
+            ready and non-empty; hidden entirely at 0 alerts. */}
+        {status === 'ready' && liveCount > 0 && (
+          <div
+            className="shrink-0 border-t border-[hsl(var(--surface-border)/0.08)] px-4 py-3"
+            style={{ backgroundColor: 'hsl(var(--card) / 0.95)' }}
+          >
+            <Button
+              variant="outline"
+              className="h-11 w-full gap-2 rounded-lg"
+              onClick={handleMarkAllRead}
+              aria-label="Tandai semua alert dibaca"
+              data-testid="mark-all-read"
+            >
+              <CheckCheck className="h-4 w-4" />
+              Tandai semua dibaca
+            </Button>
+          </div>
+        )}
+
+        {/* FIN-022: single polite announcement for bulk actions (never per-card). */}
+        <span className="sr-only" aria-live="polite">
+          {justMarkedAll ? 'Semua alert ditandai' : ''}
+        </span>
       </SheetContent>
     </Sheet>
   );
