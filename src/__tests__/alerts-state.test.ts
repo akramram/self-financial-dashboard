@@ -9,11 +9,20 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 const mockGetDismissedAlertKeys = vi.fn(() => [] as string[]);
 const mockDismissAlertKeys = vi.fn();
 const mockRestoreAlertKeys = vi.fn(() => 0);
+const mockGetAlertPrefs = vi.fn(() => ({
+  budget_over: true,
+  budget_approaching: true,
+  anomaly_amount_spike: true,
+  anomaly_new_merchant: true,
+}));
+const mockSetAlertPref = vi.fn((_k: string, v: boolean) => v);
 
 vi.mock('../lib/db', () => ({
   getDismissedAlertKeys: mockGetDismissedAlertKeys,
   dismissAlertKeys: mockDismissAlertKeys,
   restoreAlertKeys: mockRestoreAlertKeys,
+  getAlertPrefs: mockGetAlertPrefs,
+  setAlertPref: mockSetAlertPref,
 }));
 
 function makeRequest(url: string, init?: RequestInit) {
@@ -24,7 +33,7 @@ function makeRequest(url: string, init?: RequestInit) {
 }
 
 describe('API — /api/alerts/state (FIN-022)', () => {
-  let GET: any, POST: any, DELETE: any, OPTIONS: any;
+  let GET: any, POST: any, DELETE: any, PATCH: any, OPTIONS: any;
 
   beforeEach(async () => {
     vi.clearAllMocks();
@@ -34,14 +43,23 @@ describe('API — /api/alerts/state (FIN-022)', () => {
     GET = mod.GET;
     POST = mod.POST;
     DELETE = mod.DELETE;
+    PATCH = mod.PATCH;
     OPTIONS = mod.OPTIONS;
   });
 
-  it('GET returns the dismissed key list', async () => {
+  it('GET returns the dismissed key list and the default-ON prefs map', async () => {
     mockGetDismissedAlertKeys.mockReturnValue(['a:12', '5:Food']);
     const res = await GET({});
     expect(res.status).toBe(200);
-    await expect(res.json()).resolves.toEqual({ dismissed: ['a:12', '5:Food'] });
+    await expect(res.json()).resolves.toEqual({
+      dismissed: ['a:12', '5:Food'],
+      prefs: {
+        budget_over: true,
+        budget_approaching: true,
+        anomaly_amount_spike: true,
+        anomaly_new_merchant: true,
+      },
+    });
   });
 
   it('POST dismisses a batch of keys', async () => {
@@ -116,6 +134,52 @@ describe('API — /api/alerts/state (FIN-022)', () => {
   it('OPTIONS responds 204 with allowed methods', async () => {
     const res = OPTIONS();
     expect(res.status).toBe(204);
+  });
+
+  // ── FIN-022 lanjutan (KUR-132 §2): PATCH sets exactly one pref ──
+
+  it('PATCH sets one pref and echoes the persisted value', async () => {
+    mockSetAlertPref.mockReturnValue(false);
+    const res = await PATCH({
+      request: makeRequest('/api/alerts/state', {
+        method: 'PATCH',
+        body: JSON.stringify({ pref: 'anomaly_new_merchant', enabled: false }),
+      }),
+    });
+    expect(res.status).toBe(200);
+    await expect(res.json()).resolves.toEqual({
+      ok: true,
+      pref: 'anomaly_new_merchant',
+      enabled: false,
+    });
+    expect(mockSetAlertPref).toHaveBeenCalledWith('anomaly_new_merchant', false);
+  });
+
+  it('PATCH rejects unknown pref keys and non-boolean enabled', async () => {
+    mockSetAlertPref.mockClear();
+    const unknown = await PATCH({
+      request: makeRequest('/api/alerts/state', {
+        method: 'PATCH',
+        body: JSON.stringify({ pref: 'category_outlier', enabled: false }),
+      }),
+    });
+    expect(unknown.status).toBe(400);
+
+    const notBool = await PATCH({
+      request: makeRequest('/api/alerts/state', {
+        method: 'PATCH',
+        body: JSON.stringify({ pref: 'budget_over', enabled: 'yes' }),
+      }),
+    });
+    expect(notBool.status).toBe(400);
+    expect(mockSetAlertPref).not.toHaveBeenCalled();
+  });
+
+  it('PATCH rejects malformed JSON', async () => {
+    const res = await PATCH({
+      request: makeRequest('/api/alerts/state', { method: 'PATCH', body: 'nope' }),
+    });
+    expect(res.status).toBe(400);
   });
 });
 
