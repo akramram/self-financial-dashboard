@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
-import { db } from '../../../lib/db';
 import { loadKseiToken } from '../../../lib/kseiToken';
+import { fetchAndCacheKseiDetail } from '../../../lib/kseiDetail';
 import {
   extractInstruments,
   KIND_BY_SLICE,
@@ -8,25 +8,25 @@ import {
 } from '../../../lib/kseiInstruments';
 
 /**
- * GET /api/ksei/instruments?type=EKUITAS|REKSADANA   (KUR-145, parent KUR-42)
+ * GET /api/ksei/instruments?type=EKUITAS|REKSADANA   (KUR-145 + KUR-147)
  *
  * Drill-down instrument list for one asset-class slice of the KSEI card.
- * Cache-only: reads the raw, shape-agnostic rows KUR-143's capture flow
- * persists into `ksei_detail_snapshots` (payload_json stored VERBATIM).
- * This endpoint NEVER calls AKSes — no network, no token usage, instant
- * answer when nothing is cached yet.
+ * Since KUR-147 the route goes through the fetch layer
+ * (fetchAndCacheKseiDetail): token present → one live AKSes detail request
+ * whose body is stored VERBATIM into `ksei_detail_snapshots`; token
+ * missing/expired or any fetch failure → falls back to the newest cached
+ * row without throwing. Zero cached rows and no live data → 404.
  *
- * Response (spec KUR-144 §8):
- *   200 { snapshot_date, fetched_at, stale, tokenExpired, instruments: [...] }
+ * Response (contract from KUR-145 — sheet binds to these fields):
+ *   200 { snapshot_date, fetched_at, stale, tokenExpired, instruments: [...],
+ *         source: 'live' | 'cache' }   ← source added in KUR-147
  *   400 { error }                      — type missing / not EKUITAS|REKSADANA
- *   404 { error }                      — nothing cached for this class
- *   503 { error }                      — cache table not available yet
+ *   404 { error }                      — nothing cached and live fetch empty
+ *   503 { error }                      — cache table not available yet / DB hiccup
  *
- * Field mapping lives in lib/kseiInstruments.ts; the raw AKSes 200 shape is
- * still unverified (token expired), so the extractor is deliberately
- * tolerant: unknown shapes map to an empty list (defensive empty state),
- * and alias handling means a mapping tweak — not a UI change — once fixtures
- * land (KUR-42 wiring).
+ * Field mapping lives in lib/kseiInstruments.ts and is NOT touched here —
+ * the raw AKSes 200 shape is still unverified (token expired); a mapping
+ * tweak lands with KUR-42 once live fixtures confirm the shape.
  */
 
 export const GET: APIRoute = async ({ url }) => {
@@ -40,44 +40,30 @@ export const GET: APIRoute = async ({ url }) => {
 
   const kind = KIND_BY_SLICE[type];
   try {
-    // Latest cached row for this class — newest snapshot_date wins. Reads the
-    // shared ksei_detail_snapshots table (KUR-143); the query lives in this
-    // module so db.ts stays untouched (avoids merge contention with KUR-143).
-    const row = db
-      .prepare(
-        `SELECT snapshot_date, payload_json, fetched_at
-           FROM ksei_detail_snapshots
-          WHERE kind = ?
-          ORDER BY snapshot_date DESC
-          LIMIT 1`
-      )
-      .get(kind) as
-      | { snapshot_date: string; payload_json: string; fetched_at: string }
-      | undefined;
+    const result = await fetchAndCacheKseiDetail(kind as 'equity-summary' | 'reksadana-summary');
 
-    if (!row) {
+    // No cached row at all and live fetch produced nothing → 404. A cached
+    // but corrupt row still degrades to an empty list (KUR-145 behaviour).
+    if (!result.hadCache) {
       return json(
-        { error: 'Belum ada data instrumen tersimpan untuk kelas ini.', tokenExpired: tokenExpired() },
+        {
+          error: 'Belum ada data instrumen tersimpan untuk kelas ini.',
+          tokenExpired: result.tokenExpired,
+        },
         404
       );
     }
 
-    let raw: unknown = null;
-    try {
-      raw = JSON.parse(row.payload_json);
-    } catch {
-      raw = null; // corrupt row → defensive empty below
-    }
-
-    const instruments: KseiInstrument[] = extractInstruments(raw, type);
+    const instruments: KseiInstrument[] = extractInstruments(result.payload, type);
 
     return json({
-      snapshot_date: row.snapshot_date,
-      fetched_at: row.fetched_at,
-      stale: isStale(row.fetched_at),
-      tokenExpired: tokenExpired(),
+      snapshot_date: result.snapshotDate,
+      fetched_at: result.fetchedAt,
+      stale: result.stale,
+      tokenExpired: result.tokenExpired,
+      source: result.source,
       instruments,
-    });
+    }, 200);
   } catch {
     // Table not migrated yet (KUR-143 not deployed) or DB hiccup.
     return json(
@@ -100,10 +86,4 @@ function json(body: unknown, status: number): Response {
 function tokenExpired(): boolean {
   const { token, expired } = loadKseiToken();
   return token !== null && expired;
-}
-
-/** Cache row is stale once older than the summary card's 1h refresh interval. */
-function isStale(fetchedAt: string): boolean {
-  const age = Date.now() - new Date(fetchedAt).getTime();
-  return !(age >= 0 && age < 60 * 60 * 1000);
 }
