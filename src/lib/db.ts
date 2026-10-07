@@ -216,6 +216,25 @@ export function initSchema() {
       enabled  INTEGER NOT NULL DEFAULT 1
     );
   `);
+
+  // KUR-42 prep (KUR-143): raw, shape-agnostic AKSes (KSEI) drill-down cache.
+  // Payload is the response body stored VERBATIM (JSON string as received) —
+  // field names in KUR-42 comments come from the minified SPA and have never
+  // been seen in a 200 response, so no typed columns here. Parsing happens in
+  // the wiring ticket, after the shape is verified live via
+  // scripts/ksei-capture-fixtures.sh. Additive only — ksei_snapshots is
+  // untouched. code='' for endpoints without a per-fund dimension; PK
+  // (snapshot_date, kind, code) mirrors the capture dimensions.
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS ksei_detail_snapshots (
+      snapshot_date TEXT NOT NULL,
+      kind TEXT NOT NULL,
+      code TEXT NOT NULL DEFAULT '',
+      payload_json TEXT NOT NULL,
+      fetched_at TEXT NOT NULL,
+      PRIMARY KEY (snapshot_date, kind, code)
+    );
+  `);
 }
 
 // ─── Period helpers ─────────────────────────────────────────────────────────
@@ -3611,4 +3630,58 @@ export function saveKseiSnapshot(s: {
        breakdown_json = excluded.breakdown_json,
        fetched_at = excluded.fetched_at`
   ).run(s.snapshot_date, s.total_value, JSON.stringify(s.breakdown), s.fetched_at);
+}
+
+// ─── AKSes (KSEI) drill-down raw cache (KUR-42 prep / KUR-143) ───────────────
+// Shape-agnostic by design: payload_json is the response body VERBATIM, so
+// these helpers are safe before the live shape is verified. No parsing here —
+// that lands with the wiring ticket once fixtures confirm the real shape.
+
+export interface KseiDetailSnapshotRow {
+  snapshot_date: string;
+  kind: string;
+  code: string;
+  payload_json: string;
+  fetched_at: string;
+}
+
+export function getKseiDetailSnapshot(
+  snapshotDate: string,
+  kind: string,
+  code = ''
+): KseiDetailSnapshotRow | null {
+  const row = db
+    .prepare(
+      'SELECT * FROM ksei_detail_snapshots WHERE snapshot_date = ? AND kind = ? AND code = ?'
+    )
+    .get(snapshotDate, kind, code) as KseiDetailSnapshotRow | undefined;
+  return row ?? null;
+}
+
+export function getLatestKseiDetailSnapshot(
+  kind: string,
+  code = ''
+): KseiDetailSnapshotRow | null {
+  const row = db
+    .prepare(
+      'SELECT * FROM ksei_detail_snapshots WHERE kind = ? AND code = ? ORDER BY snapshot_date DESC LIMIT 1'
+    )
+    .get(kind, code) as KseiDetailSnapshotRow | undefined;
+  return row ?? null;
+}
+
+export function saveKseiDetailSnapshot(s: {
+  snapshot_date: string;
+  kind: string;
+  code?: string;
+  payload_json: string;
+  fetched_at: string;
+}): void {
+  db.prepare(
+    `INSERT INTO ksei_detail_snapshots (snapshot_date, kind, code, payload_json, fetched_at)
+     VALUES (?, ?, ?, ?, ?)
+     ON CONFLICT(snapshot_date, kind, code) DO UPDATE SET
+       payload_json = excluded.payload_json,
+       fetched_at = excluded.fetched_at`
+  ).run(s.snapshot_date, s.kind, s.code ?? '', s.payload_json, s.fetched_at);
 }

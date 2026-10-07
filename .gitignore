@@ -119,3 +119,7 @@ skills-lock.json
 
 # AKSes (KSEI) bearer token — secret, never commit (KUR-40)
 data/ksei.json
+
+# AKSes (KSEI) raw fixture captures (KUR-42 prep) — private portfolio data,
+# never commit. Regenerate via scripts/ksei-capture-fixtures.sh.
+data/ksei-fixtures/
