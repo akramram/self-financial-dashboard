@@ -57,30 +57,92 @@ export function kseiTypeLabel(type: string): string {
   return map[type] ?? type;
 }
 
+// ─── field-alias tables (single source: extractor + KUR-148 shape harness) ──
+
+/** Ticker/fund-code candidates per slice type (tried in order, case-insensitive). */
+export const CODE_KEYS_BY_SLICE: Record<KseiSliceType, string[]> = {
+  EKUITAS: ['code', 'codeBaseSec', 'ticker', 'symbol', 'emitenCode', 'secCode'],
+  REKSADANA: ['code', 'codeBaseSec', 'fundCode', 'schemeCode', 'ticker', 'symbol'],
+};
+export const NAME_KEYS = [
+  'name', 'nama', 'fundName', 'emitenName', 'emitenshortname',
+  'shortName', 'longName', 'description',
+];
+export const VALUE_KEYS = [
+  'summaryAmount', 'summaryValue', 'value', 'amount', 'nav',
+  'balanceRupiah', 'marketValue', 'totalValue',
+];
+export const VOLUME_KEYS = ['jmlLembar', 'volume', 'quantity', 'qty', 'lembar', 'units'];
+
 // ─── field-alias reading ────────────────────────────────────────────────────
+
+/** Result of an alias lookup: which alias matched and the ORIGINAL key it hit. */
+export interface AliasPick {
+  /** alias that matched ('' when MISS) */
+  alias: string;
+  /** original as-written row key that satisfied the alias (null when MISS) */
+  key: string | null;
+  value?: string | number;
+}
+
+/** pickString + which alias/original key matched (KUR-148 shape harness). */
+export function tracePickString(obj: Record<string, unknown>, keys: string[]): AliasPick {
+  for (const alias of keys) {
+    let origKey: string | null = null;
+    let v: unknown;
+    for (const [k, val] of Object.entries(obj)) {
+      if (k.toLowerCase() === alias.toLowerCase()) {
+        origKey = k;
+        v = val; // last duplicate wins — mirrors the lowerKeys map build order
+      }
+    }
+    if (origKey === null) continue;
+    if (typeof v === 'string' && v.trim()) return { alias, key: origKey, value: v.trim() };
+    if (typeof v === 'number' && Number.isFinite(v)) return { alias, key: origKey, value: String(v) };
+  }
+  return { alias: '', key: null };
+}
+
+/** pickNumber + which alias/original key matched (KUR-148 shape harness). */
+export function tracePickNumber(obj: Record<string, unknown>, keys: string[]): AliasPick {
+  for (const alias of keys) {
+    let origKey: string | null = null;
+    let v: unknown;
+    for (const [k, val] of Object.entries(obj)) {
+      if (k.toLowerCase() === alias.toLowerCase()) {
+        origKey = k;
+        v = val;
+      }
+    }
+    if (origKey === null) continue;
+    if (typeof v === 'number' && Number.isFinite(v)) return { alias, key: origKey, value: v };
+    if (typeof v === 'string' && v.trim() !== '' && Number.isFinite(Number(v))) {
+      return { alias, key: origKey, value: Number(v) };
+    }
+  }
+  return { alias: '', key: null };
+}
 
 /** First present, non-empty string among candidate keys (case-insensitive). */
 function pickString(obj: Record<string, unknown>, keys: string[]): string {
-  const lower: Record<string, unknown> = {};
-  for (const [k, v] of Object.entries(obj)) lower[k.toLowerCase()] = v;
-  for (const k of keys) {
-    const v = lower[k.toLowerCase()];
-    if (typeof v === 'string' && v.trim()) return v.trim();
-    if (typeof v === 'number' && Number.isFinite(v)) return String(v);
-  }
-  return '';
+  const picked = tracePickString(obj, keys);
+  return picked.key === null ? '' : (picked.value as string);
 }
 
 /** First present, finite number among candidate keys (case-insensitive). */
 function pickNumber(obj: Record<string, unknown>, keys: string[]): number | undefined {
-  const lower: Record<string, unknown> = {};
-  for (const [k, v] of Object.entries(obj)) lower[k.toLowerCase()] = v;
-  for (const k of keys) {
-    const v = lower[k.toLowerCase()];
-    if (typeof v === 'number' && Number.isFinite(v)) return v;
-    if (typeof v === 'string' && v.trim() !== '' && Number.isFinite(Number(v))) return Number(v);
-  }
-  return undefined;
+  const picked = tracePickNumber(obj, keys);
+  return picked.key === null ? undefined : (picked.value as number);
+}
+
+/**
+ * Where findInstrumentList got the instrument rows and, when it fell back to
+ * the recursive walk, the object path to the array (KUR-148 shape harness).
+ * `wellKnownKey` is the matched WELL_KNOWN key, null when the fallback hit.
+ */
+export interface ContainerSource {
+  wellKnownKey: string | null;
+  fallbackPath: string | null;
 }
 
 /**
@@ -90,12 +152,25 @@ function pickNumber(obj: Record<string, unknown>, keys: string[]): number | unde
  * 2. recursive walk: the FIRST array whose elements are objects that carry a
  *    recognizable value-ish field (amount/value/summaryValue/nav…) — protects
  *    against renamed containers without guessing a hard-coded path.
+ *
+ * `trace` (KUR-148 shape harness) receives where the container came from:
+ * WELL_KNOWN key, or the fallback path (e.g. "$.response.dataList[0]"),
+ * or {null, null} when nothing matched. Selection is identical with or
+ * without trace — only the origin is reported.
  */
-function findInstrumentList(raw: unknown): Record<string, unknown>[] {
+function findInstrumentList(
+  raw: unknown,
+  trace?: (src: ContainerSource) => void
+): Record<string, unknown>[] {
   if (Array.isArray(raw)) {
-    return raw.filter(el => el !== null && typeof el === 'object') as Record<string, unknown>[];
+    const rows = raw.filter(el => el !== null && typeof el === 'object') as Record<string, unknown>[];
+    if (trace) trace({ wellKnownKey: null, fallbackPath: '$' });
+    return rows;
   }
-  if (raw === null || typeof raw !== 'object') return [];
+  if (raw === null || typeof raw !== 'object') {
+    if (trace) trace({ wellKnownKey: null, fallbackPath: null });
+    return [];
+  }
 
   const WELL_KNOWN = [
     'dataListNodeEmitenList',
@@ -114,12 +189,15 @@ function findInstrumentList(raw: unknown): Record<string, unknown>[] {
       const rows = candidate.filter(
         el => el !== null && typeof el === 'object'
       ) as Record<string, unknown>[];
-      if (rows.length > 0) return rows;
+      if (rows.length > 0) {
+        if (trace) trace({ wellKnownKey: key, fallbackPath: null });
+        return rows;
+      }
     }
   }
 
   // Recursive fallback: depth-first, first array of value-bearing objects.
-  const VALUE_KEYS = [
+  const FALLBACK_VALUE_KEYS = [
     'summaryamount', 'amount', 'value', 'nav', 'totalvalue', 'balancerupiah',
     'marketvalue', 'closingprice', 'price',
   ];
@@ -134,19 +212,60 @@ function findInstrumentList(raw: unknown): Record<string, unknown>[] {
       if (
         rows.length > 0 &&
         rows.some(row =>
-          VALUE_KEYS.some(k => k in lowerKeys(row))
+          FALLBACK_VALUE_KEYS.some(k => k in lowerKeys(row))
         )
       ) {
-        return rows;
+        return node as Record<string, unknown>[]; // ORIGINAL array — path-findable
       }
     }
-    for (const v of Object.values(node as Record<string, unknown>)) {
+    for (const [k, v] of Object.entries(node as Record<string, unknown>)) {
       const found = visit(v);
       if (found) return found;
     }
     return null;
   };
-  return visit(raw) ?? [];
+  for (const [key, value] of Object.entries(obj)) {
+    const found = visit(value);
+    if (found) {
+      if (trace) trace({ wellKnownKey: null, fallbackPath: pathToContainer(found, obj) });
+      return found.filter(
+        el => el !== null && typeof el === 'object' && !Array.isArray(el)
+      ) as Record<string, unknown>[];
+    }
+  }
+  if (trace) trace({ wellKnownKey: null, fallbackPath: null });
+  return [];
+}
+
+/**
+ * Re-derive the object path to `container` inside `root` by a fresh walk
+ * (KUR-148 shape harness). Search order matches visit()'s depth-first pass,
+ * so the reported path is the one the selection actually took.
+ */
+function pathToContainer(container: unknown, root: unknown): string {
+  const stack: Array<{ node: unknown; path: string }> = [];
+  const push = (node: unknown, path: string) => {
+    if (node === null || typeof node !== 'object') return;
+    if (stack.some(e => e.node === node)) return; // don't revisit shared refs
+    stack.push({ node, path });
+  };
+  for (const [k, v] of Object.entries(root as Record<string, unknown>)) {
+    push(v, `$.${k}`);
+  }
+  while (stack.length > 0) {
+    const { node, path } = stack.pop() as { node: unknown; path: string };
+    if (node === container) return path;
+    if (Array.isArray(node)) {
+      for (let i = node.length - 1; i >= 0; i--) push(node[i], `${path}[${i}]`);
+    } else {
+      const entries = Object.entries(node as Record<string, unknown>);
+      for (let i = entries.length - 1; i >= 0; i--) {
+        const [k, v] = entries[i];
+        push(v, `${path}.${k}`);
+      }
+    }
+  }
+  return '(path tak terlacak — referensi tidak konvensional / siklik terpotong)';
 }
 
 function lowerKeys(obj: Record<string, unknown>): Record<string, unknown> {
@@ -155,42 +274,93 @@ function lowerKeys(obj: Record<string, unknown>): Record<string, unknown> {
   return out;
 }
 
+/** A row extractInstruments skipped, with the reason (KUR-148 shape harness). */
+export interface DroppedRow {
+  /** row position in the container (0-based) */
+  index: number;
+  /** 'no-value' when no value alias held a number, else 'no-identity' */
+  reason: 'no-value' | 'no-identity';
+  /** the raw row keys, as written in the payload */
+  keys: string[];
+}
+
+/**
+ * Trace of one extractInstruments run (KUR-148 shape harness) — selection is
+ * identical with or without it; only observability is added.
+ */
+export interface ExtractTrace {
+  container: ContainerSource;
+  /** which alias/original key matched on the FIRST CONTAINER row (even if that row was dropped) */
+  firstRowPicks: {
+    code: AliasPick;
+    name: AliasPick;
+    value: AliasPick;
+    volume: AliasPick;
+  } | null;
+  /** raw keys of the first container row, as written in the payload */
+  firstRowKeys: string[];
+  dropped: DroppedRow[];
+}
+
 /** Extract UI rows from a raw payload. Never throws; unknown → []. */
 export function extractInstruments(
   raw: unknown,
-  sliceType: 'EKUITAS' | 'REKSADANA'
+  sliceType: 'EKUITAS' | 'REKSADANA',
+  trace?: (t: ExtractTrace) => void
 ): KseiInstrument[] {
-  const rows = findInstrumentList(raw);
+  const containerBox: { current: ContainerSource | null } = { current: null };
+  const rows = findInstrumentList(raw, src => {
+    containerBox.current = src;
+  });
+  const codeKeys = CODE_KEYS_BY_SLICE[sliceType];
+
+  let firstRowPicks: ExtractTrace['firstRowPicks'] = null;
+  let firstRowKeys: string[] = [];
+  const dropped: DroppedRow[] = [];
   const out: KseiInstrument[] = [];
-  for (const row of rows) {
-    // Funds have no ticker — derive code from the name when absent.
-    const codeKeys =
-      sliceType === 'EKUITAS'
-        ? ['code', 'codeBaseSec', 'ticker', 'symbol', 'emitenCode', 'secCode']
-        : ['code', 'codeBaseSec', 'fundCode', 'schemeCode', 'ticker', 'symbol'];
-    const nameKeys = [
-      'name', 'nama', 'fundName', 'emitenName', 'emitenshortname',
-      'shortName', 'longName', 'description',
-    ];
-    const valueKeys = [
-      'summaryAmount', 'summaryValue', 'value', 'amount', 'nav',
-      'balanceRupiah', 'marketValue', 'totalValue',
-    ];
-    const volumeKeys = ['jmlLembar', 'volume', 'quantity', 'qty', 'lembar', 'units'];
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i];
+    const isFirstRow = i === 0;
+    if (isFirstRow) {
+      // Row-0 alias picks are recorded EVEN WHEN the row is dropped — a MISS
+      // on value must be reported with the keys that were actually available.
+      firstRowKeys = Object.keys(row);
+      firstRowPicks = {
+        code: tracePickString(row, codeKeys),
+        name: tracePickString(row, NAME_KEYS),
+        value: tracePickNumber(row, VALUE_KEYS),
+        volume: tracePickNumber(row, VOLUME_KEYS),
+      };
+    }
 
-    const value = pickNumber(row, valueKeys);
-    if (value === undefined) continue; // not an instrument row — skip silently
+    const valuePick = tracePickNumber(row, VALUE_KEYS);
+    if (valuePick.key === null) {
+      // not an instrument row — skip silently (unchanged behavior)
+      dropped.push({ index: i, reason: 'no-value', keys: Object.keys(row) });
+      continue;
+    }
 
-    const name = pickString(row, nameKeys);
+    const name = pickString(row, NAME_KEYS);
     const code = pickString(row, codeKeys) || (name ? name.slice(0, 24) : '');
-    if (!code && !name) continue;
+    if (!code && !name) {
+      dropped.push({ index: i, reason: 'no-identity', keys: Object.keys(row) });
+      continue;
+    }
 
-    const item: KseiInstrument = { code, name, value };
-    const volume = pickNumber(row, volumeKeys);
+    const item: KseiInstrument = { code, name, value: valuePick.value as number };
+    const volume = pickNumber(row, VOLUME_KEYS);
     if (sliceType === 'EKUITAS' && volume !== undefined && volume > 0) {
       item.volume = Math.round(volume);
     }
     out.push(item);
+  }
+  if (trace) {
+    trace({
+      container: containerBox.current ?? { wellKnownKey: null, fallbackPath: null },
+      firstRowPicks,
+      firstRowKeys: firstRowKeys.length > 0 ? firstRowKeys : (rows[0] ? Object.keys(rows[0]) : []),
+      dropped,
+    });
   }
   return out;
 }
