@@ -203,7 +203,7 @@ export default function FintechSidebar({ balance, alerts: initialAlerts = 0 }: P
             aria-expanded={drawerOpen}
             aria-label={alerts > 0 ? `Alerts, ${alerts} active` : 'Alerts, none'}
             title={alerts > 0 ? `Alerts, ${alerts} active` : 'Alerts, none'}
-            className={`relative w-full flex items-center rounded-xl transition-colors no-underline hover:bg-slate-100 dark:hover:bg-white/5 data-[drawer=open]:bg-slate-100 dark:data-[drawer=open]:bg-white/5 ${
+            className={`relative w-full flex items-center min-h-[44px] rounded-xl transition-colors no-underline hover:bg-slate-100 dark:hover:bg-white/5 data-[drawer=open]:bg-slate-100 dark:data-[drawer=open]:bg-white/5 ${
               collapsed ? 'justify-center p-2' : 'px-3 py-2 gap-3'
             }`}
             data-drawer={drawerOpen ? 'open' : 'closed'}
@@ -215,8 +215,7 @@ export default function FintechSidebar({ balance, alerts: initialAlerts = 0 }: P
             {alerts > 0 && (
               <span
                 aria-hidden="true"
-                className="absolute -top-0.5 -right-0.5 min-w-[20px] h-5 px-1 rounded-full flex items-center justify-center text-[10px] font-bold text-slate-900 dark:text-white"
-                style={{ backgroundColor: '#ef4444' }}
+                className="absolute -top-0.5 -right-0.5 min-w-[20px] h-5 px-1 rounded-full flex items-center justify-center bg-coral-600 text-white text-[10px] font-bold"
               >
                 {alerts > 99 ? '99+' : alerts}
               </span>
