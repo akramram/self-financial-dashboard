@@ -8,7 +8,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "ksei:verify-shape": "tsx scripts/ksei-verify-shape.ts"
   },
   "dependencies": {
     "@astrojs/node": "^8.3.4",
