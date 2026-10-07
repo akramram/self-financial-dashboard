@@ -2,6 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
 import { Skeleton } from './ui/skeleton';
 import { onDataChanged, notifyDataChanged } from '../lib/dataSync';
+import { fmtIdr, fmtDate } from '../lib/format';
+import {
+  kseiTypeColor,
+  kseiTypeLabel,
+  type KseiSliceType,
+} from '../lib/kseiInstruments';
+import KseiDrilldownSheet from './KseiDrilldownSheet';
 
 /**
  * AKSes (KSEI) live asset card (KUR-40, replaces BbriCard from KUR-29).
@@ -16,6 +23,11 @@ import { onDataChanged, notifyDataChanged } from '../lib/dataSync';
  * card shows a red badge + an inline paste field that accepts the raw JWT or
  * a full "copy as cURL" command; saving it POSTs to /api/ksei/token which
  * persists + hot-applies the token and refreshes the snapshot immediately.
+ *
+ * Drill-down (KUR-145, spec KUR-144): the EKUITAS / REKSADANA slices are
+ * buttons (≥44px) that open KseiDrilldownSheet with the per-instrument list;
+ * KAS/OBLIGASI/LAINNYA stay non-interactive (no instrument data source yet).
+ * The card keeps owning the summary breakdown; the sheet owns the list.
  */
 
 export interface KseiCardData {
@@ -33,40 +45,12 @@ interface Props {
   data?: KseiCardData | null;
 }
 
-const fmtIdr = (n: number) => 'Rp ' + Math.round(n).toLocaleString('id-ID');
+// ─── shared display helpers imported from lib/format + lib/kseiInstruments ──
+
 const MS_PER_DAY = 86_400_000;
 
 function daysOld(fetchedAt: string, now: number): number {
   return Math.floor((now - new Date(fetchedAt).getTime()) / MS_PER_DAY);
-}
-
-function fmtDate(iso: string): string {
-  const d = new Date(iso + (iso.length === 10 ? 'T00:00:00' : ''));
-  if (isNaN(d.getTime())) return iso;
-  return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
-}
-
-const TYPE_COLORS: Record<string, string> = {
-  EKUITAS: '#10b981',
-  REKSADANA: '#6366f1',
-  KAS: '#f59e0b',
-  OBLIGASI: '#06b6d4',
-  LAINNYA: '#94a3b8',
-};
-
-function typeColor(type: string): string {
-  return TYPE_COLORS[type] ?? '#94a3b8';
-}
-
-function typeLabel(type: string): string {
-  const map: Record<string, string> = {
-    EKUITAS: 'Saham',
-    REKSADANA: 'Reksadana',
-    KAS: 'Kas',
-    OBLIGASI: 'Obligasi',
-    LAINNYA: 'Lainnya',
-  };
-  return map[type] ?? type;
 }
 
 export default function KseiCard({ data }: Props) {
@@ -75,6 +59,9 @@ export default function KseiCard({ data }: Props) {
   const [fetchError, setFetchError] = useState<string | null>(null);
   const ref = useRef<KseiCardData | null>(portfolio);
   ref.current = portfolio;
+
+  // Drill-down (KUR-145): which slice's sheet is open (null = closed).
+  const [openSlice, setOpenSlice] = useState<KseiSliceType | null>(null);
 
   // Token rotation (KUR-40): inline paste field, auto-shown while the AKSes
   // token is expired. Accepts a raw JWT or a full "copy as cURL" command —
@@ -292,31 +279,57 @@ export default function KseiCard({ data }: Props) {
             Total asset · posisi {fmtDate(portfolio.snapshot_date)}
           </p>
 
-          {/* 2 — per-type breakdown bars */}
+          {/* 2 — per-type breakdown bars (EKUITAS/REKSADANA = drill-down
+              buttons into KseiDrilldownSheet, KUR-145; ≥44px target with the
+              bar kept as the visual; KAS/OBLIGASI/LAINNYA stay non-interactive
+              until an instrument data source exists — spec KUR-144 §4). */}
           <div className="space-y-2">
             {breakdown.length === 0 ? (
               <p className="text-xs text-slate-500 dark:text-white/50">Tidak ada holding aktif.</p>
             ) : (
-              breakdown.map(s => (
-                <div key={s.type}>
-                  <div className="flex items-center justify-between text-xs mb-0.5">
-                    <span className="text-slate-600 dark:text-white/60">{typeLabel(s.type)}</span>
-                    <span className="font-medium text-slate-700 dark:text-white/80">
-                      {fmtIdr(s.amount)}
-                      <span className="text-slate-400 dark:text-white/40">
-                        {' '}
-                        · {s.percent.toFixed(1).replace('.', ',')}%
+              breakdown.map(s => {
+                const interactive = s.type === 'EKUITAS' || s.type === 'REKSADANA';
+                const label = kseiTypeLabel(s.type);
+                const percentText = s.percent.toFixed(1).replace('.', ',');
+                const bar = (
+                  <>
+                    <div className="flex items-center justify-between text-xs mb-0.5">
+                      <span className="text-slate-600 dark:text-white/60">{label}</span>
+                      <span className="font-medium text-slate-700 dark:text-white/80">
+                        {fmtIdr(s.amount)}
+                        <span className="text-slate-400 dark:text-white/40">
+                          {' '}
+                          · {percentText}%
+                        </span>
                       </span>
-                    </span>
+                    </div>
+                    <div className="h-1.5 rounded-full bg-slate-200/70 dark:bg-white/[0.06] overflow-hidden">
+                      <div
+                        className="h-full rounded-full"
+                        style={{ width: `${Math.max(2, Math.min(100, s.percent))}%`, background: kseiTypeColor(s.type) }}
+                      />
+                    </div>
+                  </>
+                );
+                return interactive ? (
+                  <button
+                    key={s.type}
+                    type="button"
+                    data-testid={`ksei-slice-${s.type.toLowerCase()}`}
+                    aria-haspopup="dialog"
+                    aria-controls={`ksei-drilldown-${s.type.toLowerCase()}`}
+                    aria-label={`Lihat instrumen ${label}, ${fmtIdr(s.amount)}, ${percentText}%`}
+                    onClick={() => setOpenSlice(s.type as KseiSliceType)}
+                    className="block w-full text-left py-2 min-h-[44px] rounded-lg hover:bg-white/[0.03] dark:hover:bg-white/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-colors cursor-pointer"
+                  >
+                    {bar}
+                  </button>
+                ) : (
+                  <div key={s.type} className="py-2 min-h-[44px]">
+                    {bar}
                   </div>
-                  <div className="h-1.5 rounded-full bg-slate-200/70 dark:bg-white/[0.06] overflow-hidden">
-                    <div
-                      className="h-full rounded-full"
-                      style={{ width: `${Math.max(2, Math.min(100, s.percent))}%`, background: typeColor(s.type) }}
-                    />
-                  </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
 
@@ -328,6 +341,32 @@ export default function KseiCard({ data }: Props) {
           )}
         </div>
       )}
+
+      {/* Drill-down sheet (KUR-145) — one instance per supported slice; Radix
+          mounts content only while open, so both stay inert until opened.
+          "Perbarui token" in the banner closes the sheet and reopens the
+          card's inline token form (spec §2: sheet never writes back). */}
+      {portfolio &&
+        breakdown.length > 0 &&
+        (['EKUITAS', 'REKSADANA'] as KseiSliceType[]).map(t => {
+          const slice = breakdown.find(s => s.type === t);
+          if (!slice) return null;
+          return (
+            <KseiDrilldownSheet
+              key={t}
+              sliceType={t}
+              sliceAmount={slice.amount}
+              slicePercent={slice.percent}
+              snapshotDate={portfolio.snapshot_date}
+              open={openSlice === t}
+              onOpenChange={o => setOpenSlice(o ? t : null)}
+              onRotateToken={() => {
+                setTokenDismissed(false);
+                setTokenFormOpen(true);
+              }}
+            />
+          );
+        })}
     </motion.div>
   );
 }
