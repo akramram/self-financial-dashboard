@@ -246,7 +246,7 @@ export default function AlertsDrawer() {
     <Sheet open={open} onOpenChange={handleOpenChange}>
       <SheetContent
         side="right"
-        className="w-full sm:max-w-[400px] sm:w-[calc(100vw-48px)] p-0 flex flex-col border-l border-[hsl(var(--surface-border)/0.12)] shadow-elevation-3 pb-[env(safe-area-inset-bottom)]"
+        className="w-full sm:max-w-[400px] sm:w-[calc(100vw-48px)] p-0 flex flex-col border-l border-[hsl(var(--surface-border)/0.12)] shadow-elevation-3 pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]"
         style={{
           backgroundColor: 'hsl(var(--card) / 0.95)',
           backdropFilter: 'blur(24px)',
@@ -254,7 +254,7 @@ export default function AlertsDrawer() {
         aria-describedby={undefined}
       >
         {view === 'list' ? (
-          <SheetHeader className="h-14 shrink-0 flex-row items-center gap-2 border-b border-[hsl(var(--surface-border)/0.08)] px-4 py-0 space-y-0">
+          <SheetHeader className="h-14 shrink-0 flex-row items-center gap-2 overflow-hidden border-b border-[hsl(var(--surface-border)/0.08)] px-4 py-0 space-y-0">
             <Bell
               className={`h-5 w-5 shrink-0 ${
                 liveCount > 0 ? 'text-mint-500' : 'text-slate-400 dark:text-white/40'
@@ -265,14 +265,14 @@ export default function AlertsDrawer() {
               Alerts
             </SheetTitle>
             <span
-              className="rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums"
+              className="whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums"
               style={{ backgroundColor: 'hsl(var(--muted))' }}
             >
               {liveCount} aktif
             </span>
             {mutedCount > 0 && (
               <span
-                className="rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums"
+                className="whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums"
                 style={{ backgroundColor: 'hsl(var(--muted))', opacity: 0.75 }}
                 data-testid="alerts-muted-count"
               >
@@ -285,7 +285,7 @@ export default function AlertsDrawer() {
               onClick={() => setView('prefs')}
               aria-label="Preferensi Alert"
               data-testid="open-alert-prefs"
-              className="ml-auto flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-[hsl(var(--surface-hover))] hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring dark:text-white/50 dark:hover:text-white/80"
+              className="mr-12 ml-auto flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-[hsl(var(--surface-hover))] hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring dark:text-white/50 dark:hover:text-white/80"
             >
               <SlidersHorizontal className="h-5 w-5" strokeWidth={1.8} />
             </button>
@@ -426,9 +426,9 @@ export default function AlertsDrawer() {
                         Pemulihan bersifat permanen dan tersimpan di server.
                       </p>
                       <Button
-                        variant="ghost"
+                        variant="outline"
                         size="sm"
-                        className="mt-2"
+                        className="mt-2 h-11"
                         onClick={handleRestoreAll}
                         data-testid="restore-all-alerts"
                       >
@@ -437,6 +437,7 @@ export default function AlertsDrawer() {
                       <Button
                         variant="ghost"
                         size="sm"
+                        className="h-11"
                         onClick={() => handleOpenChange(false)}
                       >
                         Tutup
@@ -465,7 +466,7 @@ export default function AlertsDrawer() {
                           type="button"
                           onClick={() => setView('prefs')}
                           data-testid="empty-open-prefs"
-                          className="mt-1 text-[13px] font-medium text-mint-600 underline-offset-2 hover:underline dark:text-mint-400"
+                          className="inline-flex h-11 items-center text-[13px] font-medium text-mint-600 underline-offset-2 hover:underline dark:text-mint-400"
                         >
                           Ubah preferensi alert
                         </button>
@@ -473,7 +474,7 @@ export default function AlertsDrawer() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="mt-2"
+                        className="mt-2 h-11"
                         onClick={() => handleOpenChange(false)}
                       >
                         Tutup

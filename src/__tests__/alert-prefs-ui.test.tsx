@@ -229,4 +229,43 @@ describe('FIN-022 lanjutan — Alert Preferences UI (AC-4, KUR-132)', () => {
     // No sonner Toaster mounted.
     expect(document.querySelector('[data-sonner-toaster]')).toBeNull();
   });
+
+  it('FIN-023 F-1 — prefs trigger clears the sheet close button (mr-12 + DOM order after it)', async () => {
+    await openDrawerAndPrefs(baseRoutes([]));
+    // openDrawerAndPrefs lands in the prefs push-view; the trigger lives in
+    // the list header, so navigate back.
+    fireEvent.click(screen.getByTestId('alert-prefs-back'));
+    await waitFor(() => {
+      expect(screen.getByTestId('open-alert-prefs')).toBeInTheDocument();
+    });
+
+    const trigger = screen.getByTestId('open-alert-prefs');
+
+    // Class-level: trigger must reserve the X column (right-3 + 40px wide).
+    expect(trigger.className).toContain('mr-12');
+
+    // DOM-position level (jsdom has no hit-testing): the built-in close
+    // (SheetPrimitive.Close, absolute right-3) is the LAST direct child of
+    // the dialog content, so it comes after the header — the trigger sits to
+    // its left thanks to mr-12 instead of under it.
+    const content = trigger.closest('[role="dialog"]') as HTMLElement | null;
+    // SheetHeader renders a div; the trigger is its direct child.
+    const header = trigger.parentElement as HTMLElement | null;
+    expect(content).not.toBeNull();
+    expect(header).not.toBeNull();
+    const directButtons = Array.from(
+      content!.querySelectorAll(':scope > button'),
+    );
+    const closeBtn = directButtons[directButtons.length - 1];
+    expect(closeBtn).toBeDefined();
+    expect(header!.compareDocumentPosition(closeBtn as Node) &
+      Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+
+    // Header clips stray overflow so the chips can never push the trigger
+    // under the X.
+    expect(header!.className).toContain('overflow-hidden');
+    for (const chip of header!.querySelectorAll('span.rounded-full')) {
+      expect(chip.className).toContain('whitespace-nowrap');
+    }
+  });
 });

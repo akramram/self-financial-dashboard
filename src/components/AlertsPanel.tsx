@@ -468,7 +468,7 @@ export default function AlertsPanel({
                   data-alert-dismiss
                   onClick={() => handleDismiss(alert)}
                   aria-label={`Dismiss: ${alert.title}`}
-                  className="shrink-0 p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700 transition"
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg -my-3 -mr-3 transition hover:bg-slate-200 dark:hover:bg-slate-700"
                   title="Dismiss"
                 >
                   <X className="w-3.5 h-3.5 text-slate-400" />

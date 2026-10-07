@@ -225,7 +225,7 @@ export default function MobileSidebar({ balance, alerts: initialAlerts = 0 }: Pr
             aria-haspopup="dialog"
             aria-expanded={drawerOpen}
             aria-label={alerts > 0 ? `Alerts, ${alerts} active` : 'Alerts, none'}
-            className="relative w-full flex items-center rounded-xl px-3 py-2 gap-3 transition-colors no-underline hover:bg-slate-100 dark:bg-white/5"
+            className="relative w-full flex items-center min-h-[44px] rounded-xl px-3 py-2 gap-3 transition-colors no-underline hover:bg-slate-100 dark:bg-white/5"
           >
             <Bell
               className={`w-5 h-5 ${alerts > 0 ? 'text-mint-500' : 'text-slate-400 dark:text-white/40'}`}
@@ -237,8 +237,7 @@ export default function MobileSidebar({ balance, alerts: initialAlerts = 0 }: Pr
             {alerts > 0 && (
               <span
                 aria-hidden="true"
-                className="ml-auto min-w-[20px] h-5 px-1 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
-                style={{ backgroundColor: '#ef4444' }}
+                className="ml-auto min-w-[20px] h-5 px-1 rounded-full flex items-center justify-center bg-coral-600 text-white text-[10px] font-bold"
               >
                 {alerts > 99 ? '99+' : alerts}
               </span>
