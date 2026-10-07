@@ -2395,3 +2395,13 @@ Audit KUR-59/FIN-015+016: foundation shadcn + migrasi tabel & form ternyata suda
 ### Catatan
 - FIN-015 sudah lengkap sejak April: semua 8 komponen spek (Button, Input, Card, Table, Dialog, Select, Label, Checkbox) ada di `src/components/ui/`, tokens Tailwind mode extend dengan mapping CSS variables dual-theme. Tidak ada pekerjaan foundation yang tersisa.
 - Sticky header sengaja bounded-scroll (max-h 70vh), bukan page-scroll, agar tidak bentrok dengan top bar mobile fixed (h-14) dan tidak mengubah layout halaman.
+
+## 2026-10-07 — KUR-135 Daily Health Check (Code Crafter)
+
+### Hasil
+- PM2 `financial-dashboard` online. Clean deploy via `scripts/deploy-dashboard.sh` (pm2 delete → wipe dist → rebuild → ecosystem start → save). Post-deploy: `/login` 200, `/` 302 (auth redirect), bad-creds login 401, tunnel `https://findash.kurulabs.dpdns.org` 200.
+- Test suite **388/388 hijau** (27 files). DB `PRAGMA integrity_check` = ok, 963 transaksi. `data/` & `financial.db` tidak disentuh.
+- Sebelum run: tidak ada issue/PR GitHub yang terbuka. Error log PM2 hanya entri basi (19 Sep, JSON parse di DELETE bulk — sudah ter-guard `parseJsonBody` di source & bundle saat ini).
+- PR #296 merged: `scripts/deploy-dashboard.sh` +exec bit (sebelumnya `./scripts/...` Permission denied).
+- Catatan ops: `findash-tunnel` tercatat 21 restarts (fluktuasi jaringan, koneksi saat ini sehat via QUIC cgk/sin). Dipantau; tidak ada aksi.
+- Review visual (Pixel Painter) & relevansi kalkulator (Strategy Hawk) sesuai checklist KUR-135 — di luar scope health-check teknis ini.
