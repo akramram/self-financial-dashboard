@@ -47,11 +47,24 @@ export interface KseiResult extends KseiPortfolio {
   error?: string;
 }
 
-const BASE = 'https://akses.ksei.co.id';
-const TIMEOUT_MS = 10_000;
+// ─── shared request constants (detail fetch KUR-147 reuses these) ───────────
+
+export const KSEI_BASE = 'https://akses.ksei.co.id';
+export const KSEI_TIMEOUT_MS = 10_000;
 /** walk back at most 10 days — covers long holidays; beyond that, fall back to cache */
 const MAX_LOOKBACK_DAYS = 10;
 export const MIN_REFRESH_INTERVAL_MS = 60 * 60 * 1000; // 1 hour
+
+/** Headers for AKSes service calls — Authorization injected per request. */
+export function kseiRequestHeaders(token: string): Record<string, string> {
+  return {
+    Accept: '*/*',
+    Authorization: `Bearer ${token}`,
+    Referer: `${KSEI_BASE}/myportofolio/saldo`,
+    'User-Agent': 'Mozilla/5.0',
+    DNT: '1',
+  };
+}
 
 // ─── token handling (see lib/kseiToken.ts) ──────────────────────────────────
 
@@ -90,16 +103,13 @@ export async function fetchKseiSummary(
 ): Promise<SummaryApiResponse | null> {
   let res: Response;
   try {
-    res = await fetchImpl(`${BASE}/service/myportofolio/summary?type=&tanggal=${date}`, {
-      headers: {
-        Accept: '*/*',
-        Authorization: `Bearer ${token}`,
-        Referer: `${BASE}/myportofolio/saldo`,
-        'User-Agent': 'Mozilla/5.0',
-        DNT: '1',
-      },
-      signal: AbortSignal.timeout(TIMEOUT_MS),
-    });
+    res = await fetchImpl(
+      `${KSEI_BASE}/service/myportofolio/summary?type=&tanggal=${date}`,
+      {
+        headers: kseiRequestHeaders(token),
+        signal: AbortSignal.timeout(KSEI_TIMEOUT_MS),
+      }
+    );
   } catch (err) {
     // Timeout / network error — AKSes hangs (not 404s) on dates with no file yet.
     if (err instanceof Error && err.name === 'TimeoutError') return null;
