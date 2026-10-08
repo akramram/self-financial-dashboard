@@ -17,7 +17,7 @@ const { title = 'Financial Dashboard', balance, alerts = getActiveAlertCount() }
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>{title}</title>
     <meta name="description" content="Personal finance tracker — income, expenses, networth, and budget." />
     <meta name="theme-color" content="#0a0e27" />
@@ -47,34 +47,35 @@ const { title = 'Financial Dashboard', balance, alerts = getActiveAlertCount() }
     <MobileSidebar balance={balance} alerts={alerts} client:load />
 
     <!-- Mobile Top Bar -->
-    <div class="lg:hidden fixed top-0 left-0 right-0 h-14 flex items-center justify-between px-4 z-40 bg-background/95 dark:bg-navy-950/95 backdrop-blur-xl border-b border-border dark:border-white/[0.05]">
+    <div class="lg:hidden fixed top-0 left-0 right-0 min-h-[3.5rem] flex items-center justify-between px-4 z-40 bg-background/95 dark:bg-navy-950/95 backdrop-blur-xl border-b border-border dark:border-white/[0.05]" style="padding-top: env(safe-area-inset-top, 0px);">
+      <!-- FIN-024: touch-target 44×44 (p-3 + 20px icon) -->
       <!-- Hamburger menu -->
-      <button onclick="window.__toggleMobileSidebar && window.__toggleMobileSidebar()" class="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted dark:text-white/60 dark:hover:text-white dark:hover:bg-white/10 transition" aria-label="Open menu">
+      <button onclick="window.__toggleMobileSidebar && window.__toggleMobileSidebar()" class="p-3 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted dark:text-white/60 dark:hover:text-white dark:hover:bg-white/10 transition" aria-label="Open menu">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 6h16M4 12h16M4 18h16"/></svg>
       </button>
       <div></div>
       <!-- Search pill (mobile) — opens command palette -->
-      <button onclick="window.dispatchEvent(new CustomEvent('cmd-palette-open'))" class="flex-1 max-w-[180px] mx-2 flex items-center gap-2 px-3 h-9 rounded-xl bg-muted dark:bg-white/[0.05] border border-border dark:border-white/[0.06] text-muted-foreground dark:text-white/50 hover:text-foreground dark:hover:text-white/80 hover:bg-accent dark:hover:bg-white/10 transition text-sm" aria-label="Search pages and actions">
+      <button onclick="window.dispatchEvent(new CustomEvent('cmd-palette-open'))" class="flex-1 max-w-[180px] mx-2 flex items-center gap-2 px-3 h-11 rounded-xl bg-muted dark:bg-white/[0.05] border border-border dark:border-white/[0.06] text-muted-foreground dark:text-white/50 hover:text-foreground dark:hover:text-white/80 hover:bg-accent dark:hover:bg-white/10 transition text-sm" aria-label="Search pages and actions">
         <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
         <span class="truncate">Search…</span>
       </button>
       <div class="flex items-center gap-1.5">
         <!-- Settings (mobile) -->
-        <a href="/settings" class="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted dark:text-white/60 dark:hover:text-white dark:hover:bg-white/10 transition" aria-label="Settings">
+        <a href="/settings" class="p-3 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted dark:text-white/60 dark:hover:text-white dark:hover:bg-white/10 transition" aria-label="Settings">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
         </a>
-        <!-- Dark mode toggle (mobile) -->
-        <button onclick="(function(){var h=document.documentElement;var d=h.classList.toggle('dark');localStorage.setItem('theme',d?'dark':'light')})()" class="p-1.5 rounded-lg bg-muted dark:bg-white/[0.05] text-muted-foreground dark:text-white/60 dark:hover:text-white hover:bg-accent dark:hover:bg-white/10 transition text-sm" aria-label="Toggle theme">
+        <!-- Dark mode toggle (mobile) — FIN-024: 44×44 target (py-3 + line-height) -->
+        <button onclick="(function(){var h=document.documentElement;var d=h.classList.toggle('dark');localStorage.setItem('theme',d?'dark':'light')})()" class="py-3 px-3 min-w-[44px] min-h-[44px] rounded-lg bg-muted dark:bg-white/[0.05] text-muted-foreground dark:text-white/60 dark:hover:text-white hover:bg-accent dark:hover:bg-white/10 transition text-sm" aria-label="Toggle theme">
           <span class="dark:hidden">🌙</span>
           <span class="hidden dark:inline">☀️</span>
         </button>
         <!-- Auth -->
         <span id="roleBadge" class="hidden text-xs font-medium px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"></span>
-        <button id="logoutBtn" class="hidden p-1.5 rounded-lg bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-sm font-medium hover:bg-red-200 dark:hover:bg-red-900/50 transition" aria-label="Logout">⏻</button>
+        <button id="logoutBtn" class="hidden py-3 px-3 min-w-[44px] min-h-[44px] rounded-lg bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-sm font-medium hover:bg-red-200 dark:hover:bg-red-900/50 transition" aria-label="Logout">⏻</button>
       </div>
     </div>
-    <!-- Mobile top bar spacer -->
-    <div class="lg:hidden h-14"></div>
+    <!-- Mobile top bar spacer — FIN-024: grows with status-bar inset when viewport-fit=cover is active -->
+    <div class="lg:hidden" style="height: calc(3.5rem + env(safe-area-inset-top, 0px));"></div>
 
     <!-- Desktop Top Bar -->
     <div class="hidden lg:flex items-center justify-between h-16 px-6 border-b border-border dark:border-white/[0.05] ml-[var(--sidebar-w,240px)] transition-all duration-300" id="desktop-topbar">
@@ -172,7 +173,7 @@ const { title = 'Financial Dashboard', balance, alerts = getActiveAlertCount() }
       function showUpdateBanner() {
         const banner = document.createElement('div');
         banner.id = 'sw-update-banner';
-        banner.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);z-index:9999;' +
+        banner.style.cssText = 'position:fixed;bottom:calc(100px + env(safe-area-inset-bottom, 0px));left:50%;transform:translateX(-50%);z-index:9999;' +
           'background:#059669;color:#fff;padding:12px 20px;border-radius:12px;font-size:14px;font-weight:600;' +
           'box-shadow:0 4px 20px rgba(0,0,0,0.3);cursor:pointer;display:flex;align-items:center;gap:8px;' +
           'animation:slideUp 0.3s ease;';

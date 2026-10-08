@@ -68,9 +68,10 @@ const SheetContent = React.forwardRef<
       {...props}
     >
       {children}
-      {/* KUR-117 §1: 40×40 close (touch ≥44 on mobile via hit area), centered
-          in the drawer's 56px header row. */}
-      <SheetPrimitive.Close className="absolute right-3 top-2 z-10 flex h-10 w-10 items-center justify-center rounded-lg opacity-70 transition-opacity hover:bg-[hsl(var(--surface-hover))] hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none">
+      {/* FIN-024 §3.1: 44×44 close (was 40×40), offset clears the status-bar
+          inset when viewport-fit=cover is active (0px fallback elsewhere).
+          Only this block is in FIN-024 scope — sheetVariants/animation untouched. */}
+      <SheetPrimitive.Close className="absolute right-3 top-[calc(0.5rem+env(safe-area-inset-top,0px))] z-10 flex h-11 w-11 items-center justify-center rounded-lg opacity-70 transition-opacity hover:bg-[hsl(var(--surface-hover))] hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none">
         <X className="h-4 w-4" />
         <span className="sr-only">Close</span>
       </SheetPrimitive.Close>

@@ -246,7 +246,7 @@ export default function AlertsDrawer() {
     <Sheet open={open} onOpenChange={handleOpenChange}>
       <SheetContent
         side="right"
-        className="w-full sm:max-w-[400px] sm:w-[calc(100vw-48px)] p-0 flex flex-col border-l border-[hsl(var(--surface-border)/0.12)] shadow-elevation-3 pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]"
+        className="w-full sm:max-w-[400px] sm:w-[calc(100vw-48px)] p-0 flex flex-col border-l border-[hsl(var(--surface-border)/0.12)] shadow-elevation-3 pt-[env(safe-area-inset-top,0px)] pb-[env(safe-area-inset-bottom,0px)]"
         style={{
           backgroundColor: 'hsl(var(--card) / 0.95)',
           backdropFilter: 'blur(24px)',

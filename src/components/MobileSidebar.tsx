@@ -66,7 +66,7 @@ function NavRow({ item, active, onClick }: { item: NavItem; active: boolean; onC
     <a
       href={item.path}
       onClick={onClick}
-      className={`w-full flex items-center rounded-xl px-3 py-2.5 gap-3 transition-all duration-150 no-underline ${
+      className={`w-full flex items-center rounded-xl px-3 py-2.5 min-h-[44px] gap-3 transition-all duration-150 no-underline ${
         active
           ? 'text-slate-900 dark:text-white'
           : 'text-slate-500 dark:text-white/40 hover:text-slate-700 dark:hover:text-white/70 hover:bg-slate-100 dark:hover:bg-white/5'
@@ -164,14 +164,15 @@ export default function MobileSidebar({ balance, alerts: initialAlerts = 0 }: Pr
         }`}
       >
         {/* Header */}
-        <div className="flex items-center h-14 px-4 shrink-0 border-b border-slate-200 dark:border-white/[0.05]">
+        {/* FIN-024: header padding clears the status-bar inset when cover is active */}
+        <div className="flex items-center min-h-[3.5rem] px-4 shrink-0 border-b border-slate-200 dark:border-white/[0.05]" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
           <a href="/" className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 no-underline" style={{ background: 'linear-gradient(135deg, #34d399, #0ea5e9)' }}>
             <span className="text-slate-900 dark:text-white font-bold text-xs">FD</span>
           </a>
           <span className="ml-3 font-semibold text-slate-900 dark:text-white text-base">FinDash</span>
           <button
             onClick={close}
-            className="ml-auto p-1.5 rounded-lg hover:bg-slate-200/50 dark:bg-white/10 transition-colors text-slate-600 dark:text-white/50"
+            className="ml-auto flex items-center justify-center w-11 h-11 rounded-lg hover:bg-slate-200/50 dark:bg-white/10 transition-colors text-slate-600 dark:text-white/50"
             aria-label="Close menu"
           >
             <X className="w-5 h-5" />
@@ -214,7 +215,7 @@ export default function MobileSidebar({ balance, alerts: initialAlerts = 0 }: Pr
 
         {/* Alert bell — opens the Alerts Detail Drawer (FIN-021). KUR-117 §6:
             stays clickable at 0 alerts (reassurance + discoverability). */}
-        <div className="px-3 pt-2 pb-4 shrink-0 border-t border-slate-200 dark:border-white/[0.05]">
+        <div className="px-3 pt-2 shrink-0 border-t border-slate-200 dark:border-white/[0.05]" style={{ paddingBottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))' }}>
           <button
             type="button"
             ref={bellRef}
