@@ -765,7 +765,7 @@ describe('FIN-021 AlertsDrawer', () => {
     render(<AlertsDrawer />);
     openAlertsDrawer();
     await waitFor(() => {
-      expect(screen.getByText("You're all caught up")).toBeInTheDocument();
+      expect(screen.getByText("Semua alert tertangani")).toBeInTheDocument();
     });
     expect(screen.getByRole('dialog')).toBeInTheDocument();
   });
@@ -1376,7 +1376,7 @@ describe('FIN-022 persistent alert state', () => {
     render(<AlertsDrawer />);
     openAlertsDrawer();
     await waitFor(() => {
-      expect(screen.getByText("You're all caught up")).toBeInTheDocument();
+      expect(screen.getByText("Semua alert tertangani")).toBeInTheDocument();
     });
     expect(screen.queryByTestId('mark-all-read')).not.toBeInTheDocument();
   });

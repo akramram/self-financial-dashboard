@@ -452,14 +452,14 @@ export default function AlertsDrawer() {
                         <CheckCircle2 className="h-10 w-10 text-mint-500 opacity-40 motion-reduce:transition-none" />
                       </span>
                       <p className="text-[15px] font-semibold text-slate-800 dark:text-white/80">
-                        You're all caught up
+                        Semua alert tertangani
                       </p>
                       {/* Varian C: when preferences mute alerts, say how many
                           and offer the toggle — never a session-scope claim. */}
                       <p className={`text-[13px] ${MUTED}`}>
                         {prefsActive && mutedCount > 0
                           ? `${mutedCount} alert disembunyikan oleh preferensi.`
-                          : 'No budget or anomaly alerts this month.'}
+                          : 'Tidak ada alert anggaran atau anomali bulan ini.'}
                       </p>
                       {prefsActive && mutedCount > 0 && (
                         <button
