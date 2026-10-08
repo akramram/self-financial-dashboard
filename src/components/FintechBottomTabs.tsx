@@ -24,7 +24,7 @@ export default function FintechBottomTabs() {
       className="lg:hidden fixed bottom-4 left-4 right-4 rounded-2xl flex items-center justify-around py-2 z-50 glass-card-elevated"
       style={{
         boxShadow: '0 -4px 30px rgba(0,0,0,0.15)',
-        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+        bottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))',
       }}
     >
       {TABS.map((tab, idx) => {
@@ -62,7 +62,7 @@ function TabButton({ tab, active }: { tab: typeof TABS[0]; active: boolean }) {
   return (
     <a
       href={tab.path}
-      className="flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl transition-colors relative no-underline flex-1"
+      className="flex flex-col items-center justify-center gap-0.5 py-1 px-2 min-h-[44px] rounded-xl transition-colors relative no-underline flex-1"
     >
       {React.createElement(tab.icon, {
         className: `w-5 h-5 ${active ? 'text-mint-500' : 'text-slate-400 dark:text-white/40'}`,

@@ -96,6 +96,7 @@ export default function TransactionDetailSheet({ open, transaction, onClose, onT
         onPointerCancel={endDrag}
         className="max-w-lg w-full fixed left-1/2 bottom-0 -translate-x-1/2 translate-y-0 top-auto rounded-b-none sm:rounded-b-lg rounded-t-2xl border-t border-slate-300 dark:border-white/[0.08] bg-slate-100 dark:bg-navy-800 p-0 gap-0 overflow-hidden max-h-[90vh] overflow-y-auto"
         style={{
+          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
           ...(dragY > 0 ? { transform: `translate(-50%, ${dragY}px)` } : null),
           transition: dragging ? 'none' : 'transform 200ms ease-out',
           overscrollBehavior: 'contain',
