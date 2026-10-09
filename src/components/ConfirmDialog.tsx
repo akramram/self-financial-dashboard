@@ -113,7 +113,7 @@ export function ConfirmRoot() {
       onOpenChange={(open) => { if (!open) handleCancel(); }}
     >
       <DialogContent>
-        <DialogHeader>
+        <DialogHeader className="pr-14">
           <DialogTitle>{state.title}</DialogTitle>
           <DialogDescription>{state.description}</DialogDescription>
         </DialogHeader>
