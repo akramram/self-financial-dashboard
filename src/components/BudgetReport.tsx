@@ -450,12 +450,12 @@ export default function BudgetReport({ summaries, categories }: Props) {
       {/* Category Drill-down Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Receipt className="w-5 h-5 text-slate-500" />
+          <DialogHeader className="pr-12">
+            <DialogTitle className="flex items-start gap-2 line-clamp-2 break-words">
+              <Receipt className="w-5 h-5 shrink-0 text-slate-500" />
               {selectedCategory} - Transactions
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="break-words">
               {isAllTime ? 'All months' : filterMonth} · {categoryTransactions.length} transaction{categoryTransactions.length !== 1 ? 's' : ''} · Total {formatIdr(dialogTotal)}
             </DialogDescription>
           </DialogHeader>
