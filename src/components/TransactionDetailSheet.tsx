@@ -107,7 +107,7 @@ export default function TransactionDetailSheet({ open, transaction, onClose, onT
           <div className="w-10 h-1 rounded-full bg-slate-300 dark:bg-white/20" />
         </div>
 
-        <DialogHeader className="px-6 pt-2 pb-4 pr-12 text-left items-start">
+        <DialogHeader className="px-6 pt-2 pb-4 pr-12 sm:pr-16 text-left items-start">
           <div className="flex items-start justify-between w-full gap-3">
             <div className="min-w-0">
               <DialogTitle className="text-lg font-semibold leading-snug break-words text-slate-900 dark:text-white">
