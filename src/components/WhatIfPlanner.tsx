@@ -290,11 +290,11 @@ export default function WhatIfPlanner() {
     scales: {
       y: {
         ticks: {
-          font: { size: 10 },
+          font: { size: 11 },
           callback: (val: any) => 'IDR ' + (val / 1000000).toFixed(0) + 'M',
         },
       },
-      x: { ticks: { font: { size: 10 } } },
+      x: { ticks: { font: { size: 11 } } },
     },
   };
 
@@ -334,7 +334,7 @@ export default function WhatIfPlanner() {
     scales: {
       y: {
         ticks: {
-          font: { size: 10 },
+          font: { size: 11 },
           callback: (val: any) => 'IDR ' + (val / 1000000).toFixed(0) + 'M',
         },
       },
@@ -448,7 +448,7 @@ export default function WhatIfPlanner() {
                 onChange={(e) => setIncomeChangePct(Number(e.target.value))}
                 className="w-full accent-emerald-600"
               />
-              <div className="flex justify-between text-[10px] text-muted-foreground mt-1">
+              <div className="flex justify-between text-[11px] text-muted-foreground mt-1">
                 <span>-50%</span>
                 <span>0%</span>
                 <span>+100%</span>
@@ -524,7 +524,7 @@ export default function WhatIfPlanner() {
                 </div>
               ))
             )}
-            <p className="text-[10px] text-muted-foreground">
+            <p className="text-[11px] text-muted-foreground">
               💡 Use negative amounts for expenses, positive for income.
             </p>
           </div>
@@ -561,7 +561,7 @@ export default function WhatIfPlanner() {
                 <div className="w-2 h-8 rounded-full flex-shrink-0" style={{ backgroundColor: cat.color }} />
                 <div className="w-28 flex-shrink-0">
                   <p className="text-sm font-medium truncate">{cat.name}</p>
-                  <p className="text-[10px] text-muted-foreground">{formatIdr(cat.avg_spending)}/mo</p>
+                  <p className="text-[11px] text-muted-foreground">{formatIdr(cat.avg_spending)}/mo</p>
                 </div>
                 <div className="flex-1">
                   <input
@@ -578,7 +578,7 @@ export default function WhatIfPlanner() {
                   <p className={`text-sm font-semibold ${pct < 0 ? 'text-emerald-600 dark:text-emerald-400' : pct > 0 ? 'text-red-600 dark:text-red-400' : ''}`}>
                     {pct > 0 ? '+' : ''}{pct}%
                   </p>
-                  <p className="text-[10px] text-muted-foreground">{formatIdr(newAmount)}</p>
+                  <p className="text-[11px] text-muted-foreground">{formatIdr(newAmount)}</p>
                 </div>
               </div>
             );

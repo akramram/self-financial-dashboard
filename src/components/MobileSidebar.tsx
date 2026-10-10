@@ -91,7 +91,7 @@ function NavRow({ item, active, onClick }: { item: NavItem; active: boolean; onC
 
 function GroupHeader({ label }: { label: string }) {
   return (
-    <p className="px-3 pt-4 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-white/40">
+    <p className="px-3 pt-4 pb-1 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-white/40">
       {label}
     </p>
   );
@@ -229,7 +229,7 @@ export default function MobileSidebar({ balance, alerts: initialAlerts = 0 }: Pr
             className="relative w-full flex items-center min-h-[44px] rounded-xl px-3 py-2 gap-3 transition-colors no-underline hover:bg-slate-100 dark:bg-white/5"
           >
             <Bell
-              className={`w-5 h-5 ${alerts > 0 ? 'text-mint-500' : 'text-slate-400 dark:text-white/40'}`}
+              className={`w-5 h-5 ${alerts > 0 ? 'text-mint-500' : 'text-slate-500 dark:text-white/40'}`}
               strokeWidth={1.8}
             />
             <span className={`text-sm ${alerts > 0 ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-white/40'}`}>
@@ -238,7 +238,7 @@ export default function MobileSidebar({ balance, alerts: initialAlerts = 0 }: Pr
             {alerts > 0 && (
               <span
                 aria-hidden="true"
-                className="ml-auto min-w-[20px] h-5 px-1 rounded-full flex items-center justify-center bg-coral-600 text-white text-[10px] font-bold"
+                className="ml-auto min-w-[20px] h-5 px-1 rounded-full flex items-center justify-center bg-coral-600 text-white text-[11px] font-bold"
               >
                 {alerts > 99 ? '99+' : alerts}
               </span>

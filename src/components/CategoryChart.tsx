@@ -48,8 +48,15 @@ export default function CategoryChart({ data, categories = [], onCategoryClick }
     },
     plugins: {
       legend: {
-        position: 'right' as const,
-        labels: { boxWidth: 12, font: { size: 11 } },
+        // KUR-213 B4: bottom legend wraps full-width instead of the right-side
+        // legend that truncated long category names ("Invest…").
+        position: 'bottom' as const,
+        labels: {
+          boxWidth: 8,
+          usePointStyle: true,
+          padding: 10,
+          font: { size: 11 },
+        },
         onClick: (_e: any, legendItem: any, _legend: any) => {
           if (onCategoryClick && legendItem.text) {
             onCategoryClick(legendItem.text);
@@ -65,7 +72,7 @@ export default function CategoryChart({ data, categories = [], onCategoryClick }
   };
 
   return (
-    <div className="relative h-72">
+    <div className="relative h-80">
       <Doughnut data={chartData} options={options} />
     </div>
   );

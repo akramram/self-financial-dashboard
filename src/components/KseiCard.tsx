@@ -182,7 +182,7 @@ export default function KseiCard({ data }: Props) {
           {staleDays != null && (
             <span
               data-testid="ksei-stale"
-              className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-amber-500/15 text-amber-500"
+              className="text-[11px] font-semibold px-1.5 py-0.5 rounded-full bg-amber-500/15 text-amber-500"
             >
               data {staleDays} hr lalu
             </span>
@@ -192,14 +192,14 @@ export default function KseiCard({ data }: Props) {
               type="button"
               data-testid="ksei-token-expired"
               onClick={() => setTokenFormOpen(o => !o)}
-              className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-rose-500/15 text-rose-500 cursor-pointer hover:bg-rose-500/25"
+              className="text-[11px] font-semibold px-1.5 py-0.5 rounded-full bg-rose-500/15 text-rose-500 cursor-pointer hover:bg-rose-500/25"
               aria-label="Token kedaluwarsa — klik untuk memperbarui"
             >
               token kedaluwarsa
             </button>
           )}
         </div>
-        <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-slate-200/70 dark:bg-white/[0.06] text-slate-500 dark:text-white/50">
+        <span className="text-[11px] font-semibold px-1.5 py-0.5 rounded-full bg-slate-200/70 dark:bg-white/[0.06] text-slate-500 dark:text-white/50">
           EOD
         </span>
       </div>
@@ -216,7 +216,7 @@ export default function KseiCard({ data }: Props) {
             rows={3}
             autoComplete="off"
             spellCheck={false}
-            className="w-full text-[11px] font-mono rounded-lg bg-white dark:bg-white/[0.06] border border-slate-300 dark:border-white/10 px-2 py-1.5 text-slate-700 dark:text-white/80 placeholder:text-slate-400 dark:placeholder:text-white/30 focus:outline-none focus:border-emerald-500/60 resize-y"
+            className="w-full text-[11px] font-mono rounded-lg bg-white dark:bg-white/[0.06] border border-slate-300 dark:border-white/10 px-2 py-1.5 text-slate-700 dark:text-white/80 placeholder:text-slate-500 dark:placeholder:text-white/30 focus:outline-none focus:border-emerald-500/60 resize-y"
           />
           <div className="flex items-center gap-1.5 mt-1.5">
             <button
@@ -241,11 +241,11 @@ export default function KseiCard({ data }: Props) {
             </button>
           </div>
           {tokenError && (
-            <p data-testid="ksei-token-error" className="text-[10px] text-rose-500 mt-1.5">
+            <p data-testid="ksei-token-error" className="text-[11px] text-rose-500 mt-1.5">
               {tokenError}
             </p>
           )}
-          <p className="text-[10px] text-slate-400 dark:text-white/30 mt-1.5">
+          <p className="text-[11px] text-slate-500 dark:text-white/30 mt-1.5">
             DevTools AKSes → Network → request myportofolio → copy "Authorization: Bearer …"
           </p>
         </div>
@@ -297,7 +297,7 @@ export default function KseiCard({ data }: Props) {
                       <span className="text-slate-600 dark:text-white/60">{label}</span>
                       <span className="font-medium text-slate-700 dark:text-white/80">
                         {fmtIdr(s.amount)}
-                        <span className="text-slate-400 dark:text-white/40">
+                        <span className="text-slate-500 dark:text-white/40">
                           {' '}
                           · {percentText}%
                         </span>

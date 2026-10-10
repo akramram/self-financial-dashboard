@@ -140,19 +140,19 @@ export default function KseiDrilldownSheet({
           <SheetTitle className="text-sm font-semibold text-slate-800 dark:text-white/90 truncate min-w-0">
             {typeLabel} · {fmtIdr(sliceAmount)}
           </SheetTitle>
-          <span className="ml-auto shrink-0 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-slate-200/70 dark:bg-white/[0.06] text-slate-500 dark:text-white/50 tabular-nums">
+          <span className="ml-auto shrink-0 text-[11px] font-semibold px-1.5 py-0.5 rounded-full bg-slate-200/70 dark:bg-white/[0.06] text-slate-500 dark:text-white/50 tabular-nums">
             {slicePercent.toFixed(1).replace('.', ',')}%
           </span>
         </SheetHeader>
 
         <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-4 outline-none sidebar-scroll">
           {/* SheetDescription is USED (spec §6) — visible position line. */}
-          <SheetDescription className="flex items-center justify-between gap-2 pt-3 text-[10px] text-slate-500 dark:text-white/40">
+          <SheetDescription className="flex items-center justify-between gap-2 pt-3 text-[11px] text-slate-500 dark:text-white/40">
             <span>Posisi {fmtDate(snapshotDate)}</span>
             {staleDays != null && (
               <span
                 data-testid="ksei-drilldown-stale"
-                className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-amber-500/15 text-amber-500"
+                className="text-[11px] font-semibold px-1.5 py-0.5 rounded-full bg-amber-500/15 text-amber-500"
               >
                 data {staleDays} hr lalu
               </span>
@@ -166,7 +166,7 @@ export default function KseiDrilldownSheet({
               data-testid="ksei-drilldown-token-expired"
               className="mt-3 rounded-xl bg-rose-500/10 border border-rose-500/20 px-3 py-2.5 flex items-center justify-between gap-2"
             >
-              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-rose-500/15 text-rose-500">
+              <span className="text-[11px] font-semibold px-1.5 py-0.5 rounded-full bg-rose-500/15 text-rose-500">
                 token kedaluwarsa
               </span>
               <button
@@ -250,7 +250,7 @@ function InstrumentRow({
           {instrument.code}
         </p>
         {instrument.name && (
-          <p className="text-[10px] text-slate-500 dark:text-white/40 truncate">
+          <p className="text-[11px] text-slate-500 dark:text-white/40 truncate">
             {instrument.name}
           </p>
         )}
@@ -259,7 +259,7 @@ function InstrumentRow({
         <p className="text-xs font-medium text-slate-700 dark:text-white/80 tabular-nums">
           {fmtIdr(instrument.value)}
         </p>
-        <p className="text-[10px] text-slate-400 dark:text-white/30 tabular-nums">
+        <p className="text-[11px] text-slate-500 dark:text-white/30 tabular-nums">
           {pct}%{isEquity && instrument.volume != null ? ` · ${instrument.volume.toLocaleString('id-ID')} lembar` : ''}
         </p>
       </div>

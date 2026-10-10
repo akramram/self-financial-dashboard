@@ -26,11 +26,6 @@ import {
   type TransactionFormController,
 } from '../hooks/useTransactionForm';
 
-const MONTH_OPTIONS = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
-];
-
 interface TransactionFormFieldsProps {
   ctrl: TransactionFormController;
   /**
@@ -50,7 +45,6 @@ interface TransactionFormFieldsProps {
  */
 export default function TransactionFormFields({ ctrl, variant, formId }: TransactionFormFieldsProps) {
   const {
-    month, setMonth, year, setYear,
     txDate, txTime, handleDateChange, handleTimeChange,
     title, setTitle,
     category, setCategory, categoryUserTouched, setCategoryUserTouched,
@@ -85,7 +79,23 @@ export default function TransactionFormFields({ ctrl, variant, formId }: Transac
         </Badge>
       )}
 
-      {/* Amount — first field, quick-parse syntax (1.5jt / 25k) */}
+      {/* Type — first field (KUR-213 A7): mental flow is "what kind" before "how much" */}
+      <div className="space-y-1.5">
+        <Label>Type</Label>
+        <Select value={type} onValueChange={(v) => setType(v as TransactionFormController['type'])}>
+          <SelectTrigger className={compact ? undefined : 'min-h-[44px]'}>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {TX_TYPE_OPTIONS.map((opt) => (
+              <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Amount — quick-parse syntax (1.5jt / 25k). Month/Year removed (KUR-213 A6):
+          redundant — Date & Time drives the period via the hook's auto-snap. */}
       <div className="space-y-1.5">
         <Label htmlFor={`tx-amount-${variant}`}>Amount (IDR)</Label>
         <Input
@@ -130,31 +140,6 @@ export default function TransactionFormFields({ ctrl, variant, formId }: Transac
         <p className="text-xs text-slate-600 dark:text-white/50">
           Tanggal transaksi sebenarnya, ubah kalau input untuk hari sebelumnya. Period menyesuaikan otomatis.
         </p>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="space-y-1.5">
-          <Label>Month</Label>
-          <Select value={month} onValueChange={setMonth}>
-            <SelectTrigger className={compact ? undefined : 'min-h-[44px]'}>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {MONTH_OPTIONS.map((m) => (
-                <SelectItem key={m} value={m}>{m}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="space-y-1.5">
-          <Label>Year</Label>
-          <Input
-            type="number"
-            value={year}
-            onChange={(e) => setYear(Number(e.target.value))}
-            className={compact ? undefined : 'h-11 min-h-[44px] text-base'}
-          />
-        </div>
       </div>
 
       <div className="space-y-1.5">
@@ -203,7 +188,7 @@ export default function TransactionFormFields({ ctrl, variant, formId }: Transac
             setCategory(e.target.value);
             setCategoryUserTouched(true);
           }}
-          placeholder={isAutoFilled && !categoryUserTouched ? 'Auto-suggested' : 'e.g. 🏠 Kontrakan'}
+          placeholder={isAutoFilled && !categoryUserTouched ? 'Auto-suggested' : 'pilih / ketik kategori'}
           list="category-list"
           className={[
             compact ? '' : 'h-11 min-h-[44px] text-base',
@@ -222,30 +207,25 @@ export default function TransactionFormFields({ ctrl, variant, formId }: Transac
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="space-y-1.5">
-          <Label>Type</Label>
-          <Select value={type} onValueChange={(v) => setType(v as TransactionFormController['type'])}>
-            <SelectTrigger className={compact ? undefined : 'min-h-[44px]'}>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {TX_TYPE_OPTIONS.map((opt) => (
-                <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      <div className={`flex items-center gap-2 ${compact ? '' : 'min-h-[44px]'}`}>
+      {/* Paid/Done — whole row is the tap target (KUR-213 A2, ≥44px) */}
+      <button
+        type="button"
+        role="checkbox"
+        aria-checked={done}
+        onClick={() => setDone(!done)}
+        data-testid="tx-done-row"
+        className={`w-full flex items-center gap-3 rounded-lg text-left transition-colors hover:bg-slate-100 dark:hover:bg-white/[0.04] ${compact ? 'py-1' : 'min-h-[44px] py-2'}`}
+      >
         <Checkbox
           id={`tx-done-${variant}`}
           checked={done}
           onCheckedChange={(v) => setDone(!!v)}
+          onClick={(e) => e.stopPropagation()}
+          tabIndex={-1}
+          aria-hidden="true"
         />
-        <Label htmlFor={`tx-done-${variant}`} className="text-sm text-slate-600 dark:text-white/60">Paid / Done</Label>
-      </div>
+        <span className="text-sm text-slate-600 dark:text-white/60 select-none">Paid / Done</span>
+      </button>
 
       <div className="space-y-1.5">
         <Label>Notes</Label>

@@ -83,7 +83,7 @@ export default function StatCard({
             >
               {isPositive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
               <span className="text-xs font-semibold">{delta}</span>
-              {deltaPct && <span className="text-[10px] opacity-50">{deltaPct}</span>}
+              {deltaPct && <span className="text-[11px] opacity-50">{deltaPct}</span>}
             </motion.div>
           )}
         </div>

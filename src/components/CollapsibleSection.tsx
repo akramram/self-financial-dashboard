@@ -34,7 +34,7 @@ export default function CollapsibleSection({
             aria-expanded={!isCollapsed}
             aria-controls={`widget-content-${id}`}
           >
-            <span className="text-slate-400 dark:text-slate-500 transition-transform duration-200">
+            <span className="text-slate-500 dark:text-slate-500 transition-transform duration-200">
               {isCollapsed ? (
                 <ChevronRight className="w-4 h-4" />
               ) : (
@@ -51,7 +51,7 @@ export default function CollapsibleSection({
             variant="ghost"
             size="sm"
             onClick={onToggle}
-            className="h-7 text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+            className="h-7 text-xs text-slate-500 hover:text-slate-600 dark:hover:text-slate-300"
             aria-label={isCollapsed ? `Expand ${title}` : `Collapse ${title}`}
           >
             {isCollapsed ? 'Show' : 'Hide'}

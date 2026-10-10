@@ -447,7 +447,7 @@ export default function RecurringManager() {
                       <TableCell className="font-medium">
                         {item.title}
                         {item.goal_name && (
-                          <span className="ml-2 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-medium text-gold-600 dark:text-gold-400 bg-gold-500/10 dark:bg-gold-500/15">
+                          <span className="ml-2 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[11px] font-medium text-gold-600 dark:text-gold-400 bg-gold-500/10 dark:bg-gold-500/15">
                             <Target className="w-3 h-3" />
                             {item.goal_name}
                           </span>
@@ -608,7 +608,7 @@ export default function RecurringManager() {
                         />
                         <span className="font-medium text-sm text-slate-900 dark:text-white/90 truncate">{item.title}</span>
                         {item.goal_name && (
-                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-medium text-gold-600 dark:text-gold-400 bg-gold-500/10">
+                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[11px] font-medium text-gold-600 dark:text-gold-400 bg-gold-500/10">
                             <Target className="w-3 h-3 shrink-0" />
                             {item.goal_name}
                           </span>
@@ -623,7 +623,7 @@ export default function RecurringManager() {
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] text-slate-400 dark:text-white/30">Tgl {item.created_at || '—'}</span>
+                    <span className="text-[11px] text-slate-500 dark:text-white/30">Tgl {item.created_at || '—'}</span>
                     <div className="flex gap-2">
                       <button
                         onClick={() => startEdit(item)}

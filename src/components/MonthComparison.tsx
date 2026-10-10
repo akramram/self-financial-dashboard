@@ -188,7 +188,7 @@ export default function MonthComparison({ transactions, networth, summaries, cat
           </Select>
         </div>
         <div className="flex items-center gap-2">
-          <span className="hidden sm:inline text-slate-400">vs</span>
+          <span className="hidden sm:inline text-slate-500">vs</span>
           <Button
             variant="ghost"
             size="icon"
@@ -270,15 +270,15 @@ export default function MonthComparison({ transactions, networth, summaries, cat
               <p className="text-sm font-medium text-slate-700 dark:text-slate-200">{leftMonth}</p>
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="text-slate-500 dark:text-slate-400">Cash Expenses</span>
+                  <span className="text-slate-500 dark:text-slate-500">Cash Expenses</span>
                   <span className="font-medium">{formatIdr(leftSummary?.outcome.cash ?? 0)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-slate-500 dark:text-slate-400">Credit Payment</span>
+                  <span className="text-slate-500 dark:text-slate-500">Credit Payment</span>
                   <span className="font-medium">{formatIdr(leftSummary?.outcome.credit_payment ?? 0)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-slate-500 dark:text-slate-400">Credit Expenses</span>
+                  <span className="text-slate-500 dark:text-slate-500">Credit Expenses</span>
                   <span className="font-medium">{formatIdr(leftSummary?.outcome.credit_expenses ?? 0)}</span>
                 </div>
               </div>
@@ -288,15 +288,15 @@ export default function MonthComparison({ transactions, networth, summaries, cat
               <p className="text-sm font-medium text-slate-700 dark:text-slate-200">{rightMonth}</p>
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="text-slate-500 dark:text-slate-400">Cash Expenses</span>
+                  <span className="text-slate-500 dark:text-slate-500">Cash Expenses</span>
                   <span className="font-medium">{formatIdr(rightSummary?.outcome.cash ?? 0)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-slate-500 dark:text-slate-400">Credit Payment</span>
+                  <span className="text-slate-500 dark:text-slate-500">Credit Payment</span>
                   <span className="font-medium">{formatIdr(rightSummary?.outcome.credit_payment ?? 0)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-slate-500 dark:text-slate-400">Credit Expenses</span>
+                  <span className="text-slate-500 dark:text-slate-500">Credit Expenses</span>
                   <span className="font-medium">{formatIdr(rightSummary?.outcome.credit_expenses ?? 0)}</span>
                 </div>
               </div>
@@ -371,11 +371,11 @@ export default function MonthComparison({ transactions, networth, summaries, cat
                       </TableCell>
                       <TableCell>
                         {isUp ? (
-                          <Badge variant="destructive" className="text-[10px]">Up</Badge>
+                          <Badge variant="destructive" className="text-[11px]">Up</Badge>
                         ) : isDown ? (
-                          <Badge variant="secondary" className="text-[10px] bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">Down</Badge>
+                          <Badge variant="secondary" className="text-[11px] bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">Down</Badge>
                         ) : (
-                          <Badge variant="secondary" className="text-[10px]">Same</Badge>
+                          <Badge variant="secondary" className="text-[11px]">Same</Badge>
                         )}
                       </TableCell>
                     </TableRow>

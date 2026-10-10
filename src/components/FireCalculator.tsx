@@ -178,7 +178,7 @@ export default function FireCalculator() {
                 onChange={(e) => setWr(parseFloat(e.target.value))}
                 className="w-full accent-emerald-600"
               />
-              <div className="flex justify-between text-[10px] text-slate-500 dark:text-white/40">
+              <div className="flex justify-between text-[11px] text-slate-500 dark:text-white/40">
                 <span>2% (conservative)</span>
                 <span>8% (aggressive)</span>
               </div>
@@ -196,7 +196,7 @@ export default function FireCalculator() {
                 onChange={(e) => setEr(parseFloat(e.target.value))}
                 className="w-full accent-blue-600"
               />
-              <div className="flex justify-between text-[10px] text-slate-500 dark:text-white/40">
+              <div className="flex justify-between text-[11px] text-slate-500 dark:text-white/40">
                 <span>2% (bonds)</span>
                 <span>14% (aggressive)</span>
               </div>
@@ -214,7 +214,7 @@ export default function FireCalculator() {
                 onChange={(e) => setInf(parseFloat(e.target.value))}
                 className="w-full accent-gold-600"
               />
-              <div className="flex justify-between text-[10px] text-slate-500 dark:text-white/40">
+              <div className="flex justify-between text-[11px] text-slate-500 dark:text-white/40">
                 <span>0%</span>
                 <span>8% (high)</span>
               </div>
@@ -299,7 +299,7 @@ export default function FireCalculator() {
                   className="absolute left-0 right-0 border-t-2 border-dashed border-emerald-400/60 z-10"
                   style={{ bottom: `${fiThresholdY * 100}%` }}
                 >
-                  <span className="absolute right-0 -top-3 text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">
+                  <span className="absolute right-0 -top-3 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold">
                     FI Target
                   </span>
                 </div>
@@ -325,7 +325,7 @@ export default function FireCalculator() {
                         />
                         {/* Tooltip on hover */}
                         <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block z-20">
-                          <div className="bg-slate-800 text-slate-900 dark:text-white text-[10px] rounded px-2 py-1 whitespace-nowrap shadow-lg">
+                          <div className="bg-slate-800 text-slate-900 dark:text-white text-[11px] rounded px-2 py-1 whitespace-nowrap shadow-lg">
                             <p className="font-semibold">{p.date}</p>
                             <p>Balance: {formatIdr(p.balance)}</p>
                             <p>Contrib: {formatIdr(p.contributions)}</p>
@@ -347,7 +347,7 @@ export default function FireCalculator() {
                   return (
                     <div key={i} className="flex-1 text-center">
                       {showLabel && (
-                        <span className="text-[10px] text-slate-500 dark:text-white/40 whitespace-nowrap">
+                        <span className="text-[11px] text-slate-500 dark:text-white/40 whitespace-nowrap">
                           {p.year === 0 ? 'Now' : `Y${p.year}`}
                         </span>
                       )}
@@ -406,7 +406,7 @@ export default function FireCalculator() {
                 <span className="text-sm text-slate-600 dark:text-white/60">Savings Rate</span>
                 <span className={`text-sm font-semibold ${savingsRate >= 20 ? 'text-emerald-600 dark:text-emerald-400' : savingsRate >= 0 ? 'text-gold-600 dark:text-gold-400' : 'text-red-600 dark:text-red-400'}`}>
                   {savingsRate}%
-                  {savingsRate >= 50 && <Badge className="ml-1.5 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 text-[10px]">Super Saver</Badge>}
+                  {savingsRate >= 50 && <Badge className="ml-1.5 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 text-[11px]">Super Saver</Badge>}
                 </span>
               </div>
             </div>

@@ -95,7 +95,7 @@ export default function SectionNavRail({ sections }: { sections: SectionMeta[] }
                 ref={(el) => { chipRefs.current[s.id] = el; }}
                 onClick={() => jump(s.id)}
                 aria-current={isActive ? 'true' : undefined}
-                className={`shrink-0 px-3 h-7 rounded-full text-xs font-medium transition-colors border ${
+                className={`shrink-0 px-3 min-h-[44px] rounded-full text-xs font-medium transition-colors border ${
                   isActive
                     ? 'bg-mint-500/15 border-mint-500/40 text-mint-700 dark:text-mint-300'
                     : 'bg-slate-100 dark:bg-white/[0.04] border-slate-200 dark:border-white/[0.06] text-slate-500 dark:text-white/50 hover:text-slate-700 dark:hover:text-white/80'

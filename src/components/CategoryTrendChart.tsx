@@ -48,29 +48,37 @@ export default function CategoryTrendChart({ data, categories = [] }: Props) {
       });
     });
 
-    // Pick categories by total spend, filtering out zero-spend ones
-    const topCategories = Object.entries(categoryTotals)
+    // Pick categories by total spend, filtering out zero-spend ones.
+    // KUR-213 B3: collapse the tail into a single "Lainnya" series so the
+    // chart never overplots 20+ lines / a 25-item legend.
+    const MAX_SERIES = 6;
+    const ranked = Object.entries(categoryTotals)
       .filter(([_, total]) => total > 0)
-      .sort((a, b) => b[1] - a[1])
-      .map(([name]) => name);
+      .sort((a, b) => b[1] - a[1]);
+    const topNames = ranked.slice(0, MAX_SERIES).map(([name]) => name);
+    const otherTotal = ranked.slice(MAX_SERIES).reduce((s, [, total]) => s + total, 0);
 
-    const datasets = topCategories.map((cat, idx) => {
-      const color = colorMap.get(cat) || FALLBACK_COLORS[idx % FALLBACK_COLORS.length];
-      return {
-        label: cat,
-        data: sortedData.map((summary) => summary.category_totals?.[cat] || null),
-        spanGaps: true,
-        borderColor: color,
-        backgroundColor: color,
-        pointRadius: 3,
-        pointHoverRadius: 6,
-        pointBackgroundColor: color,
-        pointBorderColor: '#ffffff',
-        pointBorderWidth: 2,
-        tension: 0.3,
-        borderWidth: 2,
-      };
+    const buildDataset = (cat: string, color: string) => ({
+      label: cat,
+      data: sortedData.map((summary) => summary.category_totals?.[cat] || null),
+      spanGaps: true,
+      borderColor: color,
+      backgroundColor: color,
+      pointRadius: 3,
+      pointHoverRadius: 6,
+      pointBackgroundColor: color,
+      pointBorderColor: '#ffffff',
+      pointBorderWidth: 2,
+      tension: 0.3,
+      borderWidth: 2,
     });
+
+    const datasets = topNames.map((cat, idx) =>
+      buildDataset(cat, colorMap.get(cat) || FALLBACK_COLORS[idx % FALLBACK_COLORS.length])
+    );
+    if (otherTotal > 0 && ranked.length > MAX_SERIES) {
+      datasets.push(buildDataset('Lainnya', '#94a3b8'));
+    }
 
     return { labels, datasets };
   }, [sortedData, colorMap]);
@@ -81,12 +89,24 @@ export default function CategoryTrendChart({ data, categories = [] }: Props) {
     responsive: true,
     maintainAspectRatio: false,
     interaction: { mode: 'index' as const, intersect: false },
+    // KUR-213 B3: hovering a line highlights it and dims the rest
+    onHover: (_evt: any, elements: any[], chart: any) => {
+      const active = elements.length > 0 ? chart.data.datasets[elements[0].datasetIndex]?.label : null;
+      chart.data.datasets.forEach((ds: any) => {
+        if (ds._origColor === undefined) ds._origColor = ds.borderColor;
+        const dim = active != null && ds.label !== active;
+        ds.borderColor = dim ? (ds._origColor + '33') : ds._origColor;
+      });
+      chart.update('none');
+    },
     plugins: {
       legend: {
         position: 'top' as const,
+        align: 'start' as const,
         labels: {
           usePointStyle: true,
-          padding: 16,
+          padding: 12,
+          boxWidth: 8,
           font: { size: 11 },
         },
       },
@@ -109,10 +129,12 @@ export default function CategoryTrendChart({ data, categories = [] }: Props) {
         },
       },
       x: {
+        // KUR-213 B2: auto-skip (global default) — no 45° overlapping labels
         ticks: {
-          maxRotation: 45,
-          minRotation: 45,
-          font: { size: 10 },
+          font: { size: 11 },
+          maxRotation: 0,
+          autoSkip: true,
+          maxTicksLimit: 8,
         },
       },
     },

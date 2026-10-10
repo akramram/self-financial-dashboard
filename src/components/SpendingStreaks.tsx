@@ -328,7 +328,7 @@ export default function SpendingStreaks() {
                         style={{ width: `${spendPct}%` }}
                       />
                     </div>
-                    <span className="text-[10px] text-slate-500 dark:text-white/40 w-16 text-right">
+                    <span className="text-[11px] text-slate-500 dark:text-white/40 w-16 text-right">
                       {d.avgPerSpendDay > 0 ? formatIdr(d.avgPerSpendDay) : '-'}
                     </span>
                   </div>
@@ -375,7 +375,7 @@ export default function SpendingStreaks() {
             >
               <div className="flex items-start justify-between mb-2">
                 <span className={`text-3xl ${b.unlocked ? '' : 'grayscale opacity-50'}`}>{b.icon}</span>
-                {b.unlocked && <span className="text-[10px] font-bold uppercase text-gold-600 dark:text-gold-400 bg-gold-500/10 dark:bg-gold-700/20 px-1.5 py-0.5 rounded">Earned</span>}
+                {b.unlocked && <span className="text-[11px] font-bold uppercase text-gold-600 dark:text-gold-400 bg-gold-500/10 dark:bg-gold-700/20 px-1.5 py-0.5 rounded">Earned</span>}
               </div>
               <p className={`font-semibold text-sm ${b.unlocked ? 'text-slate-800 dark:text-white/80' : 'text-slate-600 dark:text-white/50'}`}>
                 {b.label}
@@ -386,7 +386,7 @@ export default function SpendingStreaks() {
                   <div className="w-full bg-slate-200/60 dark:bg-white/[0.08] rounded-full h-1.5">
                     <div className="h-1.5 rounded-full bg-gold-400 dark:bg-gold-500/50 transition-all" style={{ width: `${Math.min(100, (b.progress.current / b.progress.target) * 100)}%` }} />
                   </div>
-                  <p className="text-[10px] text-slate-500 dark:text-white/40 mt-1">{b.progress.current} / {b.progress.target}</p>
+                  <p className="text-[11px] text-slate-500 dark:text-white/40 mt-1">{b.progress.current} / {b.progress.target}</p>
                 </div>
               )}
             </div>

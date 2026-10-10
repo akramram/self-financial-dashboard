@@ -155,8 +155,8 @@ export default function DashboardSummaryCards({ summaries, networth, activeMonth
               <div className="flex-1 min-w-0">
                 {/* Label row, similarity: same icon+label pattern across all 4 cards */}
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-slate-400 dark:text-slate-500">{card.icon}</span>
-                  <p className="text-sm font-medium text-slate-500 dark:text-slate-400 truncate">
+                  <span className="text-slate-500 dark:text-slate-500">{card.icon}</span>
+                  <p className="text-sm font-medium text-slate-500 dark:text-slate-500 truncate">
                     {card.label}
                   </p>
                 </div>

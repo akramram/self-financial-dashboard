@@ -350,7 +350,7 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="glass-card p-4">
           <Zap className="w-4 h-4 text-mint-400 mb-1.5" />
-          <span className="text-[10px] font-medium text-slate-500 dark:text-white/40 uppercase tracking-wider">Avg Daily</span>
+          <span className="text-[11px] font-medium text-slate-500 dark:text-white/40 uppercase tracking-wider">Avg Daily</span>
           <div className="text-xl font-bold text-slate-900 dark:text-white mt-1">{formatIdr(velocity.current_avg_daily)}</div>
           <div className={`text-xs mt-1 ${velocityUp ? 'text-red-400' : 'text-emerald-400'}`}>
             {velocityUp ? '↑' : '↓'} {Math.abs(velocity.velocity_vs_history).toFixed(0)}% vs avg
@@ -359,21 +359,21 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
 
         <div className="glass-card p-4">
           <Target className="w-4 h-4 text-emerald-400 mb-1.5" />
-          <span className="text-[10px] font-medium text-slate-500 dark:text-white/40 uppercase tracking-wider">Projected</span>
+          <span className="text-[11px] font-medium text-slate-500 dark:text-white/40 uppercase tracking-wider">Projected</span>
           <div className="text-xl font-bold text-slate-900 dark:text-white mt-1">{formatIdr(velocity.projected_monthly)}</div>
           <div className="text-xs text-slate-500 dark:text-white/40 mt-1">Based on {velocity.days_with_spending} spending days</div>
         </div>
 
         <div className="glass-card p-4">
           <Clock className="w-4 h-4 text-gold-400 mb-1.5" />
-          <span className="text-[10px] font-medium text-slate-500 dark:text-white/40 uppercase tracking-wider">Cumulative</span>
+          <span className="text-[11px] font-medium text-slate-500 dark:text-white/40 uppercase tracking-wider">Cumulative</span>
           <div className="text-xl font-bold text-slate-900 dark:text-white mt-1">{formatIdr(velocity.cumulative_spend)}</div>
           <div className="text-xs text-slate-500 dark:text-white/40 mt-1">Over {velocity.days_tracked} tracked days</div>
         </div>
 
         <div className="glass-card p-4">
           <Hash className="w-4 h-4 text-mint-400 mb-1.5" />
-          <span className="text-[10px] font-medium text-slate-500 dark:text-white/40 uppercase tracking-wider">Transactions</span>
+          <span className="text-[11px] font-medium text-slate-500 dark:text-white/40 uppercase tracking-wider">Transactions</span>
           <div className="text-xl font-bold text-slate-900 dark:text-white mt-1">{stats.count}</div>
           <div className="text-xs text-slate-500 dark:text-white/40 mt-1">
             {stats.paid_count} paid · {stats.unpaid_count} unpaid
@@ -393,7 +393,7 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
             <Line data={dailyChartData} options={{
               responsive: true, maintainAspectRatio: false,
               plugins: { legend: { display: true, position: 'top' as const, labels: { boxWidth: 12, font: { size: 11 } } }, tooltip: { callbacks: { label: (ctx: any) => `${ctx.dataset.label}: ${formatIdr(ctx.raw as number)}` } } },
-              scales: { x: { grid: { display: false }, ticks: { font: { size: 10 }, maxRotation: 45 } }, y: { beginAtZero: true, ticks: { font: { size: 10 }, callback: (val: any) => { const n = Number(val); if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`; if (n >= 1_000) return `${(n / 1_000).toFixed(0)}K`; return val; } } } },
+              scales: { x: { grid: { display: false }, ticks: { font: { size: 11 }, maxRotation: 45 } }, y: { beginAtZero: true, ticks: { font: { size: 11 }, callback: (val: any) => { const n = Number(val); if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`; if (n >= 1_000) return `${(n / 1_000).toFixed(0)}K`; return val; } } } },
               interaction: { intersect: false, mode: 'index' as const },
             }} />
           </div>
@@ -412,7 +412,7 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
             <Bar data={dowChartData} options={{
               responsive: true, maintainAspectRatio: false,
               plugins: { legend: { display: false }, tooltip: { callbacks: { title: (items: any) => DOW_LABELS[items[0]?.dataIndex ?? 0], afterBody: (items: any) => { const row = dow.find((d: any) => d.dow === (items[0]?.dataIndex ?? 0)); return row ? `${row.tx_count} transactions` : ''; }, label: (ctx: any) => `Total: ${formatIdr(ctx.raw as number)}` } } },
-              scales: { x: { grid: { display: false } }, y: { beginAtZero: true, ticks: { font: { size: 10 }, callback: (val: any) => { const n = Number(val); if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`; if (n >= 1_000) return `${(n / 1_000).toFixed(0)}K`; return val; } } } },
+              scales: { x: { grid: { display: false } }, y: { beginAtZero: true, ticks: { font: { size: 11 }, callback: (val: any) => { const n = Number(val); if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`; if (n >= 1_000) return `${(n / 1_000).toFixed(0)}K`; return val; } } } },
             }} />
           </div>
         </div>
@@ -448,7 +448,7 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
                       <div className="flex items-center gap-2">
                         <span className="font-medium text-slate-800 dark:text-white/90">{formatIdr(cat.amount)}</span>
                         {prevPct !== null && (
-                          <Badge variant="secondary" className={`text-[10px] px-1.5 py-0 ${prevPct > 0 ? 'bg-red-500/10 text-red-300' : 'bg-emerald-500/10 text-emerald-300'}`}>
+                          <Badge variant="secondary" className={`text-[11px] px-1.5 py-0 ${prevPct > 0 ? 'bg-red-500/10 text-red-300' : 'bg-emerald-500/10 text-emerald-300'}`}>
                             {prevPct > 0 ? '↑' : '↓'}{Math.abs(prevPct).toFixed(0)}%
                           </Badge>
                         )}
@@ -524,7 +524,7 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
                 <Bar data={merchantChartData} options={{
                   indexAxis: 'y' as const, responsive: true, maintainAspectRatio: false,
                   plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx: any) => { const merchant = topMerchants[topMerchants.length - 1 - (ctx.dataIndex ?? 0)]; if (!merchant) return formatIdr(ctx.raw as number); return [`Total: ${formatIdr(merchant.paid_amount)}`, `Transactions: ${merchant.tx_count}`, `Avg: ${formatIdr(merchant.avg_amount)}`, `Category: ${merchant.category}`]; } } } },
-                  scales: { x: { beginAtZero: true, ticks: { font: { size: 10 }, callback: (val: any) => { const n = Number(val); if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`; if (n >= 1_000) return `${(n / 1_000).toFixed(0)}K`; return val; } } }, y: { ticks: { font: { size: 10 } } } },
+                  scales: { x: { beginAtZero: true, ticks: { font: { size: 11 }, callback: (val: any) => { const n = Number(val); if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`; if (n >= 1_000) return `${(n / 1_000).toFixed(0)}K`; return val; } } }, y: { ticks: { font: { size: 11 } } } },
                 }} />
               </div>
             )}
@@ -559,8 +559,8 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
               <TableBody>
                 {categoryTxs.map((tx) => (
                   <TableRow key={tx.id}>
-                    <TableCell className="flex items-center gap-2"><span className={tx.done ? 'text-slate-800 dark:text-white/80' : 'text-slate-500 dark:text-white/40'}>{tx.title}</span>{!tx.done && <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-slate-300 dark:border-white/[0.1] text-slate-600 dark:text-white/50">Unpaid</Badge>}</TableCell>
-                    <TableCell><Badge variant="secondary" className="text-[10px]">{tx.type === 'cash' ? 'Cash' : tx.type === 'credit_payment' ? 'Credit Pay' : 'Credit'}</Badge></TableCell>
+                    <TableCell className="flex items-center gap-2"><span className={tx.done ? 'text-slate-800 dark:text-white/80' : 'text-slate-500 dark:text-white/40'}>{tx.title}</span>{!tx.done && <Badge variant="outline" className="text-[11px] px-1.5 py-0 border-slate-300 dark:border-white/[0.1] text-slate-600 dark:text-white/50">Unpaid</Badge>}</TableCell>
+                    <TableCell><Badge variant="secondary" className="text-[11px]">{tx.type === 'cash' ? 'Cash' : tx.type === 'credit_payment' ? 'Credit Pay' : 'Credit'}</Badge></TableCell>
                     <TableCell className="text-right font-medium text-slate-800 dark:text-white/90">{formatIdr(tx.amount)}</TableCell>
                   </TableRow>
                 ))}

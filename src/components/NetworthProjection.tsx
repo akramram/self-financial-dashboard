@@ -171,7 +171,7 @@ export default function NetworthProjection({ data }: Props) {
       x: {
         grid: { display: false },
         ticks: {
-          font: { size: 10 },
+          font: { size: 11 },
           maxRotation: 45,
           callback: function (this: any, _val: any, index: number) {
             // Show fewer labels if there are many
@@ -185,7 +185,7 @@ export default function NetworthProjection({ data }: Props) {
       y: {
         beginAtZero: false,
         ticks: {
-          font: { size: 10 },
+          font: { size: 11 },
           callback: (val: any) => {
             const n = Number(val);
             if (n >= 1_000_000_000) return `${(n / 1_000_000_000).toFixed(1)}B`;
@@ -266,7 +266,7 @@ export default function NetworthProjection({ data }: Props) {
                     <button
                       onClick={() => setContributionInput(null)}
                       title="Reset to auto (median-based estimate)"
-                      className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md text-[10px] text-slate-500 dark:text-white/40 hover:text-gold-500 hover:bg-gold-500/10 transition-colors"
+                      className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md text-[11px] text-slate-500 dark:text-white/40 hover:text-gold-500 hover:bg-gold-500/10 transition-colors"
                     >
                       <RotateCcw className="w-3 h-3" />
                       Auto
@@ -283,25 +283,25 @@ export default function NetworthProjection({ data }: Props) {
                 onChange={(e) => setContributionInput(Number(e.target.value))}
                 className="w-full h-2 bg-slate-200/60 dark:bg-white/[0.08] rounded-lg appearance-none cursor-pointer accent-gold-500"
               />
-              <div className="flex justify-between text-[10px] text-slate-500 dark:text-white/40">
+              <div className="flex justify-between text-[11px] text-slate-500 dark:text-white/40">
                 <span>{formatIdr(0)}</span>
                 <span>{formatIdr(sliderMax)}</span>
               </div>
               {isAutoContribution ? (
                 autoMedianContribution > 0 ? (
-                  <p className="text-[10px] text-slate-500 dark:text-white/40 italic">
+                  <p className="text-[11px] text-slate-500 dark:text-white/40 italic">
                     Auto: {formatIdr(autoMedianContribution)}/mo — median of last 6 MoM changes;
                     estimate including market appreciation
                   </p>
                 ) : (
-                  <p className="text-[10px] text-slate-500 dark:text-white/40 italic">
+                  <p className="text-[11px] text-slate-500 dark:text-white/40 italic">
                     {sortedData.length < 7
                       ? 'Insufficient data (< 7 periods) — default 0. Drag slider to set.'
                       : 'Auto estimate floored to 0 (recent MoM median negative). Drag slider to set.'}
                   </p>
                 )
               ) : (
-                <p className="text-[10px] text-slate-500 dark:text-white/40 italic">
+                <p className="text-[11px] text-slate-500 dark:text-white/40 italic">
                   Custom contribution — assumption set manually.
                 </p>
               )}
@@ -327,7 +327,7 @@ export default function NetworthProjection({ data }: Props) {
                 onChange={(e) => setAnnualReturnRate(Number(e.target.value))}
                 className="w-full h-2 bg-slate-200/60 dark:bg-white/[0.08] rounded-lg appearance-none cursor-pointer accent-gold-500"
               />
-              <div className="flex justify-between text-[10px] text-slate-500 dark:text-white/40">
+              <div className="flex justify-between text-[11px] text-slate-500 dark:text-white/40">
                 <span>0%</span>
                 <span>10%</span>
                 <span>20%</span>
@@ -346,7 +346,7 @@ export default function NetworthProjection({ data }: Props) {
               {realTerms ? (
                 <>
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] text-slate-500 dark:text-white/40">Inflation</span>
+                    <span className="text-[11px] text-slate-500 dark:text-white/40">Inflation</span>
                     <Badge variant="secondary" className="text-xs font-mono">
                       {inflationRate}%
                     </Badge>
@@ -360,12 +360,12 @@ export default function NetworthProjection({ data }: Props) {
                     onChange={(e) => setInflationRate(Number(e.target.value))}
                     className="w-full h-2 bg-slate-200/60 dark:bg-white/[0.08] rounded-lg appearance-none cursor-pointer accent-gold-500"
                   />
-                  <p className="text-[10px] text-slate-500 dark:text-white/40 italic">
+                  <p className="text-[11px] text-slate-500 dark:text-white/40 italic">
                     Projection shown in today's money (deflated). 0% inflation = nominal.
                   </p>
                 </>
               ) : (
-                <p className="text-[10px] text-slate-500 dark:text-white/40 italic">
+                <p className="text-[11px] text-slate-500 dark:text-white/40 italic">
                   Off — projection in nominal values.
                 </p>
               )}
@@ -415,7 +415,7 @@ export default function NetworthProjection({ data }: Props) {
                 <p className="text-lg font-bold text-gold-400">
                   {formatIdr(summary.at12)}
                 </p>
-                <p className="text-[10px] text-slate-500 dark:text-white/40">
+                <p className="text-[11px] text-slate-500 dark:text-white/40">
                   +{formatIdr(summary.at12 - summary.lastValue)} (
                   {summary.lastValue > 0
                     ? ((summary.at12 / summary.lastValue - 1) * 100).toFixed(1)
@@ -435,7 +435,7 @@ export default function NetworthProjection({ data }: Props) {
                 <p className="text-lg font-bold text-gold-400">
                   {formatIdr(summary.at24)}
                 </p>
-                <p className="text-[10px] text-slate-500 dark:text-white/40">
+                <p className="text-[11px] text-slate-500 dark:text-white/40">
                   +{formatIdr(summary.at24 - summary.lastValue)} (
                   {summary.lastValue > 0
                     ? ((summary.at24 / summary.lastValue - 1) * 100).toFixed(1)
@@ -455,7 +455,7 @@ export default function NetworthProjection({ data }: Props) {
                 <p className="text-lg font-bold text-gold-400">
                   {formatIdr(summary.at36)}
                 </p>
-                <p className="text-[10px] text-slate-500 dark:text-white/40">
+                <p className="text-[11px] text-slate-500 dark:text-white/40">
                   +{formatIdr(summary.at36 - summary.lastValue)} (
                   {summary.lastValue > 0
                     ? ((summary.at36 / summary.lastValue - 1) * 100).toFixed(1)

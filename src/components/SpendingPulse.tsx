@@ -193,14 +193,14 @@ export default function SpendingPulse({ summaries, activeMonth, transactions }: 
             </span>
           </div>
 
-          <p className="text-xs text-slate-500 dark:text-slate-400">
+          <p className="text-xs text-slate-500 dark:text-slate-500">
             {cfg.label} - you've spent {pulse.pacePct.toFixed(0)}% of the expected amount for this point in the period.
           </p>
 
           {/* Key metrics */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 pt-1">
             <div className="bg-slate-200 dark:bg-slate-800/60 rounded-lg p-2.5">
-              <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 mb-1">
+              <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-500 mb-1">
                 <Clock className="w-3.5 h-3.5" />
                 Time Elapsed
               </div>
@@ -210,7 +210,7 @@ export default function SpendingPulse({ summaries, activeMonth, transactions }: 
               <p className="text-xs text-slate-500">{pulse.pctTimeElapsed.toFixed(0)}% through period</p>
             </div>
             <div className="bg-slate-200 dark:bg-slate-800/60 rounded-lg p-2.5">
-              <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 mb-1">
+              <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-500 mb-1">
                 <Activity className="w-3.5 h-3.5" />
                 Spend vs Expected
               </div>
@@ -223,7 +223,7 @@ export default function SpendingPulse({ summaries, activeMonth, transactions }: 
             </div>
             {(pulse.cash > 0 || pulse.credit > 0) && (
               <div className="bg-slate-200 dark:bg-slate-800/60 rounded-lg p-2.5">
-                <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 mb-1">
+                <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-500 mb-1">
                   <CreditCard className="w-3.5 h-3.5" />
                   Cash vs Credit
                 </div>
@@ -231,12 +231,12 @@ export default function SpendingPulse({ summaries, activeMonth, transactions }: 
                   <span className="text-sm font-semibold text-mint-500 dark:text-mint-400">
                     {formatIdr(pulse.cash)}
                   </span>
-                  <span className="text-slate-400 dark:text-slate-500">/</span>
+                  <span className="text-slate-500 dark:text-slate-500">/</span>
                   <span className="text-sm font-semibold text-gold-600 dark:text-gold-400">
                     {formatIdr(pulse.credit)}
                   </span>
                 </div>
-                <div className="flex gap-0.5 text-[10px] text-slate-500 mb-1">
+                <div className="flex gap-0.5 text-[11px] text-slate-500 mb-1">
                   <span className="text-mint-500">● Cash</span>
                   <span className="text-gold-500 ml-1">● Credit</span>
                 </div>
@@ -255,7 +255,7 @@ export default function SpendingPulse({ summaries, activeMonth, transactions }: 
           </div>
 
           {/* Projected total */}
-          <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+          <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-500">
             <span>Projected period total:</span>
             <span className={`font-semibold ${pulse.projectedTotal > pulse.income ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
               {formatIdr(pulse.projectedTotal)}
@@ -305,7 +305,7 @@ export default function SpendingPulse({ summaries, activeMonth, transactions }: 
               200%
             </text>
           </svg>
-          <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">
+          <p className="text-[11px] text-slate-500 dark:text-slate-500 mt-1">
             % of expected spend
           </p>
         </div>
@@ -314,7 +314,7 @@ export default function SpendingPulse({ summaries, activeMonth, transactions }: 
       {/* Bottom: mini progress comparing time vs spend */}
       <div className="mt-4 pt-3 border-t border-slate-200/50 dark:border-slate-700/50 space-y-2">
         <div className="flex items-center gap-2 text-xs">
-          <span className="w-16 text-slate-500 dark:text-slate-400 shrink-0">Time</span>
+          <span className="w-16 text-slate-500 dark:text-slate-500 shrink-0">Time</span>
           <div className="flex-1 bg-slate-200 dark:bg-slate-700 rounded-full h-1.5">
             <div
               className="bg-mint-400 dark:bg-mint-500/30 h-1.5 rounded-full transition-all"
@@ -324,7 +324,7 @@ export default function SpendingPulse({ summaries, activeMonth, transactions }: 
           <span className="w-10 text-right font-medium text-slate-600 dark:text-slate-300">{pulse.pctTimeElapsed.toFixed(0)}%</span>
         </div>
         <div className="flex items-center gap-2 text-xs">
-          <span className="w-16 text-slate-500 dark:text-slate-400 shrink-0">Spend</span>
+          <span className="w-16 text-slate-500 dark:text-slate-500 shrink-0">Spend</span>
           <div className="flex-1 bg-slate-200 dark:bg-slate-700 rounded-full h-1.5">
             <div
               className={`h-1.5 rounded-full transition-all ${cfg.bar}`}
@@ -336,7 +336,7 @@ export default function SpendingPulse({ summaries, activeMonth, transactions }: 
           </span>
         </div>
         <div className="flex items-center gap-2 text-xs">
-          <span className="w-16 text-slate-500 dark:text-slate-400 shrink-0">Budget</span>
+          <span className="w-16 text-slate-500 dark:text-slate-500 shrink-0">Budget</span>
           <div className="flex-1 bg-slate-200 dark:bg-slate-700 rounded-full h-1.5">
             <div
               className={`h-1.5 rounded-full transition-all ${

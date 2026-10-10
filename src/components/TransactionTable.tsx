@@ -366,7 +366,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
               placeholder="Search title, category, notes..."
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              className="pl-9 bg-slate-100 dark:bg-white/[0.04] border-slate-300 dark:border-white/[0.08] text-slate-800 dark:text-white/80 placeholder:text-slate-400 dark:text-white/25 focus-visible:ring-emerald-500/30"
+              className="pl-9 bg-slate-100 dark:bg-white/[0.04] border-slate-300 dark:border-white/[0.08] text-slate-800 dark:text-white/80 placeholder:text-slate-500 dark:text-white/25 focus-visible:ring-emerald-500/30"
             />
             {search && (
               <button
@@ -562,25 +562,25 @@ export default function TransactionTable({ transactions, showMonth = true, perio
           {hasAdvancedFilters && !advancedOpen && (
             <div className="flex items-center gap-2 flex-wrap">
               {dateFrom && (
-                <Badge variant="outline" className="text-[10px] py-0 h-5 gap-1 border-slate-300 dark:border-white/[0.08] text-slate-600 dark:text-white/50">
+                <Badge variant="outline" className="text-[11px] py-0 h-5 gap-1 border-slate-300 dark:border-white/[0.08] text-slate-600 dark:text-white/50">
                   From: {dateFrom}
                   <button onClick={() => setDateFrom('')}><X className="w-2.5 h-2.5" /></button>
                 </Badge>
               )}
               {dateTo && (
-                <Badge variant="outline" className="text-[10px] py-0 h-5 gap-1 border-slate-300 dark:border-white/[0.08] text-slate-600 dark:text-white/50">
+                <Badge variant="outline" className="text-[11px] py-0 h-5 gap-1 border-slate-300 dark:border-white/[0.08] text-slate-600 dark:text-white/50">
                   To: {dateTo}
                   <button onClick={() => setDateTo('')}><X className="w-2.5 h-2.5" /></button>
                 </Badge>
               )}
               {amountMin && (
-                <Badge variant="outline" className="text-[10px] py-0 h-5 gap-1 border-slate-300 dark:border-white/[0.08] text-slate-600 dark:text-white/50">
+                <Badge variant="outline" className="text-[11px] py-0 h-5 gap-1 border-slate-300 dark:border-white/[0.08] text-slate-600 dark:text-white/50">
                   ≥ {formatIdr(parseFloat(amountMin))}
                   <button onClick={() => setAmountMin('')}><X className="w-2.5 h-2.5" /></button>
                 </Badge>
               )}
               {amountMax && (
-                <Badge variant="outline" className="text-[10px] py-0 h-5 gap-1 border-slate-300 dark:border-white/[0.08] text-slate-600 dark:text-white/50">
+                <Badge variant="outline" className="text-[11px] py-0 h-5 gap-1 border-slate-300 dark:border-white/[0.08] text-slate-600 dark:text-white/50">
                   ≤ {formatIdr(parseFloat(amountMax))}
                   <button onClick={() => setAmountMax('')}><X className="w-2.5 h-2.5" /></button>
                 </Badge>
@@ -603,7 +603,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                 <div className="flex flex-col sm:flex-row gap-4">
                   {/* Date range */}
                   <div className="flex-1">
-                    <label className="text-[10px] font-medium text-slate-500 dark:text-white/40 uppercase tracking-wider mb-2 block">
+                    <label className="text-[11px] font-medium text-slate-500 dark:text-white/40 uppercase tracking-wider mb-2 block">
                       Date Range
                     </label>
                     <div className="flex items-center gap-2">
@@ -613,7 +613,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                         onChange={(e) => { setDateFrom(e.target.value); setPage(1); }}
                         className="flex-1 bg-slate-100 dark:bg-white/[0.04] border-slate-300 dark:border-white/[0.08] text-slate-700 dark:text-white/70 text-xs h-8"
                       />
-                      <span className="text-slate-400 dark:text-white/40 text-xs">→</span>
+                      <span className="text-slate-500 dark:text-white/40 text-xs">→</span>
                       <Input
                         type="date"
                         value={dateTo}
@@ -625,12 +625,12 @@ export default function TransactionTable({ transactions, showMonth = true, perio
 
                   {/* Amount range */}
                   <div className="flex-1">
-                    <label className="text-[10px] font-medium text-slate-500 dark:text-white/40 uppercase tracking-wider mb-2 block">
+                    <label className="text-[11px] font-medium text-slate-500 dark:text-white/40 uppercase tracking-wider mb-2 block">
                       Amount Range
                     </label>
                     <div className="flex items-center gap-2">
                       <div className="relative flex-1">
-                        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white/40 text-xs">Rp</span>
+                        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 dark:text-white/40 text-xs">Rp</span>
                         <Input
                           type="number"
                           placeholder="Min"
@@ -639,9 +639,9 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                           className="pl-8 bg-slate-100 dark:bg-white/[0.04] border-slate-300 dark:border-white/[0.08] text-slate-700 dark:text-white/70 text-xs h-8"
                         />
                       </div>
-                      <span className="text-slate-400 dark:text-white/40 text-xs">→</span>
+                      <span className="text-slate-500 dark:text-white/40 text-xs">→</span>
                       <div className="relative flex-1">
-                        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white/40 text-xs">Rp</span>
+                        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 dark:text-white/40 text-xs">Rp</span>
                         <Input
                           type="number"
                           placeholder="Max"
@@ -656,7 +656,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
 
                 {/* Quick presets */}
                 <div className="flex items-center gap-2 mt-3 pt-3 border-t border-slate-200 dark:border-white/[0.05]">
-                  <span className="text-[10px] font-medium text-slate-400 dark:text-white/25 uppercase tracking-wider">Presets:</span>
+                  <span className="text-[11px] font-medium text-slate-500 dark:text-white/25 uppercase tracking-wider">Presets:</span>
                   {[
                     { label: 'This Month', dateFrom: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().slice(0, 10), dateTo: '' },
                     { label: 'Last Month', dateFrom: new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).toISOString().slice(0, 10), dateTo: new Date(new Date().getFullYear(), new Date().getMonth(), 0).toISOString().slice(0, 10) },
@@ -668,7 +668,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                       size="sm"
                       variant="ghost"
                       onClick={() => { setDateFrom(preset.dateFrom); setDateTo(preset.dateTo); setPage(1); }}
-                      className="h-6 text-[10px] px-2 text-slate-500 dark:text-white/40 hover:text-slate-700 dark:text-white/70 hover:bg-slate-200/60 dark:bg-white/[0.06]"
+                      className="h-6 text-[11px] px-2 text-slate-500 dark:text-white/40 hover:text-slate-700 dark:text-white/70 hover:bg-slate-200/60 dark:bg-white/[0.06]"
                     >
                       {preset.label}
                     </Button>
@@ -677,7 +677,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                     size="sm"
                     variant="ghost"
                     onClick={() => { setDateFrom(''); setDateTo(''); setAmountMin(''); setAmountMax(''); setPage(1); }}
-                    className="h-6 text-[10px] px-2 text-slate-400 dark:text-white/25 hover:text-slate-600 dark:text-white/50 ml-auto"
+                    className="h-6 text-[11px] px-2 text-slate-500 dark:text-white/25 hover:text-slate-600 dark:text-white/50 ml-auto"
                   >
                     Clear
                   </Button>
@@ -693,7 +693,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
         <p className="text-xs text-slate-500 dark:text-white/40">
           <span className="text-slate-600 dark:text-white/60 font-semibold">{filtered.length.toLocaleString()}</span> transaction{filtered.length !== 1 ? 's' : ''}
           {filtered.length !== transactions.length && (
-            <span className="text-slate-400 dark:text-white/40"> / {transactions.length.toLocaleString()} total</span>
+            <span className="text-slate-500 dark:text-white/40"> / {transactions.length.toLocaleString()} total</span>
           )}
         </p>
         {filtered.length > 0 && (
@@ -807,7 +807,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
           <TableBody>
             {pageRows.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={showMonth ? 9 : 8} className="text-center py-12 text-slate-400 dark:text-white/25 text-sm">
+                <TableCell colSpan={showMonth ? 9 : 8} className="text-center py-12 text-slate-500 dark:text-white/25 text-sm">
                   <Filter className="w-8 h-8 mx-auto mb-3 opacity-30" />
                   No transactions found
                   {activeFilterCount > 0 && (
@@ -869,7 +869,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                             toast.error('Failed to update payment status');
                           }
                         }}
-                        className={`h-6 text-[10px] font-semibold px-2 rounded-md transition-colors ${
+                        className={`h-6 text-[11px] font-semibold px-2 rounded-md transition-colors ${
                           row.done
                             ? 'bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25'
                             : 'bg-red-500/10 text-red-400 hover:bg-red-500/20'
@@ -886,20 +886,20 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                       )}
                     </TableCell>
                     <TableCell className="py-2.5">
-                      <Badge variant="secondary" className="text-[10px] bg-slate-200/60 dark:bg-white/[0.06] text-slate-600 dark:text-white/60 border-slate-200 dark:border-white/[0.06] font-normal">
+                      <Badge variant="secondary" className="text-[11px] bg-slate-200/60 dark:bg-white/[0.06] text-slate-600 dark:text-white/60 border-slate-200 dark:border-white/[0.06] font-normal">
                         {row.category}
                       </Badge>
                     </TableCell>
                     <TableCell className="py-2.5 text-slate-500 dark:text-white/40 text-xs whitespace-nowrap">{dateStr}</TableCell>
                     <TableCell className="py-2.5 font-semibold text-right text-slate-800 dark:text-white/80 tabular-nums whitespace-nowrap">{formatIdr(row.amount)}</TableCell>
                     <TableCell className="py-2.5">
-                      <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase ${typeColorClass} ${typeBgClass}`}>
+                      <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-semibold uppercase ${typeColorClass} ${typeBgClass}`}>
                         {typeLabel}
                       </span>
                     </TableCell>
                     <TableCell className="py-2.5">
                       <div className="flex justify-end">
-                        <ChevronRight className="w-4 h-4 text-slate-400 dark:text-white/40" />
+                        <ChevronRight className="w-4 h-4 text-slate-500 dark:text-white/40" />
                       </div>
                     </TableCell>
                   </TableRow>
@@ -913,7 +913,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
         {/* Mobile card list — no horizontal scroll, tap opens detail sheet */}
         <div className="md:hidden divide-y divide-slate-200 dark:divide-white/[0.05]">
           {pageRows.length === 0 ? (
-            <div className="py-12 text-center text-slate-400 dark:text-white/25 text-sm">
+            <div className="py-12 text-center text-slate-500 dark:text-white/25 text-sm">
               <Filter className="w-8 h-8 mx-auto mb-3 opacity-30" />
               No transactions found
               {activeFilterCount > 0 && (
@@ -982,7 +982,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                   <div className="shrink-0 text-right">
                     <p className="text-sm font-semibold text-slate-800 dark:text-white/80 tabular-nums whitespace-nowrap">{formatIdr(row.amount)}</p>
                     {showMonth && (
-                      <p className="text-[11px] text-slate-400 dark:text-white/30 truncate">{periodIdToMonth.get(row.period_id) || ''}</p>
+                      <p className="text-[11px] text-slate-500 dark:text-white/30 truncate">{periodIdToMonth.get(row.period_id) || ''}</p>
                     )}
                   </div>
                 </div>

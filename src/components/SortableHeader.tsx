@@ -24,7 +24,7 @@ export default function SortableHeader({
     >
       <span className="inline-flex items-center gap-1">
         {children}
-        <span className="inline-flex flex-col leading-none text-[10px] ml-0.5">
+        <span className="inline-flex flex-col leading-none text-[11px] ml-0.5">
           <span
             className={
               currentDirection === 'asc'
