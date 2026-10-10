@@ -2405,3 +2405,14 @@ Audit KUR-59/FIN-015+016: foundation shadcn + migrasi tabel & form ternyata suda
 - PR #296 merged: `scripts/deploy-dashboard.sh` +exec bit (sebelumnya `./scripts/...` Permission denied).
 - Catatan ops: `findash-tunnel` tercatat 21 restarts (fluktuasi jaringan, koneksi saat ini sehat via QUIC cgk/sin). Dipantau; tidak ada aksi.
 - Review visual (Pixel Painter) & relevansi kalkulator (Strategy Hawk) sesuai checklist KUR-135 — di luar scope health-check teknis ini.
+
+## 2026-10-10 — KUR-206 Daily Iteration: eksekusi KUR-213 (Code Crafter)
+
+### Hasil
+- KUR-213 (spek Pixel Painter dari review KUR-207) dieksekusi penuh: PR #310 merged (`723ec024`), 65 file, UI-only — `data/` & `financial.db` tidak disentuh.
+- **A. Modal quick-add mobile:** Type di atas Amount; Month/Year dihapus (period auto-snap dari Date & Time); Paid/Done = row 44px tap target; drag handle 36×4 + swipe-down-dismiss ≥120px; scroll padding-bottom 80px + footer `env(safe-area-inset-bottom)`; placeholder Category dibedakan; `aria-modal`.
+- **B. Charts:** y-axis NetWorth compact (15M/1.2B); global autoSkip + maxTicksLimit 8 + maxRotation 0; CategoryTrend top-6 + "Lainnya" + hover dim; donut legend kanan→bawah (wrap, tidak truncate).
+- **C. Type scale:** 0 teks <11px (semua 9px/10px node → ≥11); h3 card 14→16px; light-mode data text slate-400→500; dark muted dinaikkan.
+- **D. Touch targets ≥44px:** section rail pills, All-time selector, alert bell, link Full form.
+- **E. Token & spacing:** STATUS + CATEGORICAL palette di chartConfig (hue status ≠ warna series); credit expense bar merah→slate netral; grid gap-3 sm:gap-4; card p-4 sm:p-5; FAB desktop gutter `lg:pr-20`.
+- Verifikasi: **460/460 tests** (test AC KUR-213 baru), `npm run build` OK, deploy `scripts/deploy-dashboard.sh`, :4321 HTTP 200.
