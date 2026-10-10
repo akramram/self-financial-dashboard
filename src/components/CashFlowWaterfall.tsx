@@ -302,7 +302,7 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
                   <div>
                     <p className="text-xs text-muted-foreground">Total Spent</p>
                     <p className="text-lg font-semibold text-red-600 dark:text-red-400">{formatIdr(totalSpent)}</p>
-                    <p className="text-[10px] text-muted-foreground">{totalIncome > 0 ? `${((totalSpent / totalIncome) * 100).toFixed(1)}% of income` : ''}</p>
+                    <p className="text-[11px] text-muted-foreground">{totalIncome > 0 ? `${((totalSpent / totalIncome) * 100).toFixed(1)}% of income` : ''}</p>
                   </div>
                 </div>
               </div>
@@ -316,7 +316,7 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
                     <p className={`text-lg font-semibold ${totalSavings >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
                       {formatIdr(totalSavings)}
                     </p>
-                    <p className="text-[10px] text-muted-foreground">Savings rate: {savingsRate.toFixed(1)}%</p>
+                    <p className="text-[11px] text-muted-foreground">Savings rate: {savingsRate.toFixed(1)}%</p>
                   </div>
                 </div>
               </div>
@@ -328,7 +328,7 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
                   <div>
                     <p className="text-xs text-muted-foreground">Categories</p>
                     <p className="text-lg font-semibold">{categoryBreakdown.length}</p>
-                    <p className="text-[10px] text-muted-foreground">
+                    <p className="text-[11px] text-muted-foreground">
                       {largestCategory ? `Largest: ${largestCategory.name}` : '-'}
                     </p>
                   </div>
@@ -386,7 +386,7 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
 
                 <div className="flex items-center gap-2 px-3">
                   <div className="h-px flex-1 bg-slate-200 dark:bg-slate-700" />
-                  <ArrowDown className="w-3 h-3 text-slate-400" />
+                  <ArrowDown className="w-3 h-3 text-slate-500" />
                 </div>
 
                 {/* Category Rows */}
@@ -406,7 +406,7 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
                         {cat.pct.toFixed(1)}%
                       </span>
                       {isOverBudget && (
-                        <Badge variant="destructive" className="text-[10px] px-1.5 py-0">Over</Badge>
+                        <Badge variant="destructive" className="text-[11px] px-1.5 py-0">Over</Badge>
                       )}
                     </div>
                   );
@@ -414,7 +414,7 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
 
                 <div className="flex items-center gap-2 px-3">
                   <div className="h-px flex-1 bg-slate-200 dark:bg-slate-700" />
-                  <ArrowUp className="w-3 h-3 text-slate-400" />
+                  <ArrowUp className="w-3 h-3 text-slate-500" />
                 </div>
 
                 {/* Remaining Row */}
@@ -464,7 +464,7 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
                   {/* Markers */}
                   <div className="absolute top-0 h-full w-0.5 bg-slate-400 dark:bg-slate-500" style={{ left: '20%' }} title="20% target" />
                 </div>
-                <div className="flex justify-between text-[10px] text-muted-foreground">
+                <div className="flex justify-between text-[11px] text-muted-foreground">
                   <span>0%</span>
                   <span className="text-red-500">Risky</span>
                   <span className="text-gold-500">Caution</span>

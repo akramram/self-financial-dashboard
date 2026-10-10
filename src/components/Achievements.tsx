@@ -111,7 +111,7 @@ function BadgeCard({ badge }: { badge: AchievementBadge }) {
     >
       {/* Tier ribbon */}
       <div className="absolute top-2 right-2">
-        <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${tier.text} bg-slate-200 dark:bg-white/60 bg-slate-100 dark:bg-white/[0.04]`}>
+        <span className={`text-[11px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${tier.text} bg-slate-200 dark:bg-white/60 bg-slate-100 dark:bg-white/[0.04]`}>
           {tier.label}
         </span>
       </div>
@@ -137,7 +137,7 @@ function BadgeCard({ badge }: { badge: AchievementBadge }) {
         </div>
       ) : badge.progress ? (
         <div className="space-y-1">
-          <div className="flex justify-between text-[10px] text-slate-600 dark:text-white/50 font-mono">
+          <div className="flex justify-between text-[11px] text-slate-600 dark:text-white/50 font-mono">
             <span>{formatProgress(badge.progress.current, badge.progress.target, badge.progress.unit)}</span>
             <span>{pct.toFixed(0)}%</span>
           </div>
@@ -149,7 +149,7 @@ function BadgeCard({ badge }: { badge: AchievementBadge }) {
           </div>
         </div>
       ) : (
-        <div className="text-[10px] text-slate-500 dark:text-white/40 italic">Locked</div>
+        <div className="text-[11px] text-slate-500 dark:text-white/40 italic">Locked</div>
       )}
     </div>
   );
@@ -342,7 +342,7 @@ export default function Achievements({ data }: Props) {
                 <div className="flex items-center gap-2 mb-3">
                   <span className="text-slate-600 dark:text-white/50">{cat.icon}</span>
                   <h3 className="text-base font-semibold text-slate-700 dark:text-white/70">{cat.label}</h3>
-                  <Badge variant="secondary" className="text-[10px]">
+                  <Badge variant="secondary" className="text-[11px]">
                     {unlockedInCat}/{items.length}
                   </Badge>
                 </div>

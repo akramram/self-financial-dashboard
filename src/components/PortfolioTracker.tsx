@@ -298,19 +298,19 @@ export default function PortfolioTracker() {
       {/* Summary Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
         <div className="glass-card p-5">
-          <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Total Invested</p>
+          <p className="text-xs text-slate-500 dark:text-slate-500 mb-1">Total Invested</p>
             <p className="text-lg font-bold text-slate-800 dark:text-slate-100">
               {formatIdr(summary?.totalInvested ?? 0)}
             </p>
           </div>
         <div className="glass-card p-5">
-          <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Current Value</p>
+          <p className="text-xs text-slate-500 dark:text-slate-500 mb-1">Current Value</p>
             <p className="text-lg font-bold text-slate-800 dark:text-slate-100">
               {formatIdr(summary?.totalCurrentValue ?? 0)}
             </p>
           </div>
         <div className="glass-card p-5">
-          <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Total Gain/Loss</p>
+          <p className="text-xs text-slate-500 dark:text-slate-500 mb-1">Total Gain/Loss</p>
             <div className="flex items-center gap-1.5">
               {(summary?.totalGainLoss ?? 0) >= 0 ? (
                 <TrendingUp className="w-4 h-4 text-emerald-500" />
@@ -327,7 +327,7 @@ export default function PortfolioTracker() {
             </div>
           </div>
         <div className="glass-card p-5">
-          <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Return</p>
+          <p className="text-xs text-slate-500 dark:text-slate-500 mb-1">Return</p>
             <p className={`text-lg font-bold ${
               (summary?.totalGainLossPct ?? 0) >= 0
                 ? 'text-emerald-600 dark:text-emerald-400'
@@ -338,7 +338,7 @@ export default function PortfolioTracker() {
             </p>
           </div>
         <div className="glass-card p-5">
-          <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Holdings</p>
+          <p className="text-xs text-slate-500 dark:text-slate-500 mb-1">Holdings</p>
             <p className="text-lg font-bold text-slate-800 dark:text-slate-100">
               {summary?.holdingsCount ?? 0}
             </p>
@@ -394,7 +394,7 @@ export default function PortfolioTracker() {
                           </span>
                         </div>
                         <div className="flex justify-between items-center mt-0.5">
-                          <span className="text-xs text-slate-500 dark:text-slate-400">
+                          <span className="text-xs text-slate-500 dark:text-slate-500">
                             {data.count} holding{data.count !== 1 ? 's' : ''} · {pct.toFixed(1)}% of portfolio
                           </span>
                           <span className={`text-xs font-medium ${
@@ -434,7 +434,7 @@ export default function PortfolioTracker() {
             </Button>
           </div>
         {investments.length === 0 ? (
-            <div className="text-center py-12 text-slate-500 dark:text-slate-400">
+            <div className="text-center py-12 text-slate-500 dark:text-slate-500">
               <Wallet className="w-10 h-10 mx-auto mb-3 opacity-30" />
               <p className="text-sm font-medium">No investments tracked yet</p>
               <p className="text-xs mt-1">Add your first holding to start tracking your portfolio.</p>
@@ -470,13 +470,13 @@ export default function PortfolioTracker() {
                     return (
                       <TableRow key={inv.id}>
                         <TableCell className="font-medium text-sm">{inv.name}</TableCell>
-                        <TableCell className="text-xs text-slate-500 dark:text-slate-400 font-mono">
+                        <TableCell className="text-xs text-slate-500 dark:text-slate-500 font-mono">
                           {inv.ticker || '-'}
                         </TableCell>
                         <TableCell>
                           <Badge
                             variant="secondary"
-                            className="text-[10px] px-1.5 py-0"
+                            className="text-[11px] px-1.5 py-0"
                             style={{
                               backgroundColor: `${TYPE_COLORS[inv.type] || '#6b7280'}20`,
                               color: TYPE_COLORS[inv.type] || '#6b7280',

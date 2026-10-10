@@ -241,7 +241,9 @@ export default function CreditCardTracker() {
       {
         label: 'Credit Expenses',
         data: balanceTrend.map((b) => b.expenses),
-        backgroundColor: '#ef4444',
+        // KUR-213 E2: red is a breach signal, not a series color — expenses
+        // render neutral; red stays reserved for genuine over-limit states.
+        backgroundColor: '#64748b',
         borderRadius: 4,
       },
       {
@@ -361,7 +363,7 @@ export default function CreditCardTracker() {
               {formatIdr(unpaidTotal)}
             </p>
             <div className="flex items-center gap-1 mt-1">
-              <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+              <Badge variant="secondary" className="text-[11px] px-1.5 py-0">
                 {formatNumber(unpaidCreditExpenses.length)} item{unpaidCreditExpenses.length !== 1 ? 's' : ''}
               </Badge>
             </div>
@@ -461,7 +463,7 @@ export default function CreditCardTracker() {
                           style={{ backgroundColor: color }}
                         />
                         <span className="text-sm font-medium text-slate-700 dark:text-white/70">{cat}</span>
-                        <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                        <Badge variant="secondary" className="text-[11px] px-1.5 py-0">
                           {data.count}
                         </Badge>
                       </div>
@@ -547,7 +549,7 @@ export default function CreditCardTracker() {
                     </TableCell>
                     <TableCell className="text-slate-600 dark:text-white/50">{tx.payment_method}</TableCell>
                     <TableCell>
-                      <Badge variant="outline" className="text-gold-600 dark:text-gold-400 border-gold-400/30 dark:border-gold-700 text-[10px]">
+                      <Badge variant="outline" className="text-gold-600 dark:text-gold-400 border-gold-400/30 dark:border-gold-700 text-[11px]">
                         Pending
                       </Badge>
                     </TableCell>

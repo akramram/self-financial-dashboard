@@ -25,6 +25,22 @@ export const FP = {
   glassBorder:  'rgba(51, 65, 85, 0.5)',       // slate-700 / 50%
 } as const;
 
+// ─── Status tokens (KUR-213 E1) — semantic meaning, NOT chart series ──
+// Use for state colours (healthy/warning/danger/info). Chart series use
+// CATEGORICAL below, so one hue never carries two meanings.
+export const STATUS = {
+  success: '#34d399',   // emerald-400
+  warning: '#f59e0b',   // amber-500
+  danger:  '#ef4444',   // red-500 — reserve for real breaches only
+  info:    '#0ea5e9',   // sky-500
+} as const;
+
+// ─── Categorical palette (KUR-213 E1) — chart series only ──
+export const CATEGORICAL = [
+  '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899',
+  '#06b6d4', '#84cc16', '#f97316', '#6366f1', '#14b8a6',
+] as const;
+
 // ─── Apply Global Defaults ──────────────────────────────
 export function applyFintechDefaults(): void {
   const D = ChartJS.defaults;
@@ -69,8 +85,12 @@ export function applyFintechDefaults(): void {
     scale.grid.tickColor = FP.grid;
     scale.ticks = scale.ticks || {};
     scale.ticks.color = FP.textMuted;
-    scale.ticks.font = { size: 10 };
+    scale.ticks.font = { size: 11 };
     scale.ticks.padding = 8;
+    // KUR-213 B2: never overlap month labels — auto-skip with a tick ceiling
+    scale.ticks.autoSkip = true;
+    scale.ticks.maxTicksLimit = 8;
+    scale.ticks.maxRotation = 0;
     scale.border = scale.border || {};
     scale.border.display = false;
   }

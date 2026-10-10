@@ -275,7 +275,7 @@ export default function HealthScore({ summaries, categories }: Props) {
       x: {
         grid: { display: false },
         ticks: {
-          font: { size: 10 },
+          font: { size: 11 },
           color: '#94a3b8',
           maxRotation: 45,
         },

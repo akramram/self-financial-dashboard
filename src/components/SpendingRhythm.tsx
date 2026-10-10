@@ -199,7 +199,7 @@ export default function SpendingRhythm() {
   // ── Early returns AFTER all hooks ──
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20 text-slate-400">
+      <div className="flex items-center justify-center py-20 text-slate-500">
         <div className="text-center">
           <div className="inline-block w-8 h-8 border-2 border-mint-500/40 border-t-transparent rounded-full animate-spin mb-3"></div>
           <p className="text-sm">Analyzing your spending rhythm…</p>
@@ -222,7 +222,7 @@ export default function SpendingRhythm() {
       <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-10 text-center">
         <Calendar className="w-10 h-10 mx-auto text-slate-300 dark:text-slate-600 mb-3" />
         <p className="text-slate-500 font-medium">No timestamped spending data yet</p>
-        <p className="text-sm text-slate-400 mt-1">
+        <p className="text-sm text-slate-500 mt-1">
           Spending Rhythm needs transactions with <code className="text-xs px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-700">created_time</code> data.
           New transactions added via the dashboard are automatically tracked.
         </p>
@@ -237,19 +237,19 @@ export default function SpendingRhythm() {
       {/* ── Header summary cards ── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4">
-          <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-1">
+          <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-500 mb-1">
             <Calendar className="w-3.5 h-3.5" /> Transactions
           </div>
           <p className="text-2xl font-bold">{data.totalTx}</p>
-          <p className="text-xs text-slate-400 mt-0.5">{fmtDateRange(data.dateRangeStart, data.dateRangeEnd)}</p>
+          <p className="text-xs text-slate-500 mt-0.5">{fmtDateRange(data.dateRangeStart, data.dateRangeEnd)}</p>
         </div>
 
         <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4">
-          <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-1">
+          <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-500 mb-1">
             <TrendingUp className="w-3.5 h-3.5" /> Total Spend
           </div>
           <p className="text-2xl font-bold">{formatIdr(data.totalSpend)}</p>
-          <p className="text-xs text-slate-400 mt-0.5">{data.dowStats.length} weekdays tracked</p>
+          <p className="text-xs text-slate-500 mt-0.5">{data.dowStats.length} weekdays tracked</p>
         </div>
 
         <div className="rounded-xl border border-mint-400/30 bg-mint-500/5 dark:bg-mint-500/10 p-4">
@@ -286,7 +286,7 @@ export default function SpendingRhythm() {
                 <span className="text-xl flex-shrink-0">{ins.icon}</span>
                 <div>
                   <p className="text-sm font-medium text-slate-800 dark:text-slate-200">{ins.title}</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{ins.detail}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-500 mt-0.5">{ins.detail}</p>
                 </div>
               </div>
             ))}
@@ -322,7 +322,7 @@ export default function SpendingRhythm() {
           {dowChartData && <Bar data={dowChartData} options={dowChartOptions} />}
         </div>
 
-        <div className="flex items-center gap-4 mt-3 text-xs text-slate-400">
+        <div className="flex items-center gap-4 mt-3 text-xs text-slate-500">
           <span className="flex items-center gap-1.5">
             <span className="inline-block w-3 h-3 rounded bg-mint-500/70"></span> Weekday
           </span>
@@ -344,20 +344,20 @@ export default function SpendingRhythm() {
             <p className="text-xs font-semibold text-mint-600 dark:text-mint-400 mb-3">💼 WEEKDAYS (Mon–Fri)</p>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-slate-500 dark:text-slate-400">Total Spend</span>
+                <span className="text-slate-500 dark:text-slate-500">Total Spend</span>
                 <span className="font-semibold">{formatIdr(wv.weekdaySpend)}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-slate-500 dark:text-slate-400">Transactions</span>
+                <span className="text-slate-500 dark:text-slate-500">Transactions</span>
                 <span className="font-semibold">{wv.weekdayTx}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-slate-500 dark:text-slate-400">Avg / Day</span>
+                <span className="text-slate-500 dark:text-slate-500">Avg / Day</span>
                 <span className="font-semibold">{formatIdr(wv.weekdayAvgPerDay)}</span>
               </div>
               <div className="pt-2 border-t border-mint-400/30">
                 <div className="flex justify-between text-xs mb-1">
-                  <span className="text-slate-400">Share of spend</span>
+                  <span className="text-slate-500">Share of spend</span>
                   <span className="font-medium text-mint-600 dark:text-mint-400">{wv.weekdayPctSpend}%</span>
                 </div>
                 <div className="h-2 rounded-full bg-mint-100 dark:bg-mint-900/40 overflow-hidden">
@@ -372,20 +372,20 @@ export default function SpendingRhythm() {
             <p className="text-xs font-semibold text-coral-500 dark:text-coral-400 mb-3">🎉 WEEKENDS (Sat–Sun)</p>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-slate-500 dark:text-slate-400">Total Spend</span>
+                <span className="text-slate-500 dark:text-slate-500">Total Spend</span>
                 <span className="font-semibold">{formatIdr(wv.weekendSpend)}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-slate-500 dark:text-slate-400">Transactions</span>
+                <span className="text-slate-500 dark:text-slate-500">Transactions</span>
                 <span className="font-semibold">{wv.weekendTx}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-slate-500 dark:text-slate-400">Avg / Day</span>
+                <span className="text-slate-500 dark:text-slate-500">Avg / Day</span>
                 <span className="font-semibold">{formatIdr(wv.weekendAvgPerDay)}</span>
               </div>
               <div className="pt-2 border-t border-coral-400/30">
                 <div className="flex justify-between text-xs mb-1">
-                  <span className="text-slate-400">Share of spend</span>
+                  <span className="text-slate-500">Share of spend</span>
                   <span className="font-medium text-coral-500 dark:text-coral-400">{wv.weekendPctSpend}%</span>
                 </div>
                 <div className="h-2 rounded-full bg-coral-100 dark:bg-coral-900/40 overflow-hidden">
@@ -416,11 +416,11 @@ export default function SpendingRhythm() {
             >
               <div className="flex items-center justify-between mb-2">
                 {TIME_BUCKET_ICONS[bucket.label]}
-                <span className="text-xs text-slate-400">{bucket.rangeLabel}</span>
+                <span className="text-xs text-slate-500">{bucket.rangeLabel}</span>
               </div>
               <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">{bucket.label}</p>
               <p className="text-lg font-bold mt-1">{bucket.txCount}</p>
-              <p className="text-xs text-slate-400">transactions · {bucket.pctOfTx}%</p>
+              <p className="text-xs text-slate-500">transactions · {bucket.pctOfTx}%</p>
               <div className="mt-2 h-1.5 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
                 <div
                   className={`h-full rounded-full ${
@@ -432,7 +432,7 @@ export default function SpendingRhythm() {
                   style={{ width: `${bucket.pctOfTx}%` }}
                 ></div>
               </div>
-              <p className="text-xs text-slate-400 mt-2">{formatIdr(bucket.totalSpend)}</p>
+              <p className="text-xs text-slate-500 mt-2">{formatIdr(bucket.totalSpend)}</p>
             </div>
           ))}
         </div>
@@ -445,16 +445,16 @@ export default function SpendingRhythm() {
             <TrendingUp className="w-4 h-4 text-mint-500" />
             Category × Weekday Heatmap
           </h3>
-          <p className="text-xs text-slate-400 mb-3">Spending intensity by category across weekdays. Darker = more spending.</p>
+          <p className="text-xs text-slate-500 mb-3">Spending intensity by category across weekdays. Darker = more spending.</p>
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead>
                 <tr>
-                  <th className="text-left py-2 pr-3 text-slate-400 font-medium">Category</th>
+                  <th className="text-left py-2 pr-3 text-slate-500 font-medium">Category</th>
                   {data.dowStats.map((s) => (
                     <th
                       key={s.dow}
-                      className={`px-1 py-2 text-center font-medium ${s.isWeekend ? 'text-coral-500' : 'text-slate-400'}`}
+                      className={`px-1 py-2 text-center font-medium ${s.isWeekend ? 'text-coral-500' : 'text-slate-500'}`}
                     >
                       {s.shortLabel}
                     </th>
@@ -470,7 +470,7 @@ export default function SpendingRhythm() {
                     {row.cells.map((val, idx) => (
                       <td key={idx} className="px-1 py-1 text-center">
                         <div
-                          className="rounded-md flex items-center justify-center h-8 text-[10px] font-medium transition hover:scale-105"
+                          className="rounded-md flex items-center justify-center h-8 text-[11px] font-medium transition hover:scale-105"
                           style={{
                             backgroundColor: heatColor(val),
                             color: val / heatmapMax > 0.5 ? 'white' : undefined,
@@ -486,7 +486,7 @@ export default function SpendingRhythm() {
               </tbody>
             </table>
           </div>
-          <div className="flex items-center justify-end gap-2 mt-3 text-xs text-slate-400">
+          <div className="flex items-center justify-end gap-2 mt-3 text-xs text-slate-500">
             <span>Less</span>
             <div className="flex gap-0.5">
               <span className="inline-block w-4 h-3 rounded-sm" style={{ backgroundColor: heatColor(0) }}></span>

@@ -176,7 +176,7 @@ export default function SpendingDna() {
           max: 100,
           ticks: {
             stepSize: 20,
-            font: { size: 10 },
+            font: { size: 11 },
             color: 'rgba(100, 116, 139, 0.6)',
             backdropColor: 'transparent',
           },
@@ -240,12 +240,12 @@ export default function SpendingDna() {
         y: {
           ticks: {
             callback: (v: any) => `${v}%`,
-            font: { size: 10 },
+            font: { size: 11 },
           },
           grid: { color: 'rgba(148, 163, 184, 0.15)' },
         },
         x: {
-          ticks: { font: { size: 10 }, maxRotation: 45 },
+          ticks: { font: { size: 11 }, maxRotation: 45 },
           grid: { display: false },
         },
       },
@@ -297,13 +297,13 @@ export default function SpendingDna() {
           max: 100,
           ticks: {
             callback: (v: any) => `${v}%`,
-            font: { size: 10 },
+            font: { size: 11 },
           },
           grid: { color: 'rgba(148, 163, 184, 0.15)' },
         },
         x: {
           stacked: true,
-          ticks: { font: { size: 10 }, maxRotation: 45 },
+          ticks: { font: { size: 11 }, maxRotation: 45 },
           grid: { display: false },
         },
       },
@@ -340,13 +340,13 @@ export default function SpendingDna() {
   const trendIcon = (trend: string) => {
     if (trend === 'rising') return <TrendingUp className="w-3 h-3 text-rose-500" />;
     if (trend === 'falling') return <TrendingDown className="w-3 h-3 text-emerald-500" />;
-    return <Minus className="w-3 h-3 text-slate-400" />;
+    return <Minus className="w-3 h-3 text-slate-500" />;
   };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[300px]">
-        <div className="text-slate-500 dark:text-slate-400 flex items-center gap-2">
+        <div className="text-slate-500 dark:text-slate-500 flex items-center gap-2">
           {/* computing indicator (R-19 purpose) */}
           <Brain className="w-5 h-5 animate-pulse" />
           Analyzing your spending DNA...
@@ -377,7 +377,7 @@ export default function SpendingDna() {
               <h2 className="text-2xl font-bold text-gold-400 dark:text-gold-400">
                 {data.personality.type}
               </h2>
-              <p className="text-slate-600 dark:text-slate-400 mt-2 max-w-xl">
+              <p className="text-slate-600 dark:text-slate-500 mt-2 max-w-xl">
                 {data.personality.description}
               </p>
               <div className="flex flex-wrap gap-4 mt-4 justify-center md:justify-start">
@@ -506,17 +506,17 @@ export default function SpendingDna() {
                 key={entry.period_id}
                 className="p-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 text-center"
               >
-                <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2 truncate">
+                <div className="text-xs font-semibold text-slate-500 dark:text-slate-500 mb-2 truncate">
                   {entry.month.replace(/ \d{4}$/, '')}
                 </div>
                 <div className="text-lg font-bold text-slate-800 dark:text-slate-200">
                   {entry.transaction_count}
                 </div>
-                <div className="text-xs text-slate-400">transactions</div>
+                <div className="text-xs text-slate-500">transactions</div>
                 <div className="mt-1.5 flex justify-center gap-1">
                   <Badge
                     variant="outline"
-                    className={`text-[10px] px-1.5 py-0 ${
+                    className={`text-[11px] px-1.5 py-0 ${
                       (entry.savings_rate ?? 0) >= 0
                         ? 'border-emerald-300 text-emerald-700 dark:text-emerald-400'
                         : 'border-rose-300 text-rose-700 dark:text-rose-400'
@@ -526,7 +526,7 @@ export default function SpendingDna() {
                   </Badge>
                 </div>
                 <div className="mt-1">
-                  <span className="text-[10px] text-slate-400">{entry.category_count} cats</span>
+                  <span className="text-[11px] text-slate-500">{entry.category_count} cats</span>
                 </div>
               </div>
             ))}
@@ -562,10 +562,10 @@ export default function SpendingDna() {
                     className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50"
                   >
                     <td className="py-2 px-2 font-medium">{cat.category}</td>
-                    <td className="py-2 px-2 text-right text-slate-600 dark:text-slate-400">
+                    <td className="py-2 px-2 text-right text-slate-600 dark:text-slate-500">
                       {cat.total_amount.toLocaleString()}
                     </td>
-                    <td className="py-2 px-2 text-right text-slate-600 dark:text-slate-400">
+                    <td className="py-2 px-2 text-right text-slate-600 dark:text-slate-500">
                       {cat.avg_amount.toLocaleString()}
                     </td>
                     <td className="py-2 px-2 text-right text-slate-500">

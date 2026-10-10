@@ -317,7 +317,7 @@ export default function SavingsRateTracker() {
         <div className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium ${
           data.trend === 'improving' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400' :
           data.trend === 'declining' ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400' :
-          'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
+          'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-500'
         }`}>
           {data.trend === 'improving' && <TrendingUp className="w-5 h-5" />}
           {data.trend === 'declining' && <TrendingDown className="w-5 h-5" />}
@@ -478,9 +478,9 @@ export default function SavingsRateTracker() {
               <div className={`text-sm font-bold ${m.achieved ? 'text-gold-700 dark:text-gold-400' : 'text-slate-500'}`}>
                 {m.label}
               </div>
-              <div className="text-[10px] text-slate-400 mt-1 leading-tight">{m.desc}</div>
+              <div className="text-[11px] text-slate-500 mt-1 leading-tight">{m.desc}</div>
               {m.achieved && (
-                <div className="mt-2 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">✓ ACHIEVED</div>
+                <div className="mt-2 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">✓ ACHIEVED</div>
               )}
             </div>
           ))}
@@ -494,7 +494,7 @@ export default function SavingsRateTracker() {
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400">
+            <thead className="bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-500">
               <tr>
                 <th className="text-left px-4 py-2 font-medium">Period</th>
                 <th className="text-right px-4 py-2 font-medium">Income</th>
@@ -534,7 +534,7 @@ export default function SavingsRateTracker() {
         </div>
       </div>
 
-      <div className="flex items-start gap-2 text-xs text-slate-400 dark:text-slate-500 px-1">
+      <div className="flex items-start gap-2 text-xs text-slate-500 dark:text-slate-500 px-1">
         <Info className="w-4 h-4 mt-0.5 flex-shrink-0" />
         <span>
           Savings Rate = (Income − Spending) / Income × 100. Spending includes cash and credit-card payments (done=1).

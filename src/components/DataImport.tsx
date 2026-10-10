@@ -535,9 +535,9 @@ export default function DataImport() {
       {/* Step indicator */}
       <div className="flex items-center gap-2 text-sm">
         <Badge variant={step === 'select' ? 'default' : 'outline'}>1. Select</Badge>
-        <ArrowRight className="w-3 h-3 text-slate-400" />
+        <ArrowRight className="w-3 h-3 text-slate-500" />
         <Badge variant={step === 'preview' ? 'default' : 'outline'}>2. Preview</Badge>
-        <ArrowRight className="w-3 h-3 text-slate-400" />
+        <ArrowRight className="w-3 h-3 text-slate-500" />
         <Badge variant={step === 'result' ? 'default' : 'outline'}>3. Done</Badge>
       </div>
 
@@ -602,11 +602,11 @@ export default function DataImport() {
                     id="file-upload"
                   />
                   <label htmlFor="file-upload" className="cursor-pointer">
-                    <FileSpreadsheet className="w-10 h-10 mx-auto mb-3 text-slate-400" />
+                    <FileSpreadsheet className="w-10 h-10 mx-auto mb-3 text-slate-500" />
                     <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
                       Click to upload CSV or JSON file
                     </p>
-                    <p className="text-xs text-slate-400 mt-1">.csv, .json supported</p>
+                    <p className="text-xs text-slate-500 mt-1">.csv, .json supported</p>
                   </label>
                 </div>
                 <div className="flex items-center justify-between">
@@ -614,7 +614,7 @@ export default function DataImport() {
                     <Download className="w-3.5 h-3.5" />
                     Download Template CSV
                   </Button>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-slate-500">
                     Required: {requiredFields.map((f) => fieldMap[f]).join(', ')}
                   </p>
                 </div>
@@ -653,7 +653,7 @@ export default function DataImport() {
             {/* Info card */}
             <div className="glass-card p-5 bg-mint-500/5 dark:bg-mint-500/10 border-mint-400/30 dark:border-mint-500/20">
               <p className="font-medium mb-1">📋 Import Format</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
+                <p className="text-xs text-slate-500 dark:text-slate-500">
                   For <strong>transactions</strong>, required fields are: {requiredFields.map((f) => fieldMap[f]).join(', ')}.
                   The <strong>month</strong> field should be in "Month Year" format (e.g., "June 2026").
                   The <strong>type</strong> must be one of: cash, credit_expense, credit_payment.
@@ -726,7 +726,7 @@ export default function DataImport() {
                   <Badge variant={validCount === previewRows.length ? 'default' : 'destructive'}>
                     {validCount}/{previewRows.length} valid
                   </Badge>
-                  <span className="text-xs text-slate-400">
+                  <span className="text-xs text-slate-500">
                     Showing first {Math.min(totalRows, 10)} of {totalRows} rows
                   </span>
                 </div>
@@ -750,7 +750,7 @@ export default function DataImport() {
                   <TableBody>
                     {previewRows.map((row) => (
                       <TableRow key={row.index}>
-                        <TableCell className="text-xs text-slate-400">{row.index + 1}</TableCell>
+                        <TableCell className="text-xs text-slate-500">{row.index + 1}</TableCell>
                         {Object.keys(fieldMap).map((field) => (
                           <TableCell key={field} className="text-xs max-w-[120px] truncate">
                             {row.data[field] || (
@@ -777,7 +777,7 @@ export default function DataImport() {
               </div>
 
               {previewRows.length === 0 && (
-                <p className="text-center py-8 text-slate-400">No data to preview.</p>
+                <p className="text-center py-8 text-slate-500">No data to preview.</p>
               )}
             </div>
 

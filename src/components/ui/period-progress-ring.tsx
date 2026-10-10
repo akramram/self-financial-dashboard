@@ -121,7 +121,7 @@ export default function PeriodProgressRing({ activeMonth, className = '' }: Peri
         </svg>
         {/* Center percentage */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className={`text-[10px] font-bold ${colors.text}`} style={{ color: colors.ring }}>
+          <span className={`text-[11px] font-bold ${colors.text}`} style={{ color: colors.ring }}>
             {info.pctElapsed}%
           </span>
         </div>
@@ -133,7 +133,7 @@ export default function PeriodProgressRing({ activeMonth, className = '' }: Peri
           <Clock className="w-3 h-3" style={{ color: colors.ring }} />
           {info.label}
         </p>
-        <p className="text-[10px] text-slate-400 dark:text-white/30">
+        <p className="text-[11px] text-slate-500 dark:text-white/30">
           Day {info.daysElapsed} of {info.daysTotal}
         </p>
       </div>

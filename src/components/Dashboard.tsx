@@ -265,9 +265,9 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
         <InView as="section" y={16} blur={6} data-section="pulse">
           {/* Period filter pill */}
           <div className="flex items-center justify-between mb-3">
-            <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/40">Pulse</p>
+            <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/50">Pulse</p>
             <Select value={filterPeriodId?.toString() ?? "all"} onValueChange={v => { setFilterAllTime(v === "all"); setFilterPeriodId(v === "all" ? null : parseInt(v)); setTxPage(1); }}>
-              <SelectTrigger className="w-[150px] h-8 text-xs bg-slate-100 dark:bg-white/[0.05] border-slate-300 dark:border-white/[0.08] text-slate-600 dark:text-white/60">
+              <SelectTrigger className="w-[150px] min-h-[44px] text-xs bg-slate-100 dark:bg-white/[0.05] border-slate-300 dark:border-white/[0.08] text-slate-600 dark:text-white/60">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -286,7 +286,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
             <GlassCard variant="hero" className="p-6 mb-4">
               <div className="relative flex items-start justify-between">
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-slate-500 dark:text-white/40 mb-1">Available Balance</p>
+                  <p className="text-sm font-medium text-slate-500 dark:text-white/50 mb-1">Available Balance</p>
                   <AnimatedCounter value={glance.balance} formatFn={formatIdr} className="text-4xl font-bold text-slate-900 dark:text-white tracking-tight" />
                   {glance.unpaidCount > 0 && (
                     <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mt-1.5 text-xs">
@@ -294,7 +294,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
                       <span className={`font-semibold ${glance.projectedBalance >= 0 ? 'text-slate-700 dark:text-white/90' : 'text-rose-600 dark:text-coral-400'}`}>
                         {formatIdr(glance.projectedBalance)}
                       </span>
-                      <span className="text-[11px] text-slate-500 dark:text-white/40">
+                      <span className="text-[11px] text-slate-500 dark:text-white/50">
                         ({glance.unpaidCount} unpaid • -{formatIdr(glance.unpaidTotal)})
                       </span>
                     </div>
@@ -306,13 +306,13 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
                         {glance.balance >= glance.prevBalance ? '+' : ''}{formatIdr(glance.balance - glance.prevBalance)}
                       </span>
                     )}
-                    <span className="text-xs text-slate-500 dark:text-white/40">vs last period</span>
+                    <span className="text-xs text-slate-500 dark:text-white/50">vs last period</span>
                   </div>
 
                   {/* Income Allocation Bar */}
                   <div className="mt-4">
                     <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-xs font-medium text-slate-500 dark:text-white/40">Income Allocation</span>
+                      <span className="text-xs font-medium text-slate-500 dark:text-white/50">Income Allocation</span>
                       <span className="text-xs font-semibold" style={{ color: barColor }}>{spendPct}% spent</span>
                     </div>
                     <div className="w-full h-2.5 rounded-full overflow-hidden bg-white/[0.15]">
@@ -321,10 +321,10 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
                     <div className="flex items-center justify-between mt-1.5">
                       <div className="flex items-center gap-1.5">
                         <span className="w-2 h-2 rounded-full" style={{ backgroundColor: barColor }} />
-                        <span className="text-[11px] text-slate-500 dark:text-white/40">Spent {formatIdr(glance.spending)}</span>
+                        <span className="text-[11px] text-slate-500 dark:text-white/50">Spent {formatIdr(glance.spending)}</span>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <span className="text-[11px] text-slate-500 dark:text-white/40">Saved {formatIdr(Math.max(0, glance.balance))}</span>
+                        <span className="text-[11px] text-slate-500 dark:text-white/50">Saved {formatIdr(Math.max(0, glance.balance))}</span>
                         <span className="w-2 h-2 rounded-full bg-white/30" />
                       </div>
                     </div>
@@ -339,7 +339,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
           {/* Credit Snapshot — directly under Balance Hero */}
           {activeSummary && (
             <GlassCard className="mb-4">
-              <h3 className="text-sm font-semibold text-slate-800 dark:text-white/80 mb-3">Credit Snapshot</h3>
+              <h3 className="text-base font-semibold text-slate-800 dark:text-white/80 mb-3">Credit Snapshot</h3>
               <div className="space-y-3">
                 <div>
                   <div className="flex justify-between text-sm mb-1">
@@ -359,7 +359,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
                     <div className="bg-coral-500 h-2 rounded-full transition-all" style={{ width: `${activeSummary.outcome.total > 0 ? Math.round(((activeSummary.outcome.credit_expenses ?? 0) / activeSummary.outcome.total) * 100) : 0}%` }} />
                   </div>
                 </div>
-                <p className="text-xs text-slate-500 dark:text-white/40">Credit expenses this month will be paid next month.</p>
+                <p className="text-xs text-slate-500 dark:text-white/50">Credit expenses this month will be paid next month.</p>
               </div>
             </GlassCard>
           )}
@@ -378,7 +378,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
         {/* ═══════════ SECTION 1b: KSEI — Live Assets via AKSes (KUR-40) [HIDDEN] ═══════════ */}
         {/*
         <InView as="section" y={16} blur={6} data-section="ksei">
-          <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/40 mb-3">Assets</p>
+          <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/50 mb-3">Assets</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <KseiCard data={kseiData} />
           </div>
@@ -387,7 +387,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
 
         {/* ═══════════ SECTION 2: FLOW - "Ke mana duit?" ═══════════ */}
         <InView as="section" delay={0.05} data-section="flow">
-          <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/40 mb-3">Flow</p>
+          <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/50 mb-3">Flow</p>
 
           {/* Spending Pulse + Safe to Spend merged */}
           <GlassCard className="mb-4">
@@ -411,14 +411,14 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
           {/* Category Budgets full width */}
           <div className="mb-4">
             <GlassCard>
-              <h3 className="text-sm font-semibold text-slate-800 dark:text-white/80 mb-3">Top Categories</h3>
+              <h3 className="text-base font-semibold text-slate-800 dark:text-white/80 mb-3">Top Categories</h3>
               <CategoryBudgets summaries={summaries} categories={categories} activeMonth={activeSummary?.month} onCategoryClick={openCategoryDialog} />
             </GlassCard>
           </div>
 
           {/* Top Merchants, merchant/title-level spend breakdown */}
           <GlassCard className="mb-4">
-            <h3 className="text-sm font-semibold text-slate-800 dark:text-white/80 mb-3">Top Merchants</h3>
+            <h3 className="text-base font-semibold text-slate-800 dark:text-white/80 mb-3">Top Merchants</h3>
             <TopMerchantsMini transactions={filteredTransactions} activePeriodId={activeSummary?.period_id ?? null} />
           </GlassCard>
         </InView>
@@ -426,10 +426,10 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
         {/* ═══════════ SECTION 3: ACT - "Apa yang harus dilakukan?" ═══════════ */}
         <InView as="section" delay={0.1} data-section="act">
           <div className="flex items-center justify-between mb-3">
-            <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/40">Act</p>
+            <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/50">Act</p>
             {/* Alert bell */}
-            <button onClick={() => setShowAlerts(!showAlerts)} className="relative p-2 rounded-xl hover:bg-slate-200/50 dark:bg-white/10 transition">
-              <Bell className="w-5 h-5 text-slate-500 dark:text-white/40" strokeWidth={1.8} />
+            <button onClick={() => setShowAlerts(!showAlerts)} className="relative p-3 rounded-xl hover:bg-slate-200/50 dark:bg-white/10 transition" aria-label="Toggle alerts">
+              <Bell className="w-5 h-5 text-slate-500 dark:text-white/50" strokeWidth={1.8} />
               {/* Red dot if kickoff is ready (as a nudge) */}
               {kickoffBanner?.show && <span className="absolute top-0.5 right-0.5 w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#ef4444' }} />}
             </button>
@@ -439,8 +439,8 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
           {showAlerts && (
             <GlassCard className="mb-4">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-semibold text-slate-800 dark:text-white/80">Alerts</h3>
-                <button onClick={() => setShowAlerts(false)} className="text-slate-500 dark:text-white/40 hover:text-slate-600 dark:text-white/60"><X className="w-4 h-4" /></button>
+                <h3 className="text-base font-semibold text-slate-800 dark:text-white/80">Alerts</h3>
+                <button onClick={() => setShowAlerts(false)} className="text-slate-500 dark:text-white/50 hover:text-slate-600 dark:text-white/60"><X className="w-4 h-4" /></button>
               </div>
               <AlertsPanel month={activeSummary?.month} summaries={summaries} categories={categories} transactions={localTransactions} recurringTitles={recurringTitles} />
             </GlassCard>
@@ -455,7 +455,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
             >
               <Plus className="w-4 h-4" /> Add Transaction
             </button>
-            <a href="/add" className="text-sm font-medium text-slate-500 dark:text-white/50 hover:text-slate-700 dark:hover:text-white/70 transition no-underline">
+            <a href="/add" className="text-sm font-medium text-slate-500 dark:text-white/50 hover:text-slate-700 dark:hover:text-white/70 transition no-underline inline-flex items-center min-h-[44px]">
               Full form →
             </a>
             {kickoffBanner?.show && (
@@ -493,12 +493,12 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
 
         {/* ═══════════ SECTION 4: INSIGHTS - "Pahami lebih dalam" ═══════════ */}
         <InView as="section" delay={0.15} data-section="insights">
-          <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/40 mb-3">Insights</p>
+          <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/50 mb-3">Insights</p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4">
             {/* Net Worth mini chart */}
             <GlassCard className="sm:col-span-2">
-              <h3 className="text-sm font-semibold text-slate-800 dark:text-white/80 mb-2">Net Worth Trend</h3>
+              <h3 className="text-base font-semibold text-slate-800 dark:text-white/80 mb-2">Net Worth Trend</h3>
               <div className="h-48">
                 <NetworthChart data={filteredNetworth} />
               </div>
@@ -506,7 +506,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
 
             {/* Runway snapshot */}
             <GlassCard>
-              <h3 className="text-sm font-semibold text-slate-800 dark:text-white/80 mb-3">Runway</h3>
+              <h3 className="text-base font-semibold text-slate-800 dark:text-white/80 mb-3">Runway</h3>
               {runwayData ? (
                 <div>
                   <div className="flex items-center gap-3">
@@ -515,7 +515,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
                     </div>
                     <div>
                       <p className="text-2xl font-bold text-slate-900 dark:text-white">{runwayData.runway_months.toFixed(1)}</p>
-                      <p className="text-xs text-slate-500 dark:text-white/40">months of emergency fund</p>
+                      <p className="text-xs text-slate-500 dark:text-white/50">months of emergency fund</p>
                     </div>
                   </div>
                   <a href="/runway" className="block mt-2 text-xs text-mint-500 hover:text-mint-400 no-underline">View details →</a>
@@ -523,11 +523,11 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
               ) : (
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-slate-200/60 dark:bg-white/[0.06]">
-                    <Shield className="w-5 h-5 text-slate-400 dark:text-white/40" strokeWidth={1.8} />
+                    <Shield className="w-5 h-5 text-slate-500 dark:text-white/50" strokeWidth={1.8} />
                   </div>
                   <div>
-                    <p className="text-2xl font-bold text-slate-300 dark:text-white/40">-</p>
-                    <p className="text-xs text-slate-500 dark:text-white/40">months of emergency fund</p>
+                    <p className="text-2xl font-bold text-slate-300 dark:text-white/50">-</p>
+                    <p className="text-xs text-slate-500 dark:text-white/50">months of emergency fund</p>
                   </div>
                 </div>
                 )}
@@ -548,29 +548,29 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
         {/* ═══════════ SECTION 5: FEED, Recent transactions ═══════════ */}
         <InView as="section" delay={0.2} data-section="feed">
           <div className="flex items-center justify-between mb-3">
-            <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/40">Feed</p>
-            <a href={`/transactions${!filterAllTime && filterPeriodId != null ? `?period_id=${filterPeriodId}` : ''}${feedSearch.trim() ? `${!filterAllTime && filterPeriodId != null ? '&' : '?'}search=${encodeURIComponent(feedSearch.trim())}` : ''}`} className="text-xs text-slate-500 dark:text-white/40 hover:text-slate-700 dark:hover:text-white/70 no-underline">View all →</a>
+            <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/50">Feed</p>
+            <a href={`/transactions${!filterAllTime && filterPeriodId != null ? `?period_id=${filterPeriodId}` : ''}${feedSearch.trim() ? `${!filterAllTime && filterPeriodId != null ? '&' : '?'}search=${encodeURIComponent(feedSearch.trim())}` : ''}`} className="text-xs text-slate-500 dark:text-white/50 hover:text-slate-700 dark:hover:text-white/70 no-underline">View all →</a>
           </div>
 
           <GlassCard className="p-0 overflow-hidden">
             {/* Search bar */}
             <div className="relative px-4 pt-3 pb-2">
-              <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-white/40" />
+              <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 dark:text-white/50" />
               <input
                 ref={feedSearchRef}
                 type="text"
                 placeholder="Search transactions... ( / )"
                 value={feedSearch}
                 onChange={(e) => { setFeedSearch(e.target.value); setTxPage(1); }}
-                className="w-full pl-9 pr-8 py-2 text-sm rounded-lg bg-slate-100 dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.08] text-slate-700 dark:text-white/80 placeholder:text-slate-400 dark:placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-mint-500/60 focus:ring-offset-0 focus:border-mint-500/50 transition"
+                className="w-full pl-9 pr-8 py-2 text-sm rounded-lg bg-slate-100 dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.08] text-slate-700 dark:text-white/80 placeholder:text-slate-500 dark:placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-mint-500/60 focus:ring-offset-0 focus:border-mint-500/50 transition"
               />
               {feedSearch && (
-                <button onClick={() => { setFeedSearch(''); setTxPage(1); }} className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white/40 hover:text-slate-600 dark:text-white/60 transition">
+                <button onClick={() => { setFeedSearch(''); setTxPage(1); }} className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-500 dark:text-white/50 hover:text-slate-600 dark:text-white/60 transition">
                   <X className="w-3.5 h-3.5" />
                 </button>
               )}
               {feedSearch && (
-                <p className="mt-1 text-[11px] text-slate-500 dark:text-white/40">
+                <p className="mt-1 text-[11px] text-slate-500 dark:text-white/50">
                   {searchedTransactions.length} result{searchedTransactions.length !== 1 ? 's' : ''} found
                 </p>
               )}
@@ -616,10 +616,10 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
                         </TableCell>
                         <TableCell className="text-slate-800 dark:text-white/80">{row.title}</TableCell>
                         <TableCell><Badge variant="secondary" style={{ backgroundColor: categoryMap[row.category]?.color || undefined, color: categoryMap[row.category]?.color ? '#fff' : undefined }}>{row.category}</Badge></TableCell>
-                        <TableCell className="text-slate-500 dark:text-white/40 text-xs">{dateStr}</TableCell>
+                        <TableCell className="text-slate-500 dark:text-white/50 text-xs">{dateStr}</TableCell>
                         <TableCell className="font-medium text-right text-slate-800 dark:text-white/90">{formatIdr(row.amount)}</TableCell>
                         <TableCell className={`${typeClass} text-xs font-semibold uppercase`}>{typeLabel}</TableCell>
-                        <TableCell className="text-slate-400 dark:text-white/40">
+                        <TableCell className="text-slate-500 dark:text-white/50">
                           <ChevronRight className="w-4 h-4" />
                         </TableCell>
                       </TableRow>
@@ -630,8 +630,8 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
 
               {feedSearch && pagedTransactions.length === 0 && (
                 <div className="py-8 text-center">
-                  <Search className="w-8 h-8 mx-auto mb-2 text-slate-300 dark:text-white/40" />
-                  <p className="text-sm text-slate-500 dark:text-white/40">No transactions match "{feedSearch}"</p>
+                  <Search className="w-8 h-8 mx-auto mb-2 text-slate-300 dark:text-white/50" />
+                  <p className="text-sm text-slate-500 dark:text-white/50">No transactions match "{feedSearch}"</p>
                   <button onClick={() => { setFeedSearch(''); setTxPage(1); }} className="mt-2 text-xs text-mint-500 hover:text-mint-400 transition">Clear search</button>
                 </div>
               )}
@@ -686,10 +686,10 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
 
             {searchedTransactions.length > txPerPage && (
               <div className="flex items-center justify-between px-5 py-3 border-t border-slate-200 dark:border-white/[0.05]">
-                <p className="text-xs text-slate-500 dark:text-white/40">Showing {(txPage - 1) * txPerPage + 1}–{Math.min(txPage * txPerPage, searchedTransactions.length)} of {searchedTransactions.length}</p>
+                <p className="text-xs text-slate-500 dark:text-white/50">Showing {(txPage - 1) * txPerPage + 1}–{Math.min(txPage * txPerPage, searchedTransactions.length)} of {searchedTransactions.length}</p>
                 <div className="flex items-center gap-2">
                   <Button variant="outline" size="sm" onClick={() => goToPage(txPage - 1)} disabled={txPage <= 1} className="h-7 text-xs bg-slate-100 dark:bg-white/[0.05] border-slate-300 dark:border-white/[0.08] text-slate-600 dark:text-white/60">Previous</Button>
-                  <span className="text-xs text-slate-500 dark:text-white/40 min-w-[3rem] text-center">{txPage} / {totalTxPages}</span>
+                  <span className="text-xs text-slate-500 dark:text-white/50 min-w-[3rem] text-center">{txPage} / {totalTxPages}</span>
                   <Button variant="outline" size="sm" onClick={() => goToPage(txPage + 1)} disabled={txPage >= totalTxPages} className="h-7 text-xs bg-slate-100 dark:bg-white/[0.05] border-slate-300 dark:border-white/[0.08] text-slate-600 dark:text-white/60">Next</Button>
                 </div>
               </div>
@@ -699,15 +699,15 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
 
         {/* ═══════════ CHARTS, lower section ═══════════ */}
         <InView as="section" delay={0.25} data-section="charts">
-          <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/40 mb-3">Charts</p>
-          <div className="glass-card p-5 bg-slate-100 dark:bg-white/[0.02] border-slate-200 dark:border-white/[0.06] mb-4">
+          <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/50 mb-3">Charts</p>
+          <div className="glass-card p-4 sm:p-5 bg-slate-100 dark:bg-white/[0.02] border-slate-200 dark:border-white/[0.06] mb-4">
             <h3 className="text-base font-semibold text-slate-800 dark:text-white/80">Cash Outcome vs Credit Payment</h3><OutcomeChart data={filteredSummaries} /></div>
-          <div className="glass-card p-5 bg-slate-100 dark:bg-white/[0.02] border-slate-200 dark:border-white/[0.06] mb-4">
+          <div className="glass-card p-4 sm:p-5 bg-slate-100 dark:bg-white/[0.02] border-slate-200 dark:border-white/[0.06] mb-4">
             <h3 className="text-base font-semibold text-slate-800 dark:text-white/80">Savings Rate Trend</h3><SavingsRateChart data={filteredSummaries} /></div>
-          <div className="glass-card p-5 bg-slate-100 dark:bg-white/[0.02] border-slate-200 dark:border-white/[0.06] mb-4">
+          <div className="glass-card p-4 sm:p-5 bg-slate-100 dark:bg-white/[0.02] border-slate-200 dark:border-white/[0.06] mb-4">
             <h3 className="text-base font-semibold text-slate-800 dark:text-white/80">Category Spending Trend</h3><CategoryTrendChart data={filteredSummaries} categories={categories} /></div>
           <div className="mb-4">
-            <div className="glass-card p-5 bg-slate-100 dark:bg-white/[0.02] border-slate-200 dark:border-white/[0.06]"><h3 className="text-base font-semibold text-slate-800 dark:text-white/80">{isAllTime ? 'Latest Month Categories' : `${activeSummary?.month ?? ''} Categories`}</h3>{activeSummary?.category_totals && Object.keys(activeSummary.category_totals).length > 0 ? <CategoryChart data={activeSummary.category_totals} categories={categories} onCategoryClick={openCategoryDialog} /> : <p className="text-slate-500 dark:text-white/40 text-sm">No category data available.</p>}</div>
+            <div className="glass-card p-4 sm:p-5 bg-slate-100 dark:bg-white/[0.02] border-slate-200 dark:border-white/[0.06]"><h3 className="text-base font-semibold text-slate-800 dark:text-white/80">{isAllTime ? 'Latest Month Categories' : `${activeSummary?.month ?? ''} Categories`}</h3>{activeSummary?.category_totals && Object.keys(activeSummary.category_totals).length > 0 ? <CategoryChart data={activeSummary.category_totals} categories={categories} onCategoryClick={openCategoryDialog} /> : <p className="text-slate-500 dark:text-white/50 text-sm">No category data available.</p>}</div>
           </div>
           <PeriodVsAverage summaries={filteredSummaries} categories={categories} activePeriodId={filterPeriodId} />
         </InView>
@@ -717,7 +717,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
           <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto bg-slate-100 dark:bg-navy-800 border-slate-300 dark:border-white/[0.08]">
             <DialogHeader>
               <DialogTitle className="text-slate-900 dark:text-white">{selectedCategory} - {activeSummary?.month}</DialogTitle>
-              <DialogDescription className="text-slate-500 dark:text-white/40">
+              <DialogDescription className="text-slate-500 dark:text-white/50">
                 {(() => { const catTxs = localTransactions.filter(t => t.category === selectedCategory && t.period_id === activeSummary?.period_id); const total = catTxs.reduce((sum, t) => sum + t.amount, 0); return `${catTxs.length} transaction${catTxs.length !== 1 ? 's' : ''} • Total: ${formatIdr(total)}`; })()}
               </DialogDescription>
             </DialogHeader>
@@ -726,10 +726,10 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
               <OutcomeBarChart data={activeSummary?.category_totals || {}} categories={categories} highlightCategory={selectedCategory} summaries={summaries} />
             </div>
             <div>
-              {(() => { const catTxs = localTransactions.filter(t => t.category === selectedCategory && t.period_id === activeSummary?.period_id).sort((a, b) => parseCreatedTime(b).getTime() - parseCreatedTime(a).getTime()); if (catTxs.length === 0) return <p className="text-sm text-slate-500 dark:text-white/40">No transactions found.</p>; return (
+              {(() => { const catTxs = localTransactions.filter(t => t.category === selectedCategory && t.period_id === activeSummary?.period_id).sort((a, b) => parseCreatedTime(b).getTime() - parseCreatedTime(a).getTime()); if (catTxs.length === 0) return <p className="text-sm text-slate-500 dark:text-white/50">No transactions found.</p>; return (
                 <Table>
                   <TableHeader><TableRow className="border-slate-200 dark:border-white/[0.05]"><TableHead className="text-slate-600 dark:text-white/50">Title</TableHead><TableHead className="text-slate-600 dark:text-white/50">Date</TableHead><TableHead className="text-right text-slate-600 dark:text-white/50">Amount</TableHead><TableHead className="text-slate-600 dark:text-white/50">Type</TableHead></TableRow></TableHeader>
-                  <TableBody>{catTxs.map(t => { const d = parseCreatedTime(t); const dateStr = isNaN(d.getTime()) ? t.date : d.toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' }); const typeLabel = t.type === 'cash' ? 'Cash' : t.type === 'credit_payment' ? 'Credit Pay' : 'Credit'; return (<TableRow key={t.id} onClick={() => { setDialogOpen(false); setDetailTx(t); }} className="cursor-pointer border-slate-200 dark:border-white/[0.03] hover:bg-slate-100 dark:hover:bg-white/[0.05] transition-colors"><TableCell className="font-medium text-slate-800 dark:text-white/80">{t.title}</TableCell><TableCell className="text-slate-500 dark:text-white/40 text-xs">{dateStr}</TableCell><TableCell className="text-right font-medium text-slate-800 dark:text-white/90">{formatIdr(t.amount)}</TableCell><TableCell className="text-xs font-semibold uppercase"><Badge variant="outline" className="border-slate-300 dark:border-white/[0.1]">{typeLabel}</Badge></TableCell></TableRow>); })}</TableBody>
+                  <TableBody>{catTxs.map(t => { const d = parseCreatedTime(t); const dateStr = isNaN(d.getTime()) ? t.date : d.toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' }); const typeLabel = t.type === 'cash' ? 'Cash' : t.type === 'credit_payment' ? 'Credit Pay' : 'Credit'; return (<TableRow key={t.id} onClick={() => { setDialogOpen(false); setDetailTx(t); }} className="cursor-pointer border-slate-200 dark:border-white/[0.03] hover:bg-slate-100 dark:hover:bg-white/[0.05] transition-colors"><TableCell className="font-medium text-slate-800 dark:text-white/80">{t.title}</TableCell><TableCell className="text-slate-500 dark:text-white/50 text-xs">{dateStr}</TableCell><TableCell className="text-right font-medium text-slate-800 dark:text-white/90">{formatIdr(t.amount)}</TableCell><TableCell className="text-xs font-semibold uppercase"><Badge variant="outline" className="border-slate-300 dark:border-white/[0.1]">{typeLabel}</Badge></TableCell></TableRow>); })}</TableBody>
                 </Table>
               ); })()}
             </div>

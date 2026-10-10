@@ -112,7 +112,7 @@ export default function OutcomeBarChart({ data, categories = [], highlightCatego
             if (num >= 1_000) return `${(num / 1_000).toFixed(0)}K`;
             return `${num}`;
           },
-          font: { size: 10 },
+          font: { size: 11 },
         },
         grid: {
           color: 'rgba(148, 163, 184, 0.15)',

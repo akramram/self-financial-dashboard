@@ -129,7 +129,7 @@ export default function SafeToSpend({ periodId }: Props) {
               <p className={`text-3xl font-bold tracking-tight ${leftTodayPositive ? 'text-slate-800 dark:text-slate-100' : 'text-red-600 dark:text-red-400'}`}>
                 {formatIdr(Math.abs(data.daily_safe_to_spend))}
               </p>
-              <span className="text-xs text-slate-500 dark:text-slate-400">/ hari</span>
+              <span className="text-xs text-slate-500 dark:text-slate-500">/ hari</span>
             </div>
 
             <p className={`text-xs mt-1 ${cfg.text}`}>
@@ -138,7 +138,7 @@ export default function SafeToSpend({ periodId }: Props) {
 
             {/* Mini progress: spent today vs safe-to-spend */}
             <div className="mt-3">
-              <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 mb-1">
+              <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-500 mb-1">
                 <span>Hari ini: {formatIdr(data.spent_today)}</span>
                 <span className={leftTodayPositive ? '' : 'text-red-500 font-semibold'}>
                   {leftTodayPositive ? `Sisa ${formatIdr(data.left_today)}` : `Over ${formatIdr(Math.abs(data.left_today))}`}
@@ -157,19 +157,19 @@ export default function SafeToSpend({ periodId }: Props) {
           <div className="flex flex-row sm:flex-col gap-3 sm:min-w-[140px] w-full sm:w-auto">
             {/* Days remaining */}
             <div className={`flex-1 rounded-lg p-2.5 ${cfg.bg} border ${cfg.border}`}>
-              <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 mb-0.5">
+              <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-500 mb-0.5">
                 <CalendarClock className="w-3 h-3" />
                 Hari tersisa
               </div>
               <p className={`text-lg font-bold ${cfg.text}`}>
                 {data.days_remaining}
-                <span className="text-xs font-normal text-slate-400 ml-1">/ {data.days_total} hari</span>
+                <span className="text-xs font-normal text-slate-500 ml-1">/ {data.days_total} hari</span>
               </p>
             </div>
 
             {/* 7-day average */}
             <div className="flex-1 rounded-lg p-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
-              <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 mb-0.5">
+              <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-500 mb-0.5">
                 <Flame className="w-3 h-3" />
                 Rata-rata 7 hari
               </div>
@@ -177,7 +177,7 @@ export default function SafeToSpend({ periodId }: Props) {
                 {formatIdr(data.avg_7d)}
               </p>
               {data.daily_safe_to_spend > 0 && (
-                <p className={`text-[10px] ${avgVsSafe > 100 ? 'text-red-500' : 'text-slate-400'}`}>
+                <p className={`text-[11px] ${avgVsSafe > 100 ? 'text-red-500' : 'text-slate-500'}`}>
                   {avgVsSafe}% dari safe-to-spend
                 </p>
               )}
@@ -187,7 +187,7 @@ export default function SafeToSpend({ periodId }: Props) {
 
         {/* Bottom: remaining budget bar */}
         <div className="mt-4 pt-3 border-t border-slate-200/50 dark:border-slate-700/50">
-          <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 mb-1">
+          <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-500 mb-1">
             <span>Sisa budget periode: <span className={`font-semibold ${data.remaining_budget < 0 ? 'text-red-500' : 'text-slate-700 dark:text-slate-300'}`}>{formatIdr(data.remaining_budget)}</span></span>
             <span>{data.time_elapsed_pct}% waktu terpakai</span>
           </div>

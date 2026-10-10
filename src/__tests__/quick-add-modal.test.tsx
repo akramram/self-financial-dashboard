@@ -77,4 +77,28 @@ describe('QuickAddTransactionModal', () => {
     const postCalls = fetchMock.mock.calls.filter((c) => String(c[0]).includes('/api/transactions'));
     expect(postCalls).toHaveLength(1);
   }, 10_000);
+
+  it('KUR-213 A: Type precedes Amount, Month/Year removed, drag handle present, dialog is aria-modal', () => {
+    render(<QuickAddTransactionModal open={true} onOpenChange={() => {}} />);
+
+    // A7: Type select sits above the Amount input
+    const typeSelect = screen.getByText('Type');
+    const amountInput = screen.getByLabelText('Amount (IDR)');
+    expect(typeSelect.compareDocumentPosition(amountInput) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+
+    // A6: Month/Year fields are gone (period derives from Date & Time)
+    expect(screen.queryByText('Month')).toBeNull();
+    expect(screen.queryByText('Year')).toBeNull();
+
+    // A3: drag handle rendered inside the sheet
+    expect(screen.getByTestId('sheet-drag-handle')).toBeInTheDocument();
+
+    // A2: Paid/Done is a full-row tap target (≥44px via min-h on the row)
+    const doneRow = screen.getByTestId('tx-done-row');
+    expect(doneRow.getAttribute('role')).toBe('checkbox');
+    expect(doneRow.className).toContain('min-h-[44px]');
+
+    // A9: aria-modal on the dialog content
+    expect(document.querySelector('[role="dialog"]')!.getAttribute('aria-modal')).toBe('true');
+  });
 });

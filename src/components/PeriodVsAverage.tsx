@@ -161,7 +161,7 @@ export default function PeriodVsAverage({
                   {isSignificant && (
                     <Badge
                       variant="outline"
-                      className={`text-[10px] h-4 px-1.5 flex-shrink-0 border-slate-300 dark:border-white/[0.08] ${
+                      className={`text-[11px] h-4 px-1.5 flex-shrink-0 border-slate-300 dark:border-white/[0.08] ${
                         isUp
                           ? 'text-red-400'
                           : 'text-emerald-400'
@@ -178,7 +178,7 @@ export default function PeriodVsAverage({
                 </div>
                 <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-white/40 flex-shrink-0 ml-2">
                   <span>{formatIdr(v.current)}</span>
-                  <span className="text-[10px]">vs</span>
+                  <span className="text-[11px]">vs</span>
                   <span>{formatIdr(v.average)}</span>
                 </div>
               </div>
@@ -212,7 +212,7 @@ export default function PeriodVsAverage({
                 </span>
               </div>
               {v.count < lookbackPeriods && v.current > 0 && (
-                <p className="text-[10px] text-slate-500 dark:text-white/40 ml-5">
+                <p className="text-[11px] text-slate-500 dark:text-white/40 ml-5">
                   New category, only {v.count} historical period{v.count !== 1 ? 's' : ''} for comparison
                 </p>
               )}

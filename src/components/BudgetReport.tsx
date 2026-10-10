@@ -324,12 +324,12 @@ export default function BudgetReport({ summaries, categories }: Props) {
                 <p className="text-xs text-slate-500 dark:text-white/40">Alerts</p>
                 <div className="flex gap-2 mt-0.5">
                   {overspentCount > 0 && (
-                    <Badge variant="destructive" className="text-[10px] px-1.5 py-0">
+                    <Badge variant="destructive" className="text-[11px] px-1.5 py-0">
                       {overspentCount} Over
                     </Badge>
                   )}
                   {nearLimitCount > 0 && (
-                    <Badge variant="secondary" className="text-[10px] px-1.5 py-0 bg-gold-500/10 text-gold-700 dark:bg-gold-700/20 dark:text-gold-300">
+                    <Badge variant="secondary" className="text-[11px] px-1.5 py-0 bg-gold-500/10 text-gold-700 dark:bg-gold-700/20 dark:text-gold-300">
                       {nearLimitCount} Near
                     </Badge>
                   )}
@@ -424,11 +424,11 @@ export default function BudgetReport({ summaries, categories }: Props) {
                       </TableCell>
                       <TableCell>
                         {isOver ? (
-                          <Badge variant="destructive" className="text-[10px]">Over</Badge>
+                          <Badge variant="destructive" className="text-[11px]">Over</Badge>
                         ) : isNear ? (
-                          <Badge variant="secondary" className="text-[10px] bg-gold-500/10 text-gold-700 dark:bg-gold-700/20 dark:text-gold-300">Near Limit</Badge>
+                          <Badge variant="secondary" className="text-[11px] bg-gold-500/10 text-gold-700 dark:bg-gold-700/20 dark:text-gold-300">Near Limit</Badge>
                         ) : (
-                          <Badge variant="secondary" className="text-[10px] bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">On Track</Badge>
+                          <Badge variant="secondary" className="text-[11px] bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">On Track</Badge>
                         )}
                       </TableCell>
                     </TableRow>
@@ -503,11 +503,11 @@ export default function BudgetReport({ summaries, categories }: Props) {
                         <TableCell>
                           <div className="flex items-center gap-2">
                             {isOverBudget && (
-                              <Badge variant="destructive" className="text-[10px] whitespace-nowrap">Over Budget</Badge>
+                              <Badge variant="destructive" className="text-[11px] whitespace-nowrap">Over Budget</Badge>
                             )}
                             <Badge
                               variant="secondary"
-                              className={`text-[10px] ${
+                              className={`text-[11px] ${
                                 tx.done
                                   ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
                                   : 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300'

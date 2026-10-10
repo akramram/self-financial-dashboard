@@ -158,7 +158,7 @@ export default function BudgetPace() {
         
         
           {/* Period info */}
-          <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+          <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-500">
             <CalendarClock className="h-4 w-4" />
             <span>
               {data.period_label}: Day <strong className="text-slate-700 dark:text-slate-200">{data.days_elapsed}</strong> of {data.days_total}
@@ -172,7 +172,7 @@ export default function BudgetPace() {
               <span className="text-slate-600 dark:text-slate-300">
                 Spent: <strong>{formatIdr(data.total_spent)}</strong>
               </span>
-              <span className="text-slate-500 dark:text-slate-400">
+              <span className="text-slate-500 dark:text-slate-500">
                 Expected: {formatIdr(data.total_expected)}
               </span>
               <span className="text-slate-600 dark:text-slate-300">
@@ -184,7 +184,7 @@ export default function BudgetPace() {
               expected={data.total_expected}
               limit={data.total_budget}
             />
-            <div className="flex justify-between text-xs text-slate-400">
+            <div className="flex justify-between text-xs text-slate-500">
               <span>
                 {data.total_pace_diff >= 0 ? '+' : ''}{formatIdr(data.total_pace_diff)} vs expected
               </span>
@@ -199,25 +199,25 @@ export default function BudgetPace() {
           {/* Key metrics row */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div className="rounded-lg border p-3 text-center">
-              <p className="text-xs text-slate-400 mb-1">Pace vs Expected</p>
+              <p className="text-xs text-slate-500 mb-1">Pace vs Expected</p>
               <p className={`text-lg font-bold ${data.total_pace_pct > 5 ? 'text-red-500' : data.total_pace_pct < -5 ? 'text-emerald-500' : 'text-gold-500'}`}>
                 {data.total_pace_pct >= 0 ? '+' : ''}{data.total_pace_pct.toFixed(1)}%
               </p>
             </div>
             <div className="rounded-lg border p-3 text-center">
-              <p className="text-xs text-slate-400 mb-1">Budget Used</p>
+              <p className="text-xs text-slate-500 mb-1">Budget Used</p>
               <p className="text-lg font-bold text-slate-700 dark:text-slate-200">
                 {((data.total_spent / data.total_budget) * 100).toFixed(0)}%
               </p>
             </div>
             <div className="rounded-lg border p-3 text-center">
-              <p className="text-xs text-slate-400 mb-1">Remaining Budget</p>
+              <p className="text-xs text-slate-500 mb-1">Remaining Budget</p>
               <p className="text-lg font-bold text-slate-700 dark:text-slate-200">
                 {formatIdr(Math.max(0, data.total_budget - data.total_spent))}
               </p>
             </div>
             <div className="rounded-lg border p-3 text-center">
-              <p className="text-xs text-slate-400 mb-1">Projected Overshoot</p>
+              <p className="text-xs text-slate-500 mb-1">Projected Overshoot</p>
               <p className={`text-lg font-bold ${data.total_projected > data.total_budget ? 'text-red-500' : 'text-emerald-500'}`}>
                 {data.total_projected > data.total_budget ? '+' : ''}
                 {formatIdr(data.total_projected - data.total_budget)}
@@ -247,7 +247,7 @@ export default function BudgetPace() {
                       {cfg.label}
                     </Badge>
                   </div>
-                  <div className="text-slate-500 dark:text-slate-400 text-xs">
+                  <div className="text-slate-500 dark:text-slate-500 text-xs">
                     {formatIdr(cat.spent)} / {formatIdr(cat.limit)}
                     <span className="ml-2">
                       ({cat.spent_pct.toFixed(0)}% used)
@@ -259,7 +259,7 @@ export default function BudgetPace() {
                   expected={cat.expected_pct > 0 ? cat.limit * (cat.expected_pct / 100) : 0}
                   limit={cat.limit}
                 />
-                <div className="flex justify-between text-xs text-slate-400">
+                <div className="flex justify-between text-xs text-slate-500">
                   <span>
                     {cat.pace_diff > 0 ? '↑' : cat.pace_diff < 0 ? '↓' : '−'}
                     {' '}{Math.abs(cat.pace_diff).toFixed(0)}% vs pace

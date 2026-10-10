@@ -180,7 +180,7 @@ export default function DailyBudgetIndicator({ transactions, income, spent, acti
           <div className="rounded-lg p-3 bg-slate-100 dark:bg-white/[0.04]">
             <div className="flex items-baseline justify-between mb-2">
               <p className="text-[11px] text-slate-500 dark:text-white/40">Last 7 Days</p>
-              <p className="text-[10px] text-slate-400 dark:text-white/30">line = allowance</p>
+              <p className="text-[11px] text-slate-500 dark:text-white/30">line = allowance</p>
             </div>
             <div className="relative flex items-end gap-1 h-16">
               {/* Allowance reference line — bars are scaled so 100% allowance = 80% of track height; bars crossing the line = over */}
@@ -207,7 +207,7 @@ export default function DailyBudgetIndicator({ transactions, income, spent, acti
             </div>
             <div className="flex gap-1 mt-1">
               {last7.map((d) => (
-                <span key={d.key} className="flex-1 text-center text-[9px] text-slate-400 dark:text-white/30">
+                <span key={d.key} className="flex-1 text-center text-[11px] text-slate-500 dark:text-white/30">
                   {new Date(d.key + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'narrow' })}
                 </span>
               ))}

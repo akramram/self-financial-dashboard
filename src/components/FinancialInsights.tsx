@@ -193,7 +193,7 @@ export default function FinancialInsights({ transactions, networth, summaries, c
               <div className="min-w-0">
                 <div className="flex items-center gap-2 mb-0.5">
                   <span className="text-xs font-semibold uppercase tracking-wider">{insight.title}</span>
-                  <Badge variant="secondary" className={`text-[10px] px-1.5 py-0 ${badgeVariants[insight.type]}`}>
+                  <Badge variant="secondary" className={`text-[11px] px-1.5 py-0 ${badgeVariants[insight.type]}`}>
                     {insight.type === 'success' ? 'Good' : insight.type === 'warning' ? 'Watch' : insight.type === 'danger' ? 'Alert' : 'Info'}
                   </Badge>
                 </div>

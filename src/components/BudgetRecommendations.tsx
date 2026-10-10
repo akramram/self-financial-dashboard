@@ -53,7 +53,7 @@ const CONFIDENCE_LABELS: Record<string, string> = {
 const CONFIDENCE_COLORS: Record<string, string> = {
   high: 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20',
   medium: 'text-gold-600 dark:text-gold-400 bg-gold-500/5 dark:bg-gold-700/20',
-  low: 'text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800',
+  low: 'text-slate-500 dark:text-slate-500 bg-slate-100 dark:bg-slate-800',
 };
 
 export default function BudgetRecommendations() {

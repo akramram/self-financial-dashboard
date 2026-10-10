@@ -110,7 +110,7 @@ export default function CategoryRadarChart({
         ticks: {
           display: true,
           backdropColor: 'transparent',
-          font: { size: 10 },
+          font: { size: 11 },
           callback: (value: number) => {
             if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
             if (value >= 1_000) return `${(value / 1_000).toFixed(0)}K`;

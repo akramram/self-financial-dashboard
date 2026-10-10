@@ -210,7 +210,7 @@ export default function SpendingCalendar({ transactions, periods }: Props) {
   };
 
   const getHeatColor = (total: number) => {
-    if (total === 0) return 'bg-slate-100 dark:bg-white/[0.02] text-slate-400 dark:text-white/40';
+    if (total === 0) return 'bg-slate-100 dark:bg-white/[0.02] text-slate-500 dark:text-white/40';
     if (maxDaily === 0) return 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400';
     const ratio = total / maxDaily;
     if (ratio <= 0.25) return 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400';
@@ -272,7 +272,7 @@ export default function SpendingCalendar({ transactions, periods }: Props) {
             <span className="inline-block w-3 h-3 rounded-sm bg-red-100 dark:bg-red-900/30" />
             <span>High</span>
           </div>
-          <span className="hidden sm:inline text-xs text-slate-400 dark:text-white/25 pl-2 border-l border-slate-200 dark:border-white/[0.06]">
+          <span className="hidden sm:inline text-xs text-slate-500 dark:text-white/25 pl-2 border-l border-slate-200 dark:border-white/[0.06]">
             Tap an empty day (or right-click any day) to add a transaction on that date
           </span>
         </div>
@@ -334,10 +334,10 @@ export default function SpendingCalendar({ transactions, periods }: Props) {
                 )}
                 {count > 0 && (
                   <>
-                    <span className="text-[10px] font-semibold leading-none">
+                    <span className="text-[11px] font-semibold leading-none">
                       {formatIdr(total)}
                     </span>
-                    <span className="text-[9px] opacity-70 leading-none">
+                    <span className="text-[11px] opacity-70 leading-none">
                       {count} tx
                     </span>
                   </>
@@ -424,7 +424,7 @@ export default function SpendingCalendar({ transactions, periods }: Props) {
                           <TableCell>
                             <Badge
                               variant="secondary"
-                              className={`text-[10px] ${
+                              className={`text-[11px] ${
                                 tx.done
                                   ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
                                   : 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300'

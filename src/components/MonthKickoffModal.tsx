@@ -98,7 +98,7 @@ export default function MonthKickoffModal({ open, onOpenChange, nextMonth, recur
             </div>
             <div className="rounded-lg border bg-slate-50 dark:bg-slate-800/50 p-3 text-sm space-y-1">
               <p className="font-medium text-slate-700 dark:text-slate-200">What will happen:</p>
-              <ul className="list-disc list-inside text-slate-500 dark:text-slate-400 space-y-0.5">
+              <ul className="list-disc list-inside text-slate-500 dark:text-slate-500 space-y-0.5">
                 <li>Create income record for {nextMonth}</li>
                 <li>Preload {recurringCount} active recurring transaction{recurringCount !== 1 ? 's' : ''}</li>
               </ul>

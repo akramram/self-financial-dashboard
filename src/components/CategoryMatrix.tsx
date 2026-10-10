@@ -130,14 +130,14 @@ function formatShort(n: number): string {
 function TrendBadge({ trendPct }: { trendPct: number | null }) {
   if (trendPct === null) {
     return (
-      <span className="inline-flex items-center gap-0.5 text-xs text-slate-400">
+      <span className="inline-flex items-center gap-0.5 text-xs text-slate-500">
         <Minus className="w-3 h-3" /> -
       </span>
     );
   }
   if (Math.abs(trendPct) < 5) {
     return (
-      <span className="inline-flex items-center gap-0.5 text-xs text-slate-400">
+      <span className="inline-flex items-center gap-0.5 text-xs text-slate-500">
         <Minus className="w-3 h-3" /> {trendPct > 0 ? '+' : ''}{trendPct}%
       </span>
     );
@@ -238,7 +238,7 @@ export default function CategoryMatrix({}: Props) {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-slate-400">Loading spending matrix...</div>
+        <div className="text-slate-500">Loading spending matrix...</div>
       </div>
     );
   }
@@ -254,7 +254,7 @@ export default function CategoryMatrix({}: Props) {
   if (!matrix || matrix.categories.length === 0 || matrix.periods.length === 0) {
     return (
       <div className="glass-card p-5">
-        <div className="text-center text-slate-400 py-12">
+        <div className="text-center text-slate-500 py-12">
             <Grid3x3 className="w-12 h-12 mx-auto mb-3 opacity-50" />
             <p>No spending data available. Add transactions to see the matrix.</p>
           </div>
@@ -376,7 +376,7 @@ export default function CategoryMatrix({}: Props) {
                   <TableCell className="text-right">
                     {formatShort(matrix.categories.reduce((s, r) => s + r.total, 0))}
                   </TableCell>
-                  <TableCell className="text-right text-slate-400">-</TableCell>
+                  <TableCell className="text-right text-slate-500">-</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
@@ -386,7 +386,7 @@ export default function CategoryMatrix({}: Props) {
       {/* Summary Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="glass-card p-5">
-          <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 text-slate-800 dark:text-white/80">
+          <h3 className="text-sm font-medium text-slate-500 dark:text-slate-500 text-slate-800 dark:text-white/80">
               Most Consistent Categories
             </h3>
           <div className="space-y-2">
@@ -416,7 +416,7 @@ export default function CategoryMatrix({}: Props) {
           </div>
 
         <div className="glass-card p-5">
-          <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 text-slate-800 dark:text-white/80">
+          <h3 className="text-sm font-medium text-slate-500 dark:text-slate-500 text-slate-800 dark:text-white/80">
               Fastest Rising Categories
             </h3>
           <div className="space-y-2">
@@ -439,13 +439,13 @@ export default function CategoryMatrix({}: Props) {
                   </div>
                 ))}
               {matrix.categories.filter((r) => r.trendPct !== null && r.trendPct > 0).length === 0 && (
-                <p className="text-xs text-slate-400">No rising trends detected.</p>
+                <p className="text-xs text-slate-500">No rising trends detected.</p>
               )}
             </div>
           </div>
 
         <div className="glass-card p-5">
-          <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 text-slate-800 dark:text-white/80">
+          <h3 className="text-sm font-medium text-slate-500 dark:text-slate-500 text-slate-800 dark:text-white/80">
               Declining Categories
             </h3>
           <div className="space-y-2">
@@ -468,7 +468,7 @@ export default function CategoryMatrix({}: Props) {
                   </div>
                 ))}
               {matrix.categories.filter((r) => r.trendPct !== null && r.trendPct < 0).length === 0 && (
-                <p className="text-xs text-slate-400">No declining trends detected.</p>
+                <p className="text-xs text-slate-500">No declining trends detected.</p>
               )}
             </div>
           </div>
@@ -501,9 +501,9 @@ export default function CategoryMatrix({}: Props) {
           </DialogHeader>
 
           {drillLoading ? (
-            <div className="text-center py-8 text-slate-400">Loading transactions...</div>
+            <div className="text-center py-8 text-slate-500">Loading transactions...</div>
           ) : drillTxs.length === 0 ? (
-            <div className="text-center py-8 text-slate-400">No transactions found.</div>
+            <div className="text-center py-8 text-slate-500">No transactions found.</div>
           ) : (
             <div className="max-h-[50vh] overflow-y-auto">
               <Table>
@@ -527,9 +527,9 @@ export default function CategoryMatrix({}: Props) {
                       <TableCell className="text-xs text-right font-medium">{formatIdr(tx.amount)}</TableCell>
                       <TableCell className="text-xs">
                         {tx.done ? (
-                          <Badge variant="default" className="text-[10px] bg-emerald-600">Paid</Badge>
+                          <Badge variant="default" className="text-[11px] bg-emerald-600">Paid</Badge>
                         ) : (
-                          <Badge variant="outline" className="text-[10px]">Pending</Badge>
+                          <Badge variant="outline" className="text-[11px]">Pending</Badge>
                         )}
                       </TableCell>
                     </TableRow>

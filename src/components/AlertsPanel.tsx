@@ -385,14 +385,14 @@ export default function AlertsPanel({
             Alerts
             <div className="flex items-center gap-1.5 ml-1">
               {highCount > 0 && (
-                <Badge variant="destructive" className="text-[10px] px-1.5 py-0">
+                <Badge variant="destructive" className="text-[11px] px-1.5 py-0">
                   {highCount} over
                 </Badge>
               )}
               {mediumCount > 0 && (
                 <Badge
                   variant="outline"
-                  className="text-[10px] px-1.5 py-0 border-gold-400 text-gold-600 dark:text-gold-400"
+                  className="text-[11px] px-1.5 py-0 border-gold-400 text-gold-600 dark:text-gold-400"
                 >
                   {mediumCount} approaching
                 </Badge>
@@ -400,7 +400,7 @@ export default function AlertsPanel({
               {lowCount > 0 && highCount === 0 && mediumCount === 0 && (
                 <Badge
                   variant="outline"
-                  className="text-[10px] px-1.5 py-0 border-mint-400 text-mint-500 dark:text-mint-400"
+                  className="text-[11px] px-1.5 py-0 border-mint-400 text-mint-500 dark:text-mint-400"
                 >
                   {lowCount} info
                 </Badge>
@@ -431,7 +431,7 @@ export default function AlertsPanel({
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span
-                      className={`text-[10px] font-bold uppercase tracking-[0.05em] px-1.5 py-0.5 rounded ${SEVERITY_CHIP[alert.severity]}`}
+                      className={`text-[11px] font-bold uppercase tracking-[0.05em] px-1.5 py-0.5 rounded ${SEVERITY_CHIP[alert.severity]}`}
                     >
                       {SEVERITY_LABEL[alert.severity]}
                     </span>
@@ -441,13 +441,13 @@ export default function AlertsPanel({
                     {!isDrawer && (
                       <Badge
                         variant="outline"
-                        className={`text-[10px] px-1.5 py-0 ${SEVERITY_BADGE_CLASS[alert.severity]}`}
+                        className={`text-[11px] px-1.5 py-0 ${SEVERITY_BADGE_CLASS[alert.severity]}`}
                       >
                         {alert.badgeLabel}
                       </Badge>
                     )}
                   </div>
-                  <div className="flex items-center gap-2 mt-1 text-xs text-slate-500 dark:text-slate-400 tabular-nums">
+                  <div className="flex items-center gap-2 mt-1 text-xs text-slate-500 dark:text-slate-500 tabular-nums">
                     {alert.amount != null && (
                       <>
                         <span>{formatIdr(alert.amount)}</span>
@@ -460,7 +460,7 @@ export default function AlertsPanel({
                       </>
                     )}
                   </div>
-                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+                  <p className="text-xs text-slate-500 dark:text-slate-500 mt-0.5">
                     {alert.detail}
                   </p>
                 </div>
@@ -471,7 +471,7 @@ export default function AlertsPanel({
                   className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg -my-3 -mr-3 transition hover:bg-slate-200 dark:hover:bg-slate-700"
                   title="Dismiss"
                 >
-                  <X className="w-3.5 h-3.5 text-slate-400" />
+                  <X className="w-3.5 h-3.5 text-slate-500" />
                 </button>
               </div>
             </div>

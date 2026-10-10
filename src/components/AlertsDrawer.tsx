@@ -257,7 +257,7 @@ export default function AlertsDrawer() {
           <SheetHeader className="h-14 shrink-0 flex-row items-center gap-2 overflow-hidden border-b border-[hsl(var(--surface-border)/0.08)] px-4 py-0 space-y-0">
             <Bell
               className={`h-5 w-5 shrink-0 ${
-                liveCount > 0 ? 'text-mint-500' : 'text-slate-400 dark:text-white/40'
+                liveCount > 0 ? 'text-mint-500' : 'text-slate-500 dark:text-white/40'
               }`}
               strokeWidth={1.8}
             />
@@ -322,7 +322,7 @@ export default function AlertsDrawer() {
               <section key={group} aria-labelledby={`prefs-heading-${group}`}>
                 <h3
                   id={`prefs-heading-${group}`}
-                  className="px-4 pb-1 pt-4 text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-white/40"
+                  className="px-4 pb-1 pt-4 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-white/40"
                 >
                   {group}
                 </h3>
@@ -335,7 +335,7 @@ export default function AlertsDrawer() {
                         data-testid={`pref-row-${row.key}`}
                         className="flex min-h-[56px] cursor-pointer items-center gap-3 px-4 py-2 transition-colors hover:bg-[hsl(var(--surface-hover))] focus-within:bg-[hsl(var(--surface-hover))]"
                       >
-                        <span className="shrink-0 text-slate-400 dark:text-white/40">
+                        <span className="shrink-0 text-slate-500 dark:text-white/40">
                           {PREF_ICONS[row.key]}
                         </span>
                         <span className="min-w-0 flex-1">

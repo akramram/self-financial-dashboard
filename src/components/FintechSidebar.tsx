@@ -171,21 +171,21 @@ export default function FintechSidebar({ balance, alerts: initialAlerts = 0 }: P
           ))}
 
           {!collapsed && (
-            <p className="px-3 pt-4 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-white/40">Analytics</p>
+            <p className="px-3 pt-4 pb-1 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-white/40">Analytics</p>
           )}
           {ANALYTICS.map((item) => (
             <NavButton key={item.path} item={item} isPrimary={false} />
           ))}
 
           {!collapsed && (
-            <p className="px-3 pt-4 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-white/40">Planning</p>
+            <p className="px-3 pt-4 pb-1 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-white/40">Planning</p>
           )}
           {PLANNING.map((item) => (
             <NavButton key={item.path} item={item} isPrimary={false} />
           ))}
 
           {!collapsed && (
-            <p className="px-3 pt-4 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-white/40">Reports</p>
+            <p className="px-3 pt-4 pb-1 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-white/40">Reports</p>
           )}
           {REPORTS.map((item) => (
             <NavButton key={item.path} item={item} isPrimary={false} />
@@ -209,13 +209,13 @@ export default function FintechSidebar({ balance, alerts: initialAlerts = 0 }: P
             data-drawer={drawerOpen ? 'open' : 'closed'}
           >
             <Bell
-              className={`w-5 h-5 ${alerts > 0 ? 'text-mint-500' : 'text-slate-400 dark:text-white/40'}`}
+              className={`w-5 h-5 ${alerts > 0 ? 'text-mint-500' : 'text-slate-500 dark:text-white/40'}`}
               strokeWidth={1.8}
             />
             {alerts > 0 && (
               <span
                 aria-hidden="true"
-                className="absolute -top-0.5 -right-0.5 min-w-[20px] h-5 px-1 rounded-full flex items-center justify-center bg-coral-600 text-white text-[10px] font-bold"
+                className="absolute -top-0.5 -right-0.5 min-w-[20px] h-5 px-1 rounded-full flex items-center justify-center bg-coral-600 text-white text-[11px] font-bold"
               >
                 {alerts > 99 ? '99+' : alerts}
               </span>

@@ -145,7 +145,7 @@ export default function RecurringCostAnalyzer() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <RefreshCw className="w-6 h-6 animate-spin text-slate-400" />
+        <RefreshCw className="w-6 h-6 animate-spin text-slate-500" />
       </div>
     );
   }
@@ -154,10 +154,10 @@ export default function RecurringCostAnalyzer() {
     return (
       <div className="glass-card p-5">
         <RefreshCw className="w-10 h-10 mx-auto mb-3 text-slate-300" />
-          <p className="text-slate-500 dark:text-slate-400">
+          <p className="text-slate-500 dark:text-slate-500">
             No active recurring transactions found.
           </p>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-500 mt-1">
             Add recurring transactions on the <a href="/recurring" className="text-mint-500 hover:underline">Recurring page</a> to see your subscription cost analysis.
           </p>
         </div>
@@ -172,40 +172,40 @@ export default function RecurringCostAnalyzer() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="glass-card p-5">
           <div className="flex items-center justify-between mb-1">
-              <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Monthly Cost</span>
+              <span className="text-xs font-medium text-slate-500 dark:text-slate-500">Monthly Cost</span>
               <DollarSign className="w-4 h-4 text-mint-500" />
             </div>
             <p className="text-xl font-bold text-slate-800 dark:text-slate-100">{formatIdr(monthlyTotal)}</p>
-            <p className="text-[11px] text-slate-400 mt-0.5">per salary period</p>
+            <p className="text-[11px] text-slate-500 mt-0.5">per salary period</p>
           </div>
 
         <div className="glass-card p-5">
           <div className="flex items-center justify-between mb-1">
-              <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Annual Cost</span>
+              <span className="text-xs font-medium text-slate-500 dark:text-slate-500">Annual Cost</span>
               <Calendar className="w-4 h-4 text-emerald-500" />
             </div>
             <p className="text-xl font-bold text-slate-800 dark:text-slate-100">{formatIdr(annualTotal)}</p>
-            <p className="text-[11px] text-slate-400 mt-0.5">projected per year</p>
+            <p className="text-[11px] text-slate-500 mt-0.5">projected per year</p>
           </div>
 
         <div className="glass-card p-5">
           <div className="flex items-center justify-between mb-1">
-              <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Active Items</span>
+              <span className="text-xs font-medium text-slate-500 dark:text-slate-500">Active Items</span>
               <RefreshCw className="w-4 h-4 text-gold-500" />
             </div>
             <p className="text-xl font-bold text-slate-800 dark:text-slate-100">{activeCount}</p>
-            <p className="text-[11px] text-slate-400 mt-0.5">
+            <p className="text-[11px] text-slate-500 mt-0.5">
               {temporaryCount > 0 ? `${temporaryCount} temporary` : 'all permanent'}
             </p>
           </div>
 
         <div className="glass-card p-5">
           <div className="flex items-center justify-between mb-1">
-              <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Avg / Item</span>
+              <span className="text-xs font-medium text-slate-500 dark:text-slate-500">Avg / Item</span>
               <PieChart className="w-4 h-4 text-gold-500" />
             </div>
             <p className="text-xl font-bold text-slate-800 dark:text-slate-100">{formatIdr(avgPerItem)}</p>
-            <p className="text-[11px] text-slate-400 mt-0.5">monthly average</p>
+            <p className="text-[11px] text-slate-500 mt-0.5">monthly average</p>
           </div>
       </div>
 
@@ -240,7 +240,7 @@ export default function RecurringCostAnalyzer() {
                   <span className="font-medium">{largestItem.title}</span> -{' '}
                   <span className="font-semibold text-red-600 dark:text-red-400">{formatIdr(largestItem.amount)}</span>/month
                 </p>
-                <p className="text-[11px] text-slate-400 mt-0.5">
+                <p className="text-[11px] text-slate-500 mt-0.5">
                   That's {formatIdr(largestItem.amount * 12)}/year - {((largestItem.amount / monthlyTotal) * 100).toFixed(0)}% of your recurring total.
                 </p>
               </div>
@@ -269,7 +269,7 @@ export default function RecurringCostAnalyzer() {
                     />
                     <span className="text-xs text-slate-600 dark:text-slate-300 flex-1">{cat}</span>
                     <span className="text-xs font-medium text-slate-700 dark:text-slate-200">{formatIdr(amt)}</span>
-                    <span className="text-[10px] text-slate-400 w-10 text-right">
+                    <span className="text-[11px] text-slate-500 w-10 text-right">
                       {((amt / monthlyTotal) * 100).toFixed(0)}%
                     </span>
                   </div>
@@ -291,7 +291,7 @@ export default function RecurringCostAnalyzer() {
                     <span className="text-slate-600 dark:text-slate-300">{cat}</span>
                     <span className="font-semibold text-slate-700 dark:text-slate-200">
                       {formatIdr(amt)}
-                      <span className="text-slate-400 font-normal ml-1.5">({pct.toFixed(1)}%)</span>
+                      <span className="text-slate-500 font-normal ml-1.5">({pct.toFixed(1)}%)</span>
                     </span>
                   </div>
                   <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2.5">
@@ -344,18 +344,18 @@ export default function RecurringCostAnalyzer() {
                     <TableCell className="font-medium">
                       {item.title}
                       {!item.active && (
-                        <Badge variant="outline" className="ml-2 text-[10px] h-4">Paused</Badge>
+                        <Badge variant="outline" className="ml-2 text-[11px] h-4">Paused</Badge>
                       )}
                     </TableCell>
-                    <TableCell className="text-slate-500 dark:text-slate-400">{item.category}</TableCell>
+                    <TableCell className="text-slate-500 dark:text-slate-500">{item.category}</TableCell>
                     <TableCell className="text-right font-semibold">{formatIdr(item.amount)}</TableCell>
-                    <TableCell className="text-right text-slate-500 dark:text-slate-400">{formatIdr(item.amount * 12)}</TableCell>
+                    <TableCell className="text-right text-slate-500 dark:text-slate-500">{formatIdr(item.amount * 12)}</TableCell>
                     <TableCell>
                       <Badge variant="outline" className="text-xs">
                         {typeLabel}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-xs text-slate-500 dark:text-slate-400">
+                    <TableCell className="text-xs text-slate-500 dark:text-slate-500">
                       {item.isTemporary ? (
                         <span className="text-gold-600 dark:text-gold-400">{formatEndDate(item.end_date)}</span>
                       ) : (

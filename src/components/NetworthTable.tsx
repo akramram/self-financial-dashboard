@@ -156,7 +156,7 @@ export default function NetworthTable({ networth }: Props) {
                       <span className="text-muted-foreground">First record</span>
                     )}
                   </p>
-                  <p className="mt-0.5 text-[10px] tabular-nums">
+                  <p className="mt-0.5 text-[11px] tabular-nums">
                     {yoy ? (
                       <span className={changeClass(yoy.change)}>
                         YoY {yoy.change >= 0 ? '+' : ''}

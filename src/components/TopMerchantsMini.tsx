@@ -66,7 +66,7 @@ export default function TopMerchantsMini({ transactions, activePeriodId }: Props
           <div key={m.name} className="group">
             <div className="flex items-center justify-between mb-1">
               <div className="flex items-center gap-2 min-w-0">
-                <span className="w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-bold shrink-0"
+                <span className="w-5 h-5 rounded-md flex items-center justify-center text-[11px] font-bold shrink-0"
                   style={{
                     backgroundColor: i === 0 ? 'rgba(16,185,129,0.15)' : i === 1 ? 'rgba(245,158,11,0.12)' : 'rgba(148,163,184,0.1)',
                     color: i === 0 ? '#10b981' : i === 1 ? '#f59e0b' : '#94a3b8',
@@ -77,7 +77,7 @@ export default function TopMerchantsMini({ transactions, activePeriodId }: Props
                 <span className="text-sm font-medium text-slate-700 dark:text-white/80 truncate">
                   {m.name}
                 </span>
-                <span className="text-[10px] text-slate-400 dark:text-white/25 hidden sm:inline">
+                <span className="text-[11px] text-slate-500 dark:text-white/25 hidden sm:inline">
                   ×{m.count}
                 </span>
               </div>

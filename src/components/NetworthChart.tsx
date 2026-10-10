@@ -80,7 +80,21 @@ export default function NetworthChart({ data }: { data: NetworthRecord[] }) {
       },
     },
     scales: {
-      y: { beginAtZero: false },
+      y: {
+        beginAtZero: false,
+        ticks: {
+          // KUR-213 B1: compact IDR — "15M" instead of raw 8-digit ticks
+          callback: (value: any) => {
+            const num = Number(value);
+            const abs = Math.abs(num);
+            const trim = (n: number) => (Number.isInteger(n) ? n.toFixed(0) : n.toFixed(1));
+            if (abs >= 1_000_000_000) return `${trim(num / 1_000_000_000)}B`;
+            if (abs >= 1_000_000) return `${trim(num / 1_000_000)}M`;
+            if (abs >= 1_000) return `${trim(num / 1_000)}K`;
+            return `${num}`;
+          },
+        },
+      },
     },
   };
 

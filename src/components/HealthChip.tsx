@@ -70,13 +70,13 @@ export default function HealthChip({ data, onClick }: HealthChipProps) {
 
           <div className="flex items-baseline gap-1.5 mb-1.5">
             {loading ? (
-              <span className="text-lg font-bold text-slate-400 dark:text-white/40">—</span>
+              <span className="text-lg font-bold text-slate-500 dark:text-white/40">—</span>
             ) : (
               <>
                 <span className="text-lg font-bold text-slate-900 dark:text-white">{score ?? '—'}</span>
-                <span className="text-[10px] font-medium text-slate-400 dark:text-white/40">/100</span>
+                <span className="text-[11px] font-medium text-slate-500 dark:text-white/40">/100</span>
                 {health?.grade && (
-                  <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full" style={{ backgroundColor: `${color}1a`, color }}>
+                  <span className="text-[11px] font-semibold px-1.5 py-0.5 rounded-full" style={{ backgroundColor: `${color}1a`, color }}>
                     {health.grade}
                   </span>
                 )}
@@ -94,7 +94,7 @@ export default function HealthChip({ data, onClick }: HealthChipProps) {
               transition={{ duration: 0.35, ease: 'easeOut' }}
             >
               <span className="text-xs font-semibold">{trendDelta > 0 ? '▲' : '▼'} {Math.abs(trendDelta)} pts</span>
-              <span className="text-[10px] opacity-60">vs last</span>
+              <span className="text-[11px] opacity-60">vs last</span>
             </motion.div>
           )}
           {(trendDelta == null || trendDelta === 0) && !loading && (

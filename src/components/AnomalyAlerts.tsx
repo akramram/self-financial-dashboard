@@ -101,7 +101,7 @@ export default function AnomalyAlerts({ month }: Props) {
             {highCount > 0 && (
               <button
                 onClick={() => toggleFilter('high')}
-                className={`text-[10px] px-1.5 py-0 rounded-full font-medium transition cursor-pointer border ${
+                className={`text-[11px] px-1.5 py-0 rounded-full font-medium transition cursor-pointer border ${
                   severityFilter === 'high'
                     ? 'bg-red-600 text-white border-red-600 ring-2 ring-red-300'
                     : 'bg-red-100 text-red-700 border-red-200 hover:bg-red-200 dark:bg-red-900/40 dark:text-red-300 dark:border-red-800 dark:hover:bg-red-900/60'
@@ -113,7 +113,7 @@ export default function AnomalyAlerts({ month }: Props) {
             {mediumCount > 0 && (
               <button
                 onClick={() => toggleFilter('medium')}
-                className={`text-[10px] px-1.5 py-0 rounded-full font-medium transition cursor-pointer border ${
+                className={`text-[11px] px-1.5 py-0 rounded-full font-medium transition cursor-pointer border ${
                   severityFilter === 'medium'
                     ? 'bg-gold-600 text-slate-900 dark:text-white border-gold-600 ring-2 ring-gold-400/30'
                     : 'bg-gold-500/10 text-gold-700 border-gold-400/20 hover:bg-gold-400/20 dark:bg-gold-700/20/40 dark:text-gold-300 dark:border-gold-700/40 dark:hover:bg-gold-700/30/60'
@@ -125,7 +125,7 @@ export default function AnomalyAlerts({ month }: Props) {
             {lowCount > 0 && (
               <button
                 onClick={() => toggleFilter('low')}
-                className={`text-[10px] px-1.5 py-0 rounded-full font-medium transition cursor-pointer border ${
+                className={`text-[11px] px-1.5 py-0 rounded-full font-medium transition cursor-pointer border ${
                   severityFilter === 'low'
                     ? 'bg-mint-600 text-slate-900 dark:text-white border-mint-600 ring-2 ring-mint-400/30'
                     : 'bg-mint-500/10 text-mint-600 border-mint-400/20 hover:bg-mint-400/20 dark:bg-mint-700/20 dark:text-mint-300 dark:border-mint-700/40 dark:hover:bg-mint-700/30/60'
@@ -137,21 +137,21 @@ export default function AnomalyAlerts({ month }: Props) {
             {severityFilter && (
               <button
                 onClick={() => setSeverityFilter(null)}
-                className="text-[10px] px-1.5 py-0 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 underline"
+                className="text-[11px] px-1.5 py-0 text-slate-500 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-200 underline"
               >
                 clear
               </button>
             )}
-            <span className="text-xs text-slate-400">{filtered.length} of {visible.length}</span>
+            <span className="text-xs text-slate-500">{filtered.length} of {visible.length}</span>
           </div>
         </div>
-        <p className="text-xs text-slate-400">
+        <p className="text-xs text-slate-500">
           These transactions look unusual compared to your historical spending patterns.
         </p>
       
       
         {filtered.length === 0 ? (
-          <p className="text-xs text-slate-400 text-center py-3">
+          <p className="text-xs text-slate-500 text-center py-3">
             No {severityFilter} severity anomalies found.
           </p>
         ) : (
@@ -170,17 +170,17 @@ export default function AnomalyAlerts({ month }: Props) {
                 </span>
                 <Badge
                   variant="outline"
-                  className={`text-[10px] px-1.5 py-0 ${SEVERITY_BADGE[anomaly.severity]}`}
+                  className={`text-[11px] px-1.5 py-0 ${SEVERITY_BADGE[anomaly.severity]}`}
                 >
                   {REASON_LABELS[anomaly.reason]}
                 </Badge>
               </div>
-              <div className="flex items-center gap-2 mt-1 text-xs text-slate-500 dark:text-slate-400">
+              <div className="flex items-center gap-2 mt-1 text-xs text-slate-500 dark:text-slate-500">
                 <span>{formatIdr(anomaly.amount)}</span>
                 <span>·</span>
                 <span>{anomaly.category}</span>
               </div>
-              <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+              <p className="text-xs text-slate-500 dark:text-slate-500 mt-0.5">
                 {anomaly.detail}
               </p>
             </div>
@@ -189,7 +189,7 @@ export default function AnomalyAlerts({ month }: Props) {
               className="shrink-0 p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700 transition"
               title="Dismiss"
             >
-              <X className="w-3.5 h-3.5 text-slate-400" />
+              <X className="w-3.5 h-3.5 text-slate-500" />
             </button>
           </div>
         )))}

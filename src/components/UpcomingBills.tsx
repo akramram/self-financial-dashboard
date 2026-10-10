@@ -171,14 +171,14 @@ export default function UpcomingBills({ recurring, transactions, activePeriodId,
                   {b.type === 'cash' ? <Wallet className="w-3.5 h-3.5 text-mint-500" strokeWidth={1.8} /> : <CreditCard className="w-3.5 h-3.5 text-gold-400" strokeWidth={1.8} />}
                 </span>
                 <div className="min-w-0">
-                  <p className={`text-sm font-medium truncate ${b.paid ? 'text-slate-400 dark:text-white/35 line-through' : 'text-slate-800 dark:text-white/80'}`}>
+                  <p className={`text-sm font-medium truncate ${b.paid ? 'text-slate-500 dark:text-white/35 line-through' : 'text-slate-800 dark:text-white/80'}`}>
                     {b.title}
-                    {b.oneOff && <span className="ml-1.5 px-1.5 py-0.5 rounded text-[9px] font-semibold uppercase tracking-wide bg-slate-200 dark:bg-white/[0.08] text-slate-500 dark:text-white/40 align-middle">one-off</span>}
+                    {b.oneOff && <span className="ml-1.5 px-1.5 py-0.5 rounded text-[11px] font-semibold uppercase tracking-wide bg-slate-200 dark:bg-white/[0.08] text-slate-500 dark:text-white/40 align-middle">one-off</span>}
                   </p>
                   <p className="text-[11px] text-slate-500 dark:text-white/40 flex items-center gap-1">
                     <CalendarClock className="w-3 h-3" />
                     due {b.dueDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                    {b.endLabel && <span className="text-slate-400 dark:text-white/40">· ends {b.endLabel}</span>}
+                    {b.endLabel && <span className="text-slate-500 dark:text-white/40">· ends {b.endLabel}</span>}
                   </p>
                 </div>
               </div>
@@ -191,12 +191,12 @@ export default function UpcomingBills({ recurring, transactions, activePeriodId,
                     <CheckCircle2 className="w-4 h-4 text-mint-500" strokeWidth={1.8} />
                   )
                 ) : overdue ? (
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-coral-500/15 text-coral-400">OVERDUE</span>
+                  <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-coral-500/15 text-coral-400">OVERDUE</span>
                 ) : imminent ? (
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-gold-500/15 text-gold-400">{daysLeft === 0 ? 'TODAY' : `${daysLeft}d`}</span>
+                  <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-gold-500/15 text-gold-400">{daysLeft === 0 ? 'TODAY' : `${daysLeft}d`}</span>
                 ) : (
                   <span className="flex items-center gap-1.5">
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-medium text-slate-500 dark:text-white/40">{daysLeft}d</span>
+                    <span className="px-2 py-0.5 rounded-full text-[11px] font-medium text-slate-500 dark:text-white/40">{daysLeft}d</span>
                     {toggleable && <Circle className="w-4 h-4 text-slate-300 dark:text-white/40" strokeWidth={1.8} />}
                   </span>
                 )}
@@ -206,7 +206,7 @@ export default function UpcomingBills({ recurring, transactions, activePeriodId,
         })}
       </ul>
 
-      <p className="mt-2 text-[10px] text-slate-400 dark:text-white/25">Tap a bill to mark it paid / unpaid</p>
+      <p className="mt-2 text-[11px] text-slate-500 dark:text-white/25">Tap a bill to mark it paid / unpaid</p>
       <a href="/recurring" className="block mt-1.5 text-xs text-mint-500 hover:text-mint-400 no-underline">Manage recurring →</a>
     </div>
   );
