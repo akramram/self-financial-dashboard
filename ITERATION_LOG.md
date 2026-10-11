@@ -2416,3 +2416,11 @@ Audit KUR-59/FIN-015+016: foundation shadcn + migrasi tabel & form ternyata suda
 - **D. Touch targets ≥44px:** section rail pills, All-time selector, alert bell, link Full form.
 - **E. Token & spacing:** STATUS + CATEGORICAL palette di chartConfig (hue status ≠ warna series); credit expense bar merah→slate netral; grid gap-3 sm:gap-4; card p-4 sm:p-5; FAB desktop gutter `lg:pr-20`.
 - Verifikasi: **460/460 tests** (test AC KUR-213 baru), `npm run build` OK, deploy `scripts/deploy-dashboard.sh`, :4321 HTTP 200.
+
+## 2026-10-11 — KUR-226 Daily Iteration: health-check (Code Crafter)
+
+### Hasil
+- PM2 `financial-dashboard` online, uptime stabil. `npm run build` clean, deploy `pm2 restart financial-dashboard` → :4321 HTTP 200 (login-gated; `/api/health` 401 unauthenticated = auth middleware bekerja).
+- Test suite **470/470 hijau** (34 files). DB `PRAGMA integrity_check` = ok, 978 transaksi. `data/` & `financial.db` tidak disentuh.
+- Sebelum run: tidak ada issue/PR GitHub terbuka. Error log PM2 hanya entri basi 19 Sep (JSON parse DELETE bulk, sudah ter-guard). Sehat.
+- Review visual (Pixel Painter) & relevansi kalkulator (Strategy Hawk) sesuai checklist KUR-226 — di luar scope health-check teknis ini.
