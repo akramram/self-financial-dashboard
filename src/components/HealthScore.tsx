@@ -21,6 +21,7 @@ import {
   Filler,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import { fpGrid } from '../lib/chartConfig';
 import {
   TrendingUp,
   TrendingDown,
@@ -265,20 +266,14 @@ export default function HealthScore({ summaries, categories }: Props) {
       y: {
         min: 0,
         max: 100,
-        grid: { color: 'rgba(148, 163, 184, 0.15)' },
+        grid: { color: fpGrid() },
         ticks: {
           callback: (value: any) => `${value}`,
-          font: { size: 11 },
-          color: '#94a3b8',
         },
       },
       x: {
         grid: { display: false },
-        ticks: {
-          font: { size: 11 },
-          color: '#94a3b8',
-          maxRotation: 45,
-        },
+        ticks: { maxRotation: 0 },
       },
     },
   };

@@ -129,7 +129,7 @@ export default function DailyBudgetIndicator({ transactions, income, spent, acti
     <div>
       <div className="flex items-center gap-2 mb-3">
         <CalendarDays className="w-4 h-4 text-slate-500 dark:text-white/40" strokeWidth={1.8} />
-        <h3 className="text-sm font-semibold text-slate-800 dark:text-white/80">Today's Budget</h3>
+        <h3 className="text-base font-semibold text-slate-800 dark:text-white/80">Today's Budget</h3>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4">

@@ -220,7 +220,7 @@ export default function NetworthComposition({ data }: Props) {
             {dividendLens.source === 'manual' && (
               <span
                 data-testid="dividend-manual-badge"
-                className="text-[10px] uppercase tracking-wide px-2 py-1 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 font-semibold"
+                className="text-[11px] uppercase tracking-wide px-2 py-1 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 font-semibold"
               >
                 manual estimate
               </span>
@@ -306,7 +306,7 @@ export default function NetworthComposition({ data }: Props) {
                         <span className="text-muted-foreground">
                           Dividend / yr
                           {dividendLens.source === 'manual' && (
-                            <span className="ml-1 text-[10px] uppercase tracking-wide text-amber-600 dark:text-amber-400">(manual estimate)</span>
+                            <span className="ml-1 text-[11px] uppercase tracking-wide text-amber-600 dark:text-amber-400">(manual estimate)</span>
                           )}
                         </span>
                         <span className="font-semibold">

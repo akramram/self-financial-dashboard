@@ -78,7 +78,7 @@ export default function GoalsSnapshot() {
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-semibold text-slate-800 dark:text-white/80">Goals</h3>
+        <h3 className="text-base font-semibold text-slate-800 dark:text-white/80">Goals</h3>
         <a href="/goals" className="flex items-center gap-0.5 text-xs text-mint-500 hover:text-mint-400 no-underline">
           All goals <ChevronRight className="w-3 h-3" />
         </a>

@@ -91,6 +91,18 @@ export function useTransactionForm({ onSaved }: UseTransactionFormOptions = {}) 
     initNow();
   }, [initNow]);
 
+  /** KUR-245 regresi 1: preset prefill (share-target / calendar day pin). */
+  const applyPreset = useCallback((preset: { title?: string | null; amount?: string | null; date?: string | null }) => {
+    if (preset.title != null) setTitle(preset.title);
+    if (preset.amount != null) setAmount(preset.amount);
+    if (preset.date && /^\d{4}-\d{2}-\d{2}$/.test(preset.date)) {
+      setTxDate(preset.date);
+      dateTouchedRef.current = true;
+      const p = periodForDate(preset.date);
+      if (p) { setMonth(p.month); setYear(p.year); }
+    }
+  }, []);
+
   // When the date changes, snap the period (month/year selects) to match —
   // day ≥ 21 belongs to next month's period (21st→20th convention).
   const handleDateChange = useCallback((d: string) => {
@@ -205,7 +217,7 @@ export function useTransactionForm({ onSaved }: UseTransactionFormOptions = {}) 
     // status
     status, errorMsg, showDuplicateDialog, setShowDuplicateDialog,
     // actions
-    initNow, handleDateChange, handleTimeChange,
+    initNow, applyPreset, handleDateChange, handleTimeChange,
     categoryUserTouched, setCategoryUserTouched, submitTransaction, confirmDuplicate, resetContent,
     // refs
     titleRef,

@@ -12,7 +12,13 @@ import { Chart as ChartJS } from 'chart.js';
 // ─── Fintech Palette Tokens ─────────────────────────────
 export const FP = {
   bg:           '#0f172a',                     // slate-900
-  grid:         'rgba(51, 65, 85, 0.12)',      // slate-700 / 12%
+  // KUR-245 G2: theme-aware gridline pair. Contrast-checked (AC G2.4):
+  // light slate-500/16 on white ≈ 1.22:1, dark slate-700/45 on slate-900
+  // ≈ 1.23:1 — reads as a 1px hairline, never competes with data ink (<3:1).
+  grid: {
+    light: 'rgba(100, 116, 139, 0.16)',        // slate-500 / 16%
+    dark:  'rgba(51, 65, 85, 0.45)',           // slate-700 / 45%
+  },
   text:         '#94a3b8',                     // slate-400
   textMuted:    '#64748b',                     // slate-500
   white:        '#f8fafc',                     // slate-50
@@ -24,6 +30,38 @@ export const FP = {
   glassBg:      'rgba(15, 23, 42, 0.92)',      // slate-900 / 92%
   glassBorder:  'rgba(51, 65, 85, 0.5)',       // slate-700 / 50%
 } as const;
+
+// ─── Theme-aware grid (KUR-245 G2) ─────────────────────
+// Charts render on <canvas>, so Tailwind's dark: variant can't apply — the
+// color is resolved at render time from the root .dark class. Chart.js redraws
+// on resize, and the theme toggle dispatches `theme-change` so charts pick up
+// the new pair without a page reload.
+let _isDark = false;
+try {
+  _isDark =
+    typeof document !== 'undefined' &&
+    document.documentElement.classList.contains('dark');
+} catch { /* SSR: no document */ }
+
+export function isDarkTheme(): boolean {
+  return _isDark;
+}
+
+/** Active gridline color for the current theme (G2: single source). */
+export function fpGrid(): string {
+  return _isDark ? FP.grid.dark : FP.grid.light;
+}
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('theme-change', () => {
+    _isDark = document.documentElement.classList.contains('dark');
+    // Re-apply global defaults so charts constructed AFTER a toggle (data
+    // update, remount) get the new pair. Live canvases repaint at their next
+    // update — ponytail: full hot-swap needs per-chart re-render; add when
+    // review shows stale grids after toggle matter in practice.
+    applyFintechDefaults();
+  });
+}
 
 // ─── Status tokens (KUR-213 E1) — semantic meaning, NOT chart series ──
 // Use for state colours (healthy/warning/danger/info). Chart series use
@@ -47,7 +85,7 @@ export function applyFintechDefaults(): void {
 
   // --- Global colours ---
   D.color = FP.text;
-  D.borderColor = FP.grid;
+  D.borderColor = fpGrid();
   D.backgroundColor = 'transparent';
 
   // --- Tooltip — glass-style ---
@@ -80,9 +118,9 @@ export function applyFintechDefaults(): void {
     const scale = D.scales[st] as any;
     if (!scale) continue; // SSR safety: scale type may not be registered yet
     scale.grid = scale.grid || {};
-    scale.grid.color = FP.grid;
+    scale.grid.color = fpGrid();
     scale.grid.drawTicks = true;
-    scale.grid.tickColor = FP.grid;
+    scale.grid.tickColor = fpGrid();
     scale.ticks = scale.ticks || {};
     scale.ticks.color = FP.textMuted;
     scale.ticks.font = { size: 11 };

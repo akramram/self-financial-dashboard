@@ -309,10 +309,21 @@ export default function AlertsPanel({
   const [dismissing, setDismissing] = useState<string | null>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
 
-  // ── Broadcast live count to sidebar/mobile bells (Pattern 2: CustomEvent) ──
+  // ── Broadcast live count + severity breakdown to sidebar/mobile bells
+  // (Pattern 2: CustomEvent). KUR-245 G1: `alerts-count` keeps the TOTAL for
+  // the drawer header / aria fallback; `alerts-severity` carries the
+  // over/approaching/info split so the bell can practice badge discipline —
+  // numeric badge = OVER only, gold dot = APPROACHING-only, INFO silent.
   useEffect(() => {
     window.dispatchEvent(new CustomEvent('alerts-count', { detail: allAlerts.length }));
-  }, [allAlerts.length]);
+    const severity = { over: 0, approaching: 0, info: 0 };
+    for (const a of allAlerts) {
+      if (a.severity === 'high') severity.over++;
+      else if (a.severity === 'medium') severity.approaching++;
+      else severity.info++;
+    }
+    window.dispatchEvent(new CustomEvent('alerts-severity', { detail: severity }));
+  }, [allAlerts]);
 
   // ── FIN-022: publish the visible-alert snapshot for the drawer's bulk
   //    mark-all / restore (AC-6 scope = exactly what is currently shown). ──
@@ -383,6 +394,8 @@ export default function AlertsPanel({
           <h3 className="text-base font-semibold flex items-center gap-2 text-slate-800 dark:text-white/80">
             <AlertTriangle className="w-4 h-4 text-gold-500" />
             Alerts
+            {/* KUR-245 G1 AC-2: severity digest always visible — the whole
+                breakdown shows even when only INFO exists (badge hides it). */}
             <div className="flex items-center gap-1.5 ml-1">
               {highCount > 0 && (
                 <Badge variant="destructive" className="text-[11px] px-1.5 py-0">
@@ -397,7 +410,7 @@ export default function AlertsPanel({
                   {mediumCount} approaching
                 </Badge>
               )}
-              {lowCount > 0 && highCount === 0 && mediumCount === 0 && (
+              {lowCount > 0 && (
                 <Badge
                   variant="outline"
                   className="text-[11px] px-1.5 py-0 border-mint-400 text-mint-500 dark:text-mint-400"
@@ -408,6 +421,14 @@ export default function AlertsPanel({
             </div>
           </h3>
         </div>
+      )}
+
+      {/* KUR-245 G1 AC-2: in-drawer digest — per-group counts without opening
+          the group. Drawn from the same severity classification as the list. */}
+      {isDrawer && (
+        <p className="sr-only" data-testid="alerts-digest">
+          {highCount} over, {mediumCount} nearing, {lowCount} info
+        </p>
       )}
 
         {listAlerts.map((alert) => {

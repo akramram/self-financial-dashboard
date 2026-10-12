@@ -28,6 +28,7 @@ import {
   Filler,
 } from 'chart.js';
 import { Doughnut, Line } from 'react-chartjs-2';
+import { fpGrid } from '../lib/chartConfig';
 import { Repeat, Zap, TrendingUp, TrendingDown, ArrowRightLeft } from 'lucide-react';
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement, Filler);

@@ -116,7 +116,7 @@ export default function CategoryBudgets({ summaries, categories, activeMonth, on
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <PieChart className="w-4 h-4 text-slate-500" />
-            <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">Category Budgets</h3>
+            <h3 className="text-base font-semibold text-slate-800 dark:text-white/80">Category Budgets</h3>
           </div>
           <span className="text-xs text-slate-500">
             {pace ? `Day ${pace[0]?.days_elapsed ?? 0}/${pace[0]?.days_total ?? 0} · pace-aware` : `${entries.length} categories`}

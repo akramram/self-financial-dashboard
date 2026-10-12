@@ -185,7 +185,7 @@ export default function SpendingPulse({ summaries, activeMonth, transactions }: 
         <div className="flex-1 min-w-0 space-y-3">
           <div className="flex items-center gap-2">
             <Gauge className={`w-5 h-5 ${cfg.color}`} />
-            <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
+            <h3 className="text-base font-semibold text-slate-800 dark:text-white/80">
               Spending Pulse
             </h3>
             <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${cfg.bg} border ${cfg.border} ${cfg.color}`}>
@@ -297,11 +297,11 @@ export default function SpendingPulse({ summaries, activeMonth, transactions }: 
               {pulse.pacePct.toFixed(0)}%
             </text>
             {/* Left label */}
-            <text x={gaugeCenter - gaugeRadius} y={gaugeCenter + 22} textAnchor="middle" className="fill-slate-400 dark:fill-slate-500" style={{ fontSize: '10px' }}>
+            <text x={gaugeCenter - gaugeRadius} y={gaugeCenter + 22} textAnchor="middle" className="fill-slate-400 dark:fill-slate-500" style={{ fontSize: '11px' }}>
               0%
             </text>
             {/* Right label */}
-            <text x={gaugeCenter + gaugeRadius} y={gaugeCenter + 22} textAnchor="middle" className="fill-slate-400 dark:fill-slate-500" style={{ fontSize: '10px' }}>
+            <text x={gaugeCenter + gaugeRadius} y={gaugeCenter + 22} textAnchor="middle" className="fill-slate-400 dark:fill-slate-500" style={{ fontSize: '11px' }}>
               200%
             </text>
           </svg>
