@@ -104,7 +104,7 @@ export default function PeriodVsAverage({
   if (!activePeriodId || variances.length === 0) {
     return (
       <div className="glass-card p-5">
-        <h3 className="flex items-center gap-2 text-sm font-semibold text-slate-800 dark:text-white/80 mb-3">
+        <h3 className="flex items-center gap-2 text-base font-semibold text-slate-800 dark:text-white/80 mb-3">
           <BarChart3 className="h-4 w-4 text-slate-500 dark:text-white/40" />
           Period vs Average
         </h3>
@@ -119,7 +119,7 @@ export default function PeriodVsAverage({
 
   return (
     <div className="glass-card p-5">
-      <h3 className="flex items-center gap-2 text-sm font-semibold text-slate-800 dark:text-white/80 mb-1">
+      <h3 className="flex items-center gap-2 text-base font-semibold text-slate-800 dark:text-white/80 mb-1">
         <BarChart3 className="h-4 w-4 text-slate-500 dark:text-white/40" />
         {currentSummary?.month ?? 'Current'} vs {lookbackPeriods}-Period Average
       </h3>
