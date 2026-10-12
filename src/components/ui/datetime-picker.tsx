@@ -47,7 +47,12 @@ export default function DateTimePicker({ date, time, onChange, className }: Date
           {label}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align="end">
+      <PopoverContent
+        className="w-auto p-0"
+        align="end"
+        portalled={false}
+        onPointerDown={(e) => e.stopPropagation()}
+      >
         <Calendar mode="single" selected={selected} onSelect={handleSelect} />
         <div className="flex items-center justify-between gap-2 border-t border-border p-2">
           <input
