@@ -39,6 +39,7 @@ import {
   ArcElement,
 } from 'chart.js';
 import { Bar, Line, Doughnut } from 'react-chartjs-2';
+import { fpGrid } from '../lib/chartConfig';
 import {
   TrendingUp,
   TrendingDown,
@@ -393,7 +394,7 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
             <Line data={dailyChartData} options={{
               responsive: true, maintainAspectRatio: false,
               plugins: { legend: { display: true, position: 'top' as const, labels: { boxWidth: 12, font: { size: 11 } } }, tooltip: { callbacks: { label: (ctx: any) => `${ctx.dataset.label}: ${formatIdr(ctx.raw as number)}` } } },
-              scales: { x: { grid: { display: false }, ticks: { font: { size: 11 }, maxRotation: 45 } }, y: { beginAtZero: true, ticks: { font: { size: 11 }, callback: (val: any) => { const n = Number(val); if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`; if (n >= 1_000) return `${(n / 1_000).toFixed(0)}K`; return val; } } } },
+              scales: { x: { grid: { display: false }, ticks: { font: { size: 11 }, maxRotation: 0, autoSkip: true } }, y: { beginAtZero: true, ticks: { font: { size: 11 }, callback: (val: any) => { const n = Number(val); if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`; if (n >= 1_000) return `${(n / 1_000).toFixed(0)}K`; return val; } } } },
               interaction: { intersect: false, mode: 'index' as const },
             }} />
           </div>

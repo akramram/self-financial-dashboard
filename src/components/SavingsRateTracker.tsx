@@ -25,6 +25,7 @@ import {
   Filler,
 } from 'chart.js';
 import { Line, Bar } from 'react-chartjs-2';
+import { fpGrid } from '../lib/chartConfig';
 
 ChartJS.register(
   CategoryScale, LinearScale, PointElement, LineElement, BarElement,
@@ -249,10 +250,10 @@ export default function SavingsRateTracker() {
     scales: {
       y: {
         beginAtZero: false,
-        ticks: { callback: (v: any) => `${v}%`, color: '#94a3b8' },
-        grid: { color: 'rgba(148,163,184,0.1)' },
+        ticks: { callback: (v: any) => `${v}%` },
+        grid: { color: fpGrid() },
       },
-      x: { ticks: { color: '#94a3b8', maxRotation: 45 }, grid: { display: false } },
+      x: { ticks: { maxRotation: 0 }, grid: { display: false } },
     },
     onHover: (_e: any, elements: any[]) => {
       if (elements.length > 0) setHoveredIdx(elements[0].index);
@@ -265,14 +266,14 @@ export default function SavingsRateTracker() {
     maintainAspectRatio: false,
     animation: false as const,
     plugins: {
-      legend: { position: 'top' as const, labels: { color: '#94a3b8', boxWidth: 12 } },
+      legend: { position: 'top' as const, labels: { boxWidth: 12 } },
       tooltip: {
         callbacks: { label: (ctx: any) => `${ctx.dataset.label}: ${formatIdr(ctx.parsed.y)}` },
       },
     },
     scales: {
-      y: { ticks: { callback: (v: any) => formatIdrShort(v), color: '#94a3b8' }, grid: { color: 'rgba(148,163,184,0.1)' } },
-      x: { ticks: { color: '#94a3b8', maxRotation: 45 }, grid: { display: false } },
+      y: { ticks: { callback: (v: any) => formatIdrShort(v) }, grid: { color: fpGrid() } },
+      x: { ticks: { maxRotation: 0 }, grid: { display: false } },
     },
   };
 

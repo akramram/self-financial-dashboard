@@ -303,6 +303,7 @@ export default function CommandPalette() {
     if (item.href === '__toggle_theme__') {
       const isDark = document.documentElement.classList.toggle('dark');
       localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      window.dispatchEvent(new CustomEvent('theme-change'));
       setOpen(false);
       return;
     }

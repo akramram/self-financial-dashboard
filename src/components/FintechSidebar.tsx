@@ -59,26 +59,60 @@ const REPORTS = [
   { path: '/recommendations', label: 'Tips', icon: Trophy },
 ];
 
+
+// KUR-245 G1 — badge discipline on the notification surface: the numeric
+// badge counts ONLY severity HIGH (OVER); APPROACHING-only shows a gold dot;
+// INFO alone never badges. aria-label always speaks the full breakdown.
+const SEV = { over: 0, approaching: 0, info: 0 };
+type Sev = typeof SEV;
+
+function useAlertBadge(initialAlerts: number) {
+  const [counts, setCounts] = useState({ total: initialAlerts, ...SEV });
+
+  useEffect(() => {
+    const syncCount = (e: Event) => {
+      const n = (e as CustomEvent<number>).detail;
+      if (typeof n === 'number' && n >= 0) {
+        setCounts((c) => ({ ...c, total: n }));
+      }
+    };
+    const syncSev = (e: Event) => {
+      const d = (e as CustomEvent<Sev>).detail;
+      if (d && typeof d.over === 'number') {
+        setCounts({ total: d.over + d.approaching + d.info, ...d });
+      }
+    };
+    window.addEventListener('alerts-count', syncCount);
+    window.addEventListener('alerts-severity', syncSev);
+    return () => {
+      window.removeEventListener('alerts-count', syncCount);
+      window.removeEventListener('alerts-severity', syncSev);
+    };
+  }, []);
+
+  // Badge spec: numeric (coral) = count(OVER) capped at "9+"; gold dot when
+  // 0 OVER but APPROACHING exists; nothing for INFO-only. No pulse animation.
+  const badge =
+    counts.over > 0
+      ? { kind: 'count' as const, label: counts.over > 9 ? '9+' : String(counts.over) }
+      : counts.approaching > 0
+        ? { kind: 'dot' as const, label: '' }
+        : { kind: 'none' as const, label: '' };
+  const aria = counts.total > 0
+    ? `Alerts, ${counts.over} over, ${counts.approaching} nearing, ${counts.info} info`
+    : 'Alerts, none';
+  return { counts, badge, aria };
+}
+
 export default function FintechSidebar({ balance, alerts: initialAlerts = 0 }: Props) {
   const [collapsed, setCollapsed] = useState(false);
-  const [alerts, setAlerts] = useState(initialAlerts);
+  const bell = useAlertBadge(initialAlerts);
   const bellRef = useRef<HTMLButtonElement | null>(null);
 
   // Keep layout offsets (topbar margin, main padding) in sync with width
   useEffect(() => {
     document.documentElement.style.setProperty('--sidebar-w', collapsed ? '72px' : '240px');
   }, [collapsed]);
-
-  // Live alert count — AlertsPanel broadcasts the panel's exact count
-  // (anomaly + budget, after localStorage dismissals) on every recompute.
-  useEffect(() => {
-    const sync = (e: Event) => {
-      const n = (e as CustomEvent<number>).detail;
-      if (typeof n === 'number' && n >= 0) setAlerts(n);
-    };
-    window.addEventListener('alerts-count', sync);
-    return () => window.removeEventListener('alerts-count', sync);
-  }, []);
 
   // Mirror drawer open/close for aria-expanded on the bell (KUR-117 §5).
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -155,7 +189,7 @@ export default function FintechSidebar({ balance, alerts: initialAlerts = 0 }: P
         {/* Balance snippet */}
         {balance && (
           <div className={`px-4 py-4 shrink-0 border-b border-slate-200 dark:border-white/[0.05] ${collapsed ? 'hidden' : ''}`}>
-            <p className="text-xs text-slate-500 dark:text-white/40 uppercase tracking-wider mb-1">Balance</p>
+            <p className="text-xs text-slate-500 dark:text-white/50 uppercase tracking-wider mb-1">Balance</p>
             <p className="text-lg font-bold text-slate-900 dark:text-white tabular-nums">{balance}</p>
           </div>
         )}
@@ -171,21 +205,21 @@ export default function FintechSidebar({ balance, alerts: initialAlerts = 0 }: P
           ))}
 
           {!collapsed && (
-            <p className="px-3 pt-4 pb-1 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-white/40">Analytics</p>
+            <p className="px-3 pt-4 pb-1 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-white/50">Analytics</p>
           )}
           {ANALYTICS.map((item) => (
             <NavButton key={item.path} item={item} isPrimary={false} />
           ))}
 
           {!collapsed && (
-            <p className="px-3 pt-4 pb-1 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-white/40">Planning</p>
+            <p className="px-3 pt-4 pb-1 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-white/50">Planning</p>
           )}
           {PLANNING.map((item) => (
             <NavButton key={item.path} item={item} isPrimary={false} />
           ))}
 
           {!collapsed && (
-            <p className="px-3 pt-4 pb-1 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-white/40">Reports</p>
+            <p className="px-3 pt-4 pb-1 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-white/50">Reports</p>
           )}
           {REPORTS.map((item) => (
             <NavButton key={item.path} item={item} isPrimary={false} />
@@ -201,34 +235,40 @@ export default function FintechSidebar({ balance, alerts: initialAlerts = 0 }: P
             onClick={() => openAlertsDrawer(bellRef.current)}
             aria-haspopup="dialog"
             aria-expanded={drawerOpen}
-            aria-label={alerts > 0 ? `Alerts, ${alerts} active` : 'Alerts, none'}
-            title={alerts > 0 ? `Alerts, ${alerts} active` : 'Alerts, none'}
+            aria-label={bell.aria}
+            title={bell.aria}
             className={`relative w-full flex items-center min-h-[44px] rounded-xl transition-colors no-underline hover:bg-slate-100 dark:hover:bg-white/5 data-[drawer=open]:bg-slate-100 dark:data-[drawer=open]:bg-white/5 ${
               collapsed ? 'justify-center p-2' : 'px-3 py-2 gap-3'
             }`}
             data-drawer={drawerOpen ? 'open' : 'closed'}
           >
             <Bell
-              className={`w-5 h-5 ${alerts > 0 ? 'text-mint-500' : 'text-slate-500 dark:text-white/40'}`}
+              className={`w-5 h-5 ${bell.badge.kind !== 'none' ? 'text-mint-500' : 'text-slate-500 dark:text-white/50'}`}
               strokeWidth={1.8}
             />
-            {alerts > 0 && (
+            {bell.badge.kind === 'count' && (
               <span
                 aria-hidden="true"
-                className="absolute -top-0.5 -right-0.5 min-w-[20px] h-5 px-1 rounded-full flex items-center justify-center bg-coral-600 text-white text-[11px] font-bold"
+                className="absolute -top-0.5 -right-0.5 min-w-[20px] h-5 px-1 rounded-full flex items-center justify-center bg-coral-500 text-white text-[11px] font-bold"
               >
-                {alerts > 99 ? '99+' : alerts}
+                {bell.badge.label}
               </span>
             )}
+            {bell.badge.kind === 'dot' && (
+              <span
+                aria-hidden="true"
+                className="absolute top-0.5 right-0.5 w-2 h-2 rounded-full bg-gold-500"
+              />
+            )}
             {!collapsed && (
-              <span className={`text-sm ${alerts > 0 ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-white/40'}`}>
-                {alerts > 0 ? `${alerts} alert${alerts !== 1 ? 's' : ''}` : 'No alerts'}
+              <span className={`text-sm ${bell.badge.kind !== 'none' ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-white/50'}`}>
+                {bell.counts.total > 0 ? `${bell.counts.total} alert${bell.counts.total !== 1 ? 's' : ''}` : 'No alerts'}
               </span>
             )}
           </button>
           {/* aria-live: announce count changes without moving focus (§5) */}
           <span aria-live="polite" className="sr-only">
-            {alerts > 0 ? `${alerts} alerts` : 'No alerts'}
+            {bell.aria}
           </span>
         </div>
       </aside>

@@ -11,6 +11,7 @@ import {
   Legend,
 } from 'chart.js';
 import { Radar } from 'react-chartjs-2';
+import { fpGrid } from '../lib/chartConfig';
 import { Crosshair } from 'lucide-react';
 
 ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
@@ -122,10 +123,10 @@ export default function CategoryRadarChart({
           color: '#64748b',
         },
         grid: {
-          color: 'rgba(148, 163, 184, 0.2)',
+          color: fpGrid(),
         },
         angleLines: {
-          color: 'rgba(148, 163, 184, 0.2)',
+          color: fpGrid(),
         },
       },
     },

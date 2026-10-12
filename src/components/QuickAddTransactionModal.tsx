@@ -8,6 +8,8 @@ import TransactionFormFields from './TransactionFormFields';
 interface QuickAddTransactionModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /** KUR-245 regresi 1: prefill from share-target / calendar day pin. */
+  preset?: { title?: string | null; amount?: string | null; date?: string | null } | null;
 }
 
 const SUCCESS_CLOSE_MS = 800;
@@ -19,7 +21,7 @@ const SWIPE_DISMISS_PX = 120;
  * rounded top, max-h 90dvh, internal scroll, sticky submit footer. Desktop:
  * centered max-w-md dialog. Shares all logic with /add via useTransactionForm.
  */
-export default function QuickAddTransactionModal({ open, onOpenChange }: QuickAddTransactionModalProps) {
+export default function QuickAddTransactionModal({ open, onOpenChange, preset }: QuickAddTransactionModalProps) {
   const ctrl = useTransactionForm({
     onSaved: () => {
       // Brief success state, then auto-close (brief: close ≤800ms).
@@ -28,11 +30,13 @@ export default function QuickAddTransactionModal({ open, onOpenChange }: QuickAd
   });
 
   // Fresh "now" + cleared content every time the modal opens; focus the
-  // amount field once Radix has mounted the sheet content.
+  // amount field once Radix has mounted the sheet content. Preset prefill
+  // (share-target / calendar pin) applies after resetContent.
   const focusTimer = useRef<number | null>(null);
   useEffect(() => {
     if (open) {
       ctrl.resetContent();
+      if (preset) ctrl.applyPreset(preset);
       focusTimer.current = window.setTimeout(() => ctrl.titleRef.current?.focus(), 50);
     }
     return () => {

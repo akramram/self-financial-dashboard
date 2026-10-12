@@ -172,6 +172,8 @@ export default function AlertsDrawer() {
   // every recompute (dashboard instance mounts on /; this drawer's instance
   // broadcasts while open), including optimistic drops on dismiss.
   const [liveCount, setLiveCount] = useState(0);
+  // KUR-245 G1: severity breakdown for the header digest (AC-2).
+  const [sev, setSev] = useState({ over: 0, approaching: 0, info: 0 });
   useEffect(() => {
     const onCount = (e: Event) => {
       const n = (e as CustomEvent<number>).detail;
@@ -181,8 +183,16 @@ export default function AlertsDrawer() {
         if (n > 0) setJustMarkedAll(false);
       }
     };
+    const onSev = (e: Event) => {
+      const d = (e as CustomEvent<{ over: number; approaching: number; info: number }>).detail;
+      if (d && typeof d.over === 'number') setSev(d);
+    };
     window.addEventListener('alerts-count', onCount);
-    return () => window.removeEventListener('alerts-count', onCount);
+    window.addEventListener('alerts-severity', onSev);
+    return () => {
+      window.removeEventListener('alerts-count', onCount);
+      window.removeEventListener('alerts-severity', onSev);
+    };
   }, []);
 
   // ── FIN-022 (AC-6): bulk mark-all-read + "Pulihkan semua alert bulan ini".
@@ -269,6 +279,18 @@ export default function AlertsDrawer() {
               style={{ backgroundColor: 'hsl(var(--muted))' }}
             >
               {liveCount} aktif
+            </span>
+            {/* KUR-245 G1 AC-2: drawer digest "2 over · 3 nearing · 5 info" —
+                count-only chip; info-only keeps a plain count. */}
+            <span
+              data-testid="alerts-drawer-digest"
+              className="whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-medium text-slate-500 dark:text-white/50 tabular-nums hidden sm:inline"
+              style={{ backgroundColor: 'hsl(var(--muted))' }}
+            >
+              {sev.over > 0 && <><span className="text-coral-600 dark:text-coral-400">{sev.over} over</span> · </>}
+              {sev.approaching > 0 && <><span className="text-gold-600 dark:text-gold-400">{sev.approaching} nearing</span> · </>}
+              {sev.info > 0 && <span className="text-mint-600 dark:text-mint-400">{sev.info} info</span>}
+              {sev.over === 0 && sev.approaching === 0 && sev.info === 0 && '0 info'}
             </span>
             {mutedCount > 0 && (
               <span

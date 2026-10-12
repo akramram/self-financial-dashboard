@@ -13,6 +13,7 @@ import {
   BarElement,
 } from 'chart.js';
 import { Radar, Bar } from 'react-chartjs-2';
+import { fpGrid } from '../lib/chartConfig';
 import {
   TrendingUp,
   TrendingDown,
@@ -185,10 +186,10 @@ export default function SpendingDna() {
             color: 'rgba(71, 85, 105, 1)',
           },
           grid: {
-            color: 'rgba(148, 163, 184, 0.2)',
+            color: fpGrid(),
           },
           angleLines: {
-            color: 'rgba(148, 163, 184, 0.2)',
+            color: fpGrid(),
           },
         },
       },
@@ -242,10 +243,10 @@ export default function SpendingDna() {
             callback: (v: any) => `${v}%`,
             font: { size: 11 },
           },
-          grid: { color: 'rgba(148, 163, 184, 0.15)' },
+          grid: { color: fpGrid() },
         },
         x: {
-          ticks: { font: { size: 11 }, maxRotation: 45 },
+          ticks: { maxRotation: 0 },
           grid: { display: false },
         },
       },
@@ -299,7 +300,7 @@ export default function SpendingDna() {
             callback: (v: any) => `${v}%`,
             font: { size: 11 },
           },
-          grid: { color: 'rgba(148, 163, 184, 0.15)' },
+          grid: { color: fpGrid() },
         },
         x: {
           stacked: true,

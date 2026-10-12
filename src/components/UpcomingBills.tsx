@@ -142,7 +142,7 @@ export default function UpcomingBills({ recurring, transactions, activePeriodId,
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-semibold text-slate-800 dark:text-white/80">Upcoming Bills</h3>
+        <h3 className="text-base font-semibold text-slate-800 dark:text-white/80">Upcoming Bills</h3>
         {unpaidTotal > 0 && (
           <span className="text-xs text-slate-500 dark:text-white/40">
             <span className="font-semibold text-coral-400">{formatIdr(unpaidTotal)}</span> pending

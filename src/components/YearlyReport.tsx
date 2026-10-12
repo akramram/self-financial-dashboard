@@ -194,7 +194,8 @@ export default function YearlyReport({ summaries, categories }: Props) {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { position: 'right' as const, labels: { boxWidth: 12, font: { size: 11 } } },
+      // KUR-245 regresi 2: donut legend always bottom (B4), never right.
+      legend: { position: 'bottom' as const, labels: { boxWidth: 12, font: { size: 11 } } },
       tooltip: { callbacks: { label: (ctx: any) => `${ctx.label}: ${formatIdr(ctx.parsed)}` } },
     },
   };

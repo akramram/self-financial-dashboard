@@ -32,7 +32,8 @@ export default function FintechBottomTabs() {
         if (idx === 2) {
           return (
             <React.Fragment key="center-btn">
-              {/* Center + button, opens QuickAddDialog */}
+              {/* Center + button — opens the shared quick-add sheet (QuickAddFAB
+                  hosts the modal; quick-add-open bus, KUR-245 regresi 1) */}
               <button
                 onClick={openQuickAdd}
                 className="flex items-center justify-center w-12 h-12 rounded-full -mt-6 shrink-0 mx-0.5 transition-transform active:scale-90 border-0 cursor-pointer"
@@ -65,11 +66,11 @@ function TabButton({ tab, active }: { tab: typeof TABS[0]; active: boolean }) {
       className="flex flex-col items-center justify-center gap-0.5 py-1 px-2 min-h-[44px] rounded-xl transition-colors relative no-underline flex-1"
     >
       {React.createElement(tab.icon, {
-        className: `w-5 h-5 ${active ? 'text-mint-500' : 'text-slate-500 dark:text-white/40'}`,
+        className: `w-5 h-5 ${active ? 'text-mint-500' : 'text-slate-500 dark:text-white/50'}`,
         strokeWidth: 1.8,
       })}
       <span
-        className={`text-[11px] font-medium ${active ? 'text-mint-500' : 'text-slate-500 dark:text-white/40'}`}
+        className={`text-[11px] font-medium ${active ? 'text-mint-500' : 'text-slate-500 dark:text-white/50'}`}
       >
         {tab.label}
       </span>

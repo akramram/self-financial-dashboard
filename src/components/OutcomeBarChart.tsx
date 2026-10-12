@@ -8,6 +8,7 @@ import {
   Legend,
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
+import { fpGrid } from '../lib/chartConfig';
 import { formatIdr } from '../lib/utils';
 import type { Category, MonthlySummary } from '../lib/data';
 
@@ -115,7 +116,7 @@ export default function OutcomeBarChart({ data, categories = [], highlightCatego
           font: { size: 11 },
         },
         grid: {
-          color: 'rgba(148, 163, 184, 0.15)',
+          color: fpGrid(),
         },
       },
       [isTrendMode ? 'x' : 'y']: {
