@@ -165,6 +165,19 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
     return { income, spending, balance, prevBalance, prevIncome, prevSpending, nw, prevNw, unpaidTotal, unpaidCount, projectedBalance, last6Income: sorted.slice(-6).map(s => s.income ?? 0), last6Spending: sorted.slice(-6).map(s => s.outcome?.total ?? 0), last6Nw: nwSorted.slice(-6).map(n => n.total ?? 0) };
   }, [activeSummary, summaries, networth, filteredTransactions]);
 
+  // Cashflow-Net: total spent = done cash + done credit_payment + done credit_expense
+  // Ensures CC swipes directly deplete remaining budget and daily allowance.
+  const totalPeriodSpent = useMemo(() => {
+    if (filteredTransactions.length > 0) {
+      return filteredTransactions
+        .filter(t => Boolean(t.done))
+        .reduce((s, t) => s + t.amount, 0);
+    }
+    const outcome = activeSummary?.outcome;
+    if (!outcome) return 0;
+    return (outcome.total ?? 0) + (outcome.credit_expenses ?? 0);
+  }, [filteredTransactions, activeSummary]);
+
   // ── Effects ───────────────────────────────────────────────────
   useEffect(() => { fetchCategories().then(setCategories).catch(() => {}); fetchRecurringTransactions().then(r => { setRecurringTitles(r.filter(rx => rx.active).map(rx => rx.title)); setRecurringAll(r); }).catch(() => {}); fetch('/api/runway').then(r => r.json()).then(d => setRunwayData(d)).catch(() => {}); fetch('/api/health').then(r => r.json()).then(d => setHealthData(d)).catch(() => {}); fetch('/api/ksei').then(async r => { const d = await r.json().catch(() => null); if (d) setKseiData(d); }).catch(() => {}); }, []);
 
@@ -403,7 +416,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
             <DailyBudgetIndicator
               transactions={filteredTransactions}
               income={glance?.income ?? 0}
-              spent={glance?.spending ?? 0}
+              spent={totalPeriodSpent}
               activeMonth={activeSummary?.month}
             />
           </GlassCard>

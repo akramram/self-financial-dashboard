@@ -156,6 +156,20 @@ describe('DailyBudgetIndicator — 7-day burn bars', () => {
     expect(screen.queryByText((_, el) => el?.textContent?.endsWith('unpaid') ?? false)).toBeNull();
   });
 
+  it('computes period spending from transactions including credit_expense when spent prop is omitted', () => {
+    // income 1M, done txs: 200k cash + 200k credit_expense = 400k spent
+    // daysRemaining 2 → remaining 600k → allowance 300k
+    const txs = [
+      mk(1, day(-1), 200000, true, 'cash'),
+      mk(2, day(0), 200000, true, 'credit_expense'),
+    ];
+    render(
+      <DailyBudgetIndicator transactions={txs} income={1000000} activeMonth="September 2026" />
+    );
+    expect(screen.getAllByText('IDR 300.000').length).toBeGreaterThan(0);
+    expect(screen.getByText('2 days left • IDR 600.000 remaining')).toBeInTheDocument();
+  });
+
   it('unpaid credit_expense alone does not trigger the unpaid note', () => {
     const txs = [mk(1, day(0), 300000), mk(2, day(0, 9), 200000, false, 'credit_expense')];
     render(

@@ -6,7 +6,7 @@ import { Wallet, CalendarDays, TrendingDown, CheckCircle2 } from 'lucide-react';
 interface Props {
   transactions: Transaction[];
   income: number;
-  spent: number;
+  spent?: number;
   activeMonth: string;
 }
 
@@ -58,8 +58,12 @@ export default function DailyBudgetIndicator({ transactions, income, spent, acti
     const daysRemaining = Math.max(1, Math.ceil((end.getTime() - today.getTime()) / 86400000) + 1);
 
     // Remaining budget after done spending AND unpaid obligations in the same period
+    // If spent prop is passed, use it; otherwise compute from done transactions (cash + credit_payment + credit_expense)
+    const doneSpent = spent !== undefined
+      ? spent
+      : transactions.filter(t => Boolean(t.done)).reduce((sum, t) => sum + t.amount, 0);
     const unpaidTotal = getUnpaidTotal(transactions);
-    const remaining = Math.max(0, income - spent - unpaidTotal);
+    const remaining = Math.max(0, income - doneSpent - unpaidTotal);
 
     // Daily allowance = remaining / days remaining
     const dailyAllowance = Math.round(remaining / daysRemaining);

@@ -6,14 +6,15 @@ import { db } from '../../lib/db';
  *
  * Computes the daily "safe-to-spend" allowance for the active (or specified) salary period.
  *
- * Formula:
+ * Formula (Cashflow-Net):
+ *   totalSpent        = Σ(done = 1 AND type IN ('cash','credit_expense','credit_payment'))
  *   unpaidObligations = Σ(done = 0 AND type IN ('cash','credit_payment')) — same period.
  *     Mirrors the projected-balance definition (glance.unpaidTotal). Unpaid
  *     credit_expense is NOT included: it is already counted when the expense
  *     is created (including it here would double count).
- *   remainingBudget = income − totalSpent − unpaidObligations
- *   daysRemaining   = period end date − today (minimum 0)
- *   dailySafeToSpend = remainingBudget / max(1, daysRemaining)
+ *   remainingBudget   = income − totalSpent − unpaidObligations
+ *   daysRemaining     = period end date − today (minimum 0)
+ *   dailySafeToSpend  = remainingBudget / max(1, daysRemaining)
  *
  * Also returns:
  *   unpaidObligations — sum of unpaid cash + unpaid credit_payment this period
@@ -72,12 +73,12 @@ export const GET: APIRoute = async ({ url }) => {
     .get(period.id) as { income: number } | undefined;
   const income = incomeRow?.income ?? 0;
 
-  // --- Total spent (done spending transactions) ---
+  // --- Total spent (done spending transactions: cash + credit_expense + credit_payment) ---
   const spentRow = db
     .prepare(
       `SELECT COALESCE(SUM(amount), 0) as total
        FROM transactions
-       WHERE period_id = ? AND done = 1 AND type IN ('cash', 'credit_expense')`
+       WHERE period_id = ? AND done = 1 AND type IN ('cash', 'credit_expense', 'credit_payment')`
     )
     .get(period.id) as { total: number };
   const totalSpent = spentRow.total;

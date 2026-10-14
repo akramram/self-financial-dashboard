@@ -140,6 +140,21 @@ describe('GET /api/safe-to-spend — unpaid obligations', () => {
     expect(body.daily_safe_to_spend).toBe(250_000);
   });
 
+  it('(e) done credit_payment is counted in total_spent under Cashflow-Net', async () => {
+    const p = seedWindowPeriod();
+    testDb.db
+      .prepare('INSERT INTO monthly_income (period_id, date, income) VALUES (?, ?, ?)')
+      .run(p.id, localISO(new Date()), INCOME);
+    seedTransaction(testDb.db, p.id, {
+      type: 'credit_payment', done: 1, amount: 400_000, payment_method: 'Credit Card',
+    });
+
+    const { body } = await call(p.id);
+    expect(body.total_spent).toBe(400_000);
+    expect(body.remaining_budget).toBe(600_000);
+    expect(body.daily_safe_to_spend).toBe(300_000);
+  });
+
   it('ignores unpaid obligations from other periods', async () => {
     const p = seedWindowPeriod();
     testDb.db
