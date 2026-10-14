@@ -1,5 +1,24 @@
 # Iteration Log
 
+## Sesi KUR-276 — Daily Budget memperhitungkan Credit Card Expenses (Cashflow-Net) (GH #317)
+
+### Ringkasan
+Sebelumnya `DailyBudgetIndicator` menerima prop `spent = glance.spending` yang hanya menghitung pengeluaran kas (`cash + credit_payment`). Akibatnya, gesek kartu kredit harian (`credit_expense`) untuk makan dan belanja tidak pernah memotong sisa budget maupun jatah harian. Dengan Cashflow-Net (Opsi 1):
+- `totalPeriodSpent` mencakup `done cash + done credit_payment + done credit_expense`.
+- Setiap gesek CC langsung mendeplet sisa budget dan jatah harian secara riil.
+- `/api/safe-to-spend.ts` juga mengikutsertakan `credit_payment` saat `done = 1` agar pelunasan tagihan CC tidak menimbulkan kenaikan plafon semu.
+
+### Perubahan
+- **`src/components/Dashboard.tsx`**: definisikan `totalPeriodSpent` (cash + credit_payment + credit_expense) dan oper ke `DailyBudgetIndicator`.
+- **`src/components/DailyBudgetIndicator.tsx`**: prop `spent` dijadikan optional; jika tidak dioper, fallback menghitung done spending (termasuk `credit_expense`) dari `transactions`.
+- **`src/pages/api/safe-to-spend.ts`**: query `total_spent` mencakup `cash`, `credit_expense`, dan `credit_payment` saat `done = 1`.
+- **`src/__tests__/daily-budget-indicator.test.tsx`**: tambah test case kalkulasi spending dari transaksi jika prop `spent` omitted.
+- **`src/__tests__/safe-to-spend.test.ts`**: tambah test case `(e) done credit_payment is counted in total_spent under Cashflow-Net`.
+
+### Verifikasi
+- 472/472 tests pass (34 file), `npm run build` clean.
+- Data `data/` dan `financial.db` tidak disentuh.
+
 ## Sesi KUR-237 — Daily health-check 12 Okt 2026
 
 ### Ringkasan
