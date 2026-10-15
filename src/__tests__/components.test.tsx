@@ -312,24 +312,25 @@ describe('SpendingPulse', () => {
   });
 
   it('filters out future transactions when transactions array is provided', () => {
-    const summary = makeSummary('October 2026', 10_000_000, 5_500_000);
+    const monthLabel = new Date().toLocaleString('en-US', { month: 'long', year: 'numeric' });
+    const summary = makeSummary(monthLabel, 10_000_000, 5_500_000);
     const txPast = makeTx({
       amount: 500_000,
       type: 'cash',
       done: true,
-      created_time: '2026-09-21T01:00:00.000Z',
+      created_time: new Date(Date.now() - 5 * 86_400_000).toISOString(),
     });
     const txFuture = makeTx({
       amount: 5_000_000,
       type: 'cash',
       done: true,
-      created_time: '2026-10-15T01:00:00.000Z',
+      created_time: new Date(Date.now() + 10 * 86_400_000).toISOString(),
     });
 
     render(
       <SpendingPulse
         summaries={[summary]}
-        activeMonth="October 2026"
+        activeMonth={monthLabel}
         transactions={[txPast, txFuture]}
       />,
     );
