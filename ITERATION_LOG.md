@@ -2469,3 +2469,11 @@ Audit KUR-59/FIN-015+016: foundation shadcn + migrasi tabel & form ternyata suda
 - **Bug fix (PR #320 merged):** test SpendingPulse date-flaky — hardcoded `2026-10-15` jadi "today" pada 15 Okt, gagal hanya tanggal itu. Diganti offset relatif terhadap `now`.
 - Sebelum run: tidak ada issue/PR GitHub terbuka. Error log PM2 bersih (hanya startup lines). Sehat.
 - Review visual (Pixel Painter) & relevansi kalkulator (Strategy Hawk) sesuai checklist KUR-288 — di luar scope health-check teknis ini.
+
+## 2026-10-16 — KUR-299 Daily Iteration: health-check (Code Crafter)
+
+### Hasil
+- PM2 `financial-dashboard` online. `npm run build` clean, `pm2 restart financial-dashboard` → :4321 `/login` HTTP 200, `/` 302 (auth redirect), `/api/*` 401 unauthenticated = auth middleware bekerja.
+- Test suite **472/472 hijau** (34 files). DB `PRAGMA integrity_check` = ok, 990 transaksi. `data/` & `financial.db` tidak disentuh.
+- Sebelum run: tidak ada issue/PR GitHub terbuka. Error log PM2 bersih (entri basi 19 Sep). Sehat.
+- Review visual (Pixel Painter) & relevansi kalkulator (Strategy Hawk) sesuai checklist KUR-299 — di luar scope health-check teknis ini.
