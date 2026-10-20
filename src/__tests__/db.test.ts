@@ -1514,6 +1514,135 @@ describe('DB — Goal auto-contribution (recurring link)', () => {
   });
 });
 
+describe('DB — getMonthlySummary and Invest savings envelope math', () => {
+  let db: any, cleanup: () => void;
+
+  beforeEach(() => {
+    const t = createTestDb();
+    db = t.db;
+    cleanup = t.cleanup;
+  });
+
+  afterEach(() => cleanup());
+
+  it('computes savings and savings_rate_pct treating Invest as savings, not expense', () => {
+    const p = seedPeriod(db, 'August 2026');
+    db.prepare('INSERT INTO monthly_income (period_id, date, income) VALUES (?, ?, ?)').run(p.id, p.start_date, 10000000);
+
+    // Regular done cash expense = 3,000,000
+    seedTransaction(db, p.id, {
+      title: 'Groceries',
+      category: 'Food',
+      amount: 3000000,
+      type: 'cash',
+      done: 1,
+    });
+
+    // Investment transaction = 2,000,000
+    seedTransaction(db, p.id, {
+      title: 'Bibit Reksadana',
+      category: 'Invest',
+      amount: 2000000,
+      type: 'cash',
+      done: 1,
+    });
+
+    // Credit expense = 500,000
+    seedTransaction(db, p.id, {
+      title: 'Online Shopping',
+      category: 'Shopping',
+      amount: 500000,
+      type: 'credit_expense',
+      done: 1,
+    });
+
+    const summaries = getMonthlySummaryMirror(db);
+    expect(summaries).toHaveLength(1);
+    const s = summaries[0];
+
+    expect(s.income).toBe(10000000);
+    // outcome.total is cash + credit_payment = 3,000,000 + 2,000,000 = 5,000,000
+    expect(s.outcome.total).toBe(5000000);
+    expect(s.invest_total).toBe(2000000);
+    // Savings = income - (outcome.total - invest_total) = 10M - (5M - 2M) = 7,000,000
+    expect(s.savings).toBe(7000000);
+    expect(s.savings_rate_pct).toBe(70);
+  });
+
+  it('handles period with zero income gracefully (savings_rate_pct = 0)', () => {
+    const p = seedPeriod(db, 'September 2026');
+    seedTransaction(db, p.id, {
+      title: 'Lunch',
+      category: 'Food',
+      amount: 50000,
+      type: 'cash',
+      done: 1,
+    });
+
+    const summaries = getMonthlySummaryMirror(db);
+    expect(summaries).toHaveLength(1);
+    const s = summaries[0];
+    expect(s.income).toBe(0);
+    expect(s.savings).toBe(-50000);
+    expect(s.savings_rate_pct).toBe(0);
+  });
+});
+
+/**
+ * Local mirror of getMonthlySummary logic for testing against an isolated DB.
+ */
+function getMonthlySummaryMirror(db: any) {
+  const periodRows = db.prepare(`
+    SELECT DISTINCT p.id, p.month, p.start_date, p.end_date
+    FROM periods p
+    INNER JOIN transactions t ON t.period_id = p.id
+    ORDER BY p.start_date ASC
+  `).all() as any[];
+
+  const incomeRows = db.prepare('SELECT period_id, income FROM monthly_income').all() as any[];
+  const incomeMap = new Map<number, number>();
+  for (const r of incomeRows) {
+    incomeMap.set(r.period_id, r.income || 0);
+  }
+
+  const summaries = [];
+  for (const p of periodRows) {
+    const tx = db.prepare('SELECT * FROM transactions WHERE period_id = ? AND done = 1').all(p.id) as any[];
+    const cash = tx.filter((t: any) => t.type === 'cash').reduce((s: number, t: any) => s + t.amount, 0);
+    const credit_payment = tx.filter((t: any) => t.type === 'credit_payment').reduce((s: number, t: any) => s + t.amount, 0);
+    const credit_expenses = tx.filter((t: any) => t.type === 'credit_expense').reduce((s: number, t: any) => s + t.amount, 0);
+    const total_outcome = cash + credit_payment;
+    const invest_total = tx.filter((t: any) => t.category === 'Invest').reduce((s: number, t: any) => s + t.amount, 0);
+
+    const nw = db.prepare('SELECT total FROM networth WHERE period_id = ?').get(p.id) as any;
+
+    const category_totals: Record<string, number> = {};
+    tx.filter((t: any) => t.type === 'cash' || t.type === 'credit_expense' || t.type === 'credit_payment').forEach((t: any) => {
+      category_totals[t.category] = (category_totals[t.category] || 0) + t.amount;
+    });
+
+    const income = incomeMap.get(p.id) || 0;
+    const savings = income - (total_outcome - invest_total);
+    const savings_rate_pct = income > 0 ? Number(((savings / income) * 100).toFixed(2)) : 0;
+
+    summaries.push({
+      period_id: p.id,
+      month: p.month,
+      date: p.start_date,
+      start_date: p.start_date,
+      end_date: p.end_date,
+      income,
+      outcome: { cash, credit_payment, credit_expenses, total: total_outcome },
+      invest_total,
+      savings,
+      savings_rate_pct,
+      networth: nw?.total || 0,
+      category_totals,
+    });
+  }
+  return summaries;
+}
+
 /**
  * Local mirror of ensureCategory logic for testing against an isolated DB.
  * Mirrors src/lib/db.ts:ensureCategory exactly (same palette, same hash) so
