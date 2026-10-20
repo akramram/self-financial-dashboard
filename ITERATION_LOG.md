@@ -2501,3 +2501,13 @@ Audit KUR-59/FIN-015+016: foundation shadcn + migrasi tabel & form ternyata suda
 - Test suite **472/472 hijau** (34 files). `data/` & `financial.db` tidak disentuh.
 - GitHub: tidak ada issue/PR open. Error log PM2 hanya entri basi 19 Sep (JSON parse DELETE bulk, sudah ter-guard). Sehat.
 - Review visual (Pixel Painter) & relevansi kalkulator (Strategy Hawk) sesuai checklist KUR-343 — di luar scope health-check teknis ini.
+
+## 2026-10-20 — Daily Innovation: Unifikasi Envelope Savings Rate & Invest-as-Saving (PR #326)
+
+### Hasil
+- **Inovasi / Refactor:** Unifikasi envelope math perhitungan savings rate dan kategori `Invest` sebagai saving, bukan expense, di seluruh halaman Astro (`index.astro`, `analytics.astro`, `budget.astro`, `cashflow.astro`, `compare.astro`, `health.astro`, `merchants.astro`, `report.astro`, `yearly.astro`), `api/fire/index.ts`, dan `getMonthlySummary()` pada `src/lib/db.ts`.
+- **Aturan Domain (FIN-235):** `savings = income - (outcome.total - invest_total)` dan `savings_rate_pct = income > 0 ? (savings / income) * 100 : 0`.
+- **Tests:** Menambahkan unit test baru di `src/__tests__/db.test.ts` untuk `getMonthlySummary` mirror dan envelope math Invest. Total test suite bertambah menjadi **474/474 hijau** (34 files).
+- **Git workflow:** Branch `feat/innovation-savings-invest-unification` → PR #326 merged ke `main`.
+- **Build/Deploy:** `npm run build` clean, PM2 `financial-dashboard` restarted & online di port 4321.
+
