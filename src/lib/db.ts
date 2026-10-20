@@ -717,6 +717,13 @@ export function getMonthlySummary() {
     ORDER BY p.start_date ASC
   `).all() as any[];
 
+  // Fetch monthly_income once for all periods
+  const incomeRows = db.prepare('SELECT period_id, income FROM monthly_income').all() as any[];
+  const incomeMap = new Map<number, number>();
+  for (const r of incomeRows) {
+    incomeMap.set(r.period_id, r.income || 0);
+  }
+
   const summaries = [];
   for (const p of periodRows) {
     const tx = db.prepare('SELECT * FROM transactions WHERE period_id = ? AND done = 1').all(p.id) as any[];
@@ -734,17 +741,21 @@ export function getMonthlySummary() {
       category_totals[t.category] = (category_totals[t.category] || 0) + t.amount;
     });
 
+    const income = incomeMap.get(p.id) || 0;
+    const savings = income - (total_outcome - invest_total);
+    const savings_rate_pct = income > 0 ? Number(((savings / income) * 100).toFixed(2)) : 0;
+
     summaries.push({
       period_id: p.id,
       month: p.month,
       date: p.start_date,
       start_date: p.start_date,
       end_date: p.end_date,
-      income: 0,
+      income,
       outcome: { cash, credit_payment, credit_expenses, total: total_outcome },
       invest_total,
-      savings: 0,
-      savings_rate_pct: 0,
+      savings,
+      savings_rate_pct,
       networth: nw?.total || 0,
       category_totals,
     });

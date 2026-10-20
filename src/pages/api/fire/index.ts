@@ -77,13 +77,14 @@ export const GET: APIRoute = async ({ request }) => {
   const incomeMap = new Map(incomeRows.map((r) => [r.period_id, r.income]));
   const monthlyIncome = incomeMap.get(latestSummary.period_id) || 0;
 
-  // Calculate core metrics
-  const monthlyExpenses = latestSummary.outcome.total;
+  // Calculate core metrics (Invest category is saving, not expense #235)
+  const invest = latestSummary.invest_total ?? 0;
+  const monthlyExpenses = Math.max(0, latestSummary.outcome.total - invest);
   const annualExpenses = monthlyExpenses * 12;
   const currentNetworth = latestNetworth?.total || 0;
   const monthlySavings = monthlyIncome - monthlyExpenses;
   const savingsRate = monthlyIncome > 0 
-    ? ((monthlyIncome - monthlyExpenses) / monthlyIncome) * 100 
+    ? (monthlySavings / monthlyIncome) * 100 
     : 0;
 
   // FIRE number: annual expenses / withdrawal rate (4% rule = 25x annual expenses)
