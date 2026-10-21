@@ -4,7 +4,7 @@ import { formatIdr } from '../lib/utils';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Wallet, CreditCard, Receipt, Pencil, Trash2, CheckCircle2, Circle, RotateCcw } from 'lucide-react';
+import { Wallet, CreditCard, Receipt, Pencil, Trash2, CheckCircle2, Circle, RotateCcw, CalendarClock } from 'lucide-react';
 
 interface Props {
   open: boolean;
@@ -15,6 +15,8 @@ interface Props {
   onDelete: (tx: Transaction) => void;
   /** Duplicate this transaction into the active period (one-tap repeat). */
   onRepeat: (tx: Transaction) => void;
+  /** Convert this transaction into a recurring installment. */
+  onConvertToInstallment?: (tx: Transaction) => void;
 }
 
 const DISMISS_THRESHOLD = 90; // px of downward drag before the sheet dismisses
@@ -27,7 +29,16 @@ const DISMISS_THRESHOLD = 90; // px of downward drag before the sheet dismisses
  * ponytail: no velocity fling — pure distance threshold; add velocity tracking
  * if the spring-back ever feels sluggish.
  */
-export default function TransactionDetailSheet({ open, transaction, onClose, onToggleDone, onEdit, onDelete, onRepeat }: Props) {
+export default function TransactionDetailSheet({
+  open,
+  transaction,
+  onClose,
+  onToggleDone,
+  onEdit,
+  onDelete,
+  onRepeat,
+  onConvertToInstallment,
+}: Props) {
   const contentRef = React.useRef<HTMLDivElement | null>(null);
   const drag = React.useRef<{ startY: number; startX: number; startScroll: number; pointerId: number; active: boolean } | null>(null);
   const [dragY, setDragY] = React.useState(0);
@@ -167,6 +178,20 @@ export default function TransactionDetailSheet({ open, transaction, onClose, onT
             {transaction.done ? 'Paid, tap to mark unpaid' : 'Unpaid, tap to mark paid'}
           </button>
         </div>
+
+        {onConvertToInstallment ? (
+          <div className="px-6 pb-1">
+            <button
+              onClick={() => {
+                onClose();
+                onConvertToInstallment(transaction);
+              }}
+              className="w-full flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold border border-blue-500/20 bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500/15 transition-colors"
+            >
+              <CalendarClock className="w-4 h-4" /> Ubah Jadi Cicilan
+            </button>
+          </div>
+        ) : null}
 
         <div className="px-6 pb-6 pt-2 grid grid-cols-3 gap-3">
           <Button
