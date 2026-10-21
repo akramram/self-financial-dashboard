@@ -1,7 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import type { Transaction } from '../lib/data';
 import { formatIdr, periodForDate } from '../lib/utils';
-import { getSubsequentPeriodMonth, calculateInstallment } from '../lib/installment';
+import { getSubsequentPeriodMonth, calculateInstallment } from '../lib/installment-calc';
 import { convertToInstallmentApi } from '../lib/api';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -25,30 +25,30 @@ const INTEREST_PRESETS = [
 ];
 
 export default function ConvertToInstallmentModal({ open, transaction, onClose, onSuccess }: Props) {
-  if (!transaction) return null;
-
-  // Initial date derived from transaction's created_time or date
-  const defaultDate = useMemo(() => {
-    if (transaction.created_time) {
-      return transaction.created_time.slice(0, 10);
-    }
-    if (transaction.date) {
-      return transaction.date.slice(0, 10);
-    }
-    return new Date().toISOString().slice(0, 10);
-  }, [transaction]);
-
   const [months, setMonths] = useState<number>(6);
   const [interestType, setInterestType] = useState<'percent' | 'nominal'>('percent');
   const [interestPercent, setInterestPercent] = useState<string>('0');
   const [interestNominal, setInterestNominal] = useState<string>('0');
   const [adminFee, setAdminFee] = useState<string>('0');
-  const [startDate, setStartDate] = useState<string>(defaultDate);
+  const [startDate, setStartDate] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Sync default date when transaction opens
+  useEffect(() => {
+    if (!transaction) return;
+    if (transaction.created_time) {
+      setStartDate(transaction.created_time.slice(0, 10));
+    } else if (transaction.date) {
+      setStartDate(transaction.date.slice(0, 10));
+    } else {
+      setStartDate(new Date().toISOString().slice(0, 10));
+    }
+  }, [transaction]);
+
   // Period analysis
   const periodInfo = useMemo(() => {
+    if (!startDate) return null;
     const p = periodForDate(startDate);
     if (!p) return null;
     const startPeriod = `${p.month} ${p.year}`;
@@ -59,18 +59,21 @@ export default function ConvertToInstallmentModal({ open, transaction, onClose, 
 
   // Real-time calculation
   const calc = useMemo(() => {
+    const amount = transaction?.amount || 0;
     const pct = interestType === 'percent' ? parseFloat(interestPercent) || 0 : undefined;
     const flat = interestType === 'nominal' ? parseFloat(interestNominal) || 0 : undefined;
     const fee = parseFloat(adminFee) || 0;
 
     return calculateInstallment({
-      amount: transaction.amount,
+      amount,
       months,
       interestPercent: pct,
       interestFlatMonthly: flat,
       adminFee: fee,
     });
-  }, [transaction.amount, months, interestType, interestPercent, interestNominal, adminFee]);
+  }, [transaction?.amount, months, interestType, interestPercent, interestNominal, adminFee]);
+
+  if (!open || !transaction) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

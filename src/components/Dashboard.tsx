@@ -14,7 +14,7 @@ import AnimatedCounter from './ui/animated-counter';
 import InView from './ui/in-view';
 import Sparkline from './Sparkline';
 
-import { DollarSign, Wallet, BarChart3, TrendingUp, TrendingDown, Scale, Shield, Bell, Plus, X, AlertTriangle, Search, ChevronRight } from 'lucide-react';
+import { DollarSign, Wallet, BarChart3, TrendingUp, TrendingDown, Scale, Shield, Bell, Plus, X, AlertTriangle, Search, ChevronRight, CalendarClock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -635,7 +635,20 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
                         <TableCell className="font-medium text-right text-slate-800 dark:text-white/90">{formatIdr(row.amount)}</TableCell>
                         <TableCell className={`${typeClass} text-xs font-semibold uppercase`}>{typeLabel}</TableCell>
                         <TableCell className="text-slate-500 dark:text-white/50">
-                          <ChevronRight className="w-4 h-4" />
+                          <div className="flex items-center justify-end gap-1">
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setInstallmentTx(row);
+                              }}
+                              className="p-1 rounded text-slate-500 hover:text-blue-500 hover:bg-blue-500/10 transition-colors"
+                              title="Ubah Jadi Cicilan"
+                            >
+                              <CalendarClock className="w-4 h-4" />
+                            </button>
+                            <ChevronRight className="w-4 h-4" />
+                          </div>
                         </TableCell>
                       </TableRow>
                     );
