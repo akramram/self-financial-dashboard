@@ -1,5 +1,25 @@
 # Iteration Log
 
+## Sesi 21 Okt 2026 — Credit Card Active Installments & Conversion Action (GH PR #330)
+
+### Ringkasan
+Menambahkan pelacakan cicilan aktif (**Active Installments / Cicilan Berjalan**) dan aksi konversi langsung ke cicilan pada Credit Card Tracker (`/credit-card`):
+- Bagian baru **Active Installments (Cicilan Berjalan)** menampilkan kartu metrik ringkasan: jumlah cicilan aktif, beban cicilan bulanan, dan sisa estimasi kewajiban utang cicilan.
+- Menampilkan visual progress bar tenor per cicilan (misal: 1 dari 3 bulan, persentase lunas, tanggal jatuh tempo, dan bulan target selesai).
+- Menambahkan tombol aksi **Installment** di tabel Unpaid Credit Expenses untuk mempermudah pemecahan transaksi kartu kredit menjadi cicilan bulanan via `ConvertToInstallmentModal`.
+- Mematuhi antislop: dual-mode theme support (WCAG AA), zero em-dash, dan responsive layout.
+
+### Perubahan
+- **`src/lib/installment-summary.ts`**: helper kalkulasi agregasi cicilan (`summarizeInstallments`, `extractTenorFromTitle`, `cleanInstallmentTitle`, `formatYYYYMMToPeriodMonth`).
+- **`src/components/CreditCardTracker.tsx`**: integrasi fetch recurring transactions, section Active Installments, kolom aksi cicilan di tabel unpaid expenses, dan modal konversi cicilan.
+- **`src/__tests__/installment-summary.test.ts`**: unit test parser tenor, format tanggal, dan agregasi sisa kewajiban cicilan.
+- **`src/__tests__/credit-card-tracker.test.tsx`**: test render komponen CreditCardTracker dengan cicilan aktif dan modal konversi.
+
+### Verifikasi
+- 489/489 tests pass (37 file), `npm run build` clean (6.3s).
+- Data `data/` dan `financial.db` tidak disentuh.
+
+
 ## Sesi KUR-276 — Daily Budget memperhitungkan Credit Card Expenses (Cashflow-Net) (GH #317)
 
 ### Ringkasan
