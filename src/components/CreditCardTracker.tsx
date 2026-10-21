@@ -1,8 +1,10 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { Skeleton } from './ui/skeleton';
-import type { Transaction, MonthlySummary, Category } from '../lib/data';
+import type { Transaction, MonthlySummary, Category, RecurringTransaction } from '../lib/data';
 import { formatIdr, formatNumber } from '../lib/utils';
-import { fetchTransactions, fetchSummaries, fetchCategories } from '../lib/api';
+import { fetchTransactions, fetchSummaries, fetchCategories, fetchRecurringTransactions } from '../lib/api';
+import { summarizeInstallments } from '../lib/installment-summary';
+import ConvertToInstallmentModal from './ConvertToInstallmentModal';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -33,7 +35,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { CreditCard, ArrowDownLeft, ArrowUpRight, TrendingUp, AlertTriangle, CheckCircle2, Wallet, Clock } from 'lucide-react';
+import { CreditCard, ArrowDownLeft, ArrowUpRight, TrendingUp, AlertTriangle, CheckCircle2, Wallet, Clock, CalendarClock, Split } from 'lucide-react';
 import { useSortState } from '../hooks/useSortState';
 import SortableHeader from './SortableHeader';
 
@@ -43,26 +45,35 @@ export default function CreditCardTracker() {
   const [summaries, setSummaries] = useState<MonthlySummary[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [recurring, setRecurring] = useState<RecurringTransaction[]>([]);
+  const [convertingTx, setConvertingTx] = useState<Transaction | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedPeriod, setSelectedPeriod] = useState<string>('latest');
 
   // All hooks BEFORE any early returns (Rules of Hooks)
   const { toggleSort, sortData, isSorted } = useSortState();
 
-  useEffect(() => {
+  const loadData = useCallback(() => {
+    setLoading(true);
     Promise.all([
       fetchSummaries(),
       fetchTransactions(),
       fetchCategories(),
+      fetchRecurringTransactions(),
     ])
-      .then(([s, t, c]) => {
+      .then(([s, t, c, r]) => {
         setSummaries(s);
         setTransactions(t);
         setCategories(c);
+        setRecurring(r || []);
       })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   // Build period options from summaries (newest first)
   const periodOptions = useMemo(() => {
@@ -103,6 +114,14 @@ export default function CreditCardTracker() {
       (t) => t.type === 'credit_expense' && !t.done
     );
   }, [filteredTransactions]);
+
+  const installmentSummary = useMemo(() => {
+    return summarizeInstallments({
+      recurring,
+      transactions,
+      currentPeriodMonth: activeSummary?.month ?? null,
+    });
+  }, [recurring, transactions, activeSummary]);
 
   const totalCreditExpenses = creditExpenses.reduce((sum, t) => sum + t.amount, 0);
   const totalCreditPayments = creditPayments.reduce((sum, t) => sum + t.amount, 0);
@@ -494,6 +513,135 @@ export default function CreditCardTracker() {
         </div>
       )}
 
+      {/* Active Installments (Cicilan Berjalan) */}
+      <div className="glass-card p-5 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h3 className="text-base font-semibold flex items-center gap-2 text-slate-900 dark:text-white">
+              <CalendarClock className="w-4 h-4 text-mint-500" />
+              Active Installments (Cicilan Berjalan)
+            </h3>
+            <p className="text-xs text-slate-600 dark:text-white/50">
+              Active credit card installment commitments, tenor progress, and estimated monthly debt
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge className="bg-mint-500/10 text-mint-700 dark:text-mint-300 border-mint-500/20 text-xs">
+              {installmentSummary.activeCount} Active
+            </Badge>
+            {installmentSummary.monthlyObligation > 0 && (
+              <Badge className="bg-gold-500/10 text-gold-700 dark:text-gold-300 border-gold-500/20 text-xs">
+                {formatIdr(installmentSummary.monthlyObligation)} / mo
+              </Badge>
+            )}
+            {installmentSummary.totalRemainingLiability > 0 && (
+              <Badge className="bg-slate-100 text-slate-700 dark:bg-white/[0.08] dark:text-white/80 border-slate-200 dark:border-white/10 text-xs">
+                Remaining: {formatIdr(installmentSummary.totalRemainingLiability)}
+              </Badge>
+            )}
+          </div>
+        </div>
+
+        {installmentSummary.items.length === 0 ? (
+          <div className="text-center py-6 text-slate-500 dark:text-white/40 border border-dashed border-slate-200 dark:border-white/10 rounded-lg">
+            <CalendarClock className="w-7 h-7 mx-auto mb-2 text-slate-400 dark:text-white/30" />
+            <p className="text-sm font-medium text-slate-700 dark:text-white/70">No active installments detected</p>
+            <p className="text-xs text-slate-500 dark:text-white/40 mt-0.5">
+              Click &quot;Installment&quot; on any unpaid credit expense below to convert charges into installments.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {installmentSummary.items.map((item) => {
+              const progressPct = item.totalTenor && item.totalTenor > 0
+                ? Math.min(100, Math.round((item.paidTenor / item.totalTenor) * 100))
+                : null;
+              return (
+                <div
+                  key={item.id}
+                  className="rounded-xl border border-slate-200/80 dark:border-white/[0.08] bg-slate-50/50 dark:bg-white/[0.02] p-4 flex flex-col justify-between hover:border-mint-500/40 transition-colors"
+                >
+                  <div className="space-y-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-slate-900 dark:text-white truncate" title={item.title}>
+                          {item.cleanTitle}
+                        </p>
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          <span
+                            className="w-2 h-2 rounded-full flex-shrink-0"
+                            style={{ backgroundColor: categoryColorMap[item.category] || '#10b981' }}
+                          />
+                          <span className="text-xs text-slate-600 dark:text-white/50 truncate">
+                            {item.category}
+                          </span>
+                        </div>
+                      </div>
+                      {item.isCompleted ? (
+                        <Badge variant="outline" className="text-emerald-600 dark:text-emerald-400 border-emerald-400/30 text-[10px]">
+                          Completed
+                        </Badge>
+                      ) : !item.active ? (
+                        <Badge variant="outline" className="text-slate-500 dark:text-white/40 text-[10px]">
+                          Paused
+                        </Badge>
+                      ) : (
+                        <Badge className="bg-mint-500/10 text-mint-700 dark:text-mint-300 border-mint-500/30 text-[10px]">
+                          Active
+                        </Badge>
+                      )}
+                    </div>
+
+                    <div className="pt-1">
+                      <span className="text-xs text-slate-500 dark:text-white/40">Monthly Installment</span>
+                      <p className="text-base font-bold text-slate-900 dark:text-white">
+                        {formatIdr(item.monthlyAmount)}
+                        <span className="text-xs font-normal text-slate-500 dark:text-white/40 ml-1">/ mo</span>
+                      </p>
+                    </div>
+
+                    {/* Tenor / Progress */}
+                    {progressPct !== null && item.totalTenor ? (
+                      <div className="space-y-1 pt-1">
+                        <div className="flex justify-between text-xs text-slate-600 dark:text-white/60">
+                          <span>Tenor: {item.paidTenor} of {item.totalTenor} mos</span>
+                          <span className="font-semibold text-mint-600 dark:text-mint-400">{progressPct}%</span>
+                        </div>
+                        <div className="w-full bg-slate-200 dark:bg-white/[0.08] rounded-full h-1.5 overflow-hidden">
+                          <div
+                            className="bg-gradient-to-r from-mint-500 to-sky-500 h-1.5 rounded-full transition-all"
+                            style={{ width: `${progressPct}%` }}
+                          />
+                        </div>
+                      </div>
+                    ) : item.remainingTenor !== null ? (
+                      <p className="text-xs text-slate-600 dark:text-white/60 pt-1">
+                        Remaining: <span className="font-semibold text-slate-900 dark:text-white">{item.remainingTenor} months</span>
+                      </p>
+                    ) : (
+                      <p className="text-xs text-slate-500 dark:text-white/40 pt-1">
+                        Ongoing installment
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="mt-3 pt-2.5 border-t border-slate-200/60 dark:border-white/[0.06] flex items-center justify-between text-xs text-slate-500 dark:text-white/40">
+                    <span>
+                      {item.endPeriodMonth ? `Ends: ${item.endPeriodMonth}` : `Day ${item.billingDay} each month`}
+                    </span>
+                    {item.estimatedRemainingAmount !== null && (
+                      <span className="font-medium text-slate-700 dark:text-white/70">
+                        Remaining: {formatIdr(item.estimatedRemainingAmount)}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
       {/* Unpaid Credit Expenses Table */}
       <div className="glass-card p-5">
         
@@ -529,6 +677,7 @@ export default function CreditCardTracker() {
                   <SortableHeader label="Amount" sortKey="amount" toggleSort={toggleSort} isSorted={isSorted} align="right" />
                   <SortableHeader label="Payment Method" sortKey="payment_method" toggleSort={toggleSort} isSorted={isSorted} />
                   <TableHead className="w-[100px]">Status</TableHead>
+                  <TableHead className="w-[110px] text-right">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -552,6 +701,18 @@ export default function CreditCardTracker() {
                       <Badge variant="outline" className="text-gold-600 dark:text-gold-400 border-gold-400/30 dark:border-gold-700 text-[11px]">
                         Pending
                       </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-7 text-xs px-2 text-mint-600 dark:text-mint-400 hover:bg-mint-500/10 inline-flex items-center gap-1"
+                        onClick={() => setConvertingTx(tx)}
+                        title="Convert transaction into installments"
+                      >
+                        <Split className="w-3.5 h-3.5" />
+                        Installment
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -667,6 +828,18 @@ export default function CreditCardTracker() {
           </Table>
         
       </div>
+
+      {convertingTx && (
+        <ConvertToInstallmentModal
+          open={!!convertingTx}
+          transaction={convertingTx}
+          onClose={() => setConvertingTx(null)}
+          onSuccess={() => {
+            setConvertingTx(null);
+            loadData();
+          }}
+        />
+      )}
     </div>
   );
 }
