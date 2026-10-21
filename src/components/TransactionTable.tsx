@@ -7,6 +7,7 @@ import { onDataChanged, notifyDataChanged } from '../lib/dataSync';
 import SortableHeader from './SortableHeader';
 import EditTransactionDialog from './EditTransactionDialog';
 import TransactionDetailSheet from './TransactionDetailSheet';
+import ConvertToInstallmentModal from './ConvertToInstallmentModal';
 import { StickyNote, Search, SlidersHorizontal, Download, X, Filter, ChevronDown, ChevronRight, FileJson, FileSpreadsheet } from 'lucide-react';
 import { useConfirm } from './ConfirmDialog';
 import { toast } from 'sonner';
@@ -122,6 +123,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editForm, setEditForm] = useState<Partial<Transaction>>({});
   const [detailTx, setDetailTx] = useState<Transaction | null>(null);
+  const [installmentTx, setInstallmentTx] = useState<Transaction | null>(null);
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [bulkCategory, setBulkCategory] = useState<string>('');
   const [categories, setCategories] = useState<Category[]>([]);
@@ -1089,6 +1091,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
             toast.error('Failed to delete transaction');
           }
         }}
+        onConvertToInstallment={(tx) => setInstallmentTx(tx)}
       />
 
       {editingId && (
@@ -1099,6 +1102,18 @@ export default function TransactionTable({ transactions, showMonth = true, perio
           onSave={handleSave}
           onCancel={() => { setEditingId(null); setEditForm({}); }}
           months={monthOptions.map((p) => p.month)}
+        />
+      )}
+
+      {installmentTx && (
+        <ConvertToInstallmentModal
+          open={!!installmentTx}
+          transaction={installmentTx}
+          onClose={() => setInstallmentTx(null)}
+          onSuccess={() => {
+            toast.success('Berhasil diubah menjadi cicilan');
+            notifyDataChanged('transactions');
+          }}
         />
       )}
     </div>

@@ -351,6 +351,7 @@ function normalizeTx(tx: any) {
   const copy = { ...tx };
   if (typeof copy.done === 'boolean') copy.done = copy.done ? 1 : 0;
   if (copy.notes === undefined) copy.notes = '';
+  if (!copy.currency) copy.currency = 'IDR';
   return copy;
 }
 

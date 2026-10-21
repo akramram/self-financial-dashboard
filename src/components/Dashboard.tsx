@@ -44,6 +44,7 @@ import TopMerchantsMini from './TopMerchantsMini';
 import UpcomingBills from './UpcomingBills';
 import GoalsSnapshot from './GoalsSnapshot';
 import TransactionDetailSheet from './TransactionDetailSheet';
+import ConvertToInstallmentModal from './ConvertToInstallmentModal';
 import HealthChip from './HealthChip';
 import KseiCard, { type KseiCardData } from './KseiCard';
 import SectionNavRail from './SectionNavRail';
@@ -116,6 +117,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
   const [healthData, setHealthData] = useState<{ overall: number; grade: string; gradeColor: string; trend?: string; prevScore?: number | null } | null>(null);
   const [kseiData, setKseiData] = useState<KseiCardData | null>(null);
   const [detailTx, setDetailTx] = useState<Transaction | null>(null);
+  const [installmentTx, setInstallmentTx] = useState<Transaction | null>(null);
   const [quickAddOpen, setQuickAddOpen] = useState(false);
 
   // ── Derived ───────────────────────────────────────────────────
@@ -695,7 +697,20 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
                   toast.error('Failed to delete transaction');
                 }
               }}
+              onConvertToInstallment={(tx) => setInstallmentTx(tx)}
             />
+
+            {installmentTx && (
+              <ConvertToInstallmentModal
+                open={!!installmentTx}
+                transaction={installmentTx}
+                onClose={() => setInstallmentTx(null)}
+                onSuccess={() => {
+                  toast.success('Berhasil diubah menjadi cicilan');
+                  notifyDataChanged('transactions');
+                }}
+              />
+            )}
 
             {searchedTransactions.length > txPerPage && (
               <div className="flex items-center justify-between px-5 py-3 border-t border-slate-200 dark:border-white/[0.05]">

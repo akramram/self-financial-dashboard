@@ -45,6 +45,24 @@ export async function deleteTransactionApi(id: number): Promise<void> {
   await fetch(`/api/transactions/${id}`, { method: 'DELETE' });
 }
 
+export async function convertToInstallmentApi(
+  transactionId: number,
+  payload: {
+    months: number;
+    interest_percent?: number;
+    interest_flat_monthly?: number;
+    admin_fee?: number;
+    start_date: string;
+  }
+): Promise<{ success: boolean; result?: any; error?: string }> {
+  const res = await fetch(`/api/transactions/${transactionId}/convert-to-installment`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  return res.json();
+}
+
 /**
  * One-tap repeat: duplicate a transaction into the ACTIVE period (today).
  * Copies title/category/amount/type/payment_method/notes; done=true; created_time=now.
