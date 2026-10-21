@@ -8,7 +8,7 @@ import SortableHeader from './SortableHeader';
 import EditTransactionDialog from './EditTransactionDialog';
 import TransactionDetailSheet from './TransactionDetailSheet';
 import ConvertToInstallmentModal from './ConvertToInstallmentModal';
-import { StickyNote, Search, SlidersHorizontal, Download, X, Filter, ChevronDown, ChevronRight, FileJson, FileSpreadsheet } from 'lucide-react';
+import { StickyNote, Search, SlidersHorizontal, Download, X, Filter, ChevronDown, ChevronRight, FileJson, FileSpreadsheet, CalendarClock } from 'lucide-react';
 import { useConfirm } from './ConfirmDialog';
 import { toast } from 'sonner';
 import { showDeleteUndoToast } from '../lib/undo';
@@ -900,7 +900,18 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                       </span>
                     </TableCell>
                     <TableCell className="py-2.5">
-                      <div className="flex justify-end">
+                      <div className="flex items-center justify-end gap-1">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setInstallmentTx(row);
+                          }}
+                          className="p-1 rounded text-slate-500 hover:text-blue-500 hover:bg-blue-500/10 transition-colors"
+                          title="Ubah Jadi Cicilan"
+                        >
+                          <CalendarClock className="w-4 h-4" />
+                        </button>
                         <ChevronRight className="w-4 h-4 text-slate-500 dark:text-white/40" />
                       </div>
                     </TableCell>
