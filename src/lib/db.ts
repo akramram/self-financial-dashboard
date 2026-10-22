@@ -1,6 +1,7 @@
 import Database from 'better-sqlite3';
 import bcrypt from 'bcryptjs';
 import path from 'path';
+import { cleanInstallmentTitle, extractTenorFromTitle, parseYYYYMM } from './installment-summary';
 
 const DB_PATH = path.resolve('./data/financial.db');
 
@@ -3307,12 +3308,19 @@ export function getWeeklySpending(periodId: number): WeeklySpendingResult {
 export interface RecurringCostItem {
   id: number;
   title: string;
+  cleanTitle: string;
   category: string;
   amount: number;
   type: 'cash' | 'credit_expense' | 'credit_payment';
   active: boolean;
   end_date: string | null;
+  created_at: string;
   isTemporary: boolean;
+  isInstallment: boolean;
+  totalTenor: number | null;
+  currentTenor: number | null;
+  remainingTenor: number | null;
+  remainingLiability: number | null;
 }
 
 export interface RecurringCostResult {
@@ -3328,31 +3336,76 @@ export interface RecurringCostResult {
   temporaryCount: number;
   largestItem: RecurringCostItem | null;
   avgPerItem: number;
+  subscriptionMonthlyTotal: number;
+  installmentMonthlyTotal: number;
+  totalRemainingLiability: number;
+  postInstallmentRunRate: number;
+  installmentCount: number;
+  subscriptionCount: number;
 }
 
 export function getRecurringCostAnalysis(): RecurringCostResult {
   const rows = db.prepare(`
-    SELECT id, title, category, amount, type, active, end_date
+    SELECT id, title, category, amount, type, active, end_date, created_at
     FROM recurring_transactions
     ORDER BY active DESC, amount DESC
   `).all() as any[];
 
-  const items: RecurringCostItem[] = rows.map((r) => ({
-    id: r.id,
-    title: r.title,
-    category: r.category,
-    amount: r.amount,
-    type: r.type,
-    active: !!r.active,
-    end_date: r.end_date,
-    isTemporary: !!r.end_date,
-  }));
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = now.getMonth() + 1;
+  const d = now.getDate();
+  const pMonth = d >= 21 ? (m === 12 ? 1 : m + 1) : m;
+  const pYear = d >= 21 && m === 12 ? y + 1 : y;
+  const currentYYYYMM = `${pYear}-${String(pMonth).padStart(2, '0')}`;
+
+  const items: RecurringCostItem[] = rows.map((r) => {
+    const isCicilan = /cicilan|installment/i.test(r.title);
+    const hasEnd = Boolean(r.end_date);
+    const tenor = extractTenorFromTitle(r.title);
+    const isInstallment = isCicilan || hasEnd || tenor !== null;
+
+    let remainingTenor: number | null = null;
+    if (tenor) {
+      remainingTenor = Math.max(1, tenor.total - tenor.current + 1);
+    } else if (r.end_date) {
+      const cur = parseYYYYMM(currentYYYYMM);
+      const end = parseYYYYMM(r.end_date);
+      const diff = cur && end ? (end.year - cur.year) * 12 + (end.month - cur.month) + 1 : 1;
+      remainingTenor = Math.max(1, diff);
+    }
+
+    const remainingLiability = isInstallment && remainingTenor !== null ? remainingTenor * r.amount : null;
+
+    return {
+      id: r.id,
+      title: r.title,
+      cleanTitle: cleanInstallmentTitle(r.title),
+      category: r.category,
+      amount: r.amount,
+      type: r.type,
+      active: !!r.active,
+      end_date: r.end_date,
+      created_at: r.created_at || '21',
+      isTemporary: !!r.end_date,
+      isInstallment,
+      totalTenor: tenor ? tenor.total : null,
+      currentTenor: tenor ? tenor.current : null,
+      remainingTenor,
+      remainingLiability,
+    };
+  });
 
   const activeItems = items.filter((i) => i.active);
   const pausedItems = items.filter((i) => !i.active);
 
   const monthlyTotal = activeItems.reduce((s, i) => s + i.amount, 0);
-  const annualTotal = monthlyTotal * 12;
+  const annualTotal = activeItems.reduce((s, i) => {
+    if (i.isInstallment && i.remainingTenor !== null) {
+      return s + Math.min(12, i.remainingTenor) * i.amount;
+    }
+    return s + i.amount * 12;
+  }, 0);
 
   const monthlyByCategory: Record<string, number> = {};
   for (const item of activeItems) {
@@ -3372,6 +3425,19 @@ export function getRecurringCostAnalysis(): RecurringCostResult {
     : null;
   const avgPerItem = activeItems.length > 0 ? monthlyTotal / activeItems.length : 0;
 
+  const activeInstallments = activeItems.filter((i) => i.isInstallment);
+  const activeSubscriptions = activeItems.filter((i) => !i.isInstallment);
+
+  const subscriptionMonthlyTotal = activeSubscriptions.reduce((s, i) => s + i.amount, 0);
+  const installmentMonthlyTotal = activeInstallments.reduce((s, i) => s + i.amount, 0);
+  const totalRemainingLiability = activeInstallments.reduce(
+    (s, i) => s + (i.remainingLiability ?? i.amount),
+    0
+  );
+  const postInstallmentRunRate = subscriptionMonthlyTotal;
+  const installmentCount = activeInstallments.length;
+  const subscriptionCount = activeSubscriptions.length;
+
   return {
     items,
     activeItems,
@@ -3385,6 +3451,12 @@ export function getRecurringCostAnalysis(): RecurringCostResult {
     temporaryCount,
     largestItem,
     avgPerItem,
+    subscriptionMonthlyTotal,
+    installmentMonthlyTotal,
+    totalRemainingLiability,
+    postInstallmentRunRate,
+    installmentCount,
+    subscriptionCount,
   };
 }
 
