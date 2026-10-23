@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import type { RecurringTransaction } from '../lib/data';
 import { fetchRecurringTransactions, createRecurringTransaction, updateRecurringTransactionApi, deleteRecurringTransactionApi } from '../lib/api';
 import { formatIdr } from '../lib/utils';
@@ -25,7 +25,18 @@ import {
 import { fetchCategories, fetchGoals } from '../lib/api';
 import type { Category } from '../lib/data';
 import type { FinancialGoal } from '../lib/api';
-import { Target } from 'lucide-react';
+import {
+  Target,
+  Repeat,
+  Wallet,
+  CreditCard,
+  PiggyBank,
+  Search,
+  X,
+  Calendar,
+  CheckCircle2,
+  PauseCircle,
+} from 'lucide-react';
 
 const TYPE_OPTIONS = [
   { value: 'cash', label: 'Cash' },
@@ -45,6 +56,9 @@ export default function RecurringManager() {
 
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editForm, setEditForm] = useState<Partial<RecurringTransaction>>({});
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const [typeFilter, setTypeFilter] = useState<'all' | 'active' | 'paused' | 'cash' | 'credit' | 'goals'>('all');
 
   const [isAdding, setIsAdding] = useState(false);
   const [addForm, setAddForm] = useState<{
@@ -86,6 +100,58 @@ export default function RecurringManager() {
       setLoading(false);
     }
   }
+
+  // Memoized financial statistics across recurring commitments
+  const stats = useMemo(() => {
+    let activeTotal = 0;
+    let cashTotal = 0;
+    let creditTotal = 0;
+    let goalTotal = 0;
+    let activeCount = 0;
+    let pausedCount = 0;
+
+    for (const r of recurring) {
+      if (r.active) {
+        activeCount++;
+        activeTotal += r.amount;
+        if (r.type === 'cash') cashTotal += r.amount;
+        if (r.type === 'credit_expense' || r.type === 'credit_payment') creditTotal += r.amount;
+        if (r.goal_id != null) goalTotal += r.amount;
+      } else {
+        pausedCount++;
+      }
+    }
+
+    return {
+      activeTotal,
+      cashTotal,
+      creditTotal,
+      goalTotal,
+      activeCount,
+      pausedCount,
+      totalCount: recurring.length,
+    };
+  }, [recurring]);
+
+  // Filtered recurring items by query and filter tabs
+  const filteredItems = useMemo(() => {
+    return recurring.filter((item) => {
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const matchTitle = (item.title || '').toLowerCase().includes(q);
+        const matchCat = (item.category || '').toLowerCase().includes(q);
+        const matchGoal = item.goal_name ? item.goal_name.toLowerCase().includes(q) : false;
+        if (!matchTitle && !matchCat && !matchGoal) return false;
+      }
+
+      if (typeFilter === 'active') return !!item.active;
+      if (typeFilter === 'paused') return !item.active;
+      if (typeFilter === 'cash') return item.type === 'cash';
+      if (typeFilter === 'credit') return item.type === 'credit_expense' || item.type === 'credit_payment';
+      if (typeFilter === 'goals') return item.goal_id != null;
+      return true;
+    });
+  }, [recurring, searchQuery, typeFilter]);
 
   const startEdit = (item: RecurringTransaction) => {
     setEditingId(item.id);
@@ -181,14 +247,165 @@ export default function RecurringManager() {
   };
 
   return (
-    <div className="glass-card p-5">
-      
-        <h3 className="text-slate-800 dark:text-white/80">Recurring Transactions</h3>
-        <Button size="sm" onClick={() => setIsAdding((v) => !v)}>
-          {isAdding ? 'Cancel' : '+ Add Recurring'}
-        </Button>
-      
-      
+    <div className="space-y-6">
+      {/* Overview KPI Glance Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="glass-card p-4 rounded-xl border border-slate-200/80 dark:border-white/[0.08] relative overflow-hidden">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-semibold text-slate-500 dark:text-white/60 uppercase tracking-wider">
+              Total Bulanan Aktif
+            </span>
+            <div className="w-8 h-8 rounded-lg bg-mint-500/10 dark:bg-mint-500/20 text-mint-600 dark:text-mint-400 flex items-center justify-center">
+              <Repeat className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="text-xl font-bold text-slate-900 dark:text-white tabular-nums">
+            {formatIdr(stats.activeTotal)}
+          </div>
+          <div className="mt-2 flex items-center gap-1.5 text-xs text-slate-500 dark:text-white/50">
+            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium bg-mint-500/10 text-mint-600 dark:text-mint-400">
+              <CheckCircle2 className="w-3 h-3" />
+              {stats.activeCount} Aktif
+            </span>
+            {stats.pausedCount > 0 && (
+              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium bg-slate-200 dark:bg-white/10 text-slate-600 dark:text-white/60">
+                <PauseCircle className="w-3 h-3" />
+                {stats.pausedCount} Jeda
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className="glass-card p-4 rounded-xl border border-slate-200/80 dark:border-white/[0.08]">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-semibold text-slate-500 dark:text-white/60 uppercase tracking-wider">
+              Komitmen Cash
+            </span>
+            <div className="w-8 h-8 rounded-lg bg-blue-500/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+              <Wallet className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="text-xl font-bold text-slate-900 dark:text-white tabular-nums">
+            {formatIdr(stats.cashTotal)}
+          </div>
+          <p className="mt-2 text-xs text-slate-500 dark:text-white/50">
+            Beban tunai / rekening periodik
+          </p>
+        </div>
+
+        <div className="glass-card p-4 rounded-xl border border-slate-200/80 dark:border-white/[0.08]">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-semibold text-slate-500 dark:text-white/60 uppercase tracking-wider">
+              Kewajiban Kredit
+            </span>
+            <div className="w-8 h-8 rounded-lg bg-coral-500/10 dark:bg-coral-500/20 text-coral-600 dark:text-coral-400 flex items-center justify-center">
+              <CreditCard className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="text-xl font-bold text-slate-900 dark:text-white tabular-nums">
+            {formatIdr(stats.creditTotal)}
+          </div>
+          <p className="mt-2 text-xs text-slate-500 dark:text-white/50">
+            Beban tagihan otomatis kartu kredit
+          </p>
+        </div>
+
+        <div className="glass-card p-4 rounded-xl border border-slate-200/80 dark:border-white/[0.08]">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-semibold text-slate-500 dark:text-white/60 uppercase tracking-wider">
+              Auto-Alokasi Goal
+            </span>
+            <div className="w-8 h-8 rounded-lg bg-gold-500/10 dark:bg-gold-500/20 text-gold-600 dark:text-gold-400 flex items-center justify-center">
+              <PiggyBank className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="text-xl font-bold text-slate-900 dark:text-white tabular-nums">
+            {formatIdr(stats.goalTotal)}
+          </div>
+          <p className="mt-2 text-xs text-slate-500 dark:text-white/50">
+            Terhubung tabungan target berkala
+          </p>
+        </div>
+      </div>
+
+      <div className="glass-card p-5">
+        {/* Header & Add Button */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
+          <div>
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white/90">
+              Recurring Transactions
+            </h3>
+            <p className="text-xs text-slate-500 dark:text-white/50">
+              Total {recurring.length} transaksi terjadwal ({stats.activeCount} aktif)
+            </p>
+          </div>
+          <Button
+            size="sm"
+            onClick={() => setIsAdding((v) => !v)}
+            className="bg-mint-600 hover:bg-mint-700 text-white shrink-0"
+          >
+            {isAdding ? 'Cancel' : '+ Add Recurring'}
+          </Button>
+        </div>
+
+        {/* Filter and Search Bar */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-5">
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
+            {[
+              { id: 'all', label: 'All', count: recurring.length },
+              { id: 'active', label: 'Active', count: stats.activeCount },
+              { id: 'paused', label: 'Paused', count: stats.pausedCount },
+              { id: 'cash', label: 'Cash', count: recurring.filter((r) => r.type === 'cash').length },
+              { id: 'credit', label: 'Credit', count: recurring.filter((r) => r.type === 'credit_expense' || r.type === 'credit_payment').length },
+              { id: 'goals', label: 'Goals', count: recurring.filter((r) => r.goal_id != null).length },
+            ].map((tab) => {
+              const isActive = typeFilter === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setTypeFilter(tab.id as any)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors shrink-0 flex items-center gap-1.5 ${
+                    isActive
+                      ? 'bg-mint-500/15 text-mint-700 dark:text-mint-300 border border-mint-500/30'
+                      : 'text-slate-600 dark:text-white/60 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.04]'
+                  }`}
+                >
+                  <span>{tab.label}</span>
+                  <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${
+                    isActive
+                      ? 'bg-mint-500/25 text-mint-800 dark:text-mint-200'
+                      : 'bg-slate-200/80 dark:bg-white/10 text-slate-600 dark:text-white/50'
+                  }`}>
+                    {tab.count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="relative w-full md:w-64 shrink-0">
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white/40 pointer-events-none" />
+            <Input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Cari judul / kategori..."
+              className="pl-9 pr-8 h-9 text-xs rounded-lg border-slate-200 dark:border-white/[0.08] bg-white/70 dark:bg-white/[0.03]"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white/80"
+                aria-label="Clear search"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+        </div>
+
         {error && (
           <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-300">
             {error}
@@ -301,7 +518,7 @@ export default function RecurringManager() {
           </div>
         )}
 
-        {/* Desktop table (≥md) — unchanged */}
+        {/* Desktop table (≥md) */}
         <div className="hidden md:block rounded-xl border">
           <Table>
             <TableHeader>
@@ -321,16 +538,33 @@ export default function RecurringManager() {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center text-muted-foreground py-6">Loading...</TableCell>
+                  <TableCell colSpan={10} className="text-center text-muted-foreground py-6">Loading...</TableCell>
                 </TableRow>
-              ) : recurring.length === 0 ? (
+              ) : filteredItems.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center text-muted-foreground py-6">
-                    No recurring transactions yet. Add one above.
+                  <TableCell colSpan={10} className="text-center text-muted-foreground py-8">
+                    {recurring.length === 0 ? (
+                      'No recurring transactions yet. Add one above.'
+                    ) : (
+                      <div className="flex flex-col items-center justify-center gap-2">
+                        <p className="text-sm">Tidak ada transaksi recurring yang cocok dengan filter.</p>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 text-xs text-mint-600 dark:text-mint-400"
+                          onClick={() => {
+                            setSearchQuery('');
+                            setTypeFilter('all');
+                          }}
+                        >
+                          Reset Filter
+                        </Button>
+                      </div>
+                    )}
                   </TableCell>
                 </TableRow>
               ) : (
-                recurring.map((item) => {
+                filteredItems.map((item) => {
                   const isEditing = editingId === item.id;
                   if (isEditing) {
                     return (
@@ -454,12 +688,23 @@ export default function RecurringManager() {
                         )}
                       </TableCell>
                       <TableCell>{item.category}</TableCell>
-                      <TableCell className="text-right">{formatIdr(item.amount)}</TableCell>
+                      <TableCell className="text-right tabular-nums">{formatIdr(item.amount)}</TableCell>
                       <TableCell className="text-xs">
-                        {item.type === 'cash' ? 'Cash' : item.type === 'credit_expense' ? 'Credit' : 'Credit Pay'}
+                        {item.type === 'cash' ? (
+                          <span className="text-blue-600 dark:text-blue-400 font-medium">Cash</span>
+                        ) : item.type === 'credit_expense' ? (
+                          <span className="text-coral-600 dark:text-coral-400 font-medium">Credit</span>
+                        ) : (
+                          <span className="text-slate-600 dark:text-white/60">Credit Pay</span>
+                        )}
                       </TableCell>
                       <TableCell className="text-xs text-slate-500 dark:text-white/40">
-                        {item.end_date || '-'}
+                        {item.end_date ? (
+                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-white/70 border border-slate-200 dark:border-white/10">
+                            <Calendar className="w-3 h-3 text-slate-400 dark:text-white/40" />
+                            until {item.end_date}
+                          </span>
+                        ) : '-'}
                       </TableCell>
                       <TableCell className="text-xs text-slate-500 dark:text-white/40">
                         {item.created_at || '-'}
@@ -501,12 +746,29 @@ export default function RecurringManager() {
         <div className="md:hidden rounded-xl border divide-y border-slate-200 dark:border-white/[0.06]">
           {loading ? (
             <div className="px-4 py-6 text-center text-sm text-muted-foreground">Loading...</div>
-          ) : recurring.length === 0 ? (
+          ) : filteredItems.length === 0 ? (
             <div className="px-4 py-6 text-center text-sm text-muted-foreground">
-              No recurring transactions yet. Add one above.
+              {recurring.length === 0 ? (
+                'No recurring transactions yet. Add one above.'
+              ) : (
+                <div className="flex flex-col items-center justify-center gap-2">
+                  <p>Tidak ada transaksi recurring yang cocok dengan filter.</p>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 text-xs text-mint-600 dark:text-mint-400"
+                    onClick={() => {
+                      setSearchQuery('');
+                      setTypeFilter('all');
+                    }}
+                  >
+                    Reset Filter
+                  </Button>
+                </div>
+              )}
             </div>
           ) : (
-            recurring.map((item) => {
+            filteredItems.map((item) => {
               const typeLabel = item.type === 'cash' ? 'Cash' : item.type === 'credit_expense' ? 'Credit' : 'Credit Pay';
               const isEditing = editingId === item.id;
               if (isEditing) {
@@ -623,7 +885,7 @@ export default function RecurringManager() {
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] text-slate-500 dark:text-white/30">Tgl {item.created_at || '—'}</span>
+                    <span className="text-[11px] text-slate-500 dark:text-white/30">Tgl {item.created_at || '-'}</span>
                     <div className="flex gap-2">
                       <button
                         onClick={() => startEdit(item)}
@@ -644,6 +906,7 @@ export default function RecurringManager() {
             })
           )}
         </div>
+      </div>
     </div>
   );
 }
