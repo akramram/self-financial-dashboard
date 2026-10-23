@@ -1,5 +1,23 @@
 # Iteration Log
 
+## Sesi 23 Okt 2026 — Recurring Transactions Overview & Filter Hub (GH PR #333)
+
+### Ringkasan
+Meningkatkan halaman Recurring Transactions (`/recurring`) dengan **Recurring Overview & Management Hub**:
+- **Glance KPI Cards**: Menampilkan 4 kartu ringkasan komitmen keuangan bulanan otomatis: Total Bulanan Aktif (dengan status badge aktif & jeda), Komitmen Cash periodik, Kewajiban Kredit otomatis, dan Auto-Alokasi Goal tabungan berkala.
+- **Search & Quick Filter Bar**: Pencarian real-time (judul/kategori/nama goal) dan tab filter cepat (`All`, `Active`, `Paused`, `Cash`, `Credit`, `Goals`) lengkap dengan pill badge jumlah transaksi.
+- **Installment Badge Indicator**: Indikator batas waktu jatuh tempo cicilan (`until YYYY-MM`) pada tabel desktop dan kartu mobile.
+- **Antislop & Dual Mode Compliance**: Desain clean, kontras WCAG AA di light/dark mode, tanpa em-dash di UI copy, dan tap target ramah mobile (>= 44px).
+
+### Perubahan
+- **`src/components/RecurringManager.tsx`**: implementasi KPI cards memoized, search state, quick filter tabs, responsive empty state dengan tombol reset, dan styling fintech tokens.
+- **`src/__tests__/recurring-manager-hub.test.tsx`**: unit test komprehensif untuk kalkulasi agregasi KPI, pencarian real-time, filter tab status, dan tombol reset filter.
+
+### Verifikasi
+- 493/493 tests pass (38 file), `npm run build` clean (5.4s).
+- Database `data/` dan `financial.db` tidak disentuh.
+
+
 ## Sesi 21 Okt 2026 — Credit Card Active Installments & Conversion Action (GH PR #330)
 
 ### Ringkasan
