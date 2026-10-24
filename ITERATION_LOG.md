@@ -2549,3 +2549,12 @@ Audit KUR-59/FIN-015+016: foundation shadcn + migrasi tabel & form ternyata suda
 - **Git workflow:** Branch `feat/innovation-savings-invest-unification` → PR #326 merged ke `main`.
 - **Build/Deploy:** `npm run build` clean, PM2 `financial-dashboard` restarted & online di port 4321.
 
+
+## 2026-10-24 — Daily Innovation: Cash Flow Intelligence with 50/30/20 Allocation & Multi-Period Trends
+
+### Hasil
+- **Inovasi Baru di Cash Flow (`/cashflow`):**
+  1. **50/30/20 Cash Allocation Rule Lens:** Menghitung perbandingan real-time pengeluaran kas bulanan terhadap formula 50% Needs, 30% Wants, 20% Savings/Invest. Dilengkapi segmented progress bar visual serta status kesehatan alokasi.
+  2. **Multi-Period Cash Flow Trends & History:** Tab baru "Trend & History" dengan grafik gabungan (Bar Inflow/Outflow + Line Net Flow), tabel riwayat periode dengan status Surplus/Defisit, dan 4 kartu metrik KPI kesehatan cash flow (Surplus Streak, Inflow/Outflow Ratio, Rata-rata Net Flow Bulanan, Total Akumulasi Surplus).
+  3. **Modul Analitik & Unit Tests:** Menambahkan `src/lib/cashflow-analytics.ts` untuk komputasi analitik cash flow, unit tests `src/__tests__/cashflow-analytics.test.ts` (9 tests) dan component tests `src/__tests__/cashflow-waterfall.test.tsx` (3 tests). Total test suite meningkat menjadi **505/505 hijau** (40 test files).
+  4. **Antislop & Dual-Theme:** Mendukung penuh tema light/dark mode dengan glass-card styling, kontras WCAG AA, dan copy clean tanpa em-dash.
