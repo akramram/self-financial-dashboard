@@ -2558,3 +2558,14 @@ Audit KUR-59/FIN-015+016: foundation shadcn + migrasi tabel & form ternyata suda
   2. **Multi-Period Cash Flow Trends & History:** Tab baru "Trend & History" dengan grafik gabungan (Bar Inflow/Outflow + Line Net Flow), tabel riwayat periode dengan status Surplus/Defisit, dan 4 kartu metrik KPI kesehatan cash flow (Surplus Streak, Inflow/Outflow Ratio, Rata-rata Net Flow Bulanan, Total Akumulasi Surplus).
   3. **Modul Analitik & Unit Tests:** Menambahkan `src/lib/cashflow-analytics.ts` untuk komputasi analitik cash flow, unit tests `src/__tests__/cashflow-analytics.test.ts` (9 tests) dan component tests `src/__tests__/cashflow-waterfall.test.tsx` (3 tests). Total test suite meningkat menjadi **505/505 hijau** (40 test files).
   4. **Antislop & Dual-Theme:** Mendukung penuh tema light/dark mode dengan glass-card styling, kontras WCAG AA, dan copy clean tanpa em-dash.
+
+## 2026-10-25 — Daily Innovation: Portfolio Rebalancing & Investment Hub (/portfolio)
+
+### Hasil
+- **Inovasi Baru di Portfolio (`/portfolio`):**
+  1. **Kalkulator & Engine Rebalancing Alokasi Aset:** Memungkinkan evaluasi deviasi alokasi aset aktual terhadap target model portofolio (Balanced 40/30/20/10, Aggressive Growth 60/25/10/5, Defensive Preservation 35/35/25/5, atau Custom). Dilengkapi status drift per aset (Overweight, Underweight, Seimbang) dan panduan rekomendasi rebalancing.
+  2. **Smart Cash Inflow Rebalancer:** Menghitung distribusi optimal dana baru/injeksi modal (misal dari tabungan atau gaji bulanan) secara presisi ke aset-aset yang underweight agar portofolio kembali seimbang tanpa harus menjual aset yang ada.
+  3. **Holdings & Positions Tracker:** Integrasi penuh ke database `investments` dan API CRUD (`/api/investments`), memungkinkan penambahan dan pelacakan posisi saham/reksadana/kripto dengan metrik valuasi, harga beli rata-rata, harga terkini, dan unrealized gain/loss.
+  4. **Radar Dividen & Passive Income:** Proyeksi pendapatan pasif dividen tahunan dan bulanan dari aset dividen seperti BBRI (32 lot kepemilikan, harga pasar, yield TTM ~11%, dan riwayat pembayaran dividen dari cache KSEI/Yahoo).
+  5. **Modul Domain & Unit Tests:** Menambahkan engine kalkulasi `src/lib/portfolio-rebalance.ts`, unit tests `src/__tests__/portfolio-rebalance.test.ts` (5 tests), dan component tests `src/__tests__/portfolio-hub.test.tsx` (3 tests). Total test suite bertambah menjadi **513/513 hijau** (42 test files).
+  6. **Antislop & Dual-Mode UI:** Mendukung penuh Light dan Dark mode, glass-card styling, kontras WCAG AA, dan copy clean tanpa em-dash.
