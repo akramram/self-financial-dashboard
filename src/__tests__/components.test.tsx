@@ -312,13 +312,16 @@ describe('SpendingPulse', () => {
   });
 
   it('filters out future transactions when transactions array is provided', () => {
-    const monthLabel = new Date().toLocaleString('en-US', { month: 'long', year: 'numeric' });
+    // Current period ending in the NEXT month if day >= 21, or THIS month if day <= 20
+    const now = new Date();
+    const periodEndMonth = now.getDate() >= 21 ? new Date(now.getFullYear(), now.getMonth() + 1, 1) : now;
+    const monthLabel = periodEndMonth.toLocaleString('en-US', { month: 'long', year: 'numeric' });
     const summary = makeSummary(monthLabel, 10_000_000, 5_500_000);
     const txPast = makeTx({
       amount: 500_000,
       type: 'cash',
       done: true,
-      created_time: new Date(Date.now() - 5 * 86_400_000).toISOString(),
+      created_time: new Date(Date.now() - 2 * 86_400_000).toISOString(),
     });
     const txFuture = makeTx({
       amount: 5_000_000,

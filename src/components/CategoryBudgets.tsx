@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { motion, useReducedMotion } from 'motion/react';
 import type { MonthlySummary, Category } from '../lib/data';
 import { formatIdr } from '../lib/utils';
 import { PieChart, TrendingUp, TrendingDown, Minus } from 'lucide-react';
@@ -32,6 +33,7 @@ interface CategoryTrend {
 
 export default function CategoryBudgets({ summaries, categories, activeMonth, onCategoryClick }: Props) {
   const [showAll, setShowAll] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
   // Pace context for the active period — null when API fails or period is closed
   const [pace, setPace] = useState<PaceCategory[] | null>(null);
 
@@ -125,7 +127,7 @@ export default function CategoryBudgets({ summaries, categories, activeMonth, on
 
         {/* List, Proximity: each category row is its own visual unit */}
         <div className="space-y-3">
-          {displayEntries.map(({ category, amount, limit, color }) => {
+          {displayEntries.map(({ category, amount, limit, color }, index) => {
             const hasLimit = limit > 0;
             const pct = hasLimit ? Math.min(100, (amount / limit) * 100) : 100;
             const isOver = hasLimit && amount > limit;
@@ -159,8 +161,15 @@ export default function CategoryBudgets({ summaries, categories, activeMonth, on
                     : 'text-emerald-600 dark:text-emerald-400';
 
             return (
-              <div
+              <motion.div
                 key={category}
+                initial={shouldReduceMotion ? false : { opacity: 0, x: -6 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{
+                  duration: 0.25,
+                  delay: Math.min(index * 0.03, 0.2),
+                  ease: [0.16, 1, 0.3, 1],
+                }}
                 className="cursor-pointer group"
                 onClick={() => onCategoryClick(category)}
               >
@@ -255,7 +264,7 @@ export default function CategoryBudgets({ summaries, categories, activeMonth, on
                     On pace to exceed: projected {formatIdr(pc.projected_total)}
                   </p>
                 ) : null}
-              </div>
+              </motion.div>
             );
           })}
         </div>
