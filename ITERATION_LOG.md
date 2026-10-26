@@ -1,5 +1,23 @@
 # Iteration Log
 
+## Sesi 26 Okt 2026 — Category Budget Adherence & Filter Hub (GH PR #339)
+
+### Ringkasan
+Meningkatkan halaman Budget Report (`/budget`) dengan **Category Budget Adherence & Management Hub**:
+- **Budget Adherence Overview**: Metrik agregat efisiensi anggaran (`% Used`) lengkap dengan visual dynamic progress bar (emerald <80%, gold 80-100%, coral >100%) dan perhitungan sisa buffer anggaran.
+- **Search & Quick Filter Hub**: Pencarian real-time kategori pengeluaran dan tab filter cepat (`All`, `Over Budget`, `Near Limit`, `On Track`, `No Limit`) dengan pill badge jumlah kategori dinamis.
+- **Interactive KPI Alerts**: Kartu Alerts di ringkasan KPI dapat diklik langsung untuk memfilter kategori yang melebihi atau mendekati batas limit.
+- **Koreksi Status & Anti-Slop**: Mengoreksi kategori tanpa limit (`limit === 0`) menjadi badge `No Limit` (outline/slate) dan tidak lagi keliru dilabeli `On Track`. Memperbaiki efek hover baris tabel di dark mode serta mematuhi aturan WCAG AA dan zero em-dash di UI copy.
+
+### Perubahan
+- **`src/components/BudgetReport.tsx`**: visual progress adherence, search bar, status filter tabs, interactive alerts toggle, koreksi badge status kategori, dan perbaikan styling hover dual-mode.
+- **`src/__tests__/budget-report-hub.test.tsx`**: 6 unit test mencakup KPI calculation, adherence bar, klasifikasi status kategori, filter tab, dynamic search, reset button, dan modal drill-down transaksi.
+
+### Verifikasi
+- 524/524 tests pass (44 file), `npm run build` clean (5.4s).
+- Database `data/` dan `financial.db` tidak disentuh.
+
+
 ## Sesi 23 Okt 2026 — Recurring Transactions Overview & Filter Hub (GH PR #333)
 
 ### Ringkasan
