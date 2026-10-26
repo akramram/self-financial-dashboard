@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import CategorySettings from './CategorySettings';
 import IncomeSettings from './IncomeSettings';
 import ExportData from './ExportData';
@@ -27,6 +28,7 @@ interface TabItem {
 
 export default function SettingsView() {
   const [activeTab, setActiveTab] = useState<TabKey>('all');
+  const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
     // Read initial tab from URL hash if present
@@ -100,7 +102,7 @@ export default function SettingsView() {
       </div>
 
       {/* Segmented Tab Navigation */}
-      <div className="flex items-center gap-1.5 p-1 rounded-xl bg-muted/60 dark:bg-white/[0.03] border border-border/80 dark:border-white/[0.06] overflow-x-auto no-scrollbar">
+      <div className="flex items-center gap-1.5 p-1 rounded-xl bg-muted/60 dark:bg-white/[0.03] border border-border/80 dark:border-white/[0.06] overflow-x-auto no-scrollbar relative">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.key;
@@ -108,16 +110,29 @@ export default function SettingsView() {
             <button
               key={tab.key}
               onClick={() => handleTabChange(tab.key)}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+              className={`relative flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
                 isActive
-                  ? 'bg-background text-foreground shadow-sm dark:bg-white/[0.08] dark:text-white'
+                  ? 'text-foreground dark:text-white'
                   : 'text-muted-foreground hover:text-foreground hover:bg-muted/40 dark:hover:bg-white/[0.03]'
               }`}
               role="tab"
               aria-selected={isActive}
             >
-              <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-mint-600 dark:text-mint-400' : ''}`} />
-              <span>{tab.label}</span>
+              {isActive && (
+                <motion.div
+                  layoutId="settings-tab-indicator"
+                  className="absolute inset-0 rounded-lg bg-background shadow-sm dark:bg-white/[0.08]"
+                  transition={
+                    shouldReduceMotion
+                      ? { duration: 0 }
+                      : { type: 'spring', bounce: 0.15, duration: 0.4 }
+                  }
+                />
+              )}
+              <span className="relative z-10 flex items-center gap-2">
+                <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-mint-600 dark:text-mint-400' : ''}`} />
+                <span>{tab.label}</span>
+              </span>
             </button>
           );
         })}

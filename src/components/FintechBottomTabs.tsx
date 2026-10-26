@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion, useReducedMotion } from 'motion/react';
 import { LayoutDashboard, ArrowRightLeft, PieChart, Target, Plus } from 'lucide-react';
 
 const TABS = [
@@ -60,6 +61,7 @@ export default function FintechBottomTabs() {
 }
 
 function TabButton({ tab, active }: { tab: typeof TABS[0]; active: boolean }) {
+  const shouldReduceMotion = useReducedMotion();
   return (
     <a
       href={tab.path}
@@ -75,8 +77,14 @@ function TabButton({ tab, active }: { tab: typeof TABS[0]; active: boolean }) {
         {tab.label}
       </span>
       {active && (
-        <div
+        <motion.div
+          layoutId="bottom-tabs-indicator"
           className="absolute -top-1 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-full bg-mint-500"
+          transition={
+            shouldReduceMotion
+              ? { duration: 0 }
+              : { type: 'spring', bounce: 0.2, duration: 0.35 }
+          }
         />
       )}
     </a>
