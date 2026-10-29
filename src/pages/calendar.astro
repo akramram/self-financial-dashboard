@@ -1,23 +1,25 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import SpendingCalendar from '../components/SpendingCalendar';
-import { getTransactions, getAllPeriods } from '../lib/db';
+import { getTransactions, getAllPeriods, getCategories } from '../lib/db';
 
 const transactions = getTransactions();
 const periods = getAllPeriods().map((p: any) => ({ period_id: p.id, month: p.month }));
+const categories = getCategories();
 ---
 
 <Layout title="Spending Calendar - Financial Dashboard">
   <div class="mb-6">
-    <h1 class="text-2xl font-bold">Spending Calendar</h1>
-    <p class="text-slate-500 dark:text-slate-400 text-sm">
-      Visualize daily spending intensity and drill down into individual days
+    <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Spending Calendar</h1>
+    <p class="text-slate-600 dark:text-white/60 text-sm">
+      Visualize daily spending intensity, track zero-spend days, and explore day-of-week rhythm
     </p>
   </div>
 
   <SpendingCalendar
     transactions={transactions}
     periods={periods}
+    categories={categories}
     client:load
   />
 </Layout>
