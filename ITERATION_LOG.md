@@ -1,5 +1,26 @@
 # Iteration Log
 
+## Sesi 29 Okt 2026 — Spending Calendar Intelligence Hub & No-Spend Days Tracker (GH PR #341)
+
+### Ringkasan
+Meningkatkan halaman Spending Calendar (`/calendar`) menjadi **Spending Calendar Intelligence Hub & No-Spend Days Tracker**:
+- **6 Metrik KPI Finansial**: Menampilkan Period Spend, Daily Average Spend, No-Spend Days (dengan zero-spend rate percentage), Peak Spend Day, Weekend Spend distribution, dan Active Days count.
+- **Filter Cepat & Kategori**: Dropdown kategori real-time, filter jenis pengeluaran (All Expenses, Cash Only, Credit Card Only, CC Payments), tombol toggle **No-Spend Focus** mode, serta chip highlight intensitas (Peak, Med, Low, Zero).
+- **Day-of-Week Spending Rhythm**: Visual mini bar chart sebaran pengeluaran per hari (Minggu sampai Sabtu) untuk membaca pola kebiasaan mingguan.
+- **Enhanced Day Detail Dialog**: Ringkasan distribusi kategori per tanggal, split Cash vs Credit, dan tabel transaksi interaktif dengan tautan langsung ke transaksi.
+- **Koreksi Token & Antislop**: Memperbaiki kelas CSS invalid `dark:bg-gold-700/20/30` menjadi token valid, mendukung dual-theme dark/light mode dengan kontras WCAG AA, dan zero em-dash di UI copy.
+- **Unit Test**: 8 unit test komprehensif di `src/__tests__/spending-calendar-hub.test.tsx` (total test suite 541/541 lulus).
+
+### Perubahan
+- **`src/components/SpendingCalendar.tsx`**: implementasi 6 kartu KPI finansial, filter kategori dan tipe pembayaran, mode No-Spend Focus, rhythm bar mingguan, dan dialog detail hari yang diperkaya.
+- **`src/pages/calendar.astro`**: mengintegrasikan passing `categories` dari `getCategories()`.
+- **`src/__tests__/spending-calendar-hub.test.tsx`**: 8 unit test komprehensif mencakup kalkulasi KPI, filter kategori, filter tipe, toggle No-Spend, custom event quick-add, dan modal detail hari.
+
+### Verifikasi
+- 541/541 tests pass (47 file), `npm run build` clean (5.3s).
+- Database `data/` dan `financial.db` tidak disentuh.
+
+
 ## Sesi 26 Okt 2026 — Category Budget Adherence & Filter Hub (GH PR #339)
 
 ### Ringkasan
