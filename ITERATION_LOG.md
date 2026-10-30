@@ -1,5 +1,30 @@
 # Iteration Log
 
+## Sesi 30 Okt 2026 — Budget Recommendations Intelligence Hub & Strategy Modes (GH PR #343)
+
+### Ringkasan
+Meningkatkan halaman Budget Recommendations (`/recommendations`) menjadi **Budget Recommendations Intelligence Hub**:
+- **Pilihan 4 Strategi Rekomendasi Interaktif**:
+  - `Cerdas (Default P80)`: Formula smart blend berbasis persentil 80 dan rata-rata menurut tingkat volatilitas.
+  - `Aman (+10% Buffer)`: Margin keamanan ekstra 10% untuk mencegah over budget di kategori rentan fluktuasi.
+  - `Disiplin (Median)`: Mode penghematan anggaran ketat berbasis median bulanan tanpa buffer.
+  - `Kustom (-20% s/d +30%)`: Slider interaktif dengan pembulatan langkah IDR 50.000 untuk presisi pengaturan target.
+- **Budget Impact Bar & 6 Metrik KPI**: Memperlihatkan perbandingan Total Limit Saat Ini vs Total Rekomendasi Baru dan selisih anggaran bulanan (+/- IDR), serta 6 kartu KPI ringkas (Total Kategori, Perlu Update, Over Budget, Tanpa Limit, Tren Naik, Volatilitas Tinggi) yang berfungsi ganda sebagai filter interaktif.
+- **Filter Cepat & Pencarian Real-time**: Search input nama kategori dan filter tabs status (`Semua`, `Perlu Update`, `Over Budget`, `Tanpa Limit`).
+- **Action per Kategori (Single Apply & Batch Update)**: Tombol `Terapkan` langsung per baris dengan loading spinner dan feedback status `Diterapkan`, serta tombol `Terapkan Semua` dengan progress tracking.
+- **Drill-down Modal Analisis Kategori**: Dialog detail historis (Rata-rata, Median, Maksimum, P80, Tren %, Volatilitas, Standar Deviasi) lengkap dengan form penyesuaian limit kustom sebelum disimpan.
+- **Antislop & WCAG AA**: Mengganti styling dengan kelas warna konsisten dual-theme (dark/light), touch target 44px, dan zero em-dash pada seluruh teks UI.
+- **Unit Test**: 7 unit test komprehensif di `src/__tests__/budget-recommendations-hub.test.tsx` (total test suite 548/548 lulus).
+
+### Perubahan
+- **`src/components/BudgetRecommendations.tsx`**: perombakan total komponen menjadi intelligence hub dengan strategy mode switcher, impact bar, 6 KPI cards, search/filter bar, single apply per baris, dan drill-down analysis modal.
+- **`src/__tests__/budget-recommendations-hub.test.tsx`**: unit test mencakup formula pembulatan, kalkulasi strategi rekomendasi, render KPI, search filtering, status filtering, single-item apply via API, dan modal drill-down.
+
+### Verifikasi
+- 548/548 tests pass (48 file).
+- `npm run build` clean tanpa error.
+- Database `data/` dan `financial.db` tidak disentuh.
+
 ## Sesi 29 Okt 2026 — Spending Calendar Intelligence Hub & No-Spend Days Tracker (GH PR #341)
 
 ### Ringkasan
