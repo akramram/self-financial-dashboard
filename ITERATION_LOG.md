@@ -1,5 +1,28 @@
 # Iteration Log
 
+## Sesi 31 Okt 2026 — FIRE Intelligence Hub & Multi-Tier Freedom Simulator (GH PR #345)
+
+### Ringkasan
+Meningkatkan halaman FIRE (`/fire`) menjadi **FIRE Intelligence Hub & Multi-Tier Freedom Simulator**:
+- **Multi-Tier FIRE Model**: Mendukung 5 skenario pensiun dini interaktif (Lean FIRE 75%, Standard FIRE 100%, Chubby FIRE 130%, Fat FIRE 175%, Barista FIRE 50%) dengan kartu selektor interaktif dan perhitungan otomatis target modal secara real-time.
+- **6 Metrik Finansial KPI**: Target FIRE aktif, Progres Kekayaan Bersih (%), Estimasi Waktu Bebas Finansial, Simpanan Bulanan Simpul & Tingkat Tabungan, Kesiapan Coast FIRE (modal dibutuhkan hari ini vs aktual), serta Kapasitas Passive Income Aman per bulan/tahun.
+- **Milestone Freedom Pathways**: 4 tahapan tonggak kebebasan finansial (25% Quarter FI, 50% Halfway FI, 75% Three-Quarter FI, 100% Full Freedom) lengkap dengan progress bar dan nominal target.
+- **Simulator Asumsi & Percepatan Interaktif**: Kontrol slider untuk Safe Withdrawal Rate (SWR 2.5% s/d 6.0%), Return Investasi Riil (Nominal 4% s/d 15%), Asumsi Inflasi (1% s/d 6%), Penyesuaian Pengeluaran Bulanan (-30% s/d +30%), Boost Tabungan Tambahan (Rp 0 s/d Rp 10 Juta/bln), serta Usia Sekarang & Usia Target Coast FIRE.
+- **Trajektori Pertumbuhan Portofolio (Chart.js)**: Visualisasi tren saldo terhadap garis batas target FIRE, plus toggle komposisi tabungan pokok vs keuntungan bunga majemuk akumulatif.
+- **Jadwal Proyeksi Tahunan**: Tabel proyeksi tahun demi tahun dengan kolom saldo, tabungan pokok, keuntungan majemuk, persentase target, dan badge milestone (toggle 5 tahun pertama / semua tahun).
+- **Koreksi Antislop & Aksesibilitas**: Zero em-dash (R-02), warna token valid WCAG AA di light/dark mode, no dead controls, dan 8 unit test komprehensif di `src/__tests__/fire-intelligence-hub.test.tsx` (total 556/556 passed).
+
+### Perubahan
+- **`src/components/FireCalculator.tsx`**: implementasi komprehensif Multi-Tier Strategy Selector, 6 kartu KPI, Milestone Freedom Pathways, Simulator Asumsi, Chart.js visualizer, dan Tabel Jadwal Tahunan.
+- **`src/pages/fire.astro`**: pembaruan judul dan deskripsi halaman ke FIRE Intelligence Hub.
+- **`src/pages/api/fire/index.ts`**: perbaikan string em-dash ke colon standar.
+- **`src/__tests__/fire-intelligence-hub.test.tsx`**: 8 unit test komprehensif mencakup selector tier, respon slider asumsi, kalkulasi Coast FIRE, dan milestone.
+
+### Verifikasi
+- Test suite: 556/556 lulus (49 test files).
+- Build Astro: Berhasil tanpa error.
+- PM2 process: Restarted & healthy di port 4321.
+
 ## Sesi 30 Okt 2026 — Budget Recommendations Intelligence Hub & Strategy Modes (GH PR #343)
 
 ### Ringkasan
