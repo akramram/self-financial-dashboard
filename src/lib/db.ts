@@ -2906,7 +2906,7 @@ export function getAchievements(): AchievementsResult {
       unlocked,
       unlockedDate: unlocked ? (networthRows.find((n) => n.total >= t.target)?.start_date ?? null) : null,
       progress: !unlocked ? { current: Math.max(0, peakNw), target: t.target, unit: 'IDR' } : undefined,
-      value: unlocked ? `First hit in ${networthRows.find((n) => n.total >= t.target)?.month ?? '—'}` : undefined,
+      value: unlocked ? `First hit in ${networthRows.find((n) => n.total >= t.target)?.month ?? '-'}` : undefined,
     });
   }
 
@@ -3110,7 +3110,7 @@ export function getAchievements(): AchievementsResult {
     },
     {
       label: 'Best Savings Rate',
-      value: bestRate > 0 ? `${bestRate.toFixed(1)}%` : '—',
+      value: bestRate > 0 ? `${bestRate.toFixed(1)}%` : '-',
       icon: '💰',
       subtext: `${periodsAbove10} period(s) above 10%`,
     },
@@ -3122,13 +3122,13 @@ export function getAchievements(): AchievementsResult {
     },
     {
       label: 'Tracking Span',
-      value: daysTracked > 0 ? `${Math.floor(daysTracked / 30)} mo` : '—',
+      value: daysTracked > 0 ? `${Math.floor(daysTracked / 30)} mo` : '-',
       icon: '📅',
       subtext: `${daysTracked} days since first entry`,
     },
     {
       label: 'Net Worth Growth',
-      value: nwGrowthPct !== 0 ? `${nwGrowthPct >= 0 ? '+' : ''}${nwGrowthPct.toFixed(0)}%` : '—',
+      value: nwGrowthPct !== 0 ? `${nwGrowthPct >= 0 ? '+' : ''}${nwGrowthPct.toFixed(0)}%` : '-',
       icon: nwGrowthPct >= 0 ? '📈' : '📉',
       subtext: `from ${formatIdrInline(firstNw)}`,
     },

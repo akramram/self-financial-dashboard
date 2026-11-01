@@ -385,3 +385,12 @@ export async function fetchPortfolioSummary(): Promise<PortfolioSummary> {
   const res = await fetch('/api/investments/summary');
   return res.json();
 }
+
+export async function fetchAchievements(): Promise<any> {
+  const res = await fetch('/api/achievements');
+  if (!res.ok) {
+    throw new Error('Failed to fetch achievements');
+  }
+  return res.json();
+}
+
