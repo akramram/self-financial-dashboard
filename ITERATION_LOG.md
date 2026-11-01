@@ -1,5 +1,29 @@
 # Iteration Log
 
+## Sesi 01 Nov 2026 — Achievements & Milestone Journey Hub (GH PR #347)
+
+### Ringkasan
+Meningkatkan halaman Achievements (`/achievements`) menjadi **Achievements & Milestone Journey Hub**:
+- **REST Endpoint GET `/api/achievements`**: Menghilangkan Astro devalue serialization pitfall pada props island, mendukung dynamic client hydration dengan state loading skeleton dan error fallback yang tangguh.
+- **Interactive Badge Detail Modal (Dialog)**: Klik badge manapun (terbuka atau terkunci) membuka modal dialog detail elegan (Radix/shadcn Dialog) yang menampilkan kriteria target, rincian progress bar, kekurangan nominal/periode (shortfall), tanggal perolehan pertama kali, dan reward poin XP.
+- **Linimasa Milestone Kronologis**: Tab linimasa jejak rekam pencapaian finansial dari awal pencatatan transaksi hingga saat ini, diurutkan secara kronologis dengan tanggal perolehan dan highlight milestone berikutnya.
+- **Peringkat Finansial & Matriks XP**: Sistem progres gamifikasi 10 tingkatan level (Level 1 Pemula Finansial hingga Level 10 Legenda Finansial) dengan akumulasi XP per tier (Bronze: 10 XP, Silver: 25 XP, Gold: 50 XP, Platinum: 100 XP), progress bar ke level berikutnya, dan rincian perolehan poin per tier.
+- **Filter Cerdas & Pencarian Real-Time**: Filter status instan (Semua, Terbuka, Terkunci), filter kategori (Net Worth, Tabungan, Disiplin, Durasi, Diversitas), filter tier (Bronze, Silver, Gold, Platinum), serta instant search bar.
+- **Antislop Compliance**: Zero em-dash (R-02) di seluruh konten dan fallback database, kontras WCAG AA di mode terang dan gelap, aksesibilitas keyboard (Escape/Tab/Enter), dan 6 unit test baru di `src/__tests__/achievements-hub.test.tsx` (562/562 tests pass).
+
+### File yang Diubah
+- **`src/pages/api/achievements.ts`**: Endpoint API baru yang melayani payload `AchievementsResult`.
+- **`src/lib/api.ts`**: Menambahkan fungsi helper `fetchAchievements()`.
+- **`src/lib/db.ts`**: Membersihkan karakter em-dash pada nilai fallback `getAchievements()`.
+- **`src/pages/achievements.astro`**: Transisi island ke client-side fetch murni tanpa serialisasi prop devalue.
+- **`src/components/Achievements.tsx`**: Peningkatan komprehensif menjadi hub interaktif 3 tab, search/filter, dan dialog modal detail lencana.
+- **`src/__tests__/achievements-hub.test.tsx`**: 6 unit test komprehensif mencakup master header, pencarian, filter status, pembukaan dialog detail, tab navigation, dan verifikasi zero em-dash.
+
+### Verifikasi
+- Test suite: 562/562 lulus (50 test files).
+- Build Astro: Berhasil tanpa error.
+- PM2 process: Restarted & healthy di port 4321.
+
 ## Sesi 31 Okt 2026 — FIRE Intelligence Hub & Multi-Tier Freedom Simulator (GH PR #345)
 
 ### Ringkasan
