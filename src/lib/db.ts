@@ -3390,6 +3390,15 @@ export function getRecurringCostAnalysis(): RecurringCostResult {
 
 // ─── Budget Pace ───────────────────────────────────────────────────────────
 
+export interface BudgetPaceTransaction {
+  id: number;
+  title: string;
+  amount: number;
+  date: string;
+  payment_method: string;
+  type: string;
+}
+
 export interface BudgetPaceCategory {
   category: string;
   color: string;
@@ -3400,8 +3409,33 @@ export interface BudgetPaceCategory {
   pace_diff: number;       // spent_pct - expected_pct (positive = over pace)
   pace_status: 'on_track' | 'warning' | 'over_pace' | 'under_budget' | 'no_limit';
   projected_total: number; // linear projection at end of period
+  projected_diff: number;  // projected_total - limit
   days_elapsed: number;
   days_total: number;
+  days_remaining: number;
+  remaining_budget: number;
+  safe_daily_burn: number;
+  actual_daily_burn: number;
+  tx_count: number;
+  transactions?: BudgetPaceTransaction[];
+}
+
+export interface BudgetPaceTimelinePoint {
+  day: number;
+  date: string;
+  spent_daily: number;
+  spent_cumulative: number;
+  expected_cumulative: number;
+  budget_limit: number;
+  projected_cumulative?: number;
+}
+
+export interface BudgetPacePeriodOption {
+  id: number;
+  month: string;
+  start_date: string;
+  end_date: string;
+  is_active: boolean;
 }
 
 export interface BudgetPaceResult {
@@ -3411,25 +3445,47 @@ export interface BudgetPaceResult {
   end_date: string;
   days_elapsed: number;
   days_total: number;
+  days_remaining: number;
   time_elapsed_pct: number;    // days_elapsed / days_total * 100
   total_budget: number;        // sum of all category limits
   total_spent: number;         // sum of actual spending in budgeted categories
+  remaining_budget: number;    // total_budget - total_spent
   total_expected: number;      // linear: total_budget * time_elapsed_pct / 100
   total_pace_diff: number;     // total_spent - total_expected
   total_pace_pct: number;      // (spent - expected) / expected * 100
   total_projected: number;     // projected total at period end
+  safe_daily_burn: number;     // remaining_budget / days_remaining
+  actual_daily_burn: number;   // total_spent / days_elapsed
+  budget_burn_rate_ratio: number; // actual_daily_burn / (total_budget / days_total)
+  run_out_day: number | null;  // day number when budget runs out if over-pacing
+  run_out_date: string | null; // calendar date string when budget runs out
   overall_status: 'on_track' | 'warning' | 'over_pace' | 'critical';
   categories: BudgetPaceCategory[];
+  available_periods: BudgetPacePeriodOption[];
+  daily_timeline: BudgetPaceTimelinePoint[];
 }
 
 export function getBudgetPace(periodId?: number): BudgetPaceResult {
   // Resolve period
   const period = periodId
-    ? db.prepare('SELECT * FROM periods WHERE id = ?').get(periodId) as any
+    ? (db.prepare('SELECT * FROM periods WHERE id = ?').get(periodId) as any)
     : getActivePeriod();
 
+  const activePeriod = getActivePeriod();
+  const available_periods: BudgetPacePeriodOption[] = db.prepare(`
+    SELECT id, month, start_date, end_date
+    FROM periods
+    ORDER BY start_date DESC
+  `).all().map((p: any) => ({
+    id: p.id,
+    month: p.month,
+    start_date: p.start_date,
+    end_date: p.end_date,
+    is_active: activePeriod ? p.id === activePeriod.id : false,
+  }));
+
   if (!period) {
-    // No active period — return empty result
+    // No active period: return empty result
     return {
       period_id: 0,
       period_label: 'N/A',
@@ -3437,43 +3493,83 @@ export function getBudgetPace(periodId?: number): BudgetPaceResult {
       end_date: '',
       days_elapsed: 0,
       days_total: 0,
+      days_remaining: 0,
       time_elapsed_pct: 0,
       total_budget: 0,
       total_spent: 0,
+      remaining_budget: 0,
       total_expected: 0,
       total_pace_diff: 0,
       total_pace_pct: 0,
       total_projected: 0,
+      safe_daily_burn: 0,
+      actual_daily_burn: 0,
+      budget_burn_rate_ratio: 1,
+      run_out_day: null,
+      run_out_date: null,
       overall_status: 'on_track',
       categories: [],
+      available_periods,
+      daily_timeline: [],
     };
   }
 
   const startDate = new Date(period.start_date + 'T00:00:00');
-  const endDate = new Date(period.end_date + 'T23:59:59');
-  const now = new Date();
+  const endDate = new Date(period.end_date + 'T00:00:00');
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
   const msPerDay = 1000 * 60 * 60 * 24;
   const days_total = Math.max(1, Math.round((endDate.getTime() - startDate.getTime()) / msPerDay) + 1);
-  const days_elapsed = Math.min(
-    days_total,
-    Math.max(0, Math.round((now.getTime() - startDate.getTime()) / msPerDay) + 1)
-  );
+
+  let days_elapsed = 0;
+  if (today.getTime() >= endDate.getTime()) {
+    days_elapsed = days_total;
+  } else if (today.getTime() >= startDate.getTime()) {
+    days_elapsed = Math.min(
+      days_total,
+      Math.max(0, Math.round((today.getTime() - startDate.getTime()) / msPerDay) + 1)
+    );
+  } else {
+    days_elapsed = 0;
+  }
+  const days_remaining = Math.max(0, days_total - days_elapsed);
   const time_elapsed_pct = (days_elapsed / days_total) * 100;
 
-  // Get all categories with limits
+  // Get all categories with budget limits
   const categories = db.prepare('SELECT name, color, monthly_limit FROM categories WHERE monthly_limit > 0').all() as any[];
 
-  // Get spending per category for this period (done=1, spending types only)
-  const spending = db.prepare(`
-    SELECT category, SUM(amount) as spent
+  // Get detailed spending transactions for this period (done=1, cash & credit_expense)
+  const txRows = db.prepare(`
+    SELECT id, title, amount, category, type, payment_method, done,
+           SUBSTR(COALESCE(created_time, date), 1, 10) AS day_date
     FROM transactions
     WHERE period_id = ? AND done = 1 AND type IN ('cash', 'credit_expense')
-    GROUP BY category
+    ORDER BY COALESCE(created_time, date) DESC, id DESC
   `).all(period.id) as any[];
 
+  const txByCategory = new Map<string, BudgetPaceTransaction[]>();
+  const spendingByDay = new Map<string, number>();
   const spendingMap = new Map<string, number>();
-  spending.forEach((s) => spendingMap.set(s.category, s.spent));
+
+  for (const tx of txRows) {
+    const catList = txByCategory.get(tx.category) || [];
+    catList.push({
+      id: tx.id,
+      title: tx.title,
+      amount: tx.amount,
+      date: tx.day_date,
+      payment_method: tx.payment_method,
+      type: tx.type,
+    });
+    txByCategory.set(tx.category, catList);
+
+    const prevCatSpent = spendingMap.get(tx.category) || 0;
+    spendingMap.set(tx.category, prevCatSpent + tx.amount);
+
+    const prevDaySpent = spendingByDay.get(tx.day_date) || 0;
+    spendingByDay.set(tx.day_date, prevDaySpent + tx.amount);
+  }
 
   let total_budget = 0;
   let total_spent = 0;
@@ -3485,6 +3581,11 @@ export function getBudgetPace(periodId?: number): BudgetPaceResult {
     const expected_pct = time_elapsed_pct;
     const pace_diff = spent_pct - expected_pct;
     const projected_total = days_elapsed > 0 ? (spent / days_elapsed) * days_total : 0;
+    const projected_diff = projected_total - limit;
+    const remaining_budget = Math.max(0, limit - spent);
+    const safe_daily_burn = days_remaining > 0 ? remaining_budget / days_remaining : 0;
+    const actual_daily_burn = days_elapsed > 0 ? spent / days_elapsed : 0;
+    const catTxs = txByCategory.get(cat.name) || [];
 
     let pace_status: BudgetPaceCategory['pace_status'];
     if (limit === 0) {
@@ -3514,8 +3615,15 @@ export function getBudgetPace(periodId?: number): BudgetPaceResult {
       pace_diff,
       pace_status,
       projected_total,
+      projected_diff,
       days_elapsed,
       days_total,
+      days_remaining,
+      remaining_budget,
+      safe_daily_burn,
+      actual_daily_burn,
+      tx_count: catTxs.length,
+      transactions: catTxs,
     };
   });
 
@@ -3523,6 +3631,59 @@ export function getBudgetPace(periodId?: number): BudgetPaceResult {
   const total_pace_diff = total_spent - total_expected;
   const total_pace_pct = total_expected > 0 ? (total_pace_diff / total_expected) * 100 : 0;
   const total_projected = days_elapsed > 0 ? (total_spent / days_elapsed) * days_total : 0;
+  const remaining_budget = Math.max(0, total_budget - total_spent);
+  const safe_daily_burn = days_remaining > 0 ? remaining_budget / days_remaining : 0;
+  const actual_daily_burn = days_elapsed > 0 ? total_spent / days_elapsed : 0;
+  const standard_daily_budget = days_total > 0 ? total_budget / days_total : 1;
+  const budget_burn_rate_ratio = standard_daily_budget > 0 ? actual_daily_burn / standard_daily_budget : 1;
+
+  let run_out_day: number | null = null;
+  let run_out_date: string | null = null;
+  if (actual_daily_burn > 0 && total_budget > 0) {
+    const projectedDay = Math.ceil(total_budget / actual_daily_burn);
+    if (projectedDay <= days_total) {
+      run_out_day = projectedDay;
+      const runOutD = new Date(startDate.getTime() + (projectedDay - 1) * msPerDay);
+      const y = runOutD.getFullYear();
+      const m = String(runOutD.getMonth() + 1).padStart(2, '0');
+      const d = String(runOutD.getDate()).padStart(2, '0');
+      run_out_date = `${y}-${m}-${d}`;
+    }
+  }
+
+  // Daily timeline
+  const daily_timeline: BudgetPaceTimelinePoint[] = [];
+  let runningCumulative = 0;
+  for (let i = 0; i < days_total; i++) {
+    const d = new Date(startDate.getTime() + i * msPerDay);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const dayOfMonth = String(d.getDate()).padStart(2, '0');
+    const dateStr = `${y}-${m}-${dayOfMonth}`;
+    const dayNum = i + 1;
+    const spent_daily = spendingByDay.get(dateStr) || 0;
+
+    if (dayNum <= days_elapsed) {
+      runningCumulative += spent_daily;
+    }
+
+    const expected_cumulative = Math.round((dayNum / days_total) * total_budget);
+
+    const point: BudgetPaceTimelinePoint = {
+      day: dayNum,
+      date: dateStr,
+      spent_daily: dayNum <= days_elapsed ? spent_daily : 0,
+      spent_cumulative: dayNum <= days_elapsed ? runningCumulative : (days_elapsed > 0 ? total_spent : 0),
+      expected_cumulative,
+      budget_limit: total_budget,
+    };
+
+    if (dayNum > days_elapsed && days_elapsed > 0) {
+      point.projected_cumulative = Math.round(total_spent + (dayNum - days_elapsed) * actual_daily_burn);
+    }
+
+    daily_timeline.push(point);
+  }
 
   let overall_status: BudgetPaceResult['overall_status'];
   if (total_budget === 0) {
@@ -3544,15 +3705,24 @@ export function getBudgetPace(periodId?: number): BudgetPaceResult {
     end_date: period.end_date,
     days_elapsed,
     days_total,
+    days_remaining,
     time_elapsed_pct,
     total_budget,
     total_spent,
+    remaining_budget,
     total_expected,
     total_pace_diff,
     total_pace_pct,
     total_projected,
+    safe_daily_burn,
+    actual_daily_burn,
+    budget_burn_rate_ratio,
+    run_out_day,
+    run_out_date,
     overall_status,
     categories: paceCategories,
+    available_periods,
+    daily_timeline,
   };
 }
 
