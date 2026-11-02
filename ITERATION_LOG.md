@@ -1,5 +1,28 @@
 # Iteration Log
 
+## Sesi 02 Nov 2026 — Budget Pace & Burn-Rate Intelligence Hub (GH PR #349)
+
+### Ringkasan
+Meningkatkan halaman Budget Pace (`/budget-pace`) menjadi **Budget Pace & Burn-Rate Intelligence Hub**:
+- **Pemilihan Periode Interaktif**: Mendukung dropdown selektor periode siklus gaji (21 s/d 20) untuk memantau performa bulan berjalan maupun riwayat bulan-bulan lampau, tersinkronisasi dengan query string URL (`?period_id=...`).
+- **4 Kartu Metrik Burn-Rate & Waktu**: Status Pacing & Waktu Siklus (hari elapsed vs total vs sisa), Sisa Anggaran & Alokasi Harian Aman (safe daily allowance), Kecepatan Belanja Aktual (burn rate per hari & rasio kecepatan terhadap anggaran normal), serta Proyeksi Akhir Periode & Estimasi Tanggal Anggaran Habis (run-out date alert jika over pace).
+- **Kurva Pacing & Trajektori Anggaran Kumulatif (Responsive SVG)**: Visualisasi kurva kumulatif aktual vs garis target benchmark linier vs garis batas anggaran vs proyeksi trajektori hingga akhir periode, dilengkapi penanda pin Hari Ini, pin Estimasi Habis, dan tooltip interaktif.
+- **Simulator Penyesuaian Belanja Harian (What-If)**: Kontrol slider pengeluaran harian tersisa dengan preset cepat (Batas Aman, Hemat 25%, Frugal 50%) untuk memproyeksikan total pengeluaran dan surplus/defisit akhir periode secara real-time.
+- **Kartu Kategori Cerdas dengan Filter & Pencarian**: Filter status (Semua, Over Pace, Warning, On Track, Under Budget), instant search bar, jarum penanda ekspektasi pusingan pada progress bar, serta komparasi kecepatan aktual vs alokasi aman harian.
+- **Modal Drill-Down Transaksi Kategori (Dialog)**: Klik kartu kategori manapun membuka detail modal dialog yang memuat statistik limit vs belanja, rekomendasi tindakan taktis, dan daftar transaksi lengkap pada siklus gaji tersebut.
+- **Antislop & Aksesibilitas**: Zero em-dash (R-02), kepatuhan kontras WCAG AA di light/dark mode, keyboard navigasi modal (Escape/Close), dan pengujian unit komprehensif pada `src/__tests__/budget-pace-burn-rate.test.tsx` (568/568 passed).
+
+### Detail Perubahan
+- **`src/lib/db.ts`**: Memperluas interface `BudgetPaceCategory` dan `BudgetPaceResult` dengan metrik `safe_daily_burn`, `actual_daily_burn`, `budget_burn_rate_ratio`, `run_out_day`, `run_out_date`, `available_periods`, `daily_timeline`, serta relasi transaksi per kategori.
+- **`src/components/BudgetPace.tsx`**: Rombak komponen UI menjadi Intelligence Hub lengkap dengan SVG trajectory chart, selector periode, What-If slider simulator, filter status, search input, dan Radix/shadcn Dialog drill-down transaksi.
+- **`src/pages/budget-pace.astro`**: Perbarui judul dan deskripsi halaman ke format baru yang clean dan antislop.
+- **`src/__tests__/budget-pace-burn-rate.test.tsx`**: Suite pengujian unit komprehensif menguji perhitungan DB dan interaksi UI komponen.
+
+### Verifikasi
+- 568/568 unit tests passing (51 test files)
+- `npm run build` sukses tanpa error
+- PM2 reload & zero downtime deployment
+
 ## Sesi 01 Nov 2026 — Achievements & Milestone Journey Hub (GH PR #347)
 
 ### Ringkasan
