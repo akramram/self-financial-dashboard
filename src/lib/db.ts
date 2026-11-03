@@ -3867,3 +3867,320 @@ export function saveKseiDetailSnapshot(s: {
        fetched_at = excluded.fetched_at`
   ).run(s.snapshot_date, s.kind, s.code ?? '', s.payload_json, s.fetched_at);
 }
+
+// ============================================================
+// Month Comparison Intelligence Hub
+// ============================================================
+
+export interface ComparePeriodSummary {
+  id: number;
+  month: string;
+  start_date: string;
+  end_date: string;
+  income: number;
+  outcome: {
+    total: number;
+    cash: number;
+    credit_payment: number;
+    credit_expenses: number;
+  };
+  invest_total: number;
+  savings: number;
+  savings_rate_pct: number;
+  networth_total: number;
+  tx_count: number;
+  avg_per_tx: number;
+  top_transactions: Array<{
+    id: number;
+    title: string;
+    amount: number;
+    category: string;
+    date: string;
+    type: string;
+  }>;
+}
+
+export interface CategoryCompareRow {
+  name: string;
+  color: string;
+  leftAmount: number;
+  rightAmount: number;
+  delta: number;
+  pctChange: number;
+  status: 'up' | 'down' | 'same' | 'new' | 'zero';
+  leftCount: number;
+  rightCount: number;
+}
+
+export interface CompareResult {
+  availablePeriods: Array<{
+    id: number;
+    month: string;
+    start_date: string;
+    end_date: string;
+    tx_count: number;
+  }>;
+  periodA: ComparePeriodSummary;
+  periodB: ComparePeriodSummary;
+  categories: CategoryCompareRow[];
+  topDrivers: {
+    topIncreases: CategoryCompareRow[];
+    topSavings: CategoryCompareRow[];
+  };
+  insights: string[];
+  categoryTransactions?: {
+    category: string;
+    periodA: Array<{ id: number; title: string; amount: number; date: string; type: string }>;
+    periodB: Array<{ id: number; title: string; amount: number; date: string; type: string }>;
+  };
+}
+
+export function getMonthComparison(options?: {
+  periodAId?: number;
+  periodBId?: number;
+  monthA?: string;
+  monthB?: string;
+  drilldownCategory?: string;
+}): CompareResult {
+  const availablePeriods = db.prepare(`
+    SELECT p.id, p.month, p.start_date, p.end_date, COUNT(t.id) as tx_count
+    FROM periods p
+    LEFT JOIN transactions t ON t.period_id = p.id AND t.done = 1
+    GROUP BY p.id
+    ORDER BY p.start_date DESC
+  `).all() as Array<{ id: number; month: string; start_date: string; end_date: string; tx_count: number }>;
+
+  if (availablePeriods.length === 0) {
+    const emptyPeriod: ComparePeriodSummary = {
+      id: 0,
+      month: 'N/A',
+      start_date: '',
+      end_date: '',
+      income: 0,
+      outcome: { total: 0, cash: 0, credit_payment: 0, credit_expenses: 0 },
+      invest_total: 0,
+      savings: 0,
+      savings_rate_pct: 0,
+      networth_total: 0,
+      tx_count: 0,
+      avg_per_tx: 0,
+      top_transactions: [],
+    };
+    return {
+      availablePeriods: [],
+      periodA: emptyPeriod,
+      periodB: emptyPeriod,
+      categories: [],
+      topDrivers: { topIncreases: [], topSavings: [] },
+      insights: ['Belum ada data periode yang tersedia untuk komparasi.'],
+    };
+  }
+
+  // Resolve Period A and Period B
+  let pB = availablePeriods[0];
+  let pA = availablePeriods.length > 1 ? availablePeriods[1] : availablePeriods[0];
+
+  if (options?.periodBId) {
+    const found = availablePeriods.find((p) => p.id === options.periodBId);
+    if (found) pB = found;
+  } else if (options?.monthB) {
+    const found = availablePeriods.find((p) => p.month === options.monthB);
+    if (found) pB = found;
+  }
+
+  if (options?.periodAId) {
+    const found = availablePeriods.find((p) => p.id === options.periodAId);
+    if (found) pA = found;
+  } else if (options?.monthA) {
+    const found = availablePeriods.find((p) => p.month === options.monthA);
+    if (found) pA = found;
+  }
+
+  const buildPeriodSummary = (p: typeof availablePeriods[0]): { summary: ComparePeriodSummary; txs: any[] } => {
+    const txRows = db.prepare(`
+      SELECT id, title, amount, category, date, type
+      FROM transactions
+      WHERE period_id = ? AND done = 1
+      ORDER BY amount DESC
+    `).all(p.id) as Array<{ id: number; title: string; amount: number; category: string; date: string; type: string }>;
+
+    const cash = txRows.filter((t) => t.type === 'cash').reduce((sum, t) => sum + t.amount, 0);
+    const credit_payment = txRows.filter((t) => t.type === 'credit_payment').reduce((sum, t) => sum + t.amount, 0);
+    const credit_expenses = txRows.filter((t) => t.type === 'credit_expense').reduce((sum, t) => sum + t.amount, 0);
+    const total_outcome = cash + credit_payment;
+    const invest_total = txRows.filter((t) => t.category === INVEST_CATEGORY).reduce((sum, t) => sum + t.amount, 0);
+
+    const incRow = db.prepare('SELECT income FROM monthly_income WHERE period_id = ?').get(p.id) as any;
+    const income = incRow ? (incRow.income || 0) : 0;
+    const savings = income - (total_outcome - invest_total);
+    const savings_rate_pct = income > 0 ? Number(((savings / income) * 100).toFixed(2)) : 0;
+
+    const nwRow = db.prepare('SELECT total FROM networth WHERE period_id = ?').get(p.id) as any;
+    const networth_total = nwRow ? (nwRow.total || 0) : 0;
+    const tx_count = txRows.length;
+    const avg_per_tx = tx_count > 0 ? Math.round(total_outcome / tx_count) : 0;
+    const top_transactions = txRows.slice(0, 5);
+
+    return {
+      summary: {
+        id: p.id,
+        month: p.month,
+        start_date: p.start_date,
+        end_date: p.end_date,
+        income,
+        outcome: {
+          total: total_outcome,
+          cash,
+          credit_payment,
+          credit_expenses,
+        },
+        invest_total,
+        savings,
+        savings_rate_pct,
+        networth_total,
+        tx_count,
+        avg_per_tx,
+        top_transactions,
+      },
+      txs: txRows,
+    };
+  };
+
+  const dataA = buildPeriodSummary(pA);
+  const dataB = buildPeriodSummary(pB);
+
+  const catRows = db.prepare('SELECT name, color FROM categories').all() as Array<{ name: string; color: string }>;
+  const catColorMap = new Map<string, string>();
+  catRows.forEach((c) => catColorMap.set(c.name, c.color));
+
+  const catMap = new Map<string, { leftAmount: number; rightAmount: number; leftCount: number; rightCount: number }>();
+
+  for (const t of dataA.txs) {
+    if (t.type === 'cash' || t.type === 'credit_payment') {
+      const entry = catMap.get(t.category) || { leftAmount: 0, rightAmount: 0, leftCount: 0, rightCount: 0 };
+      entry.leftAmount += t.amount;
+      entry.leftCount += 1;
+      catMap.set(t.category, entry);
+    }
+  }
+
+  for (const t of dataB.txs) {
+    if (t.type === 'cash' || t.type === 'credit_payment') {
+      const entry = catMap.get(t.category) || { leftAmount: 0, rightAmount: 0, leftCount: 0, rightCount: 0 };
+      entry.rightAmount += t.amount;
+      entry.rightCount += 1;
+      catMap.set(t.category, entry);
+    }
+  }
+
+  const categories: CategoryCompareRow[] = Array.from(catMap.entries()).map(([name, val]) => {
+    const delta = val.rightAmount - val.leftAmount;
+    let status: 'up' | 'down' | 'same' | 'new' | 'zero' = 'same';
+    if (val.leftAmount === 0 && val.rightAmount === 0) status = 'zero';
+    else if (val.leftAmount === 0 && val.rightAmount > 0) status = 'new';
+    else if (delta > 0) status = 'up';
+    else if (delta < 0) status = 'down';
+
+    const pctChange = val.leftAmount > 0
+      ? Number(((delta / val.leftAmount) * 100).toFixed(1))
+      : (val.rightAmount > 0 ? 100 : 0);
+
+    return {
+      name,
+      color: catColorMap.get(name) || '#64748b',
+      leftAmount: val.leftAmount,
+      rightAmount: val.rightAmount,
+      delta,
+      pctChange,
+      status,
+      leftCount: val.leftCount,
+      rightCount: val.rightCount,
+    };
+  }).sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta));
+
+  const topIncreases = categories
+    .filter((c) => c.delta > 0 && c.rightAmount > 0)
+    .sort((a, b) => b.delta - a.delta)
+    .slice(0, 3);
+
+  const topSavings = categories
+    .filter((c) => c.delta < 0)
+    .sort((a, b) => a.delta - b.delta)
+    .slice(0, 3);
+
+  const insights: string[] = [];
+  const outcomeDelta = dataB.summary.outcome.total - dataA.summary.outcome.total;
+  const outcomePct = dataA.summary.outcome.total > 0
+    ? Math.abs(Number(((outcomeDelta / dataA.summary.outcome.total) * 100).toFixed(1)))
+    : 0;
+
+  if (outcomeDelta > 0) {
+    insights.push(
+      `Total pengeluaran ${pB.month} (${formatIdrInline(dataB.summary.outcome.total)}) naik ${formatIdrInline(outcomeDelta)} (+${outcomePct}%) dibandingkan ${pA.month} (${formatIdrInline(dataA.summary.outcome.total)}).`
+    );
+  } else if (outcomeDelta < 0) {
+    insights.push(
+      `Total pengeluaran ${pB.month} (${formatIdrInline(dataB.summary.outcome.total)}) lebih hemat ${formatIdrInline(Math.abs(outcomeDelta))} (-${outcomePct}%) dibandingkan ${pA.month} (${formatIdrInline(dataA.summary.outcome.total)}).`
+    );
+  } else {
+    insights.push(
+      `Total pengeluaran ${pB.month} seimbang sama persis dengan ${pA.month} pada angka ${formatIdrInline(dataB.summary.outcome.total)}.`
+    );
+  }
+
+  if (topIncreases.length > 0) {
+    insights.push(
+      `Pemicu kenaikan pengeluaran terbesar berasal dari kategori ${topIncreases[0].name} dengan penambahan +${formatIdrInline(topIncreases[0].delta)} (+${topIncreases[0].pctChange}%).`
+    );
+  }
+
+  if (topSavings.length > 0) {
+    insights.push(
+      `Efisiensi biaya terbaik dicapai pada kategori ${topSavings[0].name} dengan penghematan ${formatIdrInline(Math.abs(topSavings[0].delta))} (${topSavings[0].pctChange}%).`
+    );
+  }
+
+  if (dataB.summary.income > 0) {
+    const surplusLabel = dataB.summary.savings >= 0 ? 'surplus' : 'defisit';
+    insights.push(
+      `Tingkat tabungan berada pada ${dataB.summary.savings_rate_pct}% (${surplusLabel} ${formatIdrInline(Math.abs(dataB.summary.savings))}), dibandingkan ${dataA.summary.savings_rate_pct}% pada ${pA.month}.`
+    );
+  }
+
+  let categoryTransactions: CompareResult['categoryTransactions'] = undefined;
+  if (options?.drilldownCategory) {
+    const cat = options.drilldownCategory;
+    const catTxsA = db.prepare(`
+      SELECT id, title, amount, date, type
+      FROM transactions
+      WHERE period_id = ? AND category = ? AND done = 1
+      ORDER BY date DESC, amount DESC
+    `).all(pA.id, cat) as Array<{ id: number; title: string; amount: number; date: string; type: string }>;
+
+    const catTxsB = db.prepare(`
+      SELECT id, title, amount, date, type
+      FROM transactions
+      WHERE period_id = ? AND category = ? AND done = 1
+      ORDER BY date DESC, amount DESC
+    `).all(pB.id, cat) as Array<{ id: number; title: string; amount: number; date: string; type: string }>;
+
+    categoryTransactions = {
+      category: cat,
+      periodA: catTxsA,
+      periodB: catTxsB,
+    };
+  }
+
+  return {
+    availablePeriods,
+    periodA: dataA.summary,
+    periodB: dataB.summary,
+    categories,
+    topDrivers: {
+      topIncreases,
+      topSavings,
+    },
+    insights,
+    categoryTransactions,
+  };
+}
