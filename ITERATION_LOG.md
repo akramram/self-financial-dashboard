@@ -1,5 +1,31 @@
 # Iteration Log
 
+## Sesi 03 Nov 2026 — Month Comparison Intelligence Hub (GH PR #351)
+
+### Ringkasan
+Meningkatkan halaman Compare Months (`/compare`) menjadi **Month Comparison Intelligence Hub**:
+- **REST API Endpoint GET `/api/compare` & Eliminasi Astro Island Bloat**: Menghilangkan serialisasi ratusan/ribuan baris transaksi mentah melalui props SSR Astro island. Data di-fetch secara asynchronous via REST API dengan query parameter fleksibel (`period_a`, `period_b`, `category`).
+- **Sinkronisasi URL & Preset Cepat**: Dilengkapi kontrol preset 1-klik (*Bulan Ini vs Lalu*, *vs 2 Bulan Lalu*, *Tahun Lalu (YoY)*, dan *Tukar Periode (Swap)*), tersinkronisasi otomatis dengan query string browser (`?period_a=...&period_b=...`).
+- **Executive Intelligence Briefing (Ringkasan Eksekutif)**: Poin-poin narasi deterministik dalam Bahasa Indonesia yang merangkum perbedaan total belanja, kategori pemicu lonjakan biaya terbesar, efisiensi biaya terbaik, dan pergeseran status surplus/tabungan.
+- **6 Kartu Komparasi Finansial KPI**: Total Pengeluaran, Total Pemasukan, Tabungan Bersih (Surplus), Savings Rate (%), Total Net Worth, dan Rata-rata per Transaksi beserta frekuensi transaksi, lengkap dengan indikator delta nominal & persentase.
+- **Highlight Pemicu Utama (Top Drivers of Change)**: Kartu *Pemicu Lonjakan Biaya (Top Kenaikan)* & *Pemicu Efisiensi Biaya (Top Penghematan)* yang dapat diklik langsung untuk memicu drill-down transaksi.
+- **Visualisasi Komparasi Terpadu (Bar, Cash vs Credit, Radar)**: Grouped Bar Chart kategori teratas (Chart.js), kartu perbandingan Cash vs Kredit, dan visualisasi profil radar chart.
+- **Tabel Analisis Variansi Kategori & Modal Drill-down Transaksi**: Filter status instan (*Semua*, *Kenaikan / Boros*, *Penurunan / Hemat*, *Kategori Baru*) dan pencarian nama kategori. Klik baris kategori membuka dialog modal Radix untuk melihat transaksi individual Periode A vs Periode B secara side-by-side.
+- **Standar Kualitas & Antislop**: Bebas em-dash (R-02), kepatuhan kontras WCAG AA light/dark mode, dan penambahan suite pengujian `src/__tests__/month-comparison-hub.test.tsx` (574/574 unit tests passing).
+
+### File yang Diubah
+- **`src/lib/db.ts`**: Menambahkan interface `ComparePeriodSummary`, `CategoryCompareRow`, `CompareResult` dan query function `getMonthComparison()`.
+- **`src/pages/api/compare.ts`**: REST API endpoint GET `/api/compare`.
+- **`src/components/MonthComparison.tsx`**: Komponen UI komprehensif dengan state management, preset cepat, bar chart, filter, dan dialog drill-down transaksi.
+- **`src/pages/compare.astro`**: Membersihkan serialisasi props SSR berat menjadi lightweight client island.
+- **`src/__tests__/month-comparison-hub.test.tsx`**: Pengujian unit komprehensif untuk fungsi database dan interaksi antarmuka pengguna.
+
+### Verifikasi
+- 574/574 unit tests passing (52 test files)
+- `npm run build` sukses tanpa error
+- PM2 clean rebuild & deployment terverifikasi di port 4321
+
+
 ## Sesi 02 Nov 2026 — Budget Pace & Burn-Rate Intelligence Hub (GH PR #349)
 
 ### Ringkasan
