@@ -1,5 +1,47 @@
 # Iteration Log
 
+## Sesi 06 Nov 2026 — Subscription & Recurring Audit Intelligence Hub (GH PR #355)
+
+### Ringkasan
+Mentransformasi halaman Recurring Cost Analyzer (`/recurring-audit`) menjadi **Subscription & Recurring Audit Intelligence Hub**:
+- **Dashboard KPI Kesehatan Komitmen & Rasio Beban Rutin**:
+  - Menghitung **Recurring-to-Income Burden Ratio** (persentase beban rutin terhadap total pendapatan bulanan) dengan badge status kesehatan (*Sangat Sehat <15%*, *Moderat 15-25%*, *Beban Tinggi 25-40%*, *Beban Kritis >40%*).
+  - Menampilkan total komitmen bulanan & proyeksi tahunan, total komitmen berjangka yang akan terbebas, dan item komitmen terbesar.
+- **Simulator Pemangkasan Komitmen (What-If Kill-Switch)**:
+  - Checkbox interaktif untuk memilih langganan atau pengeluaran rutin yang disimulasikan untuk diputus/dibatalkan.
+  - Preset cepat 1-klik: *Pangkas Streaming*, *Simulasi Bebas Cicilan*, *Pangkas Top 3*, dan *Reset*.
+  - Kalkulasi dampak instan: Kas Bulanan Terbebas, Penghematan Kas Tahunan, Sisa Komitmen Rutin, dan Rasio Beban Baru.
+  - **Efek Pengganda Kekayaan 5 Tahun (The Subscription Multiplier)**: Proyeksi akumulasi kekayaan majemuk (*compound interest*) untuk horizon 1, 3, dan 5 tahun dengan pilihan imbal hasil (5%, 7%, 10% p.a.).
+- **Pilar Komitmen & Distribusi Beban Finansial**:
+  - Segmented distribution bar dan pengelompokan 4 pilar fungsional: *Keluarga & Tempat Tinggal*, *Cicilan & Kewajiban Berjangka*, *Utilitas & Langganan Digital*, dan *Investasi & Zakat*.
+  - Donut chart komposisi kategori komitmen teratas.
+- **Roadmap Pelepasan Arus Kas Cicilan Berjangka**:
+  - Linimasa kronologis tanggal jatuh tempo berakhirnya komitmen berjangka dan running cumulative nominal kas bulanan yang otomatis kembali bebas.
+- **Insight & Rekomendasi Audit Deterministik**:
+  - Poin-poin evaluasi rasio beban, peluang penghematan, dan optimasi cicilan berulang dalam Bahasa Indonesia.
+- **Tabel Interaktif**:
+  - Filter tipe (Cash, Credit Expense, Credit Payment) dan toggle tampilkan/sembunyikan komitmen jeda (*paused*).
+  - Fitur pencarian real-time nama komitmen dan kategori.
+  - Checkbox simulasi cut langsung di baris tabel.
+- **Standar Kualitas & Antislop**:
+  - Bebas karakter em-dash (R-02).
+  - Kepatuhan kontras WCAG AA di light maupun dark mode (R-25).
+  - Desain adaptif ramah layar mobile (R-03).
+  - 16 pengujian unit baru (100% lulus, total 604 passing across 56 test files).
+
+### Perubahan File
+- **`src/lib/recurring-audit-engine.ts`**: Modul analitik beban rutin, simulasi kill-switch, proyeksi bunga majemuk 5 tahun, pilar komitmen, dan roadmap pelepasan kas.
+- **`src/components/RecurringCostAnalyzer.tsx`**: Komponen antarmuka pengguna interaktif dengan navigasi 3 tab (*Ringkasan & Radar*, *Simulator Kill-Switch*, *Daftar Komitmen*), preset, chart donut, dan checklist simulasi.
+- **`src/pages/recurring-audit.astro`**: Pembaruan judul dan pengantar halaman.
+- **`src/lib/db.ts`**: Menambahkan field `latestIncome` pada `getRecurringCostAnalysis()`.
+- **`src/__tests__/recurring-audit-engine.test.ts`**: Suite pengujian unit mesin analitik dan simulasi (12 tes).
+- **`src/__tests__/recurring-audit-hub.test.tsx`**: Suite pengujian unit komponen antarmuka pengguna dan interaksi (4 tes).
+
+### Verifikasi
+- 604/604 unit tests passing (56 test files)
+- `npm run build` sukses tanpa error
+- PM2 clean rebuild & deployment terverifikasi di port 4321
+
 ## Sesi 05 Nov 2026 — Credit Card Debt Payoff Simulator & Credit Health Hub (GH PR #353)
 
 ### Ringkasan
