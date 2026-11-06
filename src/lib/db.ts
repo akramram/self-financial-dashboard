@@ -3328,6 +3328,7 @@ export interface RecurringCostResult {
   temporaryCount: number;
   largestItem: RecurringCostItem | null;
   avgPerItem: number;
+  latestIncome?: number;
 }
 
 export function getRecurringCostAnalysis(): RecurringCostResult {
@@ -3371,6 +3372,14 @@ export function getRecurringCostAnalysis(): RecurringCostResult {
     ? activeItems.reduce((max, i) => (i.amount > max.amount ? i : max))
     : null;
   const avgPerItem = activeItems.length > 0 ? monthlyTotal / activeItems.length : 0;
+  const lastIncomeRow = db.prepare(`
+    SELECT mi.income 
+    FROM monthly_income mi 
+    JOIN periods p ON mi.period_id = p.id 
+    ORDER BY p.start_date DESC 
+    LIMIT 1
+  `).get() as { income?: number } | undefined;
+  const latestIncome = lastIncomeRow?.income || 0;
 
   return {
     items,
@@ -3385,6 +3394,7 @@ export function getRecurringCostAnalysis(): RecurringCostResult {
     temporaryCount,
     largestItem,
     avgPerItem,
+    latestIncome,
   };
 }
 
