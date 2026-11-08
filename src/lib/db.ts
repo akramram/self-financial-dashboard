@@ -867,11 +867,16 @@ export function insertRecurringTransaction(tx: Omit<any, 'id'>) {
 }
 
 export function updateRecurringTransaction(id: number, tx: Partial<any>) {
-  const fields = Object.keys(tx).filter((k) => k !== 'id');
+  const copy: Record<string, any> = { ...tx };
+  delete copy.id;
+  if (typeof copy.active === 'boolean') copy.active = copy.active ? 1 : 0;
+  if (typeof copy.done === 'boolean') copy.done = copy.done ? 1 : 0;
+  if (copy.amount !== undefined) copy.amount = Number(copy.amount);
+  const fields = Object.keys(copy).filter((k) => copy[k] !== undefined);
   if (fields.length === 0) return;
   const setClause = fields.map((f) => `${f} = @${f}`).join(', ');
   const stmt = db.prepare(`UPDATE recurring_transactions SET ${setClause} WHERE id = @id`);
-  stmt.run({ ...tx, id });
+  stmt.run({ ...copy, id });
 }
 
 export function deleteRecurringTransaction(id: number) {
@@ -947,11 +952,14 @@ export function updateGoal(id: number, goal: Partial<{
   icon: string;
   completed: boolean;
 }>) {
-  const fields = Object.keys(goal).filter((k) => k !== 'id');
+  const copy: Record<string, any> = { ...goal };
+  delete copy.id;
+  if (typeof copy.completed === 'boolean') copy.completed = copy.completed ? 1 : 0;
+  const fields = Object.keys(copy).filter((k) => copy[k] !== undefined);
   if (fields.length === 0) return;
   const setClause = fields.map((f) => `${f} = @${f}`).join(', ');
   const stmt = db.prepare(`UPDATE goals SET ${setClause}, updated_at = CURRENT_TIMESTAMP WHERE id = @id`);
-  stmt.run({ ...goal, id });
+  stmt.run({ ...copy, id });
 }
 
 export function deleteGoal(id: number) {
