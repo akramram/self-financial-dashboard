@@ -208,24 +208,20 @@ export default function TransactionFormFields({ ctrl, variant, formId }: Transac
       </div>
 
       {/* Paid/Done — whole row is the tap target (KUR-213 A2, ≥44px) */}
-      <button
-        type="button"
+      <label
+        htmlFor={`tx-done-${variant}`}
         role="checkbox"
         aria-checked={done}
-        onClick={() => setDone(!done)}
         data-testid="tx-done-row"
-        className={`w-full flex items-center gap-3 rounded-lg text-left transition-colors hover:bg-slate-100 dark:hover:bg-white/[0.04] ${compact ? 'py-1' : 'min-h-[44px] py-2'}`}
+        className={`w-full flex items-center gap-3 rounded-lg text-left cursor-pointer transition-colors hover:bg-slate-100 dark:hover:bg-white/[0.04] ${compact ? 'py-1' : 'min-h-[44px] py-2'}`}
       >
         <Checkbox
           id={`tx-done-${variant}`}
           checked={done}
           onCheckedChange={(v) => setDone(!!v)}
-          onClick={(e) => e.stopPropagation()}
-          tabIndex={-1}
-          aria-hidden="true"
         />
         <span className="text-sm text-slate-600 dark:text-white/60 select-none">Paid / Done</span>
-      </button>
+      </label>
 
       <div className="space-y-1.5">
         <Label>Notes</Label>
