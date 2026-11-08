@@ -1,15 +1,17 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import RecurringBreakdown from '../components/RecurringBreakdown';
+import SpendingMixHub from '../components/SpendingMixHub';
 ---
 
-<Layout title="Spending Mix - Financial Dashboard">
+<Layout title="Spending Mix & Agility Hub - Financial Dashboard">
   <div class="mb-6">
-    <h1 class="text-2xl font-bold">Spending Mix</h1>
-    <p class="text-slate-500 dark:text-slate-400 text-sm">
-      Understand how your spending breaks down between recurring (bills, subscriptions, fixed costs) and discretionary (flexible, one-time) purchases. A higher discretionary share means more financial flexibility.
+    <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+      Spending Mix & Financial Agility
+    </h1>
+    <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">
+      Pahami struktur biaya operasional Anda antara komitmen tetap (tagihan, langganan) dan belanja fleksibel. Simulasikan pemangkasan darurat untuk mengukur ketahanan finansial saat krisis.
     </p>
   </div>
 
-  <RecurringBreakdown client:load />
+  <SpendingMixHub client:load />
 </Layout>
