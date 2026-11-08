@@ -2116,10 +2116,29 @@ export interface RecurringBreakdownTopItem {
   amount: number;
 }
 
+export interface RecurringBreakdownCategoryShare {
+  category: string;
+  amount: number;
+  pct: number;
+}
+
+export interface RecurringBreakdownTxItem {
+  id: number;
+  title: string;
+  category: string;
+  amount: number;
+  is_recurring: boolean;
+  date: string;
+}
+
 export interface RecurringBreakdown {
   periods: RecurringBreakdownPeriod[];
   current: RecurringBreakdownPeriod | null;
   topRecurring: RecurringBreakdownTopItem[];
+  topDiscretionary?: RecurringBreakdownTopItem[];
+  discretionaryCategories?: RecurringBreakdownCategoryShare[];
+  recurringCategories?: RecurringBreakdownCategoryShare[];
+  periodTransactions?: RecurringBreakdownTxItem[];
 }
 
 export function getRecurringVsDiscretionary(periodId?: number): RecurringBreakdown {
@@ -2130,12 +2149,6 @@ export function getRecurringVsDiscretionary(periodId?: number): RecurringBreakdo
 
   const recurringTitleSet = new Set(recurringTitles.map((r) => r.title));
 
-  // Build a map for top recurring items (use the latest period's data)
-  const recurringAmountMap = new Map<string, number>();
-  for (const r of recurringTitles) {
-    recurringAmountMap.set(r.title, r.amount);
-  }
-
   // Get all periods with transactions
   const periodRows = db.prepare(`
     SELECT DISTINCT p.id, p.month, p.start_date
@@ -2145,14 +2158,10 @@ export function getRecurringVsDiscretionary(periodId?: number): RecurringBreakdo
     ORDER BY p.start_date ASC
   `).all() as { id: number; month: string; start_date: string }[];
 
-  // If a specific period is requested, filter
-  const targetPeriods = periodId
-    ? periodRows.filter((p) => p.id === periodId)
-    : periodRows;
-
+  // Always compute all periods so the dropdown & historical trajectory are preserved
   const periods: RecurringBreakdownPeriod[] = [];
 
-  for (const p of targetPeriods) {
+  for (const p of periodRows) {
     const txs = db.prepare(`
       SELECT title, category, amount FROM transactions
       WHERE period_id = ? AND done = 1 AND type IN ('cash', 'credit_expense')
@@ -2165,8 +2174,6 @@ export function getRecurringVsDiscretionary(periodId?: number): RecurringBreakdo
 
     for (const tx of txs) {
       const titleLower = tx.title.toLowerCase();
-      // Check if this transaction matches a recurring template
-      // Use fuzzy matching: exact match or the recurring title is contained in the transaction title
       const isRecurring = recurringTitleSet.has(titleLower) ||
         [...recurringTitleSet].some((rt) => titleLower.includes(rt) || rt.includes(titleLower));
 
@@ -2193,10 +2200,11 @@ export function getRecurringVsDiscretionary(periodId?: number): RecurringBreakdo
     });
   }
 
-  // Current period = last in the list
-  const current = periods.length > 0 ? periods[periods.length - 1] : null;
+  // Determine target period for deep breakdown
+  const targetPeriodId = periodId ?? (periods.length > 0 ? periods[periods.length - 1].period_id : null);
+  const current = periods.find((p) => p.period_id === targetPeriodId) || (periods.length > 0 ? periods[periods.length - 1] : null);
 
-  // Top recurring items: aggregate across all periods
+  // Top recurring items across all periods
   const recurringTotals = new Map<string, { title: string; category: string; amount: number }>();
   for (const p of periodRows) {
     const txs = db.prepare(`
@@ -2229,7 +2237,83 @@ export function getRecurringVsDiscretionary(periodId?: number): RecurringBreakdo
       amount: Math.round(item.amount * 100) / 100,
     }));
 
-  return { periods, current, topRecurring };
+  // Target period deep breakdown: categories & transactions
+  const discretionaryCatMap = new Map<string, number>();
+  const recurringCatMap = new Map<string, number>();
+  const discretionaryTxTotals = new Map<string, { title: string; category: string; amount: number }>();
+  const periodTransactions: RecurringBreakdownTxItem[] = [];
+
+  if (targetPeriodId) {
+    const txs = db.prepare(`
+      SELECT id, title, category, amount, date FROM transactions
+      WHERE period_id = ? AND done = 1 AND type IN ('cash', 'credit_expense')
+      ORDER BY amount DESC
+    `).all(targetPeriodId) as { id: number; title: string; category: string; amount: number; date: string }[];
+
+    for (const tx of txs) {
+      const titleLower = tx.title.toLowerCase();
+      const isRecurring = recurringTitleSet.has(titleLower) ||
+        [...recurringTitleSet].some((rt) => titleLower.includes(rt) || rt.includes(titleLower));
+
+      periodTransactions.push({
+        id: tx.id,
+        title: tx.title,
+        category: tx.category,
+        amount: tx.amount,
+        is_recurring: isRecurring,
+        date: tx.date,
+      });
+
+      if (isRecurring) {
+        recurringCatMap.set(tx.category, (recurringCatMap.get(tx.category) || 0) + tx.amount);
+      } else {
+        discretionaryCatMap.set(tx.category, (discretionaryCatMap.get(tx.category) || 0) + tx.amount);
+        const existing = discretionaryTxTotals.get(tx.title);
+        if (existing) {
+          existing.amount += tx.amount;
+        } else {
+          discretionaryTxTotals.set(tx.title, { title: tx.title, category: tx.category, amount: tx.amount });
+        }
+      }
+    }
+  }
+
+  const discTotal = current?.discretionary || 0;
+  const recTotal = current?.recurring || 0;
+
+  const discretionaryCategories: RecurringBreakdownCategoryShare[] = [...discretionaryCatMap.entries()]
+    .map(([category, amount]) => ({
+      category,
+      amount: Math.round(amount * 100) / 100,
+      pct: discTotal > 0 ? Math.round((amount / discTotal) * 1000) / 10 : 0,
+    }))
+    .sort((a, b) => b.amount - a.amount);
+
+  const recurringCategories: RecurringBreakdownCategoryShare[] = [...recurringCatMap.entries()]
+    .map(([category, amount]) => ({
+      category,
+      amount: Math.round(amount * 100) / 100,
+      pct: recTotal > 0 ? Math.round((amount / recTotal) * 1000) / 10 : 0,
+    }))
+    .sort((a, b) => b.amount - a.amount);
+
+  const topDiscretionary: RecurringBreakdownTopItem[] = [...discretionaryTxTotals.values()]
+    .sort((a, b) => b.amount - a.amount)
+    .slice(0, 10)
+    .map((item) => ({
+      ...item,
+      amount: Math.round(item.amount * 100) / 100,
+    }));
+
+  return {
+    periods,
+    current,
+    topRecurring,
+    topDiscretionary,
+    discretionaryCategories,
+    recurringCategories,
+    periodTransactions,
+  };
 }
 
 // ─── Savings Rate Tracker ────────────────────────────────────────────────────
