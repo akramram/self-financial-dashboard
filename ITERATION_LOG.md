@@ -1,5 +1,31 @@
 # Iteration Log
 
+## Sesi 09 Nov 2026: Sinking Funds & Dedicated Cash Reserves Intelligence Hub (GH PR #362)
+
+### Ringkasan
+Menghadirkan fitur baru **Sinking Funds & Dedicated Cash Reserves Intelligence Hub** (`/sinking-funds`):
+- **Sinking Funds Domain Engine (`src/lib/sinking-funds-engine.ts`)**:
+  - Menghitung sisa siklus gaji tanggal 21 s/d 20 menuju tenggat waktu pos tabungan.
+  - Perhitungan rekomendasi setoran bulanan (`monthlyRequired`) otomatis per pos.
+  - Evaluasi pacing kesehatan (`funded`, `on_track`, `needs_attention`, `overdue`).
+  - Mesin simulasi Waterfall Allocation: mendistribusikan surplus tabungan kas secara berjenjang dari Tier 1 (Kewajiban Pokok/Wajib), Tier 2 (Proteksi & Buffer Darurat), hingga Tier 3 (Gaya Hidup & Gear Upgrade).
+- **UI Interaktif Sinking Funds Hub (`src/components/SinkingFundsHub.tsx`)**:
+  - Kartu metrik: Total Dana Terkumpul, Komitmen Setoran Bulanan, Status Kesehatan Pos, dan Kapasitas Tabungan.
+  - Filter tab prioritas per tier (Semua, Tier 1, Tier 2, Tier 3).
+  - Card grid pos dana dengan visual progress bar, sisa siklus gaji, dan tombol cepat `+ Setor Tabungan`.
+  - Simulator Waterfall Surplus Interaktif dengan preset tombol cepat dan tabel rincian hasil alokasi.
+  - Dialog modal untuk Tambah / Edit pos dana dan Quick Deposit dengan persistensi `localStorage`.
+- **Integrasi Navigasi & Testing**:
+  - Ditambahkan ke Astro route `/sinking-funds` (`src/pages/sinking-funds.astro`).
+  - Integrasi ke `FintechSidebar.tsx`, `MobileSidebar.tsx`, dan `CommandPalette.tsx` di bawah grup PLANNING.
+  - 18 unit tests baru (`sinking-funds-engine.test.ts` & `sinking-funds-hub.test.tsx`), seluruh 659 tests project hijau (63 files).
+  - Patuh kurasi Antislop (dual-theme, kontras tinggi WCAG AA, tanpa em-dash).
+
+### Verifikasi
+- 659/659 unit tests passing (63 test files)
+- `npm run build` sukses tanpa error
+- PM2 clean rebuild & deployment terverifikasi di port 4321
+
 ## Sesi 06 Nov 2026 — Subscription & Recurring Audit Intelligence Hub (GH PR #355)
 
 ### Ringkasan
