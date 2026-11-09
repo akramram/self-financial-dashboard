@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { toast } from 'sonner';
 import { formatIdr } from '../lib/utils';
+import { useConfirm } from './ConfirmDialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -78,6 +80,7 @@ function getFundIcon(iconId?: string) {
 }
 
 export default function SinkingFundsHub() {
+  const { confirm: confirmAction } = useConfirm();
   const [funds, setFunds] = useState<SinkingFund[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const [selectedPriorityTab, setSelectedPriorityTab] = useState<'all' | SinkingFundPriority>('all');
@@ -130,10 +133,21 @@ export default function SinkingFundsHub() {
     }
   }, []);
 
-  const handleResetDefaults = () => {
-    if (confirm('Kembalikan daftar pos dana khusus ke data awal bawaan?')) {
-      updateFunds(DEFAULT_SINKING_FUNDS);
+  const handleResetDefaults = async () => {
+    const confirmed = await confirmAction({
+      title: 'Reset Pos Dana',
+      description: 'Kembalikan daftar pos dana khusus ke data awal bawaan?',
+      confirmLabel: 'Reset',
+      variant: 'destructive',
+    });
+    if (!confirmed) return;
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch (e) {
+      console.error('Gagal menghapus sinking funds dari localStorage:', e);
     }
+    setFunds(DEFAULT_SINKING_FUNDS);
+    toast.success('Daftar pos dana berhasil direset ke data awal');
   };
 
   // Ringkasan metrik
@@ -234,10 +248,36 @@ export default function SinkingFundsHub() {
   };
 
   // Hapus pos dana
-  const handleDeleteFund = (id: string, name: string) => {
-    if (confirm(`Hapus pos dana "${name}"?`)) {
+  const handleDeleteFund = async (id: string, name: string) => {
+    const confirmed = await confirmAction({
+      title: 'Hapus Pos Dana',
+      description: `Hapus pos dana "${name}"?`,
+      confirmLabel: 'Hapus',
+      variant: 'destructive',
+    });
+    if (confirmed) {
       updateFunds(funds.filter((f) => f.id !== id));
+      toast.success(`Pos dana "${name}" dihapus`);
     }
+  };
+
+  // Terapkan hasil simulasi waterfall ke saldo pos dana
+  const handleApplyWaterfall = async () => {
+    if (waterfallResult.totalAllocated <= 0) return;
+    const confirmed = await confirmAction({
+      title: 'Terapkan Alokasi',
+      description: `Tambahkan total ${formatIdr(waterfallResult.totalAllocated)} ke saldo pos dana sesuai hasil simulasi?`,
+      confirmLabel: 'Terapkan',
+    });
+    if (!confirmed) return;
+    const allocated = new Map(waterfallResult.allocations.map((a) => [a.fundId, a.allocatedAmount]));
+    updateFunds(
+      funds.map((f) => {
+        const add = allocated.get(f.id) ?? 0;
+        return add > 0 ? { ...f, currentAmount: f.currentAmount + add } : f;
+      })
+    );
+    toast.success(`Alokasi ${formatIdr(waterfallResult.totalAllocated)} diterapkan ke pos dana`);
   };
 
   // Setor saldo (Quick Deposit)
@@ -722,6 +762,18 @@ export default function SinkingFundsHub() {
               </tr>
             </tfoot>
           </table>
+        </div>
+
+        <div className="flex justify-end">
+          <Button
+            size="sm"
+            onClick={handleApplyWaterfall}
+            disabled={waterfallResult.totalAllocated <= 0}
+            className="text-xs h-9 gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white"
+          >
+            <CheckCircle2 className="w-3.5 h-3.5" />
+            <span>Terapkan Alokasi</span>
+          </Button>
         </div>
       </div>
 
