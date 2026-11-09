@@ -58,6 +58,7 @@ const ALL_ITEMS: CommandItem[] = [
   { id: 'what-if', label: 'What-If', description: 'Simulate spending & income changes', icon: FlaskConical, group: 'pages', href: '/what-if' },
   { id: 'forecast', label: 'Forecast', description: 'Spending predictions and projections', icon: TrendingUp, group: 'pages', href: '/forecast' },
   { id: 'portfolio', label: 'Portfolio', description: 'Investment portfolio allocation', icon: Briefcase, group: 'pages', href: '/portfolio' },
+  { id: 'sinking-funds', label: 'Sinking Funds', description: 'Dedicated cash reserves & savings targets', icon: Target, group: 'pages', href: '/sinking-funds' },
   { id: 'networth', label: 'Net Worth', description: 'Track net worth over time', icon: PiggyBank, group: 'pages', href: '/networth' },
   // Pages — REPORTS
   { id: 'weekly', label: 'Weekly', description: 'Weekly spending report', icon: Calendar, group: 'pages', href: '/weekly' },
