@@ -45,6 +45,7 @@ const PLANNING = [
   { path: '/what-if', label: 'What-If', icon: FlaskConical },
   { path: '/forecast', label: 'Forecast', icon: TrendingUp },
   { path: '/portfolio', label: 'Portfolio', icon: Briefcase },
+  { path: '/sinking-funds', label: 'Sinking Funds', icon: Target },
   { path: '/networth', label: 'Net Worth', icon: PiggyBank },
 ];
 
