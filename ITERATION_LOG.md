@@ -1,5 +1,21 @@
 # Iteration Log
 
+## Sesi 10 Nov 2026: Financial Health Intelligence Hub & What-If Score Simulator (GH PR #365)
+
+### Ringkasan
+Mengubah halaman Financial Health Score (`/health`) menjadi **Financial Health Intelligence Hub**:
+- **Domain Engine Terpusat (`src/lib/health-engine.ts`)**: Menyatukan kalkulasi 5 pilar (Savings Rate, Budget Adherence, Networth Growth, Spending Control, Consistency), memperbaiki Spending Control agar mengecualikan kategori `Invest` (Invest = tabungan), serta memperbaiki `prevScore` agar menggunakan skor konsistensi riil periode sebelumnya (bukan hardcoded `10`).
+- **Eliminasi Props Serialization `devalue` (`src/pages/health.astro`, `src/pages/api/health/index.ts`)**: Menghapus serialisasi props `summaries` dan `categories` di level SSR Astro dan menyajikan daftar periode, tren historis per pilar, `rawContext`, serta `prescriptions` terurut potensi kenaikan poin langsung via `/api/health`.
+- **UI Intelligence Hub (`src/components/HealthScore.tsx`)**:
+  - Hero Command Strip dengan SVG Score Gauge, Grade Pill, tren MoM, dan 4 kartu metrik eksekutif (Pilar Terkuat, Bottleneck Utama, Ruang Kenaikan Skor, Rata-rata 3 Siklus).
+  - 3 Tab interaktif: **Ringkasan & Pilar** (Radar 5 Pilar Chart.js + Line Tren + Rencana Aksi Prioritas), **Simulator Skor** (What-If Booster interaktif dengan preset & slider real-time), dan **Riwayat & Metodologi** (tabel historis clickable per siklus gaji).
+  - Sinkronisasi query URL `?month=...`, validasi antislop (WCAG AA dual-theme, zero em-dash, valid Tailwind tokens), serta state loading/error/empty lengkap.
+
+### Verifikasi
+- 667/667 unit tests passing (64 test files), termasuk `src/__tests__/health-intelligence-hub.test.tsx`.
+- `npm run build` sukses tanpa error.
+- PM2 clean rebuild & deployment terverifikasi di port 4321.
+
 ## Sesi 09 Nov 2026: Sinking Funds & Dedicated Cash Reserves Intelligence Hub (GH PR #362)
 
 ### Ringkasan
