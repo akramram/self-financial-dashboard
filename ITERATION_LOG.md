@@ -1,5 +1,21 @@
 # Iteration Log
 
+## Sesi 11 Nov 2026: Savings Rate Intelligence Hub & Target Simulator (GH PR #367)
+
+### Ringkasan
+Mengubah halaman `/savings-rate` menjadi **Savings Rate Intelligence Hub & Target Simulator**:
+- **Enrichment Backend (`src/lib/db.ts`)**: Memperluas `getSavingsRate()` dengan metrik dekomposisi per siklus (`invest`, `living_expense`, `cash_surplus`, `invest_rate`) serta agregat `total_invested`, `total_cash_surplus`, dan `avg_invest_rate` secara backward-compatible dengan tetap mempertahankan aturan Invest sebagai tabungan (FIN-235).
+- **Domain Engine Terpusat (`src/lib/savings-rate-engine.ts`)**: Menyediakan klasifikasi 6 tier WCAG AA dual-theme (`Defisit`, `Merintis`, `Cukup`, `Sehat`, `Prima`, `Siap FIRE`), dekomposisi komposisi tabungan, simulator target What-If beserta proyeksi bunga majemuk 12 & 36 siklus, progres milestone berikutnya, serta insight deterministik dalam Bahasa Indonesia tanpa em-dash.
+- **UI Intelligence Hub (`src/components/SavingsRateTracker.tsx`, `src/pages/savings-rate.astro`)**:
+  - Hero Command Strip dengan pemilih siklus gaji, pill tier berkontras tinggi light/dark, bar komposisi Biaya Hidup vs Investasi vs Surplus Kas, dan 4 kartu KPI ringkas.
+  - 3 Tab interaktif tersinkronisasi URL (`?period=...&tab=...`): **Ringkasan & Tren** (grafik garis Rate vs Target 20%/30%/50%, grafik komposisi nominal, distribusi tier, dan progres milestone), **Simulator Target** (preset target, slider efisiensi biaya, penyesuaian pemasukan, tambahan investasi, serta proyeksi 1 & 3 tahun), dan **Riwayat & Rincian** (pencarian, filter tahun/tier, tabel sortable desktop + kartu responsif mobile).
+  - Memperbaiki pelanggaran antislop sebelumnya (kontras teks di atas gradasi hex, kelas Tailwind `/10/40` tidak valid, warna chart indigo di luar palet, serta state loading/error/empty).
+
+### Verifikasi
+- 675/675 unit tests hijau (65 test files), termasuk 8 test baru di `src/__tests__/savings-rate-intelligence-hub.test.tsx`
+- `npm run build` bersih tanpa error
+- PM2 clean rebuild & deployment terverifikasi di port 4321
+
 ## Sesi 10 Nov 2026: Financial Health Intelligence Hub & What-If Score Simulator (GH PR #365)
 
 ### Ringkasan
