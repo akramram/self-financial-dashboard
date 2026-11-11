@@ -2325,8 +2325,12 @@ export interface SavingsRatePeriod {
   end_date: string;
   income: number;
   outcome: number;          // total paid spending (cash + credit_payment)
-  savings: number;          // income - outcome
+  invest: number;           // Invest category total (counted as savings)
+  living_expense: number;   // outcome - invest (net living consumption)
+  cash_surplus: number;     // income - outcome (unspent liquid cash)
+  savings: number;          // income - (outcome - invest)
   savings_rate: number;     // pct, can be negative
+  invest_rate: number;      // invest / income * 100
   is_positive: boolean;
 }
 
@@ -2345,6 +2349,9 @@ export interface SavingsRateResult {
   consecutive_positive: number;   // current run ending at latest period
   longest_positive_streak: number;
   total_saved: number;
+  total_invested: number;
+  total_cash_surplus: number;
+  avg_invest_rate: number;
   // Trailing-3 and trailing-6 average rates for trend detection
   trailing3_avg: number;
   trailing6_avg: number;
@@ -2402,9 +2409,13 @@ export function getSavingsRate(): SavingsRateResult {
   for (const p of periodRows) {
     const income = incomeMap.get(p.id) || 0;
     const outcome = outcomeMap.get(p.id) || 0;
-    if (income <= 0) continue; // skip periods with no income — can't compute a rate
-    const savings = income - (outcome - (investMap.get(p.id) || 0));
+    if (income <= 0) continue; // skip periods with no income, cannot compute a rate
+    const invest = investMap.get(p.id) || 0;
+    const living_expense = Math.max(0, outcome - invest);
+    const cash_surplus = income - outcome;
+    const savings = income - (outcome - invest);
     const rate = (savings / income) * 100;
+    const investRate = (invest / income) * 100;
     periods.push({
       period_id: p.id,
       month: p.month,
@@ -2412,8 +2423,12 @@ export function getSavingsRate(): SavingsRateResult {
       end_date: p.end_date,
       income,
       outcome,
+      invest,
+      living_expense,
+      cash_surplus,
       savings,
       savings_rate: Math.round(rate * 100) / 100,
+      invest_rate: Math.round(investRate * 100) / 100,
       is_positive: savings >= 0,
     });
   }
@@ -2424,6 +2439,7 @@ export function getSavingsRate(): SavingsRateResult {
       best_rate: 0, worst_rate: 0, best_month: null, worst_month: null,
       positive_count: 0, negative_count: 0, total_periods: 0,
       consecutive_positive: 0, longest_positive_streak: 0, total_saved: 0,
+      total_invested: 0, total_cash_surplus: 0, avg_invest_rate: 0,
       trailing3_avg: 0, trailing6_avg: 0, trend: 'stable',
     };
   }
@@ -2458,6 +2474,9 @@ export function getSavingsRate(): SavingsRateResult {
   }
 
   const total_saved = periods.reduce((s, p) => s + p.savings, 0);
+  const total_invested = periods.reduce((s, p) => s + p.invest, 0);
+  const total_cash_surplus = periods.reduce((s, p) => s + p.cash_surplus, 0);
+  const avg_invest_rate = periods.reduce((s, p) => s + p.invest_rate, 0) / Math.max(1, n);
 
   // Trailing averages
   const trailing3 = periods.slice(-3).map((p) => p.savings_rate);
@@ -2487,6 +2506,9 @@ export function getSavingsRate(): SavingsRateResult {
     consecutive_positive,
     longest_positive_streak,
     total_saved: Math.round(total_saved),
+    total_invested: Math.round(total_invested),
+    total_cash_surplus: Math.round(total_cash_surplus),
+    avg_invest_rate: Math.round(avg_invest_rate * 100) / 100,
     trailing3_avg: Math.round(trailing3_avg * 100) / 100,
     trailing6_avg: Math.round(trailing6_avg * 100) / 100,
     trend,
