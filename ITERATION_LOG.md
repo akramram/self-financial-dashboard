@@ -1,5 +1,21 @@
 # Iteration Log
 
+## Sesi 12 Nov 2026: What-If Scenario Intelligence Hub & Simulator
+
+### Ringkasan
+Mengubah halaman `/what-if` menjadi **What-If Scenario Intelligence Hub & Simulator**:
+- **Enrichment Backend (`src/pages/api/scenario/index.ts`)**: Mengecualikan kategori `Invest` dari total belanja hidup (`avgSpending`) sesuai aturan FIN-235, menambahkan `avgInvest`, serta menyertakan daftar target finansial aktif (`goals`) untuk menghitung dampak percepatan pencapaian target.
+- **Domain Engine Terpusat (`src/lib/what-if-engine.ts`)**: Menyediakan simulasi multi-horizon (6, 12, 24, 36, 60 bulan), perhitungan bunga majemuk tahunan (0% s/d 18% p.a.), preset skenario cepat (*Frugal Sprint -20%*, *Kenaikan Gaji +15%*, *Investasi 10% p.a.*, *Belanja Besar -15 Jt*), kalkulasi akselerasi milestone kekayaan bersih, dampak ETA target finansial, dan insight deterministik Bahasa Indonesia tanpa em-dash.
+- **UI Intelligence Hub (`src/components/WhatIfPlanner.tsx`, `src/pages/what-if.astro`)**:
+  - Hero Command Strip dengan pemilih horizon (6B-60B), quick preset pills, dan 4 kartu KPI (Proyeksi Net Worth, Surplus Bulanan, Rasio Tabungan, Tambahan Compounding).
+  - 3 Tab interaktif tersinkronisasi URL (`?tab=projection|levers|compare`): **Proyeksi & Milestone** (grafik garis Baseline vs Skenario Aktif vs Pembanding, grafik bar Arus Kas, kartu Milestone & Goal Impact), **Kontrol Skenario** (slider pemasukan, imbal hasil tahunan, pengeluaran per kategori non-Invest, kejadian satu kali), dan **Simpan & Bandingkan** (simpan snapshot ke `localStorage`, pin ke grafik, hapus dengan konfirmasi `useConfirm`).
+  - Memenuhi standar antislop (WCAG AA light/dark, zero em-dash, skeleton loading, error/empty state).
+
+### Verifikasi
+- 681/681 unit tests passing (66 test files), termasuk `src/__tests__/what-if-intelligence-hub.test.tsx`.
+- `npm run build` sukses tanpa error.
+- PM2 clean rebuild & deployment terverifikasi di port 4321.
+
 ## Sesi 11 Nov 2026: Savings Rate Intelligence Hub & Target Simulator (GH PR #367)
 
 ### Ringkasan

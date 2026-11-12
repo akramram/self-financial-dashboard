@@ -1,8 +1,8 @@
 import type { APIRoute } from 'astro';
-import { db } from '../../../lib/db';
+import { db, INVEST_CATEGORY } from '../../../lib/db';
 
 export const GET: APIRoute = async () => {
-  // Fetch last N months of summaries for trend analysis
+  // Fetch last N months summaries for trend analysis
   const periodRows = db.prepare(`
     SELECT p.id, p.month, p.start_date, p.end_date
     FROM periods p
@@ -13,8 +13,10 @@ export const GET: APIRoute = async () => {
 
   const periods = periodRows.map((p) => {
     const tx = db.prepare('SELECT * FROM transactions WHERE period_id = ? AND done = 1').all(p.id) as any[];
-    const cash = tx.filter((t) => t.type === 'cash').reduce((s, t) => s + t.amount, 0);
-    const creditPayment = tx.filter((t) => t.type === 'credit_payment').reduce((s, t) => s + t.amount, 0);
+    const isInvest = (t: any) => String(t.category || '').toLowerCase() === INVEST_CATEGORY.toLowerCase();
+    const cash = tx.filter((t) => t.type === 'cash' && !isInvest(t)).reduce((s, t) => s + t.amount, 0);
+    const creditPayment = tx.filter((t) => t.type === 'credit_payment' && !isInvest(t)).reduce((s, t) => s + t.amount, 0);
+    const invest = tx.filter((t) => (t.type === 'cash' || t.type === 'credit_payment') && isInvest(t)).reduce((s, t) => s + t.amount, 0);
 
     const incomeRow = db.prepare('SELECT income, other_income FROM monthly_income WHERE period_id = ?').get(p.id) as any;
     const income = (incomeRow?.income || 0) + (incomeRow?.other_income || 0);
@@ -35,6 +37,7 @@ export const GET: APIRoute = async () => {
       end_date: p.end_date,
       income,
       outcome: cash + creditPayment,
+      invest,
       category_totals: categoryTotals,
       networth: nw?.total || null,
     };
@@ -42,6 +45,7 @@ export const GET: APIRoute = async () => {
 
   // Get category list with colors and recent averages
   const categories = db.prepare('SELECT name, color, monthly_limit FROM categories ORDER BY name').all() as any[];
+  const goals = db.prepare('SELECT id, name, target_amount, current_amount, target_date, color, completed FROM goals WHERE completed = 0 ORDER BY target_date ASC').all() as any[];
 
   // Compute 3-month average spending per category
   const recentPeriods = periods.slice(-3);
@@ -56,9 +60,13 @@ export const GET: APIRoute = async () => {
     ? recentPeriods.reduce((s, p) => s + p.income, 0) / recentPeriods.length
     : 0;
 
-  // Average total spending over last 3 months
+  // Average total living spending (excluding Invest) over last 3 months
   const avgSpending = recentPeriods.length > 0
     ? recentPeriods.reduce((s, p) => s + p.outcome, 0) / recentPeriods.length
+    : 0;
+
+  const avgInvest = recentPeriods.length > 0
+    ? recentPeriods.reduce((s, p) => s + (p.invest || 0), 0) / recentPeriods.length
     : 0;
 
   // Current networth (most recent)
@@ -83,8 +91,10 @@ export const GET: APIRoute = async () => {
       monthly_limit: c.monthly_limit,
       avg_spending: Math.round(categoryAverages[c.name] || 0),
     })),
+    goals,
     avgIncome: Math.round(avgIncome),
     avgSpending: Math.round(avgSpending),
+    avgInvest: Math.round(avgInvest),
     avgSavings: Math.round(avgIncome - avgSpending),
     currentNetworth,
     avgNwGrowth: Math.round(avgNwGrowth),
