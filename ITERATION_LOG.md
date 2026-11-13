@@ -1,5 +1,28 @@
 # Iteration Log
 
+## Sesi 13 Nov 2026: Predictive Financial Intelligence Hub (/forecast) (PR #370)
+
+### Ringkasan
+Mengubah halaman `/forecast` menjadi **Predictive Financial Intelligence Hub**:
+- **Domain Engine Terpusat (`src/lib/forecast-engine.ts`)**:
+  - Ensembel 5 model proyeksi belanja: Momentum Regresi OLS, Pace Harian Konstan, Kurva Siklus Gaji Tertimbang (front-loaded gajian decay), Batas Atas Konservatif (+25% burn-rate cushion), dan Batas Bawah Penghematan / Frugal (-25% burn-rate). Menghitung rentang *Cone of Uncertainty* (spread ketidakpastian).
+  - Kalkulator Alokasi Belanja Harian Aman (*Daily Burn Quota*) berbasis sisa hari kalender dan target plafon dinamis dengan klasifikasi kelayakan (*Sangat Longgar, Terkendali, Ketat, Batas Terlampaui*).
+  - Proyeksi Tabungan Bersih & Laju Tabungan Akhir Bulan (EOM Net Savings) sesuai envelope rule FIN-235 (Investasi = tabungan).
+  - Estimasi Timeline Kejenuhan Kategori (*Burn-Rate & Days to Exhaustion*).
+  - Simulator Interaktif Koreksi Arah Tengah Bulan (*Mid-Period Course Correction What-If*): penyesuaian belanja harian (-50% s/d +30%) serta injeksi beban tak terduga (*emergency shock*).
+- **Enrichment API Backend (`src/pages/api/forecast/index.ts`)**:
+  - Menyediakan total pemasukan (`income`) dari `getMonthlyIncomeByPeriod`, akumulasi investasi (`investTotal`), ringkasan multi-model, alokasi harian aman, dan timeline kejenuhan kategori dengan tetap backward-compatible.
+- **UI Intelligence Hub (`src/components/Forecast.tsx`, `src/pages/forecast.astro`)**:
+  - Hero Header dengan pemilih periode evaluasi dan progres hari siklus gaji (hari ke-X dari Y).
+  - 4 Kartu KPI: Realisasi Belanja, Proyeksi Akhir Bulan (dengan badge akurasi & rentang ketidakpastian), Kuota Harian Aman (dengan pill kelayakan), dan Proyeksi Tabungan EOM (nominal & savings rate %).
+  - 5 Tab navigasi terstruktur: **Multi-Model & Trajektori** (grafik trajektori kumulatif + kartu ensembel 5 model), **Simulator Kuota Harian** (slider target plafon dinamis), **Koreksi Arah (What-If)** (preset cepat + slider penyesuaian + kalkulasi instan dampak surplus kas), **Burn-Rate & Kejenuhan Pagu** (progress bar konsumsi pagu dan estimasi hari habis), serta **Historis & Utilisasi Kartu** (utilisasi kartu kredit + riwayat 6 bulan).
+  - Mematuhi antislop: bebas em-dash, kontras WCAG AA dual-theme light/dark, dan state loading/error/empty.
+
+### Verifikasi
+- 695/695 unit tests hijau (68 test files), termasuk 14 test baru di `src/__tests__/forecast-engine.test.ts` dan `src/__tests__/forecast-component.test.tsx`.
+- `npm run build` sukses bersih.
+- PM2 clean rebuild & deployment terverifikasi di port 4321.
+
 ## Sesi 12 Nov 2026: What-If Scenario Intelligence Hub & Simulator
 
 ### Ringkasan
