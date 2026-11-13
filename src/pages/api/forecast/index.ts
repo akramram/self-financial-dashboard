@@ -10,7 +10,14 @@ import {
   getAllMonthsWithSpending,
   getSpendingVelocity,
   getPeriodByMonth,
+  getMonthlyIncomeByPeriod,
 } from '../../../lib/db';
+import {
+  calculateMultiModelProjections,
+  calculateSafeDailyAllowance,
+  calculateEomSavingsForecast,
+  calculateCategoryBurnTimeline,
+} from '../../../lib/forecast-engine';
 
 export const GET: APIRoute = async ({ request }) => {
   const url = new URL(request.url);
@@ -46,7 +53,17 @@ export const GET: APIRoute = async ({ request }) => {
   const transactions = getTransactions({ periodId: pid });
   const allPaid = transactions.filter((t: any) => t.done);
   const totalSpent = allPaid.reduce((s: number, t: any) => s + t.amount, 0);
-  const totalUnpaid = transactions.filter((t: any) => !t.done).reduce((s: number, t: any) => s + t.amount, 0);
+  const unpaidList = transactions.filter((t: any) => !t.done);
+  const totalUnpaid = unpaidList.reduce((s: number, t: any) => s + t.amount, 0);
+
+  // Invest total (saving envelope FIN-235)
+  const investTotal = allPaid
+    .filter((t: any) => t.category === 'Invest')
+    .reduce((s: number, t: any) => s + t.amount, 0);
+
+  // Income for period
+  const incRow = getMonthlyIncomeByPeriod(pid);
+  const income = incRow ? (incRow.income || 0) + (incRow.other_income || 0) : 0;
 
   // 3. Estimate period length
   let periodLength = 30;
@@ -59,52 +76,32 @@ export const GET: APIRoute = async ({ request }) => {
 
   const daysElapsed = daysWithData;
   const daysRemaining = Math.max(0, periodLength - daysElapsed);
-
-  // 4. Compute projection using linear regression
-  let projectedTotal = totalSpent;
-  let projectionConfidence = 'low';
   const dailyAvg = daysElapsed > 0 ? totalSpent / daysElapsed : 0;
 
-  if (daysElapsed >= 3) {
-    const n = cumulative.length;
-    let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
-    for (let i = 0; i < n; i++) {
-      sumX += i;
-      sumY += cumulative[i].cumulative;
-      sumXY += i * cumulative[i].cumulative;
-      sumX2 += i * i;
-    }
-    const denom = n * sumX2 - sumX * sumX;
-    if (denom !== 0) {
-      const slope = (n * sumXY - sumX * sumY) / denom;
-      const intercept = (sumY - slope * sumX) / n;
-      projectedTotal = Math.max(0, intercept + slope * (periodLength - 1));
-
-      const meanY = sumY / n;
-      let ssRes = 0, ssTot = 0;
-      for (let i = 0; i < n; i++) {
-        const predicted = intercept + slope * i;
-        ssRes += (cumulative[i].cumulative - predicted) ** 2;
-        ssTot += (cumulative[i].cumulative - meanY) ** 2;
-      }
-      const rSquared = ssTot > 0 ? 1 - ssRes / ssTot : 0;
-      if (rSquared > 0.85 && daysElapsed >= 7) projectionConfidence = 'high';
-      else if (rSquared > 0.6 && daysElapsed >= 5) projectionConfidence = 'medium';
-    } else {
-      projectedTotal = dailyAvg * periodLength;
-      projectionConfidence = daysElapsed >= 7 ? 'medium' : 'low';
-    }
-  } else if (daysElapsed > 0) {
-    projectedTotal = dailyAvg * periodLength;
-    projectionConfidence = 'low';
-  }
-
-  // 5. Compare with historical average
+  // 4. Historical comparison
   const recentMonthly = getRecentMonthlyTotals(6);
   const historicalAvg = recentMonthly.length > 0
     ? recentMonthly.reduce((s: number, m: any) => s + m.daily_avg, 0) / recentMonthly.length
     : 0;
+  const historicalTotalAvg = recentMonthly.length > 0
+    ? recentMonthly.reduce((s: number, m: any) => s + m.total, 0) / recentMonthly.length
+    : 0;
   const velocityVsHistory = historicalAvg > 0 ? ((dailyAvg - historicalAvg) / historicalAvg) * 100 : 0;
+
+  // 5. Multi-model projections
+  const multiModel = calculateMultiModelProjections({
+    cumulative,
+    totalSpent,
+    daysElapsed,
+    periodLength,
+    daysRemaining,
+    historicalTotalAvg,
+    recentMonthlyTotals: recentMonthly,
+  });
+
+  const projectedTotal = multiModel.baselineProjected;
+  const regressionModel = multiModel.models.find((m) => m.id === 'regression');
+  const projectionConfidence = regressionModel?.confidence || (daysElapsed >= 7 ? 'medium' : 'low');
 
   // 6. Category-level budget burn rate
   const categories = getCategories();
@@ -118,7 +115,7 @@ export const GET: APIRoute = async ({ request }) => {
   for (const cat of Object.keys(catMap)) {
     if (totalSpent > 0 && daysElapsed > 0) {
       const catDailyAvg = catMap[cat].spent / daysElapsed;
-      catMap[cat].projected = catDailyAvg * periodLength;
+      catMap[cat].projected = Math.round(catDailyAvg * periodLength);
     } else {
       catMap[cat].projected = catMap[cat].spent;
     }
@@ -149,17 +146,50 @@ export const GET: APIRoute = async ({ request }) => {
       };
     });
 
-  // 7. Credit card utilization
+  const categoryBudgetItems = categories
+    .filter((c: any) => c.monthly_limit > 0)
+    .map((c: any) => ({
+      category: c.name,
+      color: c.color,
+      spent: catMap[c.name]?.spent || 0,
+      limit: c.monthly_limit,
+    }));
+
+  const categoryBurnTimeline = calculateCategoryBurnTimeline(categoryBudgetItems, daysElapsed, periodLength);
+
+  // 7. Safe daily burn allowance (target: historical average or sum of category limits, fallback to current projected)
+  const totalCategoryBudget = categories.reduce((s: number, c: any) => s + (c.monthly_limit || 0), 0);
+  const defaultTargetCeiling = totalCategoryBudget > 0
+    ? totalCategoryBudget
+    : historicalTotalAvg > 0
+    ? Math.round(historicalTotalAvg)
+    : Math.round(projectedTotal);
+
+  const safeDailyAllowance = calculateSafeDailyAllowance({
+    targetCeiling: defaultTargetCeiling,
+    currentSpent: totalSpent,
+    daysRemaining,
+    currentDailyAvg: dailyAvg,
+  });
+
+  // 8. EOM Net Savings Forecast
+  const eomSavings = calculateEomSavingsForecast({
+    income,
+    investTotal,
+    projectedTotalSpending: projectedTotal,
+  });
+
+  // 9. Credit card status
   const credit = getCreditStatus(pid);
   const creditOutstanding = credit.credit_expenses_paid - credit.credit_payments_paid;
   const creditUtilization = credit.credit_expenses_paid > 0
     ? (creditOutstanding / credit.credit_expenses_paid) * 100
     : 0;
 
-  // 8. Spending velocity
+  // 10. Spending velocity
   const velocity = getSpendingVelocity(pid);
 
-  // 9. Generate projected trajectory points
+  // 11. Projected trajectory points
   const projectedTrajectory: any[] = [];
   if (cumulative.length > 0 && daysRemaining > 0) {
     const lastPoint = cumulative[cumulative.length - 1];
@@ -169,49 +199,49 @@ export const GET: APIRoute = async ({ request }) => {
       const futureDate = new Date(lastDay + d * 1000 * 60 * 60 * 24);
       projectedTrajectory.push({
         day: futureDate.toISOString().slice(0, 10),
-        cumulative: lastPoint.cumulative + step * d,
+        cumulative: Math.round(lastPoint.cumulative + step * d),
       });
     }
   }
 
-  // 10. Alerts
+  // 12. Alerts
   const alerts: { type: 'info' | 'warning' | 'danger'; message: string }[] = [];
 
   for (const bs of budgetStatus) {
     if (bs.status === 'critical') {
       alerts.push({
         type: 'danger',
-        message: `${bs.category}: Projected to exceed budget by ${formatAlertAmt(bs.projected - bs.limit)} (${Math.round(bs.projectedPct)}% of limit)`,
+        message: `${bs.category}: Diproyeksikan overbudget ${formatAlertAmt(bs.projected - bs.limit)} (${Math.round(bs.projectedPct)}% dari batas)`,
       });
     } else if (bs.status === 'danger') {
       alerts.push({
         type: 'danger',
-        message: `${bs.category}: Already at ${Math.round(bs.spentPct)}% of budget (${formatAlertAmt(bs.remaining)} remaining)`,
+        message: `${bs.category}: Sudah mencapai ${Math.round(bs.spentPct)}% batas anggaran (${formatAlertAmt(bs.remaining)} tersisa)`,
       });
     } else if (bs.status === 'warning') {
       alerts.push({
         type: 'warning',
-        message: `${bs.category}: On track to reach ${Math.round(bs.projectedPct)}% of budget by month end`,
+        message: `${bs.category}: Ritme belanja tinggi (${Math.round(bs.projectedPct)}% dari pagu)`,
       });
     }
   }
 
   if (velocityVsHistory > 30) {
     alerts.push({
-      type: 'warning',
-      message: `Spending velocity is ${Math.round(velocityVsHistory)}% higher than your historical average`,
+      type: 'danger',
+      message: `Kecepatan belanja harian ${Math.round(velocityVsHistory)}% lebih tinggi dari tren historis`,
     });
   } else if (velocityVsHistory < -20 && daysElapsed >= 5) {
     alerts.push({
       type: 'info',
-      message: `Spending velocity is ${Math.round(Math.abs(velocityVsHistory))}% lower than usual — on track for savings!`,
+      message: `Pace belanja sangat hemat, ${Math.round(Math.abs(velocityVsHistory))}% di bawah rata-rata historis`,
     });
   }
 
-  if (totalUnpaid > 0) {
+  if (unpaidList.length > 0) {
     alerts.push({
-      type: 'info',
-      message: `${transactions.filter((t: any) => !t.done).length} unpaid transactions totaling ${formatAlertAmt(totalUnpaid)} not included in projections`,
+      type: 'warning',
+      message: `${unpaidList.length} transaksi berulang belum diselesaikan (total komitmen ${formatAlertAmt(totalUnpaid)})`,
     });
   }
 
@@ -219,24 +249,32 @@ export const GET: APIRoute = async ({ request }) => {
     alerts.push({
       type: 'info',
       message: daysElapsed < 3
-        ? 'Need a few more days of data for accurate projections. Check back soon!'
-        : 'Looking good! Spending is within expected ranges.',
+        ? 'Data awal periode masih minim. Akurasi proyeksi akan meningkat seiring berjalannya hari.'
+        : 'Ritme belanja terpantau stabil dalam batas aman.',
     });
   }
 
   const forecast = {
     month: targetMonth,
     period_id: pid,
+    income,
+    investTotal,
     daysElapsed,
     periodLength,
     daysRemaining,
     totalSpent,
     totalUnpaid,
+    unpaidCount: unpaidList.length,
     dailyAvg,
     projectedTotal,
     projectionConfidence,
     velocityVsHistory,
+    targetCeiling: defaultTargetCeiling,
     budgetStatus,
+    categoryBurnTimeline,
+    multiModel,
+    safeDailyAllowance,
+    eomSavings,
     creditStatus: {
       creditExpenses: credit.credit_expenses_paid,
       creditPayments: credit.credit_payments_paid,
