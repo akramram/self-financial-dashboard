@@ -3288,6 +3288,18 @@ export function getAchievements(): AchievementsResult {
 
 // ─── Weekly Spending Tracker ──────────────────────────────────────────────────
 
+export interface WeeklyTransactionItem {
+  id: number;
+  title: string;
+  category: string;
+  amount: number;
+  type: string;
+  done: number;
+  created_time: string;
+  date: string;
+  isWeekend?: boolean;
+}
+
 export interface WeeklyBucket {
   weekNum: number;
   label: string;       // "Week 1 (May 21–27)"
@@ -3297,6 +3309,11 @@ export interface WeeklyBucket {
   txCount: number;
   categoryTotals: Record<string, number>;
   avgDaily: number;
+  weekdaySpend?: number;
+  weekendSpend?: number;
+  weekdayCount?: number;
+  weekendCount?: number;
+  transactions?: WeeklyTransactionItem[];
 }
 
 export interface WeeklySpendingResult {
@@ -3361,6 +3378,41 @@ export function getWeeklySpending(periodId: number): WeeklySpendingResult {
       return txDate >= weekStart && txDate <= new Date(weekEnd.getTime() + 86399999); // include end day
     });
 
+    let weekdaySpend = 0;
+    let weekendSpend = 0;
+    let weekdayCount = 0;
+    let weekendCount = 0;
+
+    const enrichedTxs: WeeklyTransactionItem[] = weekTxs.map((t) => {
+      const txDate = t.created_time ? new Date(t.created_time) : new Date(t.date);
+      const day = txDate.getDay();
+      const isWeekend = day === 0 || day === 6;
+      if (isWeekend) {
+        weekendSpend += t.amount;
+        weekendCount++;
+      } else {
+        weekdaySpend += t.amount;
+        weekdayCount++;
+      }
+      return {
+        id: t.id,
+        title: t.title,
+        category: t.category,
+        amount: t.amount,
+        type: t.type,
+        done: t.done,
+        created_time: t.created_time,
+        date: t.date,
+        isWeekend,
+      };
+    });
+
+    enrichedTxs.sort((a, b) => {
+      const dateA = a.created_time ? new Date(a.created_time).getTime() : new Date(a.date).getTime();
+      const dateB = b.created_time ? new Date(b.created_time).getTime() : new Date(b.date).getTime();
+      return dateB - dateA;
+    });
+
     const total = weekTxs.reduce((s, t) => s + t.amount, 0);
     const categoryTotals: Record<string, number> = {};
     weekTxs.forEach((t) => {
@@ -3379,6 +3431,11 @@ export function getWeeklySpending(periodId: number): WeeklySpendingResult {
       txCount: weekTxs.length,
       categoryTotals,
       avgDaily,
+      weekdaySpend,
+      weekendSpend,
+      weekdayCount,
+      weekendCount,
+      transactions: enrichedTxs,
     });
 
     weekStart = new Date(weekStart);
