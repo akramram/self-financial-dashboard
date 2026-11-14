@@ -1,6 +1,30 @@
 # Iteration Log
 
-## Sesi 13 Nov 2026: Predictive Financial Intelligence Hub (/forecast) (PR #370)
+## Sesi 14 Nov 2026: Weekly Spending & Pacing Intelligence Hub (/weekly) (PR #372)
+
+### Ringkasan
+Mengubah halaman `/weekly` menjadi **Weekly Spending & Pacing Intelligence Hub**:
+- **Domain Engine Terpusat (`src/lib/weekly-pacing-engine.ts`)**:
+  - Trajektori burn-rate kumulatif per minggu vs plafon anggaran periodik lengkap dengan status pacing (*under_budget, on_track, approaching, exceeded*).
+  - Kalkulator Batas Aman Belanja Harian (*Safe-to-Spend Allowance*) untuk sisa hari dalam siklus gaji dengan target rasio tabungan dinamis (0% s/d 50%) dan tabel simulasi proyeksi surplus/defisit akhir periode.
+  - Evaluasi Skor Disiplin Pacing (0-100) dan deteksi pola *Kickoff Spike* (belanja berlebih di minggu pertama) serta lonjakan belanja akhir pekan (*Weekend Surge*).
+  - Helper filter transaksi mingguan cepat berdasarkan query, kategori, dan jenis hari (*weekend/weekday*).
+- **Enrichment DB Backend (`src/lib/db.ts`)**:
+  - Menghitung breakdown nominal dan frekuensi belanja hari kerja (*weekday*) vs akhir pekan (*weekend*) per minggu.
+  - Menyertakan daftar transaksi lengkap per minggu (`transactions`) terurut kronologis untuk interactive audit drill-down.
+- **UI Intelligence Hub (`src/components/WeeklyTracker.tsx`, `src/pages/weekly.astro`)**:
+  - 4 Kartu KPI Headline: Total Pemasukan, Total Realisasi Belanja, Plafon Mingguan Rata-rata, dan Skor Disiplin Pacing dengan badge tier (*Disiplin Prima, Terkendali, Waspada, Kritis*).
+  - 3 Tab Interaktif:
+    1. **Ritme & Pacing**: Grafik batang realisasi mingguan vs plafon, grafik kurva kumulatif burn-rate, kartu progres per minggu dengan detail kategori, tren laju harian WoW, dan donat distribusi kategori.
+    2. **Safe-to-Spend Simulator**: Slider target tabungan, metrik batas belanja harian aman, status kelonggaran pacing, dan skenario komparasi proyeksi tabungan.
+    3. **Audit Transaksi & Weekend**: Komparasi visual hari kerja vs akhir pekan, pencarian transaksi real-time, filter kategori, dan filter hari kerja vs akhir pekan.
+  - Kepatuhan antislop: Bebas karakter em-dash (R-02), kontras tinggi WCAG AA untuk Light & Dark mode, dan penanganan state data/loading/empty.
+
+### Hasil Verifikasi
+- Test suite: **704/704 tests pass** (70 test files), bertambah 9 tests dari `src/__tests__/weekly-pacing-engine.test.ts` dan `src/__tests__/weekly-tracker-hub.test.tsx`.
+- Astro build: Berhasil tanpa error.
+- Deployment: PM2 `financial-dashboard` restarted & running sehat di port 4321.
+
 
 ### Ringkasan
 Mengubah halaman `/forecast` menjadi **Predictive Financial Intelligence Hub**:
