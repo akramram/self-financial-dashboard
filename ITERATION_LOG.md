@@ -2953,3 +2953,15 @@ Audit KUR-59/FIN-015+016: foundation shadcn + migrasi tabel & form ternyata suda
    - **Git workflow:** Branch `feat/innovation-spending-mix-hub` → PR #360 merged ke `main`.
 
 
+
+
+## 2026-11-15 — Daily Innovation: Money Flow Sankey Intelligence Hub (/flow)
+
+### Hasil
+- **Halaman Baru `/flow`:** Peta aliran dana (Sankey diagram) satu periode gaji: node Pemasukan di kiri mengalir ke setiap kategori peruntukan di kanan, ketebalan pita proporsional dengan nominal. Tanpa dependensi baru (SVG kustom: layout node, ribbon bezier, hover highlight, native tooltip).
+- **Semantik Kas yang Benar:** Outflow hanya dari transaksi `done` bertipe `cash` + `credit_payment` (biaya kartu kredit dihitung saat pelunasan, bukan saat mencatat); `credit_expense` dikecualikan. Kategori `Invest` dirutekan sebagai aliran wealth, sisa pemasukan menjadi node Tabungan (atau node Defisit merah jika pengeluaran melebihi pemasukan).
+- **KPI & Insight:** 4 kartu KPI (Pemasukan, Total Keluar, Sisa/Defisit, Savings Rate), insight chips (konsentrasi top-3 aliran, porsi pelunasan kredit, alokasi invest), dan ranking Aliran Terbesar dengan bar proporsional.
+- **Engine Domain:** `src/lib/flow-analytics.ts` (buildFlowGraph + buildFlowInsights), unit tests `flow-analytics.test.ts` (6 tests) dan component tests `flow-map-hub.test.tsx` (5 tests). Total suite **715/715 hijau** (72 files).
+- **Verifikasi Browser:** Login → `/flow` → island hydrate (9 node, 8 ribbon, KPI live), switch periode Nov→Okt OK, dark/light toggle OK, kontras AA. Auth enforced (302 unauth).
+- **Antislop:** Dual-theme WCAG AA, copy tanpa em-dash, loading/empty/error states lengkap.
+- **Git workflow:** Branch `feat/innovation-money-flow-sankey` → PR #374 merged ke `main`.
