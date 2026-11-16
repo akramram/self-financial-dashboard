@@ -1,5 +1,24 @@
 # Iteration Log
 
+## Sesi 16 Nov 2026: Goals Pace Intelligence Hub (GH PR #375)
+
+### Ringkasan
+Meningkatkan halaman Goals (`/goals`) menjadi **Goals Pace Intelligence Hub**:
+- **Domain Engine Terpusat (`src/lib/goals-engine.ts`, pure client-safe)**:
+  - `computeGoalPace()`: progres aktual vs ekspektasi waktu (expected-by-now marker), klasifikasi 5 status pace (*Di Maju Jadwal, Sesuai Jadwal, Terlambat, Berisiko, Lewat Tenggat*), required/month, proyeksi ETA berbasis auto-setoran recurring, milestone 25/50/75 berikutnya + shortfall.
+  - `analyzeGoalsPortfolio()`: agregasi kebutuhan setoran vs kapasitas surplus 6 periode selesai dari `/api/savings-rate`, klasifikasi kelayakan (*Longgar, Pas-Pasan, Kurang Mampu*), coverage auto-setoran, milestone terdekat lintas goal, dan insight deterministik Bahasa Indonesia.
+  - `simulateBoost()`: alokasi setoran ekstra pro-rata ke kebutuhan setoran, ETA baru per goal, total bulan dipercepat, dan warning over-capacity terhadap surplus.
+- **UI Intelligence Panel (`src/components/GoalPacePanel.tsx`, terintegrasi `GoalsTracker.tsx`)**:
+  - 4 KPI: On Track count, Setoran Wajib/bln dengan badge kelayakan, Auto Coverage %, Milestone Terdekat.
+  - Tabel pace per goal: dual progress bar (aktual vs marker ekspektasi waktu), badge status, chip ETA (tepat waktu / meleset N bulan), required vs auto setoran, sisa/lewat hari.
+  - Simulator setoran ekstra: preset cepat + slider, KPI tepat-waktu sebelum/sesudah, total bulan dipercepat, beban total vs kapasitas %.
+- **Koreksi regresi antislop eksisting**: kelas Tailwind invalid `dark:bg-gold-700/20/30` dan `dark:hover:bg-gold-700/30/20` di GoalsTracker diperbaiki; badge memakai shade valid dual-theme WCAG AA, zero em-dash, state loading/empty.
+
+### Hasil Verifikasi
+- Test suite: **748/748 tests pass** (71 test files), bertambah 33 tests (`src/__tests__/goals-engine.test.ts` 27 + `src/__tests__/goals-pace-panel.test.tsx` 6).
+- `npm run build` bersih; tsc 0 error baru vs main (50 baseline).
+- PM2 clean rebuild & deployment terverifikasi di port 4321.
+
 ## Sesi 14 Nov 2026: Weekly Spending & Pacing Intelligence Hub (/weekly) (PR #372)
 
 ### Ringkasan
