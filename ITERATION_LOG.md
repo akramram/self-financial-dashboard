@@ -2984,3 +2984,14 @@ Audit KUR-59/FIN-015+016: foundation shadcn + migrasi tabel & form ternyata suda
 - **Verifikasi Browser:** Login → `/flow` → island hydrate (9 node, 8 ribbon, KPI live), switch periode Nov→Okt OK, dark/light toggle OK, kontras AA. Auth enforced (302 unauth).
 - **Antislop:** Dual-theme WCAG AA, copy tanpa em-dash, loading/empty/error states lengkap.
 - **Git workflow:** Branch `feat/innovation-money-flow-sankey` → PR #374 merged ke `main`.
+
+## 2026-11-17 — Daily Innovation: Data Health Integrity Hub (/diagnostics)
+
+### Hasil
+- **Halaman Baru `/diagnostics`:** Pusat pemeriksaan integritas database yang mengotomatisasi 10 mode kegagalan data yang sudah dikenal (sebelumnya hanya terdeteksi manual lewat sesi debugging): transaksi yatim (period_id tanpa periods), periode ganda (rentang tanggal sama), penanda tanggal anomali (bukan tanggal 1/21, bekas bug timezone), tagihan lampau done=0 yang tersembunyi dari ringkasan, pelunasan kredit salah tipe cash, kategori tak terdaftar (autocomplete kosong), created_time hilang, created_time di masa depan (bekas overwrite saat edit), transaksi nominal nol, dan label bulan non-English.
+- **Skor Kesehatan 0-100:** Hero ring dengan skor teragregasi (deduksi per temuan diskalakan volume, dibatasi cap per check: high 30, medium 15, low 8) dan label status (Sangat Sehat / Baik / Perlu Perawatan / Kritis). Setiap temuan punya kartu severity badge, deskripsi dampak, saran perbaikan, dan daftar contoh baris yang bisa dibuka-tutup (maks 5 contoh).
+- **Engine Murni:** `src/lib/data-diagnostics.ts` (runDataDiagnostics + healthLabel), API read-only `GET /api/diagnostics`, komponen island `DataHealthHub.tsx`. Data nyata: skor 74 (Perlu Perawatan) dengan 19 kategori tak terdaftar, 435 created_time hilang (impor historis 2023), 6 transaksi nominal nol.
+- **Navigasi:** Ditambahkan ke sidebar desktop/mobile (grup Reports, ikon ShieldCheck) dan Command Palette (31 pages).
+- **Testing:** Unit tests `data-diagnostics.test.ts` (12 tests: semua detektor, cap deduksi, kombinasi multi-check, batas sampel) + component tests `data-health-hub.test.tsx` (4 tests: loading, expand sampel, all-clear, error+retry). Total suite **764/764 hijau** (76 files).
+- **Antislop:** Dual-theme WCAG AA (badge severity dan ring skor teruji di light/dark), copy tanpa em-dash, loading/error/empty states lengkap, tanpa dependensi baru.
+- **Git workflow:** Branch `feat/innovation-data-health-hub` → PR merged ke `main`.
