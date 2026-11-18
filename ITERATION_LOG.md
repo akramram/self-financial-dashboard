@@ -2995,3 +2995,16 @@ Audit KUR-59/FIN-015+016: foundation shadcn + migrasi tabel & form ternyata suda
 - **Testing:** Unit tests `data-diagnostics.test.ts` (12 tests: semua detektor, cap deduksi, kombinasi multi-check, batas sampel) + component tests `data-health-hub.test.tsx` (4 tests: loading, expand sampel, all-clear, error+retry). Total suite **764/764 hijau** (76 files).
 - **Antislop:** Dual-theme WCAG AA (badge severity dan ring skor teruji di light/dark), copy tanpa em-dash, loading/error/empty states lengkap, tanpa dependensi baru.
 - **Git workflow:** Branch `feat/innovation-data-health-hub` → PR merged ke `main`.
+
+## 2026-11-18 — Daily Innovation: Annual Money Rewind (/rewind)
+
+### Hasil
+- **Halaman Baru `/rewind`:** Rekap setahun penuh wrapped-style dari periode gaji yang start_date-nya jatuh di tahun terpilih. Selector tahun otomatis dari tabel periods (2026, 2025, ...).
+- **Persona Keuangan Tahunan:** Engine 5 tier dari kombinasi savings rate + porsi invest (Arsitek Kekayaan / Penabung Disiplin / Pengelola Seimbang / Mulai Menabung / Butuh Rem Keuangan) lengkap dengan blurb satu kalimat.
+- **KPI & Visual:** 4 kartu KPI (pemasukan, keluar, savings rate, net worth akhir tahun + pertumbuhan %), bar ganda ritme bulanan masuk/keluar per periode dengan penanda bulan terberat & ringan, top-5 kategori dengan bar proporsional, dan sorotan tahun (jumlah transaksi, investasi teralokasi, transaksi terbesar).
+- **Semantik Kas:** Outcome = transaksi done bertipe cash + credit_payment (credit_expense dikecualikan), konsisten dengan /flow.
+- **Engine & API:** src/lib/rewind-analytics.ts (buildRewindReport, gradeRewind, availableRewindYears) + GET /api/rewind?year= (read-only, auth middleware). Navigasi ditambahkan ke sidebar desktop/mobile (grup Reports, ikon Sparkles) dan Command Palette (32 pages).
+- **Testing:** rewind-analytics.test.ts (5 tests) + rewind-hub.test.tsx (3 tests: loading, empty, error+retry). Total suite **772/772 hijau** (78 files).
+- **Verifikasi Nyata:** API live vs DB (2026: 10 periode, 91 tx, persona Butuh Rem Keuangan; 2025: 12 periode); browser CDP cookie injection → island hydrate, 4 KPI + 10 bar, tanpa horizontal overflow.
+- **Antislop:** Dual-theme WCAG AA (pattern glass-card DataHealthHub), loading/empty/error states, copy tanpa em-dash, tanpa dependensi baru.
+- **Git workflow:** Branch feat/innovation-annual-rewind → PR #377 merged ke main.
