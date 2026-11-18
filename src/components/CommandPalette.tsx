@@ -3,7 +3,7 @@ import {
   LayoutDashboard, ArrowRightLeft, PieChart, Target, Settings,
   TrendingUp, Calendar, Shield, Wallet, CreditCard,
   Trophy, Zap, Heart, BarChart3, FlaskConical, Briefcase, PiggyBank,
-  Repeat, Search, FileText, GitCompare, Activity, Layers, CalendarDays, Grid3x3, ShieldCheck,
+  Repeat, Search, FileText, GitCompare, Activity, Layers, CalendarDays, Grid3x3, ShieldCheck, Sparkles,
   Plus, LogOut, Flame, Moon, ArrowUpRight, ArrowDownRight,
 } from 'lucide-react';
 import { formatIdr } from '../lib/utils';
@@ -69,6 +69,7 @@ const ALL_ITEMS: CommandItem[] = [
   { id: 'recurring', label: 'Recurring', description: 'Manage recurring transactions', icon: Repeat, group: 'pages', href: '/recurring' },
   { id: 'recurring-audit', label: 'Recurring Audit', description: 'Subscription costs, monthly & annual totals', icon: Search, group: 'pages', href: '/recurring-audit' },
   { id: 'diagnostics', label: 'Data Health', description: 'Database integrity checks and anomaly scan', icon: ShieldCheck, group: 'pages', href: '/diagnostics' },
+  { id: 'rewind', label: 'Annual Rewind', description: 'Rekap setahun: persona keuangan, ritme bulanan, sorotan', icon: Sparkles, group: 'pages', href: '/rewind' },
   { id: 'recommendations', label: 'Tips', description: 'Budget recommendations and savings tips', icon: Trophy, group: 'pages', href: '/recommendations' },
   // Actions
   { id: 'add-data', label: 'Add Data', description: 'Add transaction or net worth entry', shortcut: '⌘N', icon: Plus, group: 'actions', href: '/add' },

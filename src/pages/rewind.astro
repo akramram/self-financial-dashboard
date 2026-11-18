@@ -1,0 +1,15 @@
+---
+import Layout from '../layouts/Layout.astro';
+import RewindHub from '../components/RewindHub';
+---
+
+<Layout title="Annual Rewind: Financial Dashboard">
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold">Annual Rewind</h1>
+    <p class="text-slate-600 dark:text-white/50 text-sm">
+      Rekap setahun penuh dalam satu halaman: persona keuangan, ritme bulanan, kategori terbesar, dan sorotan transaksi sepanjang tahun.
+    </p>
+  </div>
+
+  <RewindHub client:load />
+</Layout>
