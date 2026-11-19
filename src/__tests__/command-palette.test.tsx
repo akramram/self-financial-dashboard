@@ -23,7 +23,7 @@ vi.mock('lucide-react', () => {
     'LayoutDashboard', 'ArrowRightLeft', 'PieChart', 'Target', 'Settings',
     'TrendingUp', 'Calendar', 'Shield', 'Wallet', 'CreditCard',
     'Trophy', 'Zap', 'Heart', 'BarChart3', 'FlaskConical', 'Briefcase', 'PiggyBank',
-    'Repeat', 'Search', 'FileText', 'GitCompare', 'Activity', 'Layers', 'CalendarDays', 'Grid3x3', 'ShieldCheck', 'Sparkles',
+    'Repeat', 'Search', 'FileText', 'GitCompare', 'Activity', 'Layers', 'CalendarDays', 'Grid3x3', 'ShieldCheck', 'Sparkles', 'CircleDollarSign',
     'Plus', 'LogOut', 'Flame', 'Moon', 'ArrowUpRight', 'ArrowDownRight',
   ];
   const mock: Record<string, unknown> = { __esModule: true };

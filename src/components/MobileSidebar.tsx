@@ -3,7 +3,7 @@ import {
   LayoutDashboard, ArrowRightLeft, PieChart, Target, Settings,
   TrendingUp, Calendar, Shield, Wallet, CreditCard, X, Bell,
   Trophy, Flame, Heart, BarChart3, FlaskConical, Briefcase, PiggyBank,
-  Repeat, Search, FileText, GitCompare, Activity, Layers, CalendarDays, Zap, Grid3x3, Waves, ShieldCheck, Sparkles,
+  Repeat, Search, FileText, GitCompare, Activity, Layers, CalendarDays, Zap, Grid3x3, Waves, ShieldCheck, Sparkles, CircleDollarSign,
 } from 'lucide-react';
 import { openAlertsDrawer } from '../lib/alertsStore';
 
@@ -56,6 +56,7 @@ const REPORTS = [
   { path: '/compare', label: 'Compare', icon: GitCompare },
   { path: '/cashflow', label: 'Cashflow', icon: BarChart3 },
   { path: '/flow', label: 'Money Flow', icon: Waves },
+  { path: '/inflation', label: 'Inflasi', icon: CircleDollarSign },
   { path: '/recurring', label: 'Recurring', icon: Repeat },
   { path: '/recurring-audit', label: 'Recurring Audit', icon: Search },
   { path: '/diagnostics', label: 'Data Health', icon: ShieldCheck },
