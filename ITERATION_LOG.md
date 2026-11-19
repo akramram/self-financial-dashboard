@@ -3008,3 +3008,16 @@ Audit KUR-59/FIN-015+016: foundation shadcn + migrasi tabel & form ternyata suda
 - **Verifikasi Nyata:** API live vs DB (2026: 10 periode, 91 tx, persona Butuh Rem Keuangan; 2025: 12 periode); browser CDP cookie injection → island hydrate, 4 KPI + 10 bar, tanpa horizontal overflow.
 - **Antislop:** Dual-theme WCAG AA (pattern glass-card DataHealthHub), loading/empty/error states, copy tanpa em-dash, tanpa dependensi baru.
 - **Git workflow:** Branch feat/innovation-annual-rewind → PR #377 merged ke main.
+
+## 2026-11-19 — Daily Innovation: Real Value / Inflation Hub (/inflation)
+
+### Hasil
+- **Halaman Baru `/inflation`:** Seluruh riwayat pemasukan & pengeluaran direstat ke rupiah hari ini. Gaji nominal naik, tapi daya beli ikut naik atau hanya mengikuti harga? Dijawab dengan koreksi inflasi konstan per tahun.
+- **Slider Asumsi Inflasi:** Range 0-10% (default 3.5%) + preset cepat 2.0 / 3.5 / 5.0. API `/api/real-value` hanya mengirim baris mentah per periode; seluruh matematika jalan di client sehingga geser slider langsung menghitung ulang tanpa refetch.
+- **Engine Murni (`src/lib/real-value-engine.ts`):** `buildRawRows()` (agregasi per periode, semantik kas konsisten /flow + /rewind: done cash + credit_payment, credit_expense & unpaid dikecualikan), `inflationFactor()` ((1+r)^tahun, clamp negatif & masa depan), `buildRealValueReport()` (inflasi kumulatif, perubahan endpoint gaji/belanja riil, surplus riil, erosi referensi Rp1jt), `gradeRealValue()` verdict 4 tone: Gaji Melaju / Seimbang dengan Inflasi / Standar Hidup Menguntit / Gaji Tertinggal Inflasi (+Defisit Riil).
+- **UI:** Verdict hero, 4 KPI (inflasi kumulatif, perubahan gaji riil, perubahan belanja riil, surplus riil terakhir), callout erosi "Rp1jt di {periode} lama setara RpX hari ini", bar surplus riil per periode (hijau/merah, tooltip nominal vs riil). Tanpa dependensi baru.
+- **Navigasi:** Sidebar desktop + mobile (grup Reports, ikon CircleDollarSign) dan Command Palette (33 pages).
+- **Testing:** `real-value-engine.test.ts` (15 tests) + `real-value-hub.test.tsx` (4 tests: loading+KPI, recompute slider, empty, error+retry) + mock lucide command-palette diperbarui. Total suite **791/791 hijau** (80 files).
+- **Verifikasi Nyata:** Full clean rebuild (stop → rm dist/.astro/.vite → build → start ecosystem), PM2 online, `/inflation` HTTP 200 dengan sesi, API live mengembalikan 39 periode (Sep 2023 → Nov 2026), CSS hash live resolve 200 (tanpa stale build), auth enforced (302/401 tanpa sesi).
+- **Antislop:** Dual-theme WCAG AA (semua teks + slider + preset chip punya pasangan dark), copy tanpa em-dash, loading/empty/error states lengkap.
+- **Git workflow:** Branch `feat/innovation-real-value-inflation` → PR #379 merged ke `main`.
