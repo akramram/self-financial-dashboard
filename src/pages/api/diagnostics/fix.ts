@@ -85,8 +85,10 @@ export const POST: APIRoute = async ({ request }) => {
         for (const r of rows) {
           const m = (r.month ?? '').trim().match(/^(\S+) (\d{4})$/);
           const en = m ? ID_TO_EN_MONTHS[m[1]] : undefined;
-          if (en) {
-            db.prepare('UPDATE periods SET month = ? WHERE id = ?').run(`${en} ${m![2]}`, r.id);
+          // Sept/Nov/Apr are identical in both languages; skip no-op rewrites.
+          const label = m && en ? `${en} ${m[2]}` : null;
+          if (label && label !== (r.month ?? '').trim()) {
+            db.prepare('UPDATE periods SET month = ? WHERE id = ?').run(label, r.id);
             fixed++;
           }
         }
