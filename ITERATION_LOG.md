@@ -3021,3 +3021,16 @@ Audit KUR-59/FIN-015+016: foundation shadcn + migrasi tabel & form ternyata suda
 - **Verifikasi Nyata:** Full clean rebuild (stop → rm dist/.astro/.vite → build → start ecosystem), PM2 online, `/inflation` HTTP 200 dengan sesi, API live mengembalikan 39 periode (Sep 2023 → Nov 2026), CSS hash live resolve 200 (tanpa stale build), auth enforced (302/401 tanpa sesi).
 - **Antislop:** Dual-theme WCAG AA (semua teks + slider + preset chip punya pasangan dark), copy tanpa em-dash, loading/empty/error states lengkap.
 - **Git workflow:** Branch `feat/innovation-real-value-inflation` → PR #379 merged ke `main`.
+
+## 2026-11-20 — Daily Innovation: Auto-Repair Satu Klik di Data Health Hub (/diagnostics)
+
+### Hasil
+- **Menutup loop deteksi → perbaikan:** 6 temuan mekanis di `/diagnostics` kini punya tombol **Perbaiki otomatis** langsung di kartu temuan. Cek yang butuh pertimbangan manusia (transaksi yatim, periode ganda, tagihan lampau unpaid, nominal nol) sengaja tidak ada auto-fix.
+- **Perbaikan yang didukung (`POST /api/diagnostics/fix`, admin-only via middleware):** created_time hilang & created_time masa depan → `date || 'T12:00:00.000Z'`; kategori tak terdaftar → didaftarkan via `ensureCategory` (palet warna hashed); pelunasan kredit tertanda cash → `credit_payment` (heuristik identik dengan detektor); penanda tanggal anomali → disamakan dengan `start_date` periode; label bulan Indonesia → English (skip no-op untuk Sept/Nov/Apr yang ejaannya identik).
+- **Metadata murni:** `FIXABLE_CHECKS` di `src/lib/data-diagnostics.ts` (judul + body konfirmasi per check), teruji integritas id-nya terhadap temuan engine.
+- **UX:** Konfirmasi memakai ConfirmDialog singleton (bukan window.confirm), toast sonner "N baris diperbaiki", laporan otomatis di-refresh setelah sukses, tombol disabled saat perbaikan berjalan. Viewer diblokir middleware (403).
+- **Testing:** FIXABLE_CHECKS integrity (2 tests) + alur fix hub: tombol hanya muncul di check fixable, POST payload benar, refetch setelah sukses (1 test). Total suite **794/794 hijau** (80 files).
+- **Verifikasi Nyata (data live):** Auth enforced (401 tanpa sesi, 400 untuk checkId tak dikenal dengan sesi). Eksekusi nyata di DB live: 19 kategori terdaftar, 435 created_time dipulihkan → **skor kesehatan data 74 → 97 (Sangat Sehat)**; sisa temuan hanya zero_amount 6 (butuh keputusan manual hapus/isi nominal). Sanity check pasca-fix: 0 orphan, 0 missing created_time.
+- **Bug ditemukan & dipatch saat verifikasi:** label Sept/Nov/Apr identik di ID/EN sehingga no-op rewrite mengembangkan hitungan fixed (11 padahal detektor 0). Patch: skip bila label hasil terjemahan sama dengan label kini (PR #381).
+- **Antislop:** Dual-theme WCAG AA (tombol emerald punya pasangan dark), copy tanpa em-dash, tanpa dependensi baru.
+- **Git workflow:** Branch `feat/innovation-data-health-autofix` → PR #380 merged; follow-up `fix/innovation-autofix-month-noop` → PR #381 merged. Full clean rebuild + PM2 ecosystem restart, CSS hash live resolve 200.
