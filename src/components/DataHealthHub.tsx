@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import {
-  ShieldCheck, RefreshCw, AlertTriangle, CheckCircle2, ChevronDown, Database,
+  ShieldCheck, RefreshCw, AlertTriangle, CheckCircle2, ChevronDown, Database, Wrench,
 } from 'lucide-react';
+import { confirm } from './ConfirmDialog';
 import type { DiagnosticsReport, Finding, Severity } from '../lib/data-diagnostics';
+import { FIXABLE_CHECKS } from '../lib/data-diagnostics';
 
 const SEV_BADGE: Record<Severity, { label: string; cls: string }> = {
   high: { label: 'Tinggi', cls: 'bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300' },
@@ -21,10 +24,13 @@ function scoreColor(score: number): string {
   return '#ef4444';
 }
 
-function FindingCard({ f }: { f: Finding }) {
+function FindingCard({
+  f, onFix, fixing,
+}: { f: Finding; onFix?: () => void; fixing?: boolean }) {
   const [open, setOpen] = useState(false);
   const sev = SEV_BADGE[f.severity];
   const hidden = f.count - f.samples.length;
+  const fixable = FIXABLE_CHECKS[f.id];
 
   return (
     <div
@@ -47,6 +53,19 @@ function FindingCard({ f }: { f: Finding }) {
       <p className="text-xs text-slate-600 dark:text-white/60">
         <span className="font-medium text-slate-700 dark:text-white/70">Saran perbaikan:</span> {f.hint}
       </p>
+      {fixable && onFix && (
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={onFix}
+          disabled={fixing}
+          data-testid={`fix-${f.id}`}
+          className="w-fit border-emerald-300 text-emerald-700 hover:bg-emerald-50 dark:border-emerald-500/40 dark:text-emerald-400 dark:hover:bg-emerald-500/10"
+        >
+          <Wrench className="w-3.5 h-3.5 mr-1.5" aria-hidden="true" />
+          {fixing ? 'Memperbaiki…' : 'Perbaiki otomatis'}
+        </Button>
+      )}
       {f.samples.length > 0 && (
         <div>
           <button
@@ -78,6 +97,7 @@ export default function DataHealthHub() {
   const [report, setReport] = useState<DiagnosticsReport | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [fixingId, setFixingId] = useState<string | null>(null);
   const mounted = useRef(true);
 
   useEffect(() => {
@@ -104,6 +124,34 @@ export default function DataHealthHub() {
   };
 
   useEffect(load, []);
+
+  const handleFix = async (f: Finding) => {
+    const meta = FIXABLE_CHECKS[f.id];
+    if (!meta) return;
+    const ok = await confirm({
+      title: meta.confirmTitle,
+      description: meta.confirmBody,
+      confirmLabel: 'Perbaiki',
+      cancelLabel: 'Batal',
+    });
+    if (!ok) return;
+    setFixingId(f.id);
+    try {
+      const r = await fetch('/api/diagnostics/fix', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ checkId: f.id }),
+      });
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.error || 'Perbaikan gagal.');
+      toast.success(`${data.fixed} baris diperbaiki.`);
+      load();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Perbaikan gagal.');
+    } finally {
+      if (mounted.current) setFixingId(null);
+    }
+  };
 
   if (error) {
     return (
@@ -176,7 +224,14 @@ export default function DataHealthHub() {
             Perlu Perhatian ({active.length})
           </h3>
           <div className="grid gap-3 md:grid-cols-2">
-            {active.map((f) => <FindingCard key={f.id} f={f} />)}
+            {active.map((f) => (
+              <FindingCard
+                key={f.id}
+                f={f}
+                onFix={() => handleFix(f)}
+                fixing={fixingId === f.id}
+              />
+            ))}
           </div>
         </section>
       ) : (
