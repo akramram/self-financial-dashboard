@@ -112,4 +112,53 @@ describe('DataHealthHub Component', () => {
       expect(screen.getByTestId('diagnostics-hub')).toBeInTheDocument();
     });
   });
+
+  it('offers auto-fix only for fixable checks and posts after confirmation', async () => {
+    const fixableReport: DiagnosticsReport = {
+      ...dirtyReport,
+      findings: [
+        dirtyReport.findings[0],
+        {
+          id: 'created_time_missing',
+          title: 'created_time Hilang',
+          severity: 'low',
+          count: 3,
+          description: 'Heatmap kehilangan penempatan hari.',
+          hint: 'Isi dengan date + T12:00:00.000Z.',
+          samples: ['#12 "Kopi" (Rp20.000, 2026-10-21)'],
+        },
+      ],
+    };
+    const fetchMock = vi.fn((url: string, init?: RequestInit) =>
+      Promise.resolve(
+        init?.method === 'POST'
+          ? { ok: true, json: async () => ({ ok: true, checkId: 'created_time_missing', fixed: 3 }) }
+          : { ok: true, json: async () => fixableReport }
+      )
+    );
+    vi.stubGlobal('fetch', fetchMock);
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
+
+    render(<DataHealthHub />);
+    await waitFor(() => screen.getByTestId('diagnostics-hub'));
+
+    // Fixable finding gets a repair button, non-fixable one does not.
+    expect(screen.getByTestId('fix-created_time_missing')).toBeInTheDocument();
+    expect(screen.queryByTestId('fix-orphan_transactions')).not.toBeInTheDocument();
+
+    const user = userEvent.setup();
+    await user.click(screen.getByTestId('fix-created_time_missing'));
+
+    await waitFor(() => {
+      const post = fetchMock.mock.calls.find(([, init]) => (init as RequestInit)?.method === 'POST');
+      expect(post).toBeTruthy();
+      expect(post![0]).toBe('/api/diagnostics/fix');
+      expect(JSON.parse((post![1] as RequestInit).body as string)).toEqual({ checkId: 'created_time_missing' });
+    });
+    expect(confirmSpy).toHaveBeenCalled();
+    // After success the hub refetches the report.
+    await waitFor(() => {
+      expect(fetchMock.mock.calls.filter(([u]) => u === '/api/diagnostics').length).toBeGreaterThanOrEqual(2);
+    });
+  });
 });

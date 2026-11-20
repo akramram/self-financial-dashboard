@@ -288,3 +288,44 @@ export function runDataDiagnostics(input: DiagnosticsInput): DiagnosticsReport {
     findings,
   };
 }
+
+// One-click repair metadata: mechanical fixes whose SQL is deterministic.
+// Human-judgment checks (orphans, duplicate periods, unpaid past, zero-amount)
+// deliberately have no auto-fix.
+export interface FixableCheck {
+  confirmTitle: string;
+  confirmBody: string;
+}
+
+export const FIXABLE_CHECKS: Record<string, FixableCheck> = {
+  created_time_missing: {
+    confirmTitle: 'Pulihkan created_time?',
+    confirmBody:
+      'Semua transaksi tanpa created_time akan diisi date + T12:00:00.000Z agar heatmap bisa menempatkannya.',
+  },
+  created_time_future: {
+    confirmTitle: 'Pulihkan created_time masa depan?',
+    confirmBody:
+      'Semua created_time yang berada di depan waktu sekarang akan di-reset ke date + T12:00:00.000Z.',
+  },
+  unmapped_categories: {
+    confirmTitle: 'Daftarkan kategori?',
+    confirmBody:
+      'Setiap kategori yang dipakai transaksi tetapi belum terdaftar akan dibuat otomatis dengan warna dari palet.',
+  },
+  credit_payment_misclassified: {
+    confirmTitle: 'Ubah tipe pelunasan kredit?',
+    confirmBody:
+      'Semua transaksi bertipe cash yang judul/kategorinya mengandung "credit" akan diubah menjadi credit_payment.',
+  },
+  date_marker_anomalies: {
+    confirmTitle: 'Normalisasi penanda tanggal?',
+    confirmBody:
+      'Kolom date transaksi akan disamakan dengan start_date periodenya (tanggal 1 atau 21).',
+  },
+  month_labels: {
+    confirmTitle: 'Bakukan label bulan?',
+    confirmBody:
+      'Label periode berbahasa Indonesia (mis. "Oktober 2024") akan diterjemahkan ke English ("October 2024").',
+  },
+};

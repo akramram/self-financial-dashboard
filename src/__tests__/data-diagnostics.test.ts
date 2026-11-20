@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { runDataDiagnostics, healthLabel } from '../lib/data-diagnostics';
+import { runDataDiagnostics, healthLabel, FIXABLE_CHECKS } from '../lib/data-diagnostics';
 import type { DiagTx, DiagPeriod } from '../lib/data-diagnostics';
 
 const NOW = '2026-11-17T10:00:00.000Z';
@@ -160,5 +160,39 @@ describe('healthLabel', () => {
     expect(healthLabel(80)).toBe('Baik');
     expect(healthLabel(55)).toBe('Perlu Perawatan');
     expect(healthLabel(10)).toBe('Kritis');
+  });
+});
+
+describe('FIXABLE_CHECKS', () => {
+  it('only references finding ids that the engine actually emits', () => {
+    const report = runDataDiagnostics({
+      transactions: [
+        tx({ id: 1, period_id: 999 }),
+        tx({ id: 2, type: 'cash', title: 'Credit Card Bill' }),
+        tx({ id: 3, date: '2026-05-31' }),
+        tx({ id: 4, amount: 0 }),
+        tx({ id: 5, created_time: null }),
+        tx({ id: 6, created_time: '2027-01-01T00:00:00.000Z' }),
+        tx({ id: 7, category: 'Mystery' }),
+      ],
+      periods: [
+        { id: 10, month: 'Oktober 2024', start_date: '2024-10-21', end_date: '2024-11-20' },
+        { id: 11, month: 'Oktober 2024', start_date: '2024-10-21', end_date: '2024-11-20' },
+      ],
+      categories: [{ id: 1, name: 'Makan' }],
+      activePeriodId: 11,
+      now: NOW,
+    });
+    const emitted = new Set(report.findings.map((f) => f.id));
+    for (const id of Object.keys(FIXABLE_CHECKS)) {
+      expect(emitted.has(id), `${id} must be a real finding id`).toBe(true);
+    }
+  });
+
+  it('has non-empty confirm copy for every fixable check', () => {
+    for (const [id, meta] of Object.entries(FIXABLE_CHECKS)) {
+      expect(meta.confirmTitle.trim(), id).not.toBe('');
+      expect(meta.confirmBody.trim(), id).not.toBe('');
+    }
   });
 });
