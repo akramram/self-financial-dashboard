@@ -3128,3 +3128,12 @@ Audit KUR-59/FIN-015+016: foundation shadcn + migrasi tabel & form ternyata suda
 - **Testing:** `note-indicator.test.tsx` (2 test: tooltip di wrapper bukan svg, teks sr-only). Suite **821/821 hijau** (88 files).
 - **Antislop:** tanpa perubahan warna/teks selain teks sr-only; kontras tetap.
 - **Git workflow:** Branch `fix/innovation-note-tooltip-ring-color` → PR.
+
+## 2026-11-22 — Marathon Iteration (DX): tipe `Transaction.done` sesuai data nyata
+
+### Hasil
+- `Transaction.done` dideklarasikan `boolean`, padahal SQLite/API mengirim `0/1` (dan fixture JSON lama boolean). Akibatnya kode yang benar (`done === 1`, `done: newDone ? 1 : 0`) butuh cast `as Transaction` dan memunculkan 7 error `tsc` (Dashboard, TransactionTable, DailyBudgetIndicator).
+- Tipe kini `boolean | 0 | 1` dengan komentar "uji dengan truthiness". Satu pemanggil yang benar-benar butuh boolean (ekspor CSV `paid`) di-coerce `Boolean(t.done)` — output CSV tidak berubah (fungsi sudah memakai truthiness → "Yes"/"No").
+- `tsc --noEmit`: 32 → **25** error (sisa: tipe opsi Chart.js, mock test, `Locals.user`, ikon CommandPalette `strokeWidth`, fixture data.ts).
+- **Testing:** suite **821/821 hijau** (88 files), build Complete. Tidak ada perubahan runtime.
+- **Git workflow:** Branch `chore/innovation-transaction-done-type` → PR.
