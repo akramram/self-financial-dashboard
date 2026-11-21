@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { toast } from 'sonner';
 import { Skeleton } from './ui/skeleton';
 import type { FinancialGoal } from '../lib/api';
 import type { NetworthRecord } from '../lib/data';
@@ -307,6 +308,7 @@ export default function GoalsTracker({ networth }: Props) {
       await loadGoals();
     } catch (err) {
       console.error('Failed to delete goal:', err);
+      toast.error(err instanceof Error ? err.message : 'Gagal menyimpan perubahan goal');
     }
   };
 
@@ -318,6 +320,7 @@ export default function GoalsTracker({ networth }: Props) {
       await loadGoals();
     } catch (err) {
       console.error('Failed to toggle goal:', err);
+      toast.error(err instanceof Error ? err.message : 'Gagal menyimpan perubahan goal');
     }
   };
 
@@ -338,6 +341,7 @@ export default function GoalsTracker({ networth }: Props) {
       await loadGoals();
     } catch (err) {
       console.error('Failed to contribute:', err);
+      toast.error(err instanceof Error ? err.message : 'Gagal menyimpan perubahan goal');
     }
   };
 

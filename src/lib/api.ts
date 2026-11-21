@@ -355,15 +355,17 @@ export async function createGoalApi(goal: Omit<FinancialGoal, 'id' | 'completed'
 }
 
 export async function updateGoalApi(id: number, goal: Partial<FinancialGoal>): Promise<void> {
-  await fetch(`/api/goals/${id}`, {
+  const res = await fetch(`/api/goals/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(goal),
   });
+  await assertOk(res, 'Update goal');
 }
 
 export async function deleteGoalApi(id: number): Promise<void> {
-  await fetch(`/api/goals/${id}`, { method: 'DELETE' });
+  const res = await fetch(`/api/goals/${id}`, { method: 'DELETE' });
+  await assertOk(res, 'Hapus goal');
 }
 
 // ─── Investments API ─────────────────────────────────────────────────────────
@@ -392,15 +394,17 @@ export async function createInvestmentApi(inv: Omit<Investment, 'id' | 'created_
 }
 
 export async function updateInvestmentApi(id: number, inv: Partial<Investment>): Promise<void> {
-  await fetch(`/api/investments/${id}`, {
+  const res = await fetch(`/api/investments/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(inv),
   });
+  await assertOk(res, 'Update investasi');
 }
 
 export async function deleteInvestmentApi(id: number): Promise<void> {
-  await fetch(`/api/investments/${id}`, { method: 'DELETE' });
+  const res = await fetch(`/api/investments/${id}`, { method: 'DELETE' });
+  await assertOk(res, 'Hapus investasi');
 }
 
 export async function fetchPortfolioSummary(): Promise<PortfolioSummary> {
