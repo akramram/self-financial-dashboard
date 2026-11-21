@@ -123,7 +123,8 @@ export async function updateNetworthApi(periodId: number, record: Partial<Networ
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(record),
   });
-  return res.json().catch(() => ({ success: res.ok }));
+  await assertOk(res, 'Update networth');
+  return res.json().catch(() => ({ success: true }));
 }
 
 export async function deleteNetworthApi(periodId: number): Promise<void> {

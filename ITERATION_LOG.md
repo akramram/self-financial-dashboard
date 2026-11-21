@@ -3073,3 +3073,11 @@ Audit KUR-59/FIN-015+016: foundation shadcn + migrasi tabel & form ternyata suda
 - **Testing:** test edit diperbaiki (period_id 37 + date), +test hapus kirim period_id, +test gagal API → toast error & form tetap terbuka. Ketiganya merah di kode lama. Suite **805/805 hijau** (82 files).
 - **Antislop:** tidak ada perubahan visual selain toast sonner yang sudah dipakai global.
 - **Git workflow:** Branch `fix/innovation-income-settings-period-id` → PR.
+
+## 2026-11-22 — Marathon Iteration: /networth/edit benar-benar menyimpan (period_id + error terlihat)
+
+### Hasil
+- **Bug (pola sama dengan Monthly Income):** `NetworthEditForm` memanggil `updateNetworthApi(month, …)` dengan label bulan → `PUT /api/networth/November%202026` → 400 "Invalid period_id". Helper tidak cek `res.ok` dan form menampilkan **"Networth updated successfully!"** walau gagal. Payload juga mengirim `date: ''` yang akan mengosongkan tanggal baris bila PUT lolos.
+- **Fix:** form menyimpan `period_id` + `date` baris saat load; Save memakai `period_id` dan tanggal asli; `updateNetworthApi` melempar error berpesan server (`assertOk`); error tampil sebagai alert merah (light/dark: red-700/red-300); tombol Save disabled saat menyimpan atau bila bulan tidak punya data networth (pesan "Data networth untuk X tidak ditemukan.").
+- **Testing:** `networth-edit-form.test.tsx` baru (3 test: simpan via period_id + date, error API tampil tanpa sukses palsu, bulan tak dikenal → Save disabled); ketiganya merah di kode lama. Suite **808/808 hijau** (83 files). `tsc` error 40 → 35.
+- **Git workflow:** Branch `fix/innovation-networth-edit-period-id` → PR.
