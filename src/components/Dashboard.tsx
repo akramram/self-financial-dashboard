@@ -40,6 +40,7 @@ import SavingsRateChart from './SavingsRateChart';
 import OutcomeBarChart from './OutcomeBarChart';
 import PeriodVsAverage from './PeriodVsAverage';
 import DailyBudgetIndicator from './DailyBudgetIndicator';
+import SafeToSpend from './SafeToSpend';
 import TopMerchantsMini from './TopMerchantsMini';
 import UpcomingBills from './UpcomingBills';
 import GoalsSnapshot from './GoalsSnapshot';
@@ -403,6 +404,11 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
         {/* ═══════════ SECTION 2: FLOW - "Ke mana duit?" ═══════════ */}
         <InView as="section" delay={0.05} data-section="flow">
           <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-white/50 mb-3">Flow</p>
+
+          {/* Safe to Spend: "berapa boleh dibelanjakan hari ini" (angka utama Flow) */}
+          <div className="mb-4">
+            <SafeToSpend />
+          </div>
 
           {/* Spending Pulse + Safe to Spend merged */}
           <GlassCard className="mb-4">
