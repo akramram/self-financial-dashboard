@@ -444,7 +444,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                     amount: t.amount,
                     type: t.type,
                     category: t.category,
-                    paid: t.done,
+                    paid: Boolean(t.done),
                     notes: t.notes || '',
                     period: periodIdToMonth.get(t.period_id) || '',
                   }));

@@ -13,7 +13,8 @@ export interface Transaction {
   currency: string;
   type: 'cash' | 'credit_expense' | 'credit_payment';
   payment_method: string;
-  done: boolean;
+  /** SQLite stores 0/1 and the API returns it as-is; older JSON fixtures use booleans. Test with truthiness. */
+  done: boolean | 0 | 1;
   created_time: string;
   notes?: string;
 }
