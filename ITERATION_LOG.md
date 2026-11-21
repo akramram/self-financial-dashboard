@@ -3109,3 +3109,12 @@ Audit KUR-59/FIN-015+016: foundation shadcn + migrasi tabel & form ternyata suda
 - **Catatan audit:** `deleteNetworthApi` tidak dipakai komponen mana pun. Sisa helper tanpa cek status: kelompok transaksi (perlu penanganan 409 duplikat per caller).
 - **Testing:** `recurring-kickoff-errors.test.tsx` (3 test: create 400, update/delete 404, modal kickoff menampilkan alasan 409). Suite hijau penuh.
 - **Git workflow:** Branch `fix/innovation-recurring-kickoff-errors` → PR.
+
+## 2026-11-22 — Marathon Iteration: Revert & toast gagal di tabel transaksi akhirnya hidup
+
+### Hasil
+- **Temuan:** `TransactionTable` dan `Dashboard` sudah menulis jalur gagal lengkap untuk toggle Paid/Unpaid, edit, hapus, dan aksi massal (revert optimistic update + `toast.error`). Namun 5 helper (`updateTransactionApi`, `toggleTransactionDoneApi`, `deleteTransactionApi`, `deleteTransactionsBulkApi`, `updateTransactionsBulkApi`) tidak pernah melempar → saat server gagal, UI tetap menampilkan "Marked as paid"/"Transaction updated" dan state lokal tidak di-revert (data kembali setelah reload).
+- **Fix:** kelima helper memakai `assertOk()`; jalur revert/toast yang sudah ada kini benar-benar jalan. `createTransaction` / `repeatTransactionApi` sengaja tidak diubah (pemanggil membaca body 409 duplikat).
+- **Audit `res.ok` selesai** untuk helper mutasi yang dipakai UI (kategori, income, networth, goals, investasi, recurring, kickoff, transaksi). `deleteNetworthApi` tidak dipakai.
+- **Testing:** `transaction-api-errors.test.tsx` (2 test: sukses resolve + bulk tetap mengembalikan body; 404/400/500 reject dengan alasan server). Suite **819/819 hijau** (87 files).
+- **Git workflow:** Branch `fix/innovation-transaction-api-errors` → PR.

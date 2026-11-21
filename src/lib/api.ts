@@ -27,24 +27,29 @@ export async function createTransaction(tx: Omit<Transaction, 'id'>): Promise<Tr
   return res.json();
 }
 
+// Callers (TransactionTable, Dashboard) already revert optimistic UI and toast on
+// rejection; these helpers must actually reject on HTTP errors for that to run.
 export async function updateTransactionApi(id: number, tx: Partial<Transaction>): Promise<void> {
-  await fetch(`/api/transactions/${id}`, {
+  const res = await fetch(`/api/transactions/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(tx),
   });
+  await assertOk(res, 'Update transaksi');
 }
 
 export async function toggleTransactionDoneApi(id: number, done: boolean): Promise<void> {
-  await fetch(`/api/transactions/${id}`, {
+  const res = await fetch(`/api/transactions/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ done }),
   });
+  await assertOk(res, 'Update status bayar');
 }
 
 export async function deleteTransactionApi(id: number): Promise<void> {
-  await fetch(`/api/transactions/${id}`, { method: 'DELETE' });
+  const res = await fetch(`/api/transactions/${id}`, { method: 'DELETE' });
+  await assertOk(res, 'Hapus transaksi');
 }
 
 export async function convertToInstallmentApi(
@@ -167,11 +172,12 @@ export async function deleteCategoryApi(id: number): Promise<void> {
 }
 
 export async function deleteTransactionsBulkApi(ids: number[]): Promise<void> {
-  await fetch('/api/transactions', {
+  const res = await fetch('/api/transactions', {
     method: 'DELETE',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ ids }),
   });
+  await assertOk(res, 'Hapus transaksi massal');
 }
 
 export async function updateTransactionsBulkApi(ids: number[], updates: Partial<Transaction>): Promise<{ updated: number }> {
@@ -180,6 +186,7 @@ export async function updateTransactionsBulkApi(ids: number[], updates: Partial<
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ ids, updates }),
   });
+  await assertOk(res, 'Update transaksi massal');
   return res.json();
 }
 
