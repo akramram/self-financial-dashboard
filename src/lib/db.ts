@@ -3621,6 +3621,8 @@ export interface BudgetPacePeriodOption {
 
 export interface BudgetPaceResult {
   period_id: number;
+  /** True when no period covers today (gap between salary day and kickoff) and the latest started period is shown instead. */
+  is_fallback_period?: boolean;
   period_label: string;
   start_date: string;
   end_date: string;
@@ -3648,11 +3650,16 @@ export interface BudgetPaceResult {
 
 export function getBudgetPace(periodId?: number): BudgetPaceResult {
   // Resolve period
+  const activePeriod = getActivePeriod();
+  // Gap between salary day and month kickoff: no period covers today yet.
+  // Fall back to the most recent period that has already started instead of an empty result.
+  const fallbackPeriod = !periodId && !activePeriod
+    ? (db.prepare(`SELECT * FROM periods WHERE start_date <= date('now', 'localtime') ORDER BY start_date DESC LIMIT 1`).get() as any)
+    : null;
   const period = periodId
     ? (db.prepare('SELECT * FROM periods WHERE id = ?').get(periodId) as any)
-    : getActivePeriod();
+    : (activePeriod ?? fallbackPeriod);
 
-  const activePeriod = getActivePeriod();
   const available_periods: BudgetPacePeriodOption[] = db.prepare(`
     SELECT id, month, start_date, end_date
     FROM periods
@@ -3881,6 +3888,7 @@ export function getBudgetPace(periodId?: number): BudgetPaceResult {
 
   return {
     period_id: period.id,
+    is_fallback_period: !periodId && !activePeriod,
     period_label: period.month,
     start_date: period.start_date,
     end_date: period.end_date,

@@ -176,6 +176,27 @@ describe('BudgetPace UI Component', () => {
     expect(screen.getByText('Transport')).toBeInTheDocument();
   });
 
+  it('shows fallback-period notice when no period covers today', async () => {
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ ...mockPaceResult, is_fallback_period: true }),
+    });
+    render(<BudgetPace />);
+    await waitFor(() => {
+      expect(screen.getByRole('status')).toHaveTextContent(/Belum ada periode aktif/);
+    });
+    expect(screen.getByRole('status')).toHaveTextContent(/November 2026/);
+    expect(screen.queryByText(/Belum Ada Limit Anggaran/)).not.toBeInTheDocument();
+  });
+
+  it('hides fallback notice for an active period', async () => {
+    render(<BudgetPace />);
+    await waitFor(() => {
+      expect(screen.getByText('Budget Pace & Burn-Rate Intelligence')).toBeInTheDocument();
+    });
+    expect(screen.queryByText(/Belum ada periode aktif/)).not.toBeInTheDocument();
+  });
+
   it('filters category cards by search query and status pills', async () => {
     render(<BudgetPace />);
 
