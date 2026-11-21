@@ -806,7 +806,8 @@ export default function GoalsTracker({ networth }: Props) {
                     className={`w-8 h-8 rounded-full transition-all ${
                       form.color === color ? 'ring-2 ring-offset-2 ring-offset-background scale-110' : 'hover:scale-105'
                     }`}
-                    style={{ backgroundColor: color, ringColor: color }}
+                    // `ringColor` is not CSS; Tailwind's ring reads --tw-ring-color.
+                    style={{ backgroundColor: color, '--tw-ring-color': color } as React.CSSProperties}
                     title={color}
                   />
                 ))}
