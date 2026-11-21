@@ -3034,3 +3034,14 @@ Audit KUR-59/FIN-015+016: foundation shadcn + migrasi tabel & form ternyata suda
 - **Bug ditemukan & dipatch saat verifikasi:** label Sept/Nov/Apr identik di ID/EN sehingga no-op rewrite mengembangkan hitungan fixed (11 padahal detektor 0). Patch: skip bila label hasil terjemahan sama dengan label kini (PR #381).
 - **Antislop:** Dual-theme WCAG AA (tombol emerald punya pasangan dark), copy tanpa em-dash, tanpa dependensi baru.
 - **Git workflow:** Branch `feat/innovation-data-health-autofix` → PR #380 merged; follow-up `fix/innovation-autofix-month-noop` → PR #381 merged. Full clean rebuild + PM2 ecosystem restart, CSS hash live resolve 200.
+
+## 2026-11-21 — Daily Innovation: Safe-to-Spend Card Hidup di Dashboard
+
+### Hasil
+- **Komponen yatim dihidupkan:** `SafeToSpend.tsx` (209 baris) sudah ada sejak lama tapi tidak pernah diimpor di mana pun — JSX-nya cacat (prop `className` duplikat di elemen root, struktur div tidak seimbang) sehingga mustahil dikompilasi. Diperbaiki dan dipasang sebagai **kartu pertama section Flow** di Dashboard: jawaban pertanyaan harian "berapa boleh dibelanjakan hari ini" dari API `/api/safe-to-spend` yang sudah ada.
+- **Isi kartu:** angka utama `daily_safe_to_spend` per hari + badge status (Sehat/Hemat/Over Budget), progress "Hari ini" vs batas aman dengan sisa/over, hari tersisa, rata-rata 7 hari, dan bar sisa budget periode dengan persentase waktu terpakai.
+- **State siklus gaji (bug UX ditemukan saat verifikasi):** tiap tanggal 21 sebelum kickoff, tidak ada periode DB yang mencakup hari ini dan API lama mengembalikan 404 generik sehingga kartu error. Kini API mengembalikan kode `no_active_period` dan kartu merendernya sebagai **empty state netral** dengan nudge kickoff (bukan pesan gagal).
+- **Antislop:** loading skeleton, error + tombol retry, empty state lengkap (R-27); kontras dark-mode dinaikkan dari slate-500 ke slate-400 (computed: dark rgb(148,163,184) di atas rgba(20,26,52), light rgb(71,85,105) di atas putih, keduanya WCAG AA); copy tanpa em-dash; tanpa dependensi baru.
+- **Testing:** `safe-to-spend.test.tsx` 4 test (render healthy + angka, status over, empty state no_active_period, error + retry refetch). Total suite 797/798 hijau (1 gagal = `budget-pace-burn-rate.test.tsx`, pre-existing di main, tergantung DB live).
+- **Verifikasi nyata:** clean rebuild + PM2 restart, CSS hash live 200; island ter-hydrate di browser dengan sesi, empty state tampil sesuai kondisi nyata hari ini (21 Nov, kickoff Desember belum jalan); API `?period_id=` mengembalikan angka benar untuk periode November live (status over, sisa -9.580.993).
+- **Git workflow:** Branch `feat/innovation-safe-to-spend-card` → PR #383 merged ke `main`.
