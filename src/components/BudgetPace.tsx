@@ -606,6 +606,22 @@ export default function BudgetPace() {
         )}
       </div>
 
+      {data.is_fallback_period && (
+        <div
+          role="status"
+          className="glass-card p-4 flex items-start gap-3 border-l-4 border-l-sky-500"
+        >
+          <Info className="h-4 w-4 mt-0.5 shrink-0 text-sky-600 dark:text-sky-400" />
+          <p className="text-sm text-slate-700 dark:text-slate-200">
+            Belum ada periode aktif untuk hari ini. Menampilkan periode terakhir ({data.period_label}).{' '}
+            <a href="/" className="font-medium text-sky-700 dark:text-sky-400 underline">
+              Jalankan kickoff bulan baru di Dashboard
+            </a>{' '}
+            untuk memulai periode berikutnya.
+          </p>
+        </div>
+      )}
+
       {/* KPI Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Card 1: Status & Waktu Siklus */}

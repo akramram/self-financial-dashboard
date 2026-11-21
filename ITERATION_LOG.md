@@ -3045,3 +3045,12 @@ Audit KUR-59/FIN-015+016: foundation shadcn + migrasi tabel & form ternyata suda
 - **Testing:** `safe-to-spend.test.tsx` 4 test (render healthy + angka, status over, empty state no_active_period, error + retry refetch). Total suite 797/798 hijau (1 gagal = `budget-pace-burn-rate.test.tsx`, pre-existing di main, tergantung DB live).
 - **Verifikasi nyata:** clean rebuild + PM2 restart, CSS hash live 200; island ter-hydrate di browser dengan sesi, empty state tampil sesuai kondisi nyata hari ini (21 Nov, kickoff Desember belum jalan); API `?period_id=` mengembalikan angka benar untuk periode November live (status over, sisa -9.580.993).
 - **Git workflow:** Branch `feat/innovation-safe-to-spend-card` → PR #383 merged ke `main`.
+
+## 2026-11-22 — Marathon Iteration: Budget Pace di Jeda Periode (fallback periode terakhir)
+
+### Hasil
+- **Bug:** di jeda antara hari gajian (21) dan kickoff bulan baru, `getBudgetPace()` tanpa `period_id` mengembalikan hasil kosong (`period_id: 0`, `total_budget: 0`) sehingga `/budget-pace` salah menampilkan "Belum Ada Limit Anggaran Ditetapkan" dan selector periode hilang. Test `budget-pace-burn-rate.test.tsx` (yang gagal sejak 21 Nov) ternyata menangkap bug nyata ini, bukan flaky.
+- **Fix:** bila tidak ada periode aktif, fallback ke periode terakhir yang sudah dimulai (`start_date <= today`); hasil diberi flag opsional `is_fallback_period` (aditif, API tetap kompatibel).
+- **UI:** banner status sky di atas KPI: "Belum ada periode aktif untuk hari ini. Menampilkan periode terakhir (X)" + tautan kickoff ke Dashboard. Pasangan warna light/dark (slate-700/slate-200, sky-700/sky-400), copy tanpa em-dash.
+- **Testing:** +2 test UI (banner muncul saat fallback, tersembunyi saat periode aktif). Suite **800/800 hijau** (81 files).
+- **Git workflow:** Branch `fix/innovation-budget-pace-period-gap` → PR.
