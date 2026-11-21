@@ -191,24 +191,39 @@ export async function fetchMonthlyIncome(): Promise<MonthlyIncome[]> {
   return res.json();
 }
 
-export async function upsertMonthlyIncomeApi(record: Omit<MonthlyIncome, 'other_income'> & { other_income?: number }): Promise<void> {
-  await fetch('/api/income', {
+async function assertOk(res: Response, action: string): Promise<void> {
+  if (res.ok) return;
+  let detail = '';
+  try {
+    const body: unknown = await res.json();
+    if (body && typeof body === 'object' && 'error' in body && typeof body.error === 'string') detail = body.error;
+  } catch {
+    /* non-JSON error body */
+  }
+  throw new Error(`${action} gagal (${res.status})${detail ? `: ${detail}` : ''}`);
+}
+
+export async function upsertMonthlyIncomeApi(record: Omit<MonthlyIncome, 'other_income' | 'period_id'> & { other_income?: number }): Promise<void> {
+  const res = await fetch('/api/income', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(record),
   });
+  await assertOk(res, 'Simpan income');
 }
 
 export async function updateMonthlyIncomeApi(periodId: number, record: Partial<MonthlyIncome>): Promise<void> {
-  await fetch(`/api/income/${periodId}`, {
+  const res = await fetch(`/api/income/${periodId}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(record),
   });
+  await assertOk(res, 'Update income');
 }
 
 export async function deleteMonthlyIncomeApi(periodId: number): Promise<void> {
-  await fetch(`/api/income/${periodId}`, { method: 'DELETE' });
+  const res = await fetch(`/api/income/${periodId}`, { method: 'DELETE' });
+  await assertOk(res, 'Hapus income');
 }
 
 export interface RecurringTransaction {

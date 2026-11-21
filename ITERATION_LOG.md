@@ -3064,3 +3064,12 @@ Audit KUR-59/FIN-015+016: foundation shadcn + migrasi tabel & form ternyata suda
 - **`CollapsibleSection`:** atribut `className` duplikat membuat `glass-card p-5` tertimpa; digabung. (Komponen belum dipakai di halaman mana pun; dicegah jadi jebakan.)
 - **Testing:** +1 test komponen (header Title/Amount punya label, klik tidak throw) + `api-fetch-transactions.test.ts` (2 test). Kedua test regresi terbukti **merah di kode lama**, hijau setelah fix. Suite **803/803 hijau** (82 files).
 - **Git workflow:** Branch `fix/innovation-typecheck-real-bugs` → PR.
+
+## 2026-11-22 — Marathon Iteration: Settings › Monthly Income edit/hapus benar-benar tersimpan
+
+### Hasil
+- **Bug (ditemukan dari `tsc`):** `IncomeSettings` memanggil `updateMonthlyIncomeApi`/`deleteMonthlyIncomeApi` dengan **label bulan** ("November 2026") padahal route `/api/income/:id` mem-`parseInt` id → 400 "Invalid period_id". Karena UI update optimistik dan helper tidak cek `res.ok`, edit/hapus terlihat sukses lalu kembali setelah reload. Test lama bahkan mengunci perilaku salah (`toHaveBeenCalledWith('August 2026', …)`).
+- **Fix:** baris dikunci dengan `period_id` (edit + hapus, tabel dan kartu mobile); PUT mengirim `date` baris sendiri (route default ke hari ini bila kosong, menggeser urutan); tambah baris → refetch agar baris baru punya `period_id`; helper income `assertOk()` melempar error berisi pesan server; komponen menampilkan `toast.error` dan form tetap terbuka untuk retry, `toast.success` saat berhasil.
+- **Testing:** test edit diperbaiki (period_id 37 + date), +test hapus kirim period_id, +test gagal API → toast error & form tetap terbuka. Ketiganya merah di kode lama. Suite **805/805 hijau** (82 files).
+- **Antislop:** tidak ada perubahan visual selain toast sonner yang sudah dipakai global.
+- **Git workflow:** Branch `fix/innovation-income-settings-period-id` → PR.

@@ -15,6 +15,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Wallet, PlusCircle } from 'lucide-react';
+import { toast } from 'sonner';
 
 const MONTH_OPTIONS = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -25,7 +26,8 @@ export default function IncomeSettings() {
   const { confirm: confirmAction } = useConfirm();
   const [incomes, setIncomes] = useState<MonthlyIncome[]>([]);
   const [loading, setLoading] = useState(true);
-  const [editingMonth, setEditingMonth] = useState<string | null>(null);
+  // Income rows are keyed by period_id (the /api/income/:id route expects a numeric id).
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [editForm, setEditForm] = useState<Partial<MonthlyIncome>>({});
 
   const [newMonth, setNewMonth] = useState('January');
@@ -47,42 +49,49 @@ export default function IncomeSettings() {
   }, [incomes]);
 
   const startEdit = (row: MonthlyIncome) => {
-    setEditingMonth(row.month);
+    setEditingId(row.period_id);
     setEditForm({ ...row });
   };
 
   const cancelEdit = () => {
-    setEditingMonth(null);
+    setEditingId(null);
     setEditForm({});
   };
 
   const saveEdit = async () => {
-    if (!editingMonth || editForm.income == null) return;
-    await updateMonthlyIncomeApi(editingMonth, {
-      income: Number(editForm.income),
-      other_income: Number(editForm.other_income ?? 0),
-    });
+    if (editingId == null || editForm.income == null) return;
+    const income = Number(editForm.income);
+    const other_income = Number(editForm.other_income ?? 0);
+    try {
+      // Send the row's own date: the PUT route defaults a missing date to today.
+      await updateMonthlyIncomeApi(editingId, { income, other_income, date: editForm.date });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Update income gagal');
+      return;
+    }
     setIncomes((prev) =>
-      prev.map((i) =>
-        i.month === editingMonth
-          ? { ...i, income: Number(editForm.income), other_income: Number(editForm.other_income ?? 0) }
-          : i
-      )
+      prev.map((i) => (i.period_id === editingId ? { ...i, income, other_income } : i))
     );
-    setEditingMonth(null);
+    setEditingId(null);
     setEditForm({});
+    toast.success('Income diperbarui');
   };
 
-  const handleDelete = async (month: string) => {
+  const handleDelete = async (row: MonthlyIncome) => {
     const confirmed = await confirmAction({
       title: 'Delete Income Entry',
-      description: `Delete income entry for ${month}?`,
+      description: `Delete income entry for ${row.month}?`,
       confirmLabel: 'Delete',
       variant: 'destructive',
     });
     if (!confirmed) return;
-    await deleteMonthlyIncomeApi(month);
-    setIncomes((prev) => prev.filter((i) => i.month !== month));
+    try {
+      await deleteMonthlyIncomeApi(row.period_id);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Hapus income gagal');
+      return;
+    }
+    setIncomes((prev) => prev.filter((i) => i.period_id !== row.period_id));
   };
 
   const handleAdd = async (e: React.FormEvent) => {
@@ -93,17 +102,20 @@ export default function IncomeSettings() {
     const incomeVal = Number(newIncome);
     if (!newIncome || isNaN(incomeVal)) return;
 
-    await upsertMonthlyIncomeApi({
-      month: monthName,
-      date,
-      income: incomeVal,
-      other_income: Number(newOtherIncome || 0),
-    });
-
-    setIncomes((prev) => {
-      const filtered = prev.filter((i) => i.month !== monthName);
-      return [...filtered, { month: monthName, date, income: incomeVal, other_income: Number(newOtherIncome || 0) }];
-    });
+    try {
+      await upsertMonthlyIncomeApi({
+        month: monthName,
+        date,
+        income: incomeVal,
+        other_income: Number(newOtherIncome || 0),
+      });
+      // Refetch so the new row carries the server-resolved period_id (needed for edit/delete).
+      setIncomes(await fetchMonthlyIncome());
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Simpan income gagal');
+      return;
+    }
+    toast.success(`Income ${monthName} disimpan`);
 
     setNewMonth('January');
     setNewYear(new Date().getFullYear());
@@ -201,7 +213,7 @@ export default function IncomeSettings() {
             </TableHeader>
             <TableBody>
               {sortedIncomes.map((row) => {
-                const isEditing = editingMonth === row.month;
+                const isEditing = editingId === row.period_id;
                 const total = (row.income || 0) + (row.other_income || 0);
 
                 if (isEditing) {
@@ -269,7 +281,7 @@ export default function IncomeSettings() {
                           variant="ghost"
                           size="sm"
                           className="h-7 px-2.5 text-xs text-red-600 dark:text-red-400 hover:text-red-700 hover:bg-red-500/10"
-                          onClick={() => handleDelete(row.month)}
+                          onClick={() => handleDelete(row)}
                         >
                           Delete
                         </Button>
@@ -293,7 +305,7 @@ export default function IncomeSettings() {
           </div>
         ) : (
           sortedIncomes.map((row) => {
-            const isEditing = editingMonth === row.month;
+            const isEditing = editingId === row.period_id;
             const total = (row.income || 0) + (row.other_income || 0);
 
             if (isEditing) {
@@ -349,7 +361,7 @@ export default function IncomeSettings() {
                     Edit
                   </button>
                   <button
-                    onClick={() => handleDelete(row.month)}
+                    onClick={() => handleDelete(row)}
                     className="h-8 px-3 rounded-lg text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-500/10 transition-colors"
                   >
                     Delete
