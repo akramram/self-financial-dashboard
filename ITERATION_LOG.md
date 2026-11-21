@@ -3054,3 +3054,13 @@ Audit KUR-59/FIN-015+016: foundation shadcn + migrasi tabel & form ternyata suda
 - **UI:** banner status sky di atas KPI: "Belum ada periode aktif untuk hari ini. Menampilkan periode terakhir (X)" + tautan kickoff ke Dashboard. Pasangan warna light/dark (slate-700/slate-200, sky-700/sky-400), copy tanpa em-dash.
 - **Testing:** +2 test UI (banner muncul saat fallback, tersembunyi saat periode aktif). Suite **800/800 hijau** (81 files).
 - **Git workflow:** Branch `fix/innovation-budget-pace-period-gap` → PR.
+
+## 2026-11-22 — Marathon Iteration: 3 Bug Nyata dari `tsc --noEmit` (Credit Card sort, Analytics drill-down, CollapsibleSection)
+
+### Hasil
+- **Metode:** `npx tsc --noEmit` (49 error) dipilah: error tipe Chart.js/kosmetik dibiarkan, error yang menandakan perilaku salah di runtime diperbaiki. Sisa 40 error (tipe opsi Chart.js, mock test, `Locals.user`).
+- **`/credit-card` — header tabel kosong & sort crash:** `CreditCardTracker` memanggil `SortableHeader` dengan props lama (`label`/`toggleSort`/`isSorted`/`align`) padahal komponen menerima `children`/`onSort`/`currentDirection`/`className`. Akibatnya 7 header kolom (2 tabel) tampil tanpa label dan klik header memanggil `onSort` undefined (TypeError). Diperbaiki ke API yang benar; `align="right"` → `className="text-right"`.
+- **`/analytics` — drill-down kategori salah periode:** `fetchTransactions({ month, category })` membuang `month` (tidak ada di tipe/param) sehingga dialog "Transactions for X in <bulan>" menampilkan transaksi kategori itu **sepanjang masa**. Kini `month` diteruskan (API server sudah resolve `month` → `period_id`); `period_id` tetap diprioritaskan bila keduanya ada.
+- **`CollapsibleSection`:** atribut `className` duplikat membuat `glass-card p-5` tertimpa; digabung. (Komponen belum dipakai di halaman mana pun; dicegah jadi jebakan.)
+- **Testing:** +1 test komponen (header Title/Amount punya label, klik tidak throw) + `api-fetch-transactions.test.ts` (2 test). Kedua test regresi terbukti **merah di kode lama**, hijau setelah fix. Suite **803/803 hijau** (82 files).
+- **Git workflow:** Branch `fix/innovation-typecheck-real-bugs` → PR.

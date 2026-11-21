@@ -716,10 +716,10 @@ export default function CreditCardTracker() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <SortableHeader label="Title" sortKey="title" toggleSort={toggleSort} isSorted={isSorted} />
-                  <SortableHeader label="Category" sortKey="category" toggleSort={toggleSort} isSorted={isSorted} />
-                  <SortableHeader label="Amount" sortKey="amount" toggleSort={toggleSort} isSorted={isSorted} align="right" />
-                  <SortableHeader label="Payment Method" sortKey="payment_method" toggleSort={toggleSort} isSorted={isSorted} />
+                  <SortableHeader sortKey="title" currentDirection={isSorted('title')} onSort={toggleSort}>Title</SortableHeader>
+                  <SortableHeader sortKey="category" currentDirection={isSorted('category')} onSort={toggleSort}>Category</SortableHeader>
+                  <SortableHeader sortKey="amount" currentDirection={isSorted('amount')} onSort={toggleSort} className="text-right">Amount</SortableHeader>
+                  <SortableHeader sortKey="payment_method" currentDirection={isSorted('payment_method')} onSort={toggleSort}>Payment Method</SortableHeader>
                   <TableHead className="w-[100px]">Status</TableHead>
                   <TableHead className="w-[110px] text-right">Action</TableHead>
                 </TableRow>
@@ -796,9 +796,9 @@ export default function CreditCardTracker() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <SortableHeader label="Title" sortKey="title" toggleSort={toggleSort} isSorted={isSorted} />
-                  <SortableHeader label="Amount" sortKey="amount" toggleSort={toggleSort} isSorted={isSorted} align="right" />
-                  <SortableHeader label="Date" sortKey="date" toggleSort={toggleSort} isSorted={isSorted} />
+                  <SortableHeader sortKey="title" currentDirection={isSorted('title')} onSort={toggleSort}>Title</SortableHeader>
+                  <SortableHeader sortKey="amount" currentDirection={isSorted('amount')} onSort={toggleSort} className="text-right">Amount</SortableHeader>
+                  <SortableHeader sortKey="date" currentDirection={isSorted('date')} onSort={toggleSort}>Date</SortableHeader>
                 </TableRow>
               </TableHeader>
               <TableBody>
