@@ -147,19 +147,23 @@ export async function createCategory(cat: Omit<Category, 'id' | 'created_at'>): 
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(cat),
   });
+  // 409 "Category already exists" used to look like success (form closed, nothing added).
+  await assertOk(res, 'Tambah kategori');
   return res.json();
 }
 
 export async function updateCategoryApi(id: number, cat: Partial<Omit<Category, 'id' | 'created_at'>>): Promise<void> {
-  await fetch(`/api/categories/${id}`, {
+  const res = await fetch(`/api/categories/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(cat),
   });
+  await assertOk(res, 'Update kategori');
 }
 
 export async function deleteCategoryApi(id: number): Promise<void> {
-  await fetch(`/api/categories/${id}`, { method: 'DELETE' });
+  const res = await fetch(`/api/categories/${id}`, { method: 'DELETE' });
+  await assertOk(res, 'Hapus kategori');
 }
 
 export async function deleteTransactionsBulkApi(ids: number[]): Promise<void> {

@@ -3081,3 +3081,13 @@ Audit KUR-59/FIN-015+016: foundation shadcn + migrasi tabel & form ternyata suda
 - **Fix:** form menyimpan `period_id` + `date` baris saat load; Save memakai `period_id` dan tanggal asli; `updateNetworthApi` melempar error berpesan server (`assertOk`); error tampil sebagai alert merah (light/dark: red-700/red-300); tombol Save disabled saat menyimpan atau bila bulan tidak punya data networth (pesan "Data networth untuk X tidak ditemukan.").
 - **Testing:** `networth-edit-form.test.tsx` baru (3 test: simpan via period_id + date, error API tampil tanpa sukses palsu, bulan tak dikenal → Save disabled); ketiganya merah di kode lama. Suite **808/808 hijau** (83 files). `tsc` error 40 → 35.
 - **Git workflow:** Branch `fix/innovation-networth-edit-period-id` → PR.
+
+## 2026-11-22 — Marathon Iteration: Settings › Categories menampilkan error server (duplikat tidak lagi "sukses palsu")
+
+### Hasil
+- **Audit:** dari 28 helper mutasi di `src/lib/api.ts`, mayoritas tidak memeriksa `res.ok`. Dipilih cakupan sempit yang komponennya sudah siap menampilkan error: `CategorySettings` sudah `try/catch → setError`, tapi helper tak pernah melempar.
+- **Bug:** tambah kategori dengan nama yang sudah ada → `POST /api/categories` 409 "Category already exists", namun form tertutup seolah berhasil (tidak ada yang ditambahkan). Rename ke nama yang dipakai kategori lain (409) juga diam-diam batal.
+- **Fix:** `createCategory` / `updateCategoryApi` / `deleteCategoryApi` memakai `assertOk()` (pesan: "Tambah kategori gagal (409): Category already exists"); pesan tampil lewat banner error yang sudah ada di komponen.
+- **Sisa (dicatat, belum diubah):** helper transaksi/recurring/goal/investment/bulk juga belum cek `res.ok`; `createTransaction` sengaja membaca body 409 duplikat, jadi perlu per-caller, bukan perubahan massal.
+- **Testing:** `api-category-errors.test.ts` (4 test: 409 create, 201 create, 409 rename, 500 non-JSON delete). Suite **812/812 hijau** (84 files).
+- **Git workflow:** Branch `fix/innovation-category-api-errors` → PR.
