@@ -40,7 +40,9 @@ export default function MonthKickoffModal({ open, onOpenChange, nextMonth, recur
           message: `${nextMonth} started! Salary: ${formatIdr(res.salary)}. ${res.preloaded} recurring transaction${res.preloaded !== 1 ? 's' : ''} preloaded.`,
         });
       } else {
-        setResult({ success: false, message: 'Failed to start new month.' });
+        // Surface the server's reason (e.g. month already exists) instead of a generic line.
+        const reason = (res as { error?: unknown }).error;
+        setResult({ success: false, message: typeof reason === 'string' && reason ? reason : 'Failed to start new month.' });
       }
     } catch (e: any) {
       setResult({ success: false, message: e.message || 'An error occurred.' });

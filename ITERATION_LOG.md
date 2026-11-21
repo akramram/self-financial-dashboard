@@ -3100,3 +3100,12 @@ Audit KUR-59/FIN-015+016: foundation shadcn + migrasi tabel & form ternyata suda
 - **Sisa audit:** transaksi (create/update/toggle/delete/bulk/repeat/installment), recurring, kickoff, deleteNetworth — butuh penanganan per-caller (mis. 409 duplikat transaksi dibaca sebagai body).
 - **Testing:** `api-goals-investments-errors.test.ts` (2 test: 2xx resolve, 4xx/5xx/non-JSON reject berpesan). Suite **814/814 hijau** (85 files).
 - **Git workflow:** Branch `fix/innovation-goals-investments-api-errors` → PR.
+
+## 2026-11-22 — Marathon Iteration: Recurring & Kickoff menampilkan alasan gagal dari server
+
+### Hasil
+- **Recurring:** `createRecurringTransaction` / `updateRecurringTransactionApi` / `deleteRecurringTransactionApi` mengabaikan status HTTP, padahal `RecurringManager` sudah `try/catch → setError`. Validasi server (400 "Amount must be…", 404) sebelumnya terlihat seperti sukses. Kini `assertOk()`.
+- **Kickoff bulan baru:** `MonthKickoffModal` hanya menampilkan "Failed to start new month." untuk semua kegagalan; server mengirim alasan (mis. 409 "Month already kicked off (income record exists)", 400 "Month is required") → kini alasan server ditampilkan.
+- **Catatan audit:** `deleteNetworthApi` tidak dipakai komponen mana pun. Sisa helper tanpa cek status: kelompok transaksi (perlu penanganan 409 duplikat per caller).
+- **Testing:** `recurring-kickoff-errors.test.tsx` (3 test: create 400, update/delete 404, modal kickoff menampilkan alasan 409). Suite hijau penuh.
+- **Git workflow:** Branch `fix/innovation-recurring-kickoff-errors` → PR.
