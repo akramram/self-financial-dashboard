@@ -1,9 +1,11 @@
 import type { Transaction, NetworthRecord, MonthlySummary, Category, Investment, PortfolioSummary } from './data';
 import { getActivePeriod } from './utils';
 
-export async function fetchTransactions(filters?: { periodId?: number; type?: string; search?: string; category?: string }): Promise<Transaction[]> {
+export async function fetchTransactions(filters?: { periodId?: number; month?: string; type?: string; search?: string; category?: string }): Promise<Transaction[]> {
   const params = new URLSearchParams();
   if (filters?.periodId) params.set('period_id', String(filters.periodId));
+  // `month` (period label) is resolved to a period server-side; ignored when periodId is set.
+  else if (filters?.month) params.set('month', filters.month);
   if (filters?.type) params.set('type', filters.type);
   if (filters?.search) params.set('search', filters.search);
   if (filters?.category) params.set('category', filters.category);

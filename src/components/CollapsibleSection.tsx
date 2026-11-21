@@ -25,7 +25,7 @@ export default function CollapsibleSection({
   badge,
 }: Props) {
   return (
-    <div className="glass-card p-5" className={className}>
+    <div className={`glass-card p-5 ${className}`}>
       <div className="flex items-center justify-between">
           <button
             type="button"

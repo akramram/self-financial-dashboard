@@ -155,6 +155,18 @@ describe('CreditCardTracker with Installments', () => {
     });
   });
 
+  it('renders sortable column headers with labels and sorts on click', async () => {
+    render(<CreditCardTracker />);
+    await waitFor(() => {
+      expect(screen.getByText('Belanja Uniqlo')).toBeInTheDocument();
+    });
+    // Regression: headers were rendered empty (wrong SortableHeader props) and clicking threw.
+    const titleHeaders = screen.getAllByRole('columnheader', { name: /^Title/ });
+    expect(titleHeaders.length).toBeGreaterThan(0);
+    expect(screen.getAllByRole('columnheader', { name: /^Amount/ }).length).toBeGreaterThan(0);
+    expect(() => fireEvent.click(titleHeaders[0])).not.toThrow();
+  });
+
   it('renders empty state when no active installments are present', async () => {
     vi.mocked(fetchRecurringTransactions).mockResolvedValue([]);
 
