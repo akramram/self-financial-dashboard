@@ -3091,3 +3091,12 @@ Audit KUR-59/FIN-015+016: foundation shadcn + migrasi tabel & form ternyata suda
 - **Sisa (dicatat, belum diubah):** helper transaksi/recurring/goal/investment/bulk juga belum cek `res.ok`; `createTransaction` sengaja membaca body 409 duplikat, jadi perlu per-caller, bukan perubahan massal.
 - **Testing:** `api-category-errors.test.ts` (4 test: 409 create, 201 create, 409 rename, 500 non-JSON delete). Suite **812/812 hijau** (84 files).
 - **Git workflow:** Branch `fix/innovation-category-api-errors` → PR.
+
+## 2026-11-22 — Marathon Iteration: Goals & Portfolio update/hapus tidak lagi gagal diam-diam
+
+### Hasil
+- **Lanjutan audit `res.ok`:** `createGoalApi`/`createInvestmentApi` sudah melempar error, tetapi `updateGoalApi`, `deleteGoalApi`, `updateInvestmentApi`, `deleteInvestmentApi` mengabaikan status HTTP. Semua pemanggil (`GoalsTracker`, `PortfolioTracker`, `PortfolioHub`) sudah membungkus dengan try/catch, jadi kegagalan server (404/400/500) sebelumnya dianggap sukses dan alur lanjut (refetch/close) seolah tersimpan.
+- **Fix:** keempat helper memakai `assertOk()` (pesan "Update goal gagal (404): Goal not found"). `GoalsTracker` hapus/toggle/kontribusi sebelumnya hanya `console.error` → kini juga `toast.error` (sonner global). Portfolio sudah punya `setError`.
+- **Sisa audit:** transaksi (create/update/toggle/delete/bulk/repeat/installment), recurring, kickoff, deleteNetworth — butuh penanganan per-caller (mis. 409 duplikat transaksi dibaca sebagai body).
+- **Testing:** `api-goals-investments-errors.test.ts` (2 test: 2xx resolve, 4xx/5xx/non-JSON reject berpesan). Suite **814/814 hijau** (85 files).
+- **Git workflow:** Branch `fix/innovation-goals-investments-api-errors` → PR.
