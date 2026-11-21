@@ -257,19 +257,22 @@ export async function createRecurringTransaction(tx: Omit<RecurringTransaction, 
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(tx),
   });
+  await assertOk(res, 'Tambah recurring');
   return res.json();
 }
 
 export async function updateRecurringTransactionApi(id: number, tx: Partial<Omit<RecurringTransaction, 'id'>> & { goal_id?: number | null }): Promise<void> {
-  await fetch(`/api/recurring/${id}`, {
+  const res = await fetch(`/api/recurring/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(tx),
   });
+  await assertOk(res, 'Update recurring');
 }
 
 export async function deleteRecurringTransactionApi(id: number): Promise<void> {
-  await fetch(`/api/recurring/${id}`, { method: 'DELETE' });
+  const res = await fetch(`/api/recurring/${id}`, { method: 'DELETE' });
+  await assertOk(res, 'Hapus recurring');
 }
 
 export interface KickoffStatus {
