@@ -3118,3 +3118,13 @@ Audit KUR-59/FIN-015+016: foundation shadcn + migrasi tabel & form ternyata suda
 - **Audit `res.ok` selesai** untuk helper mutasi yang dipakai UI (kategori, income, networth, goals, investasi, recurring, kickoff, transaksi). `deleteNetworthApi` tidak dipakai.
 - **Testing:** `transaction-api-errors.test.tsx` (2 test: sukses resolve + bulk tetap mengembalikan body; 404/400/500 reject dengan alasan server). Suite **819/819 hijau** (87 files).
 - **Git workflow:** Branch `fix/innovation-transaction-api-errors` → PR.
+
+## 2026-11-22 — Marathon Iteration: Tooltip catatan transaksi muncul + cincin warna goal benar
+
+### Hasil
+- **Catatan transaksi tak terlihat:** ikon catatan di tabel transaksi (desktop + kartu mobile) memakai `<StickyNote title={row.notes} />`. lucide-react 0.400 meneruskan `title` sebagai **atribut** `<svg>` (diverifikasi di test: atribut ada, elemen `<title>` tidak ada) → browser tidak menampilkan tooltip dan screen reader tidak membacanya. Diganti komponen `NoteIndicator`: tooltip di `<span title>`, ikon `aria-hidden`, teks `sr-only` "Catatan: …".
+- **Cincin warna goal:** swatch warna di form goal memakai `style={{ ringColor }}` — bukan properti CSS, jadi cincin terpilih memakai warna default. Kini `--tw-ring-color` (variabel yang dibaca utility `ring-*` Tailwind).
+- Ditemukan dari sisa `tsc --noEmit` (2 kelas error hilang); sisa error kini Chart.js options, konversi tipe `done`, `Locals.user`, ikon CommandPalette `strokeWidth`.
+- **Testing:** `note-indicator.test.tsx` (2 test: tooltip di wrapper bukan svg, teks sr-only). Suite **821/821 hijau** (88 files).
+- **Antislop:** tanpa perubahan warna/teks selain teks sr-only; kontras tetap.
+- **Git workflow:** Branch `fix/innovation-note-tooltip-ring-color` → PR.

@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import NoteIndicator from './NoteIndicator';
 import type { Transaction, Category } from '../lib/data';
 import { updateTransactionApi, deleteTransactionApi, toggleTransactionDoneApi, repeatTransactionApi, deleteTransactionsBulkApi, updateTransactionsBulkApi, fetchCategories, fetchTransactions } from '../lib/api';
 import { formatIdr } from '../lib/utils';
@@ -8,7 +9,7 @@ import SortableHeader from './SortableHeader';
 import EditTransactionDialog from './EditTransactionDialog';
 import TransactionDetailSheet from './TransactionDetailSheet';
 import ConvertToInstallmentModal from './ConvertToInstallmentModal';
-import { StickyNote, Search, SlidersHorizontal, Download, X, Filter, ChevronDown, ChevronRight, FileJson, FileSpreadsheet, CalendarClock } from 'lucide-react';
+import { Search, SlidersHorizontal, Download, X, Filter, ChevronDown, ChevronRight, FileJson, FileSpreadsheet, CalendarClock } from 'lucide-react';
 import { useConfirm } from './ConfirmDialog';
 import { toast } from 'sonner';
 import { showDeleteUndoToast } from '../lib/undo';
@@ -884,7 +885,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                     <TableCell className="py-2.5">
                       <span className="text-slate-800 dark:text-white/80">{row.title}</span>
                       {row.notes && (
-                        <StickyNote className="inline ml-1.5 align-middle w-3 h-3 text-gold-400 shrink-0" title={row.notes} />
+                        <NoteIndicator notes={row.notes} className="ml-1.5" />
                       )}
                     </TableCell>
                     <TableCell className="py-2.5">
@@ -985,7 +986,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                     <div className="flex items-center gap-1">
                       <p className="text-sm font-medium text-slate-800 dark:text-white/80 truncate">{row.title}</p>
                       {row.notes && (
-                        <StickyNote className="shrink-0 w-3 h-3 text-gold-400" title={row.notes} />
+                        <NoteIndicator notes={row.notes} />
                       )}
                     </div>
                     <p className="text-xs text-slate-500 dark:text-white/40 truncate">
