@@ -61,8 +61,9 @@ export const GET: APIRoute = async ({ url }) => {
   }
 
   if (!period) {
+    // Legitimate state: new salary cycle (21st) before kickoff created its period.
     return new Response(
-      JSON.stringify({ error: 'No active period found' }),
+      JSON.stringify({ error: 'no_active_period' }),
       { status: 404, headers: { 'Content-Type': 'application/json' } }
     );
   }
