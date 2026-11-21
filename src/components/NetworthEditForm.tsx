@@ -9,6 +9,10 @@ import { Badge } from '@/components/ui/badge';
 
 export default function NetworthEditForm() {
   const [month, setMonth] = useState('');
+  // The PUT route is keyed by numeric period_id; keep the row's own date so it is not blanked.
+  const [record, setRecord] = useState<{ periodId: number; date: string } | null>(null);
+  const [error, setError] = useState('');
+  const [saving, setSaving] = useState(false);
   const [breakdown, setBreakdown] = useState<Record<string, number>>({});
   const [message, setMessage] = useState('');
   const [loaded, setLoaded] = useState(false);
@@ -26,6 +30,9 @@ export default function NetworthEditForm() {
       const found = all.find((n) => n.month === m);
       if (found) {
         setBreakdown({ ...found.breakdown });
+        setRecord({ periodId: found.period_id, date: found.date });
+      } else {
+        setError(m ? `Data networth untuk ${m} tidak ditemukan.` : 'Bulan tidak ditentukan.');
       }
       setLoaded(true);
     });
@@ -52,9 +59,19 @@ export default function NetworthEditForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!month) return;
+    if (!month || !record) return;
     const total = Object.values(breakdown).reduce((s, v) => s + v, 0);
-    const result = await updateNetworthApi(month, { month, date: '', total, currency: 'IDR', breakdown });
+    setError('');
+    setSaving(true);
+    let result;
+    try {
+      result = await updateNetworthApi(record.periodId, { month, date: record.date, total, currency: 'IDR', breakdown });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Update networth gagal');
+      return;
+    } finally {
+      setSaving(false);
+    }
     if (result?.milestones?.length) {
       setCelebration({ milestones: result.milestones, next: result.nextMilestone ?? null, total });
     } else {
@@ -84,6 +101,14 @@ export default function NetworthEditForm() {
       
       
         <form onSubmit={handleSubmit} className="space-y-4">
+          {error && (
+            <p
+              role="alert"
+              className="w-full px-3 py-2 rounded-lg text-sm bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-900"
+            >
+              {error}
+            </p>
+          )}
           {message && (
             <Badge variant="outline" className="w-full justify-start px-3 py-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-200 border-emerald-200 dark:border-emerald-800">
               {message}
@@ -142,8 +167,8 @@ export default function NetworthEditForm() {
           </div>
 
           <div className="flex gap-3">
-            <Button type="submit">
-              Save Changes
+            <Button type="submit" disabled={!record || saving}>
+              {saving ? 'Saving...' : 'Save Changes'}
             </Button>
             <Button variant="secondary" asChild>
               <a href="/networth">Cancel</a>
