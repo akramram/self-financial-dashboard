@@ -1,5 +1,14 @@
 # Iteration Log
 
+## 2026-11-22 — Bug Fix: Edit recurring transaction tidak lagi crash server (500 → 400 dengan alasan jelas)
+
+### Hasil
+- **Bug nyata dari log PM2** (22 Nov 07:31 & 07:32): user edit recurring transaction → `PUT /api/recurring/:id` → `TypeError: SQLite3 can only bind numbers, strings, bigints, buffers, and null` → Astro unhandled rejection → 500. Route PUT **tanpa validasi sama sekali** (POST sudah divalidasi penuh; PUT kosong) dan tanpa try/catch.
+- **Kelas trigger:** amount NaN (`Number('1.293.194')` → bind NULL → NOT NULL constraint), nilai objek (mis. `goal_id`), field join seperti `goal_name` ikut ter-bind.
+- **Fix:** `updateRecurringTransaction` kini whitelist kolom updatable (title, category, amount, type, payment_method, done, active, end_date, created_at, goal_id) — field asing dibuang; amount non-finite → error `Amount must be a valid number`; goal_id harus integer/null; NOT NULL constraint ditampilkan sebagai `<kolom> cannot be empty`. Route PUT try/catch → 400 JSON berisi alasan; `assertOk` di client kini menampilkan pesan itu ke user, bukan crash.
+- **Testing:** 3 assertions baru di `recurring-update.test.ts` (NaN amount, goal_id objek, field asing dibuang). Suite **822/822 hijau** (88 files). Build Complete, clean deploy (`rm -rf dist/` → build → restart).
+- **Git workflow:** Branch `fix/innovation-recurring-update-hardening` → PR #395.
+
 ## Sesi 16 Nov 2026: Goals Pace Intelligence Hub (GH PR #375)
 
 ### Ringkasan
