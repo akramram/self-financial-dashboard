@@ -54,6 +54,32 @@ describe('DB — updateRecurringTransaction and updateGoal boolean binding', () 
     expect(updatedRow.active).toBe(1);
   });
 
+  it('rejects non-finite amount with a clear message instead of a SQL bind error', () => {
+    createdRecurringId = insertRecurringTransaction({
+      title: 'Test Subscription',
+      category: 'Utilities',
+      amount: 50000,
+      type: 'cash',
+      payment_method: 'Cash',
+      active: true,
+      done: false,
+    });
+
+    // NaN amount (e.g. Number('1.293.194')) used to bind NULL → NOT NULL constraint 500
+    expect(() => updateRecurringTransaction(createdRecurringId!, { amount: NaN })).toThrow(
+      'Amount must be a valid number',
+    );
+    // Non-integer goal_id used to reach the bind layer as an object → bind TypeError
+    expect(() => updateRecurringTransaction(createdRecurringId!, { goal_id: { id: 1 } })).toThrow(
+      'goal_id must be an integer or null',
+    );
+    // Unknown/joined fields (goal_name) are dropped, update still succeeds
+    expect(() =>
+      updateRecurringTransaction(createdRecurringId!, { title: 'Renamed', goal_name: 'Some Goal' } as any),
+    ).not.toThrow();
+    expect(getRecurringTransactionById(createdRecurringId)!.title).toBe('Renamed');
+  });
+
   it('updates goal with boolean completed without SQLite3 bind error', () => {
     createdGoalId = insertGoal({
       name: 'Test Goal',
