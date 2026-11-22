@@ -866,17 +866,45 @@ export function insertRecurringTransaction(tx: Omit<any, 'id'>) {
   return result.lastInsertRowid as number;
 }
 
+const RECURRING_UPDATABLE = new Set([
+  'title', 'category', 'amount', 'type', 'payment_method',
+  'done', 'active', 'end_date', 'created_at', 'goal_id',
+]);
+
 export function updateRecurringTransaction(id: number, tx: Partial<any>) {
   const copy: Record<string, any> = { ...tx };
   delete copy.id;
+  // Drop fields that are not real columns (e.g. joined goal_name) so a stale
+  // or sloppy client payload can never reach the bind layer as an object.
+  for (const k of Object.keys(copy)) {
+    if (!RECURRING_UPDATABLE.has(k)) delete copy[k];
+  }
   if (typeof copy.active === 'boolean') copy.active = copy.active ? 1 : 0;
   if (typeof copy.done === 'boolean') copy.done = copy.done ? 1 : 0;
-  if (copy.amount !== undefined) copy.amount = Number(copy.amount);
+  if (copy.amount !== undefined) {
+    copy.amount = Number(copy.amount);
+    if (!Number.isFinite(copy.amount)) {
+      throw new Error('Amount must be a valid number');
+    }
+  }
+  if (copy.goal_id !== undefined && copy.goal_id !== null) {
+    copy.goal_id = Number(copy.goal_id);
+    if (!Number.isInteger(copy.goal_id)) {
+      throw new Error('goal_id must be an integer or null');
+    }
+  }
   const fields = Object.keys(copy).filter((k) => copy[k] !== undefined);
   if (fields.length === 0) return;
   const setClause = fields.map((f) => `${f} = @${f}`).join(', ');
   const stmt = db.prepare(`UPDATE recurring_transactions SET ${setClause} WHERE id = @id`);
-  stmt.run({ ...copy, id });
+  try {
+    stmt.run({ ...copy, id });
+  } catch (e: any) {
+    // Surface constraint failures as actionable messages instead of raw SQL errors.
+    const m = /NOT NULL constraint failed: recurring_transactions\.(\w+)/.exec(e.message || '');
+    if (m) throw new Error(`${m[1]} cannot be empty`);
+    throw e;
+  }
 }
 
 export function deleteRecurringTransaction(id: number) {
