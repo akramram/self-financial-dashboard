@@ -1,5 +1,13 @@
 # Iteration Log
 
+## 2026-11-23 — Fitur: Hapus data networth dari UI (selama ini hanya bisa via DB langsung)
+
+### Hasil
+- **Gap nyata:** data networth bisa diedit (`/networth/edit`) tapi tidak pernah bisa dihapus dari UI. `deleteNetworthApi` ada di `api.ts` tapi tidak dipakai komponen mana pun; endpoint `DELETE /api/networth/[periodId]` (dengan `recalcNetworthMoM()`) sudah lama tersedia. Entri salah/duplikat harus dihapus manual via SQLite.
+- **Fix:** tombol **Delete** di NetworthTable (baris desktop + kartu mobile, target sentuh 44×44, warna red-600/red-400). Konfirmasi via `ConfirmDialog` destructive ("Data networth {bulan} akan dihapus permanen"). Sukses: baris hilang dari state lokal + `toast.success`; gagal: baris tetap + `toast.error` berpesan server — `deleteNetworthApi` kini `assertOk()` (konsisten serial audit res.ok; sebelumnya mengabaikan status HTTP).
+- **Testing:** `networth-table-delete.test.tsx` baru (3 test: batal confirm → tanpa API call; konfirmasi → DELETE dengan `period_id` + baris hilang + toast sukses; API 400 → baris tetap + toast error berpesan server). Suite **825/825 hijau** (89 files). Build Complete.
+- **Git workflow:** Branch `feat/innovation-networth-delete` → PR #397 (merged).
+
 ## 2026-11-22 — Bug Fix: Edit recurring transaction tidak lagi crash server (500 → 400 dengan alasan jelas)
 
 ### Hasil
