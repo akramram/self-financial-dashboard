@@ -1,8 +1,11 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import type { NetworthRecord } from '../lib/data';
 import { formatIdr } from '../lib/utils';
 import { useSortState } from '../hooks/useSortState';
 import SortableHeader from './SortableHeader';
+import { deleteNetworthApi } from '../lib/api';
+import { confirm } from './ConfirmDialog';
+import { toast } from 'sonner';
 import {
   Table,
   TableBody,
@@ -42,7 +45,30 @@ function buildYearOverYear(networth: NetworthRecord[]): Map<string, { change: nu
 
 export default function NetworthTable({ networth }: Props) {
   const { toggleSort, sortData, isSorted } = useSortState();
-  const yoyByMonth = useMemo(() => buildYearOverYear(networth), [networth]);
+  const [rows, setRows] = useState(networth);
+  const [deleting, setDeleting] = useState<number | null>(null);
+  const yoyByMonth = useMemo(() => buildYearOverYear(rows), [rows]);
+
+  const handleDelete = useCallback(async (row: NetworthRecord) => {
+    const ok = await confirm({
+      title: 'Hapus data networth',
+      description: `Data networth ${row.month} akan dihapus permanen. Lanjutkan?`,
+      confirmLabel: 'Hapus',
+      cancelLabel: 'Batal',
+      variant: 'destructive',
+    });
+    if (!ok) return;
+    setDeleting(row.period_id);
+    try {
+      await deleteNetworthApi(row.period_id);
+      setRows((prev) => prev.filter((r) => r.period_id !== row.period_id));
+      toast.success(`Data networth ${row.month} dihapus`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Gagal menghapus data networth');
+    } finally {
+      setDeleting(null);
+    }
+  }, []);
 
   const getCellValue = useCallback(
     (row: NetworthRecord, key: string): string | number => {
@@ -60,8 +86,8 @@ export default function NetworthTable({ networth }: Props) {
   );
 
   const sortedRows = useMemo(() => {
-    return sortData(networth, getCellValue, (data) => [...data].reverse());
-  }, [networth, sortData, getCellValue]);
+    return sortData(rows, getCellValue, (data) => [...data].reverse());
+  }, [rows, sortData, getCellValue]);
 
   const renderYoY = (row: NetworthRecord, field: 'change' | 'pct') => {
     const yoy = yoyByMonth.get(row.month);
@@ -125,9 +151,20 @@ export default function NetworthTable({ networth }: Props) {
                 <TableCell className="text-right tabular-nums">{renderYoY(row, 'change')}</TableCell>
                 <TableCell className="text-right">{renderYoY(row, 'pct')}</TableCell>
                 <TableCell>
-                  <Button variant="ghost" size="sm" className="h-7 text-xs text-mint-500 hover:text-mint-600" asChild>
-                    <a href={`/networth/edit?month=${encodeURIComponent(row.month)}`}>Edit</a>
-                  </Button>
+                  <div className="flex items-center gap-1">
+                    <Button variant="ghost" size="sm" className="h-7 text-xs text-mint-500 hover:text-mint-600" asChild>
+                      <a href={`/networth/edit?month=${encodeURIComponent(row.month)}`}>Edit</a>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 text-xs text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                      disabled={deleting === row.period_id}
+                      onClick={() => handleDelete(row)}
+                    >
+                      {deleting === row.period_id ? '…' : 'Delete'}
+                    </Button>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
@@ -168,7 +205,7 @@ export default function NetworthTable({ networth }: Props) {
                     )}
                   </p>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex items-center gap-1 shrink-0">
                   <span className="text-sm font-semibold tabular-nums text-slate-900 dark:text-white/90">
                     {formatIdr(row.total)}
                   </span>
@@ -178,6 +215,14 @@ export default function NetworthTable({ networth }: Props) {
                   >
                     Edit
                   </a>
+                  <button
+                    onClick={() => handleDelete(row)}
+                    disabled={deleting === row.period_id}
+                    className="min-h-[44px] min-w-[44px] px-3 inline-flex items-center justify-center rounded-lg text-xs font-medium text-red-600 hover:bg-red-500/10 disabled:opacity-50 transition-colors dark:text-red-400"
+                    aria-label={`Hapus data networth ${row.month}`}
+                  >
+                    {deleting === row.period_id ? '…' : 'Delete'}
+                  </button>
                 </div>
               </div>
             );

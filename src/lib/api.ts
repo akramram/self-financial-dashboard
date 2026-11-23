@@ -133,7 +133,8 @@ export async function updateNetworthApi(periodId: number, record: Partial<Networ
 }
 
 export async function deleteNetworthApi(periodId: number): Promise<void> {
-  await fetch(`/api/networth/${periodId}`, { method: 'DELETE' });
+  const res = await fetch(`/api/networth/${periodId}`, { method: 'DELETE' });
+  await assertOk(res, 'Hapus networth');
 }
 
 export async function fetchSummaries(): Promise<MonthlySummary[]> {
