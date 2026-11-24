@@ -3,7 +3,7 @@ import {
   LayoutDashboard, ArrowRightLeft, PieChart, Target, Settings,
   TrendingUp, Calendar, Shield, Wallet, CreditCard,
   Trophy, Zap, Heart, BarChart3, FlaskConical, Briefcase, PiggyBank,
-  Repeat, Search, FileText, GitCompare, Activity, Layers, CalendarDays, Grid3x3,
+  Repeat, Search, FileText, GitCompare, Activity, Layers, CalendarDays, Grid3x3, ShieldCheck, Sparkles, CircleDollarSign,
   Plus, LogOut, Flame, Moon, ArrowUpRight, ArrowDownRight,
 } from 'lucide-react';
 import { formatIdr } from '../lib/utils';
@@ -58,6 +58,7 @@ const ALL_ITEMS: CommandItem[] = [
   { id: 'what-if', label: 'What-If', description: 'Simulate spending & income changes', icon: FlaskConical, group: 'pages', href: '/what-if' },
   { id: 'forecast', label: 'Forecast', description: 'Spending predictions and projections', icon: TrendingUp, group: 'pages', href: '/forecast' },
   { id: 'portfolio', label: 'Portfolio', description: 'Investment portfolio allocation', icon: Briefcase, group: 'pages', href: '/portfolio' },
+  { id: 'sinking-funds', label: 'Sinking Funds', description: 'Dedicated cash reserves & savings targets', icon: Target, group: 'pages', href: '/sinking-funds' },
   { id: 'networth', label: 'Net Worth', description: 'Track net worth over time', icon: PiggyBank, group: 'pages', href: '/networth' },
   // Pages — REPORTS
   { id: 'weekly', label: 'Weekly', description: 'Weekly spending report', icon: Calendar, group: 'pages', href: '/weekly' },
@@ -67,6 +68,9 @@ const ALL_ITEMS: CommandItem[] = [
   { id: 'cashflow', label: 'Cashflow', description: 'Income vs outcome waterfall', icon: BarChart3, group: 'pages', href: '/cashflow' },
   { id: 'recurring', label: 'Recurring', description: 'Manage recurring transactions', icon: Repeat, group: 'pages', href: '/recurring' },
   { id: 'recurring-audit', label: 'Recurring Audit', description: 'Subscription costs, monthly & annual totals', icon: Search, group: 'pages', href: '/recurring-audit' },
+  { id: 'diagnostics', label: 'Data Health', description: 'Database integrity checks and anomaly scan', icon: ShieldCheck, group: 'pages', href: '/diagnostics' },
+  { id: 'rewind', label: 'Annual Rewind', description: 'Rekap setahun: persona keuangan, ritme bulanan, sorotan', icon: Sparkles, group: 'pages', href: '/rewind' },
+  { id: 'inflation', label: 'Nilai Riil (Inflasi)', description: 'Riwayat keuangan dalam rupiah hari ini, koreksi inflasi', icon: CircleDollarSign, group: 'pages', href: '/inflation' },
   { id: 'recommendations', label: 'Tips', description: 'Budget recommendations and savings tips', icon: Trophy, group: 'pages', href: '/recommendations' },
   // Actions
   { id: 'add-data', label: 'Add Data', description: 'Add transaction or net worth entry', shortcut: '⌘N', icon: Plus, group: 'actions', href: '/add' },

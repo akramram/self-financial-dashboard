@@ -1,0 +1,17 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SinkingFundsHub from '../components/SinkingFundsHub';
+---
+
+<Layout title="Sinking Funds & Cash Reserves - Financial Dashboard">
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2.5">
+      <span>🎯</span> Sinking Funds & Dedicated Cash Reserves
+    </h1>
+    <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">
+      Kelola pos tabungan terencana untuk pengeluaran non-bulanan seperti pajak STNK, premi asuransi, servis berkala, dan buffer darurat. Hitung rekomendasi setoran bulanan dan distribusikan surplus kas secara bertingkat.
+    </p>
+  </div>
+
+  <SinkingFundsHub client:load />
+</Layout>

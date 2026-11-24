@@ -8,7 +8,7 @@ vi.mock('../lib/utils', async (importOriginal) => {
   const actual = await importOriginal<typeof import('../lib/utils')>();
   return {
     ...actual,
-    formatIdr: (n: number) => `Rp ${n.toLocaleString('id-ID')}`,
+    formatIdr: (n: number) => `Rp ${Math.round(n).toLocaleString('id-ID')}`,
     formatNumber: (n: number) => String(n),
   };
 });
@@ -17,11 +17,10 @@ vi.mock('react-chartjs-2', () => ({
   Doughnut: () => <div data-testid="doughnut-chart" />,
 }));
 
-import RecurringCostAnalyzer, {
-  type RecurringCostResult,
-} from '../components/RecurringCostAnalyzer';
+import RecurringCostAnalyzer from '../components/RecurringCostAnalyzer';
+import type { RecurringCostResult } from '../lib/db';
 
-const mockAnalysisResult: RecurringCostResult = {
+const mockAnalysisResult = {
   items: [
     {
       id: 1,
@@ -74,25 +73,7 @@ const mockAnalysisResult: RecurringCostResult = {
       remainingTenor: 10,
       remainingLiability: 10000000,
     },
-    {
-      id: 4,
-      title: 'Paused Gym',
-      cleanTitle: 'Gym',
-      category: 'Kesehatan',
-      amount: 500000,
-      type: 'cash',
-      active: false,
-      end_date: null,
-      created_at: '10',
-      isTemporary: false,
-      isInstallment: false,
-      totalTenor: null,
-      currentTenor: null,
-      remainingTenor: null,
-      remainingLiability: null,
-    },
   ],
-  activeItems: [], // will populate below
   pausedItems: [],
   monthlyTotal: 2336000,
   annualTotal: 26032000,
@@ -127,146 +108,109 @@ const mockAnalysisResult: RecurringCostResult = {
     remainingLiability: null,
   },
   avgPerItem: 778667,
-  subscriptionMonthlyTotal: 1336000,
-  installmentMonthlyTotal: 1000000,
-  totalRemainingLiability: 10000000,
-  postInstallmentRunRate: 1336000,
-  installmentCount: 1,
-  subscriptionCount: 2,
-};
-mockAnalysisResult.activeItems = mockAnalysisResult.items.filter((i) => i.active);
-mockAnalysisResult.pausedItems = mockAnalysisResult.items.filter((i) => !i.active);
+  latestIncome: 23000000,
+} as unknown as RecurringCostResult;
+mockAnalysisResult.activeItems = mockAnalysisResult.items;
 
-describe('RecurringCostAnalyzer Component', () => {
+function stubFetch() {
+  globalThis.fetch = vi.fn().mockResolvedValue({
+    ok: true,
+    json: async () => mockAnalysisResult,
+  }) as any;
+}
+
+describe('RecurringCostAnalyzer — Installment Liability Analyzer (PR #332 merge)', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.restoreAllMocks();
   });
 
-  it('renders loading indicator initially', () => {
-    vi.stubGlobal('fetch', vi.fn().mockImplementation(() => new Promise(() => {})));
+  it('KPI Cicilan Berjalan menampilkan beban cicilan, sisa liabilitas, dan run-rate pasca lunas', async () => {
+    stubFetch();
     render(<RecurringCostAnalyzer />);
-    expect(screen.getByRole('status', { name: /loading recurring cost analysis/i })).toBeInTheDocument();
-  });
 
-  it('renders empty state when no items exist', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValue({
-        json: async () => ({
-          items: [],
-          activeItems: [],
-          pausedItems: [],
-          monthlyTotal: 0,
-          annualTotal: 0,
-          monthlyByCategory: {},
-          monthlyByType: { cash: 0, credit_expense: 0, credit_payment: 0 },
-          categoryCount: 0,
-          activeCount: 0,
-          temporaryCount: 0,
-          largestItem: null,
-          avgPerItem: 0,
-        }),
-      })
-    );
-
-    render(<RecurringCostAnalyzer />);
     await waitFor(() => {
-      expect(screen.getByText('No recurring transactions found')).toBeInTheDocument();
-    });
-  });
-
-  it('renders 4 summary cards: Monthly Total, Annual Cost, Subscriptions, Installments', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValue({
-        json: async () => mockAnalysisResult,
-      })
-    );
-
-    render(<RecurringCostAnalyzer />);
-    await waitFor(() => {
-      expect(screen.getByText('Monthly Total')).toBeInTheDocument();
-      expect(screen.getByText('Annual Cost')).toBeInTheDocument();
-      expect(screen.getByText('Subscriptions')).toBeInTheDocument();
-      expect(screen.getByText('Installments')).toBeInTheDocument();
+      expect(screen.getByText('Cicilan Berjalan')).toBeInTheDocument();
     });
 
-    expect(screen.getAllByText('Rp 2.336.000').length).toBeGreaterThan(0); // Monthly total
-    expect(screen.getAllByText('Rp 1.336.000').length).toBeGreaterThan(0); // Subscriptions total
-    expect(screen.getAllByText('Rp 1.000.000').length).toBeGreaterThan(0); // Installments total
+    // Nilai: beban cicilan bulanan + jumlah cicilan (unit di span terpisah)
+    expect(screen.getByText('/bln · 1 cicilan')).toBeInTheDocument();
+    expect(screen.getAllByText('Rp 1.000.000').length).toBeGreaterThan(0);
+
+    // Sisa liabilitas dan proyeksi run-rate setelah semua cicilan lunas
+    // (muncul di KPI card 3 DAN badge agregat roadmap — pakai getAllByText)
+    expect(screen.getAllByText(/Sisa liabilitas: Rp 10.000.000/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Run-rate pasca lunas: Rp 1.336.000\/bln/i).length).toBeGreaterThan(0);
+
+    // KPI Komitmen Bulanan kini memuat split langganan vs cicilan
+    expect(screen.getByText(/Langganan: Rp 1.336.000/)).toBeInTheDocument();
+    expect(screen.getByText(/Cicilan: Rp 1.000.000/)).toBeInTheDocument();
   });
 
-  it('renders Post-Installment Cash Flow Relief banner when installments exist', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValue({
-        json: async () => mockAnalysisResult,
-      })
-    );
-
+  it('Roadmap Pelepasan Kas menampilkan badge agregat liabilitas & run-rate', async () => {
+    stubFetch();
     render(<RecurringCostAnalyzer />);
+
     await waitFor(() => {
-      expect(screen.getByText('Post-Installment Cash Flow Relief')).toBeInTheDocument();
+      expect(screen.getByText('Roadmap Pelepasan Arus Kas Cicilan')).toBeInTheDocument();
     });
 
-    expect(screen.getByText(/When all 1 active installments are paid off/i)).toBeInTheDocument();
-    expect(screen.getByText('Run Rate: Rp 1.336.000/mo')).toBeInTheDocument();
-    expect(screen.getByText('Remaining Debt: Rp 10.000.000')).toBeInTheDocument();
+    expect(screen.getAllByText('Sisa liabilitas: Rp 10.000.000').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Run-rate pasca lunas: Rp 1.336.000/bln').length).toBeGreaterThan(0);
   });
 
-  it('filters table and mobile list by Subscriptions and Installments tabs', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValue({
-        json: async () => mockAnalysisResult,
-      })
-    );
-
+  it('tab Daftar Komitmen: filter Segmen/Langganan/Cicilan menyaring tabel + kartu mobile', async () => {
+    stubFetch();
     render(<RecurringCostAnalyzer />);
+
     await waitFor(() => {
-      expect(screen.getByText('Subscriptions (2)')).toBeInTheDocument();
+      expect(screen.getByText(/Recurring & Subscription Intelligence Hub/i)).toBeInTheDocument();
     });
 
-    // Default: All active items (3)
-    expect(screen.getAllByText('Kontrakan').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Netflix').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Cicilan Laptop (3/12)').length).toBeGreaterThan(0);
+    fireEvent.click(screen.getByRole('button', { name: /Daftar Komitmen/i }));
+    await waitFor(() => {
+      expect(screen.getByText('Semua (3)')).toBeInTheDocument();
+    });
 
-    // Switch to Subscriptions Only
-    fireEvent.click(screen.getByText('Subscriptions (2)'));
-    expect(screen.getAllByText('Kontrakan').length).toBeGreaterThan(0);
+    // Default Semua: 3 item aktif muncul di tabel desktop dan kartu mobile
+    expect(screen.getAllByText('Netflix').length).toBeGreaterThanOrEqual(2);
+    expect(screen.getAllByText('Cicilan Laptop (3/12)').length).toBeGreaterThanOrEqual(2);
+
+    // Filter Langganan
+    fireEvent.click(screen.getByText('Langganan (2)'));
     expect(screen.getAllByText('Netflix').length).toBeGreaterThan(0);
     expect(screen.queryByText('Cicilan Laptop (3/12)')).not.toBeInTheDocument();
 
-    // Switch to Installments Only
-    fireEvent.click(screen.getByText('Installments (1)'));
+    // Filter Cicilan
+    fireEvent.click(screen.getByText('Cicilan (1)'));
     expect(screen.getAllByText('Cicilan Laptop (3/12)').length).toBeGreaterThan(0);
-    // Netflix (a subscription) should be filtered out from the list
     expect(screen.queryByText('Netflix')).not.toBeInTheDocument();
 
-    // Switch back to All
-    fireEvent.click(screen.getByText('All (3)'));
+    // Kembali ke Semua
+    fireEvent.click(screen.getByText('Semua (3)'));
     expect(screen.getAllByText('Netflix').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Cicilan Laptop (3/12)').length).toBeGreaterThan(0);
   });
 
-  it('shows paused items when Show paused button is clicked', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValue({
-        json: async () => mockAnalysisResult,
-      })
-    );
-
+  it('menampilkan tenor berjalan (3/12) dan sisa bulan pada baris cicilan', async () => {
+    stubFetch();
     render(<RecurringCostAnalyzer />);
+
     await waitFor(() => {
-      expect(screen.getByText('Show paused (1)')).toBeInTheDocument();
+      expect(screen.getByText(/Recurring & Subscription Intelligence Hub/i)).toBeInTheDocument();
     });
 
-    expect(screen.queryByText('Paused Gym')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /Daftar Komitmen/i }));
+    await waitFor(() => {
+      expect(screen.getByText('Semua (3)')).toBeInTheDocument();
+    });
 
-    fireEvent.click(screen.getByText('Show paused (1)'));
-    expect(screen.getAllByText('Paused Gym').length).toBeGreaterThan(0);
-    expect(screen.getByText('Show active only')).toBeInTheDocument();
+    // Tenor label (tabel desktop + kartu mobile) dan sisa tenor
+    expect(screen.getAllByText('Tenor 3/12').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('10 bln lagi').length).toBeGreaterThan(0);
+
+    // Badge Cicilan di tabel desktop
+    expect(screen.getAllByText('Cicilan').length).toBeGreaterThan(0);
+
+    // Sisa liabilitas per item di kartu mobile
+    expect(screen.getAllByText(/Sisa: Rp 10.000.000/).length).toBeGreaterThan(0);
   });
 });

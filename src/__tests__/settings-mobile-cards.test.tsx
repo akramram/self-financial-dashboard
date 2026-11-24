@@ -15,6 +15,9 @@ const updateCategoryApi = vi.fn();
 const deleteCategoryApi = vi.fn();
 const upsertMonthlyIncomeApi = vi.fn();
 const updateMonthlyIncomeApi = vi.fn();
+const deleteMonthlyIncomeApi = vi.fn();
+const toastError = vi.fn();
+vi.mock('sonner', () => ({ toast: { error: (...a: any[]) => toastError(...a), success: vi.fn() } }));
 
 vi.mock('../lib/api', () => ({
   fetchCategories: vi.fn(),
@@ -24,7 +27,7 @@ vi.mock('../lib/api', () => ({
   fetchMonthlyIncome: vi.fn(),
   upsertMonthlyIncomeApi: (...a: any[]) => upsertMonthlyIncomeApi(...a),
   updateMonthlyIncomeApi: (...a: any[]) => updateMonthlyIncomeApi(...a),
-  deleteMonthlyIncomeApi: vi.fn(),
+  deleteMonthlyIncomeApi: (...a: any[]) => deleteMonthlyIncomeApi(...a),
 }));
 vi.mock('../components/ConfirmDialog', () => ({
   useConfirm: () => ({ confirm: vi.fn().mockResolvedValue(true) }),
@@ -42,8 +45,8 @@ const CATS: Category[] = [
 ] as unknown as Category[];
 
 const INCOMES: MonthlyIncome[] = [
-  { month: 'August 2026', date: '2026-08-21', income: 15000000, other_income: 500000 },
-  { month: 'September 2026', date: '2026-09-21', income: 16000000, other_income: 0 },
+  { period_id: 37, month: 'August 2026', date: '2026-08-21', income: 15000000, other_income: 500000 },
+  { period_id: 38, month: 'September 2026', date: '2026-09-21', income: 16000000, other_income: 0 },
 ] as unknown as MonthlyIncome[];
 
 beforeEach(() => {
@@ -112,7 +115,32 @@ describe('IncomeSettings — mobile card list', () => {
     fireEvent.change(inputs[inputs.length - 1], { target: { value: '17000000' } });
     fireEvent.click(screen.getAllByText('Save')[screen.getAllByText('Save').length - 1]);
     await waitFor(() =>
-      expect(updateMonthlyIncomeApi).toHaveBeenCalledWith('August 2026', expect.objectContaining({ income: 17000000 }))
+      // Regression: used to send the month label, which /api/income/:id rejects (400 Invalid period_id).
+      expect(updateMonthlyIncomeApi).toHaveBeenCalledWith(
+        37,
+        expect.objectContaining({ income: 17000000, date: '2026-08-21' })
+      )
     );
+  });
+
+  it('income Delete sends period_id, not the month label', async () => {
+    render(<IncomeSettings />);
+    await waitFor(() => expect(screen.getAllByText('September 2026').length).toBe(2));
+    // [table-aug, table-sep, card-aug, card-sep]
+    fireEvent.click(screen.getAllByText('Delete')[1]);
+    await waitFor(() => expect(deleteMonthlyIncomeApi).toHaveBeenCalledWith(38));
+  });
+
+  it('keeps the row and shows an error when the update API fails', async () => {
+    updateMonthlyIncomeApi.mockRejectedValueOnce(new Error('Update income gagal (400)'));
+    render(<IncomeSettings />);
+    await waitFor(() => expect(screen.getAllByText('August 2026').length).toBe(2));
+    fireEvent.click(screen.getAllByText('Edit')[0]);
+    const inputs = await screen.findAllByDisplayValue('15000000');
+    fireEvent.change(inputs[0], { target: { value: '99000000' } });
+    fireEvent.click(screen.getAllByText('Save')[0]);
+    await waitFor(() => expect(toastError).toHaveBeenCalledWith('Update income gagal (400)'));
+    // Edit form stays open so the user can retry; no success toast path taken
+    expect(screen.getAllByText('Save').length).toBeGreaterThan(0);
   });
 });

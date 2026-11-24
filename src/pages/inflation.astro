@@ -1,0 +1,15 @@
+---
+import Layout from '../layouts/Layout.astro';
+import RealValueHub from '../components/RealValueHub';
+---
+
+<Layout title="Nilai Riil: Financial Dashboard">
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold">Nilai Riil (Inflasi)</h1>
+    <p class="text-slate-600 dark:text-white/50 text-sm">
+      Lihat seluruh riwayat pemasukan dan pengeluaran dalam rupiah hari ini. Gaji naik tapi daya beli ikut naik, atau hanya mengikuti harga?
+    </p>
+  </div>
+
+  <RealValueHub client:load />
+</Layout>

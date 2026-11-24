@@ -867,12 +867,45 @@ export function insertRecurringTransaction(tx: Omit<any, 'id'>) {
   return result.lastInsertRowid as number;
 }
 
+const RECURRING_UPDATABLE = new Set([
+  'title', 'category', 'amount', 'type', 'payment_method',
+  'done', 'active', 'end_date', 'created_at', 'goal_id',
+]);
+
 export function updateRecurringTransaction(id: number, tx: Partial<any>) {
-  const fields = Object.keys(tx).filter((k) => k !== 'id');
+  const copy: Record<string, any> = { ...tx };
+  delete copy.id;
+  // Drop fields that are not real columns (e.g. joined goal_name) so a stale
+  // or sloppy client payload can never reach the bind layer as an object.
+  for (const k of Object.keys(copy)) {
+    if (!RECURRING_UPDATABLE.has(k)) delete copy[k];
+  }
+  if (typeof copy.active === 'boolean') copy.active = copy.active ? 1 : 0;
+  if (typeof copy.done === 'boolean') copy.done = copy.done ? 1 : 0;
+  if (copy.amount !== undefined) {
+    copy.amount = Number(copy.amount);
+    if (!Number.isFinite(copy.amount)) {
+      throw new Error('Amount must be a valid number');
+    }
+  }
+  if (copy.goal_id !== undefined && copy.goal_id !== null) {
+    copy.goal_id = Number(copy.goal_id);
+    if (!Number.isInteger(copy.goal_id)) {
+      throw new Error('goal_id must be an integer or null');
+    }
+  }
+  const fields = Object.keys(copy).filter((k) => copy[k] !== undefined);
   if (fields.length === 0) return;
   const setClause = fields.map((f) => `${f} = @${f}`).join(', ');
   const stmt = db.prepare(`UPDATE recurring_transactions SET ${setClause} WHERE id = @id`);
-  stmt.run({ ...tx, id });
+  try {
+    stmt.run({ ...copy, id });
+  } catch (e: any) {
+    // Surface constraint failures as actionable messages instead of raw SQL errors.
+    const m = /NOT NULL constraint failed: recurring_transactions\.(\w+)/.exec(e.message || '');
+    if (m) throw new Error(`${m[1]} cannot be empty`);
+    throw e;
+  }
 }
 
 export function deleteRecurringTransaction(id: number) {
@@ -948,11 +981,14 @@ export function updateGoal(id: number, goal: Partial<{
   icon: string;
   completed: boolean;
 }>) {
-  const fields = Object.keys(goal).filter((k) => k !== 'id');
+  const copy: Record<string, any> = { ...goal };
+  delete copy.id;
+  if (typeof copy.completed === 'boolean') copy.completed = copy.completed ? 1 : 0;
+  const fields = Object.keys(copy).filter((k) => copy[k] !== undefined);
   if (fields.length === 0) return;
   const setClause = fields.map((f) => `${f} = @${f}`).join(', ');
   const stmt = db.prepare(`UPDATE goals SET ${setClause}, updated_at = CURRENT_TIMESTAMP WHERE id = @id`);
-  stmt.run({ ...goal, id });
+  stmt.run({ ...copy, id });
 }
 
 export function deleteGoal(id: number) {
@@ -2109,10 +2145,29 @@ export interface RecurringBreakdownTopItem {
   amount: number;
 }
 
+export interface RecurringBreakdownCategoryShare {
+  category: string;
+  amount: number;
+  pct: number;
+}
+
+export interface RecurringBreakdownTxItem {
+  id: number;
+  title: string;
+  category: string;
+  amount: number;
+  is_recurring: boolean;
+  date: string;
+}
+
 export interface RecurringBreakdown {
   periods: RecurringBreakdownPeriod[];
   current: RecurringBreakdownPeriod | null;
   topRecurring: RecurringBreakdownTopItem[];
+  topDiscretionary?: RecurringBreakdownTopItem[];
+  discretionaryCategories?: RecurringBreakdownCategoryShare[];
+  recurringCategories?: RecurringBreakdownCategoryShare[];
+  periodTransactions?: RecurringBreakdownTxItem[];
 }
 
 export function getRecurringVsDiscretionary(periodId?: number): RecurringBreakdown {
@@ -2123,12 +2178,6 @@ export function getRecurringVsDiscretionary(periodId?: number): RecurringBreakdo
 
   const recurringTitleSet = new Set(recurringTitles.map((r) => r.title));
 
-  // Build a map for top recurring items (use the latest period's data)
-  const recurringAmountMap = new Map<string, number>();
-  for (const r of recurringTitles) {
-    recurringAmountMap.set(r.title, r.amount);
-  }
-
   // Get all periods with transactions
   const periodRows = db.prepare(`
     SELECT DISTINCT p.id, p.month, p.start_date
@@ -2138,14 +2187,10 @@ export function getRecurringVsDiscretionary(periodId?: number): RecurringBreakdo
     ORDER BY p.start_date ASC
   `).all() as { id: number; month: string; start_date: string }[];
 
-  // If a specific period is requested, filter
-  const targetPeriods = periodId
-    ? periodRows.filter((p) => p.id === periodId)
-    : periodRows;
-
+  // Always compute all periods so the dropdown & historical trajectory are preserved
   const periods: RecurringBreakdownPeriod[] = [];
 
-  for (const p of targetPeriods) {
+  for (const p of periodRows) {
     const txs = db.prepare(`
       SELECT title, category, amount FROM transactions
       WHERE period_id = ? AND done = 1 AND type IN ('cash', 'credit_expense')
@@ -2158,8 +2203,6 @@ export function getRecurringVsDiscretionary(periodId?: number): RecurringBreakdo
 
     for (const tx of txs) {
       const titleLower = tx.title.toLowerCase();
-      // Check if this transaction matches a recurring template
-      // Use fuzzy matching: exact match or the recurring title is contained in the transaction title
       const isRecurring = recurringTitleSet.has(titleLower) ||
         [...recurringTitleSet].some((rt) => titleLower.includes(rt) || rt.includes(titleLower));
 
@@ -2186,10 +2229,11 @@ export function getRecurringVsDiscretionary(periodId?: number): RecurringBreakdo
     });
   }
 
-  // Current period = last in the list
-  const current = periods.length > 0 ? periods[periods.length - 1] : null;
+  // Determine target period for deep breakdown
+  const targetPeriodId = periodId ?? (periods.length > 0 ? periods[periods.length - 1].period_id : null);
+  const current = periods.find((p) => p.period_id === targetPeriodId) || (periods.length > 0 ? periods[periods.length - 1] : null);
 
-  // Top recurring items: aggregate across all periods
+  // Top recurring items across all periods
   const recurringTotals = new Map<string, { title: string; category: string; amount: number }>();
   for (const p of periodRows) {
     const txs = db.prepare(`
@@ -2222,7 +2266,83 @@ export function getRecurringVsDiscretionary(periodId?: number): RecurringBreakdo
       amount: Math.round(item.amount * 100) / 100,
     }));
 
-  return { periods, current, topRecurring };
+  // Target period deep breakdown: categories & transactions
+  const discretionaryCatMap = new Map<string, number>();
+  const recurringCatMap = new Map<string, number>();
+  const discretionaryTxTotals = new Map<string, { title: string; category: string; amount: number }>();
+  const periodTransactions: RecurringBreakdownTxItem[] = [];
+
+  if (targetPeriodId) {
+    const txs = db.prepare(`
+      SELECT id, title, category, amount, date FROM transactions
+      WHERE period_id = ? AND done = 1 AND type IN ('cash', 'credit_expense')
+      ORDER BY amount DESC
+    `).all(targetPeriodId) as { id: number; title: string; category: string; amount: number; date: string }[];
+
+    for (const tx of txs) {
+      const titleLower = tx.title.toLowerCase();
+      const isRecurring = recurringTitleSet.has(titleLower) ||
+        [...recurringTitleSet].some((rt) => titleLower.includes(rt) || rt.includes(titleLower));
+
+      periodTransactions.push({
+        id: tx.id,
+        title: tx.title,
+        category: tx.category,
+        amount: tx.amount,
+        is_recurring: isRecurring,
+        date: tx.date,
+      });
+
+      if (isRecurring) {
+        recurringCatMap.set(tx.category, (recurringCatMap.get(tx.category) || 0) + tx.amount);
+      } else {
+        discretionaryCatMap.set(tx.category, (discretionaryCatMap.get(tx.category) || 0) + tx.amount);
+        const existing = discretionaryTxTotals.get(tx.title);
+        if (existing) {
+          existing.amount += tx.amount;
+        } else {
+          discretionaryTxTotals.set(tx.title, { title: tx.title, category: tx.category, amount: tx.amount });
+        }
+      }
+    }
+  }
+
+  const discTotal = current?.discretionary || 0;
+  const recTotal = current?.recurring || 0;
+
+  const discretionaryCategories: RecurringBreakdownCategoryShare[] = [...discretionaryCatMap.entries()]
+    .map(([category, amount]) => ({
+      category,
+      amount: Math.round(amount * 100) / 100,
+      pct: discTotal > 0 ? Math.round((amount / discTotal) * 1000) / 10 : 0,
+    }))
+    .sort((a, b) => b.amount - a.amount);
+
+  const recurringCategories: RecurringBreakdownCategoryShare[] = [...recurringCatMap.entries()]
+    .map(([category, amount]) => ({
+      category,
+      amount: Math.round(amount * 100) / 100,
+      pct: recTotal > 0 ? Math.round((amount / recTotal) * 1000) / 10 : 0,
+    }))
+    .sort((a, b) => b.amount - a.amount);
+
+  const topDiscretionary: RecurringBreakdownTopItem[] = [...discretionaryTxTotals.values()]
+    .sort((a, b) => b.amount - a.amount)
+    .slice(0, 10)
+    .map((item) => ({
+      ...item,
+      amount: Math.round(item.amount * 100) / 100,
+    }));
+
+  return {
+    periods,
+    current,
+    topRecurring,
+    topDiscretionary,
+    discretionaryCategories,
+    recurringCategories,
+    periodTransactions,
+  };
 }
 
 // ─── Savings Rate Tracker ────────────────────────────────────────────────────
@@ -2234,8 +2354,12 @@ export interface SavingsRatePeriod {
   end_date: string;
   income: number;
   outcome: number;          // total paid spending (cash + credit_payment)
-  savings: number;          // income - outcome
+  invest: number;           // Invest category total (counted as savings)
+  living_expense: number;   // outcome - invest (net living consumption)
+  cash_surplus: number;     // income - outcome (unspent liquid cash)
+  savings: number;          // income - (outcome - invest)
   savings_rate: number;     // pct, can be negative
+  invest_rate: number;      // invest / income * 100
   is_positive: boolean;
 }
 
@@ -2254,6 +2378,9 @@ export interface SavingsRateResult {
   consecutive_positive: number;   // current run ending at latest period
   longest_positive_streak: number;
   total_saved: number;
+  total_invested: number;
+  total_cash_surplus: number;
+  avg_invest_rate: number;
   // Trailing-3 and trailing-6 average rates for trend detection
   trailing3_avg: number;
   trailing6_avg: number;
@@ -2311,9 +2438,13 @@ export function getSavingsRate(): SavingsRateResult {
   for (const p of periodRows) {
     const income = incomeMap.get(p.id) || 0;
     const outcome = outcomeMap.get(p.id) || 0;
-    if (income <= 0) continue; // skip periods with no income — can't compute a rate
-    const savings = income - (outcome - (investMap.get(p.id) || 0));
+    if (income <= 0) continue; // skip periods with no income, cannot compute a rate
+    const invest = investMap.get(p.id) || 0;
+    const living_expense = Math.max(0, outcome - invest);
+    const cash_surplus = income - outcome;
+    const savings = income - (outcome - invest);
     const rate = (savings / income) * 100;
+    const investRate = (invest / income) * 100;
     periods.push({
       period_id: p.id,
       month: p.month,
@@ -2321,8 +2452,12 @@ export function getSavingsRate(): SavingsRateResult {
       end_date: p.end_date,
       income,
       outcome,
+      invest,
+      living_expense,
+      cash_surplus,
       savings,
       savings_rate: Math.round(rate * 100) / 100,
+      invest_rate: Math.round(investRate * 100) / 100,
       is_positive: savings >= 0,
     });
   }
@@ -2333,6 +2468,7 @@ export function getSavingsRate(): SavingsRateResult {
       best_rate: 0, worst_rate: 0, best_month: null, worst_month: null,
       positive_count: 0, negative_count: 0, total_periods: 0,
       consecutive_positive: 0, longest_positive_streak: 0, total_saved: 0,
+      total_invested: 0, total_cash_surplus: 0, avg_invest_rate: 0,
       trailing3_avg: 0, trailing6_avg: 0, trend: 'stable',
     };
   }
@@ -2367,6 +2503,9 @@ export function getSavingsRate(): SavingsRateResult {
   }
 
   const total_saved = periods.reduce((s, p) => s + p.savings, 0);
+  const total_invested = periods.reduce((s, p) => s + p.invest, 0);
+  const total_cash_surplus = periods.reduce((s, p) => s + p.cash_surplus, 0);
+  const avg_invest_rate = periods.reduce((s, p) => s + p.invest_rate, 0) / Math.max(1, n);
 
   // Trailing averages
   const trailing3 = periods.slice(-3).map((p) => p.savings_rate);
@@ -2396,6 +2535,9 @@ export function getSavingsRate(): SavingsRateResult {
     consecutive_positive,
     longest_positive_streak,
     total_saved: Math.round(total_saved),
+    total_invested: Math.round(total_invested),
+    total_cash_surplus: Math.round(total_cash_surplus),
+    avg_invest_rate: Math.round(avg_invest_rate * 100) / 100,
     trailing3_avg: Math.round(trailing3_avg * 100) / 100,
     trailing6_avg: Math.round(trailing6_avg * 100) / 100,
     trend,
@@ -2907,7 +3049,7 @@ export function getAchievements(): AchievementsResult {
       unlocked,
       unlockedDate: unlocked ? (networthRows.find((n) => n.total >= t.target)?.start_date ?? null) : null,
       progress: !unlocked ? { current: Math.max(0, peakNw), target: t.target, unit: 'IDR' } : undefined,
-      value: unlocked ? `First hit in ${networthRows.find((n) => n.total >= t.target)?.month ?? '—'}` : undefined,
+      value: unlocked ? `First hit in ${networthRows.find((n) => n.total >= t.target)?.month ?? '-'}` : undefined,
     });
   }
 
@@ -3111,7 +3253,7 @@ export function getAchievements(): AchievementsResult {
     },
     {
       label: 'Best Savings Rate',
-      value: bestRate > 0 ? `${bestRate.toFixed(1)}%` : '—',
+      value: bestRate > 0 ? `${bestRate.toFixed(1)}%` : '-',
       icon: '💰',
       subtext: `${periodsAbove10} period(s) above 10%`,
     },
@@ -3123,13 +3265,13 @@ export function getAchievements(): AchievementsResult {
     },
     {
       label: 'Tracking Span',
-      value: daysTracked > 0 ? `${Math.floor(daysTracked / 30)} mo` : '—',
+      value: daysTracked > 0 ? `${Math.floor(daysTracked / 30)} mo` : '-',
       icon: '📅',
       subtext: `${daysTracked} days since first entry`,
     },
     {
       label: 'Net Worth Growth',
-      value: nwGrowthPct !== 0 ? `${nwGrowthPct >= 0 ? '+' : ''}${nwGrowthPct.toFixed(0)}%` : '—',
+      value: nwGrowthPct !== 0 ? `${nwGrowthPct >= 0 ? '+' : ''}${nwGrowthPct.toFixed(0)}%` : '-',
       icon: nwGrowthPct >= 0 ? '📈' : '📉',
       subtext: `from ${formatIdrInline(firstNw)}`,
     },
@@ -3175,6 +3317,18 @@ export function getAchievements(): AchievementsResult {
 
 // ─── Weekly Spending Tracker ──────────────────────────────────────────────────
 
+export interface WeeklyTransactionItem {
+  id: number;
+  title: string;
+  category: string;
+  amount: number;
+  type: string;
+  done: number;
+  created_time: string;
+  date: string;
+  isWeekend?: boolean;
+}
+
 export interface WeeklyBucket {
   weekNum: number;
   label: string;       // "Week 1 (May 21–27)"
@@ -3184,6 +3338,11 @@ export interface WeeklyBucket {
   txCount: number;
   categoryTotals: Record<string, number>;
   avgDaily: number;
+  weekdaySpend?: number;
+  weekendSpend?: number;
+  weekdayCount?: number;
+  weekendCount?: number;
+  transactions?: WeeklyTransactionItem[];
 }
 
 export interface WeeklySpendingResult {
@@ -3248,6 +3407,41 @@ export function getWeeklySpending(periodId: number): WeeklySpendingResult {
       return txDate >= weekStart && txDate <= new Date(weekEnd.getTime() + 86399999); // include end day
     });
 
+    let weekdaySpend = 0;
+    let weekendSpend = 0;
+    let weekdayCount = 0;
+    let weekendCount = 0;
+
+    const enrichedTxs: WeeklyTransactionItem[] = weekTxs.map((t) => {
+      const txDate = t.created_time ? new Date(t.created_time) : new Date(t.date);
+      const day = txDate.getDay();
+      const isWeekend = day === 0 || day === 6;
+      if (isWeekend) {
+        weekendSpend += t.amount;
+        weekendCount++;
+      } else {
+        weekdaySpend += t.amount;
+        weekdayCount++;
+      }
+      return {
+        id: t.id,
+        title: t.title,
+        category: t.category,
+        amount: t.amount,
+        type: t.type,
+        done: t.done,
+        created_time: t.created_time,
+        date: t.date,
+        isWeekend,
+      };
+    });
+
+    enrichedTxs.sort((a, b) => {
+      const dateA = a.created_time ? new Date(a.created_time).getTime() : new Date(a.date).getTime();
+      const dateB = b.created_time ? new Date(b.created_time).getTime() : new Date(b.date).getTime();
+      return dateB - dateA;
+    });
+
     const total = weekTxs.reduce((s, t) => s + t.amount, 0);
     const categoryTotals: Record<string, number> = {};
     weekTxs.forEach((t) => {
@@ -3266,6 +3460,11 @@ export function getWeeklySpending(periodId: number): WeeklySpendingResult {
       txCount: weekTxs.length,
       categoryTotals,
       avgDaily,
+      weekdaySpend,
+      weekendSpend,
+      weekdayCount,
+      weekendCount,
+      transactions: enrichedTxs,
     });
 
     weekStart = new Date(weekStart);
@@ -3308,19 +3507,21 @@ export function getWeeklySpending(periodId: number): WeeklySpendingResult {
 export interface RecurringCostItem {
   id: number;
   title: string;
-  cleanTitle: string;
+  cleanTitle?: string;
   category: string;
   amount: number;
   type: 'cash' | 'credit_expense' | 'credit_payment';
   active: boolean;
   end_date: string | null;
-  created_at: string;
+  created_at?: string;
   isTemporary: boolean;
-  isInstallment: boolean;
-  totalTenor: number | null;
-  currentTenor: number | null;
-  remainingTenor: number | null;
-  remainingLiability: number | null;
+  // Installment analyzer (PR #332): selalu diisi oleh getRecurringCostAnalysis,
+  // optional agar fixture test/engine lama tetap valid.
+  isInstallment?: boolean;
+  totalTenor?: number | null;
+  currentTenor?: number | null;
+  remainingTenor?: number | null;
+  remainingLiability?: number | null;
 }
 
 export interface RecurringCostResult {
@@ -3342,6 +3543,7 @@ export interface RecurringCostResult {
   postInstallmentRunRate: number;
   installmentCount: number;
   subscriptionCount: number;
+  latestIncome?: number;
 }
 
 export function getRecurringCostAnalysis(): RecurringCostResult {
@@ -3401,7 +3603,7 @@ export function getRecurringCostAnalysis(): RecurringCostResult {
 
   const monthlyTotal = activeItems.reduce((s, i) => s + i.amount, 0);
   const annualTotal = activeItems.reduce((s, i) => {
-    if (i.isInstallment && i.remainingTenor !== null) {
+    if (i.isInstallment && i.remainingTenor != null) {
       return s + Math.min(12, i.remainingTenor) * i.amount;
     }
     return s + i.amount * 12;
@@ -3424,6 +3626,14 @@ export function getRecurringCostAnalysis(): RecurringCostResult {
     ? activeItems.reduce((max, i) => (i.amount > max.amount ? i : max))
     : null;
   const avgPerItem = activeItems.length > 0 ? monthlyTotal / activeItems.length : 0;
+  const lastIncomeRow = db.prepare(`
+    SELECT mi.income 
+    FROM monthly_income mi 
+    JOIN periods p ON mi.period_id = p.id 
+    ORDER BY p.start_date DESC 
+    LIMIT 1
+  `).get() as { income?: number } | undefined;
+  const latestIncome = lastIncomeRow?.income || 0;
 
   const activeInstallments = activeItems.filter((i) => i.isInstallment);
   const activeSubscriptions = activeItems.filter((i) => !i.isInstallment);
@@ -3457,10 +3667,20 @@ export function getRecurringCostAnalysis(): RecurringCostResult {
     postInstallmentRunRate,
     installmentCount,
     subscriptionCount,
+    latestIncome,
   };
 }
 
 // ─── Budget Pace ───────────────────────────────────────────────────────────
+
+export interface BudgetPaceTransaction {
+  id: number;
+  title: string;
+  amount: number;
+  date: string;
+  payment_method: string;
+  type: string;
+}
 
 export interface BudgetPaceCategory {
   category: string;
@@ -3472,36 +3692,90 @@ export interface BudgetPaceCategory {
   pace_diff: number;       // spent_pct - expected_pct (positive = over pace)
   pace_status: 'on_track' | 'warning' | 'over_pace' | 'under_budget' | 'no_limit';
   projected_total: number; // linear projection at end of period
+  projected_diff: number;  // projected_total - limit
   days_elapsed: number;
   days_total: number;
+  days_remaining: number;
+  remaining_budget: number;
+  safe_daily_burn: number;
+  actual_daily_burn: number;
+  tx_count: number;
+  transactions?: BudgetPaceTransaction[];
+}
+
+export interface BudgetPaceTimelinePoint {
+  day: number;
+  date: string;
+  spent_daily: number;
+  spent_cumulative: number;
+  expected_cumulative: number;
+  budget_limit: number;
+  projected_cumulative?: number;
+}
+
+export interface BudgetPacePeriodOption {
+  id: number;
+  month: string;
+  start_date: string;
+  end_date: string;
+  is_active: boolean;
 }
 
 export interface BudgetPaceResult {
   period_id: number;
+  /** True when no period covers today (gap between salary day and kickoff) and the latest started period is shown instead. */
+  is_fallback_period?: boolean;
   period_label: string;
   start_date: string;
   end_date: string;
   days_elapsed: number;
   days_total: number;
+  days_remaining: number;
   time_elapsed_pct: number;    // days_elapsed / days_total * 100
   total_budget: number;        // sum of all category limits
   total_spent: number;         // sum of actual spending in budgeted categories
+  remaining_budget: number;    // total_budget - total_spent
   total_expected: number;      // linear: total_budget * time_elapsed_pct / 100
   total_pace_diff: number;     // total_spent - total_expected
   total_pace_pct: number;      // (spent - expected) / expected * 100
   total_projected: number;     // projected total at period end
+  safe_daily_burn: number;     // remaining_budget / days_remaining
+  actual_daily_burn: number;   // total_spent / days_elapsed
+  budget_burn_rate_ratio: number; // actual_daily_burn / (total_budget / days_total)
+  run_out_day: number | null;  // day number when budget runs out if over-pacing
+  run_out_date: string | null; // calendar date string when budget runs out
   overall_status: 'on_track' | 'warning' | 'over_pace' | 'critical';
   categories: BudgetPaceCategory[];
+  available_periods: BudgetPacePeriodOption[];
+  daily_timeline: BudgetPaceTimelinePoint[];
 }
 
 export function getBudgetPace(periodId?: number): BudgetPaceResult {
   // Resolve period
+  const activePeriod = getActivePeriod();
+  // Gap between salary day and month kickoff: no period covers today yet.
+  // Fall back to the most recent period that has already started instead of an empty result.
+  const fallbackPeriod = !periodId && !activePeriod
+    ? (db.prepare(`SELECT * FROM periods WHERE start_date <= date('now', 'localtime') ORDER BY start_date DESC LIMIT 1`).get() as any)
+    : null;
   const period = periodId
-    ? db.prepare('SELECT * FROM periods WHERE id = ?').get(periodId) as any
-    : getActivePeriod();
+    ? (db.prepare('SELECT * FROM periods WHERE id = ?').get(periodId) as any)
+    : (activePeriod ?? fallbackPeriod);
+
+  const available_periods: BudgetPacePeriodOption[] = db.prepare(`
+    SELECT id, month, start_date, end_date
+    FROM periods
+    ORDER BY start_date DESC
+  `).all().map((p: any) => ({
+    id: p.id,
+    month: p.month,
+    start_date: p.start_date,
+    end_date: p.end_date,
+    is_active: activePeriod ? p.id === activePeriod.id : false,
+  }));
 
   if (!period) {
-    // No active period — return empty result
+    // No active period: return empty result
     return {
       period_id: 0,
       period_label: 'N/A',
@@ -3509,43 +3783,83 @@ export function getBudgetPace(periodId?: number): BudgetPaceResult {
       end_date: '',
       days_elapsed: 0,
       days_total: 0,
+      days_remaining: 0,
       time_elapsed_pct: 0,
       total_budget: 0,
       total_spent: 0,
+      remaining_budget: 0,
       total_expected: 0,
       total_pace_diff: 0,
       total_pace_pct: 0,
       total_projected: 0,
+      safe_daily_burn: 0,
+      actual_daily_burn: 0,
+      budget_burn_rate_ratio: 1,
+      run_out_day: null,
+      run_out_date: null,
       overall_status: 'on_track',
       categories: [],
+      available_periods,
+      daily_timeline: [],
     };
   }
 
   const startDate = new Date(period.start_date + 'T00:00:00');
-  const endDate = new Date(period.end_date + 'T23:59:59');
-  const now = new Date();
+  const endDate = new Date(period.end_date + 'T00:00:00');
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
   const msPerDay = 1000 * 60 * 60 * 24;
   const days_total = Math.max(1, Math.round((endDate.getTime() - startDate.getTime()) / msPerDay) + 1);
-  const days_elapsed = Math.min(
-    days_total,
-    Math.max(0, Math.round((now.getTime() - startDate.getTime()) / msPerDay) + 1)
-  );
+
+  let days_elapsed = 0;
+  if (today.getTime() >= endDate.getTime()) {
+    days_elapsed = days_total;
+  } else if (today.getTime() >= startDate.getTime()) {
+    days_elapsed = Math.min(
+      days_total,
+      Math.max(0, Math.round((today.getTime() - startDate.getTime()) / msPerDay) + 1)
+    );
+  } else {
+    days_elapsed = 0;
+  }
+  const days_remaining = Math.max(0, days_total - days_elapsed);
   const time_elapsed_pct = (days_elapsed / days_total) * 100;
 
-  // Get all categories with limits
+  // Get all categories with budget limits
   const categories = db.prepare('SELECT name, color, monthly_limit FROM categories WHERE monthly_limit > 0').all() as any[];
 
-  // Get spending per category for this period (done=1, spending types only)
-  const spending = db.prepare(`
-    SELECT category, SUM(amount) as spent
+  // Get detailed spending transactions for this period (done=1, cash & credit_expense)
+  const txRows = db.prepare(`
+    SELECT id, title, amount, category, type, payment_method, done,
+           SUBSTR(COALESCE(created_time, date), 1, 10) AS day_date
     FROM transactions
     WHERE period_id = ? AND done = 1 AND type IN ('cash', 'credit_expense')
-    GROUP BY category
+    ORDER BY COALESCE(created_time, date) DESC, id DESC
   `).all(period.id) as any[];
 
+  const txByCategory = new Map<string, BudgetPaceTransaction[]>();
+  const spendingByDay = new Map<string, number>();
   const spendingMap = new Map<string, number>();
-  spending.forEach((s) => spendingMap.set(s.category, s.spent));
+
+  for (const tx of txRows) {
+    const catList = txByCategory.get(tx.category) || [];
+    catList.push({
+      id: tx.id,
+      title: tx.title,
+      amount: tx.amount,
+      date: tx.day_date,
+      payment_method: tx.payment_method,
+      type: tx.type,
+    });
+    txByCategory.set(tx.category, catList);
+
+    const prevCatSpent = spendingMap.get(tx.category) || 0;
+    spendingMap.set(tx.category, prevCatSpent + tx.amount);
+
+    const prevDaySpent = spendingByDay.get(tx.day_date) || 0;
+    spendingByDay.set(tx.day_date, prevDaySpent + tx.amount);
+  }
 
   let total_budget = 0;
   let total_spent = 0;
@@ -3557,6 +3871,11 @@ export function getBudgetPace(periodId?: number): BudgetPaceResult {
     const expected_pct = time_elapsed_pct;
     const pace_diff = spent_pct - expected_pct;
     const projected_total = days_elapsed > 0 ? (spent / days_elapsed) * days_total : 0;
+    const projected_diff = projected_total - limit;
+    const remaining_budget = Math.max(0, limit - spent);
+    const safe_daily_burn = days_remaining > 0 ? remaining_budget / days_remaining : 0;
+    const actual_daily_burn = days_elapsed > 0 ? spent / days_elapsed : 0;
+    const catTxs = txByCategory.get(cat.name) || [];
 
     let pace_status: BudgetPaceCategory['pace_status'];
     if (limit === 0) {
@@ -3586,8 +3905,15 @@ export function getBudgetPace(periodId?: number): BudgetPaceResult {
       pace_diff,
       pace_status,
       projected_total,
+      projected_diff,
       days_elapsed,
       days_total,
+      days_remaining,
+      remaining_budget,
+      safe_daily_burn,
+      actual_daily_burn,
+      tx_count: catTxs.length,
+      transactions: catTxs,
     };
   });
 
@@ -3595,6 +3921,59 @@ export function getBudgetPace(periodId?: number): BudgetPaceResult {
   const total_pace_diff = total_spent - total_expected;
   const total_pace_pct = total_expected > 0 ? (total_pace_diff / total_expected) * 100 : 0;
   const total_projected = days_elapsed > 0 ? (total_spent / days_elapsed) * days_total : 0;
+  const remaining_budget = Math.max(0, total_budget - total_spent);
+  const safe_daily_burn = days_remaining > 0 ? remaining_budget / days_remaining : 0;
+  const actual_daily_burn = days_elapsed > 0 ? total_spent / days_elapsed : 0;
+  const standard_daily_budget = days_total > 0 ? total_budget / days_total : 1;
+  const budget_burn_rate_ratio = standard_daily_budget > 0 ? actual_daily_burn / standard_daily_budget : 1;
+
+  let run_out_day: number | null = null;
+  let run_out_date: string | null = null;
+  if (actual_daily_burn > 0 && total_budget > 0) {
+    const projectedDay = Math.ceil(total_budget / actual_daily_burn);
+    if (projectedDay <= days_total) {
+      run_out_day = projectedDay;
+      const runOutD = new Date(startDate.getTime() + (projectedDay - 1) * msPerDay);
+      const y = runOutD.getFullYear();
+      const m = String(runOutD.getMonth() + 1).padStart(2, '0');
+      const d = String(runOutD.getDate()).padStart(2, '0');
+      run_out_date = `${y}-${m}-${d}`;
+    }
+  }
+
+  // Daily timeline
+  const daily_timeline: BudgetPaceTimelinePoint[] = [];
+  let runningCumulative = 0;
+  for (let i = 0; i < days_total; i++) {
+    const d = new Date(startDate.getTime() + i * msPerDay);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const dayOfMonth = String(d.getDate()).padStart(2, '0');
+    const dateStr = `${y}-${m}-${dayOfMonth}`;
+    const dayNum = i + 1;
+    const spent_daily = spendingByDay.get(dateStr) || 0;
+
+    if (dayNum <= days_elapsed) {
+      runningCumulative += spent_daily;
+    }
+
+    const expected_cumulative = Math.round((dayNum / days_total) * total_budget);
+
+    const point: BudgetPaceTimelinePoint = {
+      day: dayNum,
+      date: dateStr,
+      spent_daily: dayNum <= days_elapsed ? spent_daily : 0,
+      spent_cumulative: dayNum <= days_elapsed ? runningCumulative : (days_elapsed > 0 ? total_spent : 0),
+      expected_cumulative,
+      budget_limit: total_budget,
+    };
+
+    if (dayNum > days_elapsed && days_elapsed > 0) {
+      point.projected_cumulative = Math.round(total_spent + (dayNum - days_elapsed) * actual_daily_burn);
+    }
+
+    daily_timeline.push(point);
+  }
 
   let overall_status: BudgetPaceResult['overall_status'];
   if (total_budget === 0) {
@@ -3611,20 +3990,30 @@ export function getBudgetPace(periodId?: number): BudgetPaceResult {
 
   return {
     period_id: period.id,
+    is_fallback_period: !periodId && !activePeriod,
     period_label: period.month,
     start_date: period.start_date,
     end_date: period.end_date,
     days_elapsed,
     days_total,
+    days_remaining,
     time_elapsed_pct,
     total_budget,
     total_spent,
+    remaining_budget,
     total_expected,
     total_pace_diff,
     total_pace_pct,
     total_projected,
+    safe_daily_burn,
+    actual_daily_burn,
+    budget_burn_rate_ratio,
+    run_out_day,
+    run_out_date,
     overall_status,
     categories: paceCategories,
+    available_periods,
+    daily_timeline,
   };
 }
 
@@ -3768,4 +4157,321 @@ export function saveKseiDetailSnapshot(s: {
        payload_json = excluded.payload_json,
        fetched_at = excluded.fetched_at`
   ).run(s.snapshot_date, s.kind, s.code ?? '', s.payload_json, s.fetched_at);
+}
+
+// ============================================================
+// Month Comparison Intelligence Hub
+// ============================================================
+
+export interface ComparePeriodSummary {
+  id: number;
+  month: string;
+  start_date: string;
+  end_date: string;
+  income: number;
+  outcome: {
+    total: number;
+    cash: number;
+    credit_payment: number;
+    credit_expenses: number;
+  };
+  invest_total: number;
+  savings: number;
+  savings_rate_pct: number;
+  networth_total: number;
+  tx_count: number;
+  avg_per_tx: number;
+  top_transactions: Array<{
+    id: number;
+    title: string;
+    amount: number;
+    category: string;
+    date: string;
+    type: string;
+  }>;
+}
+
+export interface CategoryCompareRow {
+  name: string;
+  color: string;
+  leftAmount: number;
+  rightAmount: number;
+  delta: number;
+  pctChange: number;
+  status: 'up' | 'down' | 'same' | 'new' | 'zero';
+  leftCount: number;
+  rightCount: number;
+}
+
+export interface CompareResult {
+  availablePeriods: Array<{
+    id: number;
+    month: string;
+    start_date: string;
+    end_date: string;
+    tx_count: number;
+  }>;
+  periodA: ComparePeriodSummary;
+  periodB: ComparePeriodSummary;
+  categories: CategoryCompareRow[];
+  topDrivers: {
+    topIncreases: CategoryCompareRow[];
+    topSavings: CategoryCompareRow[];
+  };
+  insights: string[];
+  categoryTransactions?: {
+    category: string;
+    periodA: Array<{ id: number; title: string; amount: number; date: string; type: string }>;
+    periodB: Array<{ id: number; title: string; amount: number; date: string; type: string }>;
+  };
+}
+
+export function getMonthComparison(options?: {
+  periodAId?: number;
+  periodBId?: number;
+  monthA?: string;
+  monthB?: string;
+  drilldownCategory?: string;
+}): CompareResult {
+  const availablePeriods = db.prepare(`
+    SELECT p.id, p.month, p.start_date, p.end_date, COUNT(t.id) as tx_count
+    FROM periods p
+    LEFT JOIN transactions t ON t.period_id = p.id AND t.done = 1
+    GROUP BY p.id
+    ORDER BY p.start_date DESC
+  `).all() as Array<{ id: number; month: string; start_date: string; end_date: string; tx_count: number }>;
+
+  if (availablePeriods.length === 0) {
+    const emptyPeriod: ComparePeriodSummary = {
+      id: 0,
+      month: 'N/A',
+      start_date: '',
+      end_date: '',
+      income: 0,
+      outcome: { total: 0, cash: 0, credit_payment: 0, credit_expenses: 0 },
+      invest_total: 0,
+      savings: 0,
+      savings_rate_pct: 0,
+      networth_total: 0,
+      tx_count: 0,
+      avg_per_tx: 0,
+      top_transactions: [],
+    };
+    return {
+      availablePeriods: [],
+      periodA: emptyPeriod,
+      periodB: emptyPeriod,
+      categories: [],
+      topDrivers: { topIncreases: [], topSavings: [] },
+      insights: ['Belum ada data periode yang tersedia untuk komparasi.'],
+    };
+  }
+
+  // Resolve Period A and Period B
+  let pB = availablePeriods[0];
+  let pA = availablePeriods.length > 1 ? availablePeriods[1] : availablePeriods[0];
+
+  if (options?.periodBId) {
+    const found = availablePeriods.find((p) => p.id === options.periodBId);
+    if (found) pB = found;
+  } else if (options?.monthB) {
+    const found = availablePeriods.find((p) => p.month === options.monthB);
+    if (found) pB = found;
+  }
+
+  if (options?.periodAId) {
+    const found = availablePeriods.find((p) => p.id === options.periodAId);
+    if (found) pA = found;
+  } else if (options?.monthA) {
+    const found = availablePeriods.find((p) => p.month === options.monthA);
+    if (found) pA = found;
+  }
+
+  const buildPeriodSummary = (p: typeof availablePeriods[0]): { summary: ComparePeriodSummary; txs: any[] } => {
+    const txRows = db.prepare(`
+      SELECT id, title, amount, category, date, type
+      FROM transactions
+      WHERE period_id = ? AND done = 1
+      ORDER BY amount DESC
+    `).all(p.id) as Array<{ id: number; title: string; amount: number; category: string; date: string; type: string }>;
+
+    const cash = txRows.filter((t) => t.type === 'cash').reduce((sum, t) => sum + t.amount, 0);
+    const credit_payment = txRows.filter((t) => t.type === 'credit_payment').reduce((sum, t) => sum + t.amount, 0);
+    const credit_expenses = txRows.filter((t) => t.type === 'credit_expense').reduce((sum, t) => sum + t.amount, 0);
+    const total_outcome = cash + credit_payment;
+    const invest_total = txRows.filter((t) => t.category === INVEST_CATEGORY).reduce((sum, t) => sum + t.amount, 0);
+
+    const incRow = db.prepare('SELECT income FROM monthly_income WHERE period_id = ?').get(p.id) as any;
+    const income = incRow ? (incRow.income || 0) : 0;
+    const savings = income - (total_outcome - invest_total);
+    const savings_rate_pct = income > 0 ? Number(((savings / income) * 100).toFixed(2)) : 0;
+
+    const nwRow = db.prepare('SELECT total FROM networth WHERE period_id = ?').get(p.id) as any;
+    const networth_total = nwRow ? (nwRow.total || 0) : 0;
+    const tx_count = txRows.length;
+    const avg_per_tx = tx_count > 0 ? Math.round(total_outcome / tx_count) : 0;
+    const top_transactions = txRows.slice(0, 5);
+
+    return {
+      summary: {
+        id: p.id,
+        month: p.month,
+        start_date: p.start_date,
+        end_date: p.end_date,
+        income,
+        outcome: {
+          total: total_outcome,
+          cash,
+          credit_payment,
+          credit_expenses,
+        },
+        invest_total,
+        savings,
+        savings_rate_pct,
+        networth_total,
+        tx_count,
+        avg_per_tx,
+        top_transactions,
+      },
+      txs: txRows,
+    };
+  };
+
+  const dataA = buildPeriodSummary(pA);
+  const dataB = buildPeriodSummary(pB);
+
+  const catRows = db.prepare('SELECT name, color FROM categories').all() as Array<{ name: string; color: string }>;
+  const catColorMap = new Map<string, string>();
+  catRows.forEach((c) => catColorMap.set(c.name, c.color));
+
+  const catMap = new Map<string, { leftAmount: number; rightAmount: number; leftCount: number; rightCount: number }>();
+
+  for (const t of dataA.txs) {
+    if (t.type === 'cash' || t.type === 'credit_payment') {
+      const entry = catMap.get(t.category) || { leftAmount: 0, rightAmount: 0, leftCount: 0, rightCount: 0 };
+      entry.leftAmount += t.amount;
+      entry.leftCount += 1;
+      catMap.set(t.category, entry);
+    }
+  }
+
+  for (const t of dataB.txs) {
+    if (t.type === 'cash' || t.type === 'credit_payment') {
+      const entry = catMap.get(t.category) || { leftAmount: 0, rightAmount: 0, leftCount: 0, rightCount: 0 };
+      entry.rightAmount += t.amount;
+      entry.rightCount += 1;
+      catMap.set(t.category, entry);
+    }
+  }
+
+  const categories: CategoryCompareRow[] = Array.from(catMap.entries()).map(([name, val]) => {
+    const delta = val.rightAmount - val.leftAmount;
+    let status: 'up' | 'down' | 'same' | 'new' | 'zero' = 'same';
+    if (val.leftAmount === 0 && val.rightAmount === 0) status = 'zero';
+    else if (val.leftAmount === 0 && val.rightAmount > 0) status = 'new';
+    else if (delta > 0) status = 'up';
+    else if (delta < 0) status = 'down';
+
+    const pctChange = val.leftAmount > 0
+      ? Number(((delta / val.leftAmount) * 100).toFixed(1))
+      : (val.rightAmount > 0 ? 100 : 0);
+
+    return {
+      name,
+      color: catColorMap.get(name) || '#64748b',
+      leftAmount: val.leftAmount,
+      rightAmount: val.rightAmount,
+      delta,
+      pctChange,
+      status,
+      leftCount: val.leftCount,
+      rightCount: val.rightCount,
+    };
+  }).sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta));
+
+  const topIncreases = categories
+    .filter((c) => c.delta > 0 && c.rightAmount > 0)
+    .sort((a, b) => b.delta - a.delta)
+    .slice(0, 3);
+
+  const topSavings = categories
+    .filter((c) => c.delta < 0)
+    .sort((a, b) => a.delta - b.delta)
+    .slice(0, 3);
+
+  const insights: string[] = [];
+  const outcomeDelta = dataB.summary.outcome.total - dataA.summary.outcome.total;
+  const outcomePct = dataA.summary.outcome.total > 0
+    ? Math.abs(Number(((outcomeDelta / dataA.summary.outcome.total) * 100).toFixed(1)))
+    : 0;
+
+  if (outcomeDelta > 0) {
+    insights.push(
+      `Total pengeluaran ${pB.month} (${formatIdrInline(dataB.summary.outcome.total)}) naik ${formatIdrInline(outcomeDelta)} (+${outcomePct}%) dibandingkan ${pA.month} (${formatIdrInline(dataA.summary.outcome.total)}).`
+    );
+  } else if (outcomeDelta < 0) {
+    insights.push(
+      `Total pengeluaran ${pB.month} (${formatIdrInline(dataB.summary.outcome.total)}) lebih hemat ${formatIdrInline(Math.abs(outcomeDelta))} (-${outcomePct}%) dibandingkan ${pA.month} (${formatIdrInline(dataA.summary.outcome.total)}).`
+    );
+  } else {
+    insights.push(
+      `Total pengeluaran ${pB.month} seimbang sama persis dengan ${pA.month} pada angka ${formatIdrInline(dataB.summary.outcome.total)}.`
+    );
+  }
+
+  if (topIncreases.length > 0) {
+    insights.push(
+      `Pemicu kenaikan pengeluaran terbesar berasal dari kategori ${topIncreases[0].name} dengan penambahan +${formatIdrInline(topIncreases[0].delta)} (+${topIncreases[0].pctChange}%).`
+    );
+  }
+
+  if (topSavings.length > 0) {
+    insights.push(
+      `Efisiensi biaya terbaik dicapai pada kategori ${topSavings[0].name} dengan penghematan ${formatIdrInline(Math.abs(topSavings[0].delta))} (${topSavings[0].pctChange}%).`
+    );
+  }
+
+  if (dataB.summary.income > 0) {
+    const surplusLabel = dataB.summary.savings >= 0 ? 'surplus' : 'defisit';
+    insights.push(
+      `Tingkat tabungan berada pada ${dataB.summary.savings_rate_pct}% (${surplusLabel} ${formatIdrInline(Math.abs(dataB.summary.savings))}), dibandingkan ${dataA.summary.savings_rate_pct}% pada ${pA.month}.`
+    );
+  }
+
+  let categoryTransactions: CompareResult['categoryTransactions'] = undefined;
+  if (options?.drilldownCategory) {
+    const cat = options.drilldownCategory;
+    const catTxsA = db.prepare(`
+      SELECT id, title, amount, date, type
+      FROM transactions
+      WHERE period_id = ? AND category = ? AND done = 1
+      ORDER BY date DESC, amount DESC
+    `).all(pA.id, cat) as Array<{ id: number; title: string; amount: number; date: string; type: string }>;
+
+    const catTxsB = db.prepare(`
+      SELECT id, title, amount, date, type
+      FROM transactions
+      WHERE period_id = ? AND category = ? AND done = 1
+      ORDER BY date DESC, amount DESC
+    `).all(pB.id, cat) as Array<{ id: number; title: string; amount: number; date: string; type: string }>;
+
+    categoryTransactions = {
+      category: cat,
+      periodA: catTxsA,
+      periodB: catTxsB,
+    };
+  }
+
+  return {
+    availablePeriods,
+    periodA: dataA.summary,
+    periodB: dataB.summary,
+    categories,
+    topDrivers: {
+      topIncreases,
+      topSavings,
+    },
+    insights,
+    categoryTransactions,
+  };
 }

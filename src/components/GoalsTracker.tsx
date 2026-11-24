@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { toast } from 'sonner';
 import { Skeleton } from './ui/skeleton';
 import type { FinancialGoal } from '../lib/api';
 import type { NetworthRecord } from '../lib/data';
@@ -10,6 +11,8 @@ import {
   deleteGoalApi,
   fetchRecurringTransactions,
 } from '../lib/api';
+import GoalPacePanel from './GoalPacePanel';
+import { analyzeGoalsPortfolio, type PortfolioAnalysis } from '../lib/goals-engine';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -147,6 +150,8 @@ export default function GoalsTracker({ networth }: Props) {
   const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
   const [contributeTo, setContributeTo] = useState<FinancialGoal | null>(null);
   const [contributeAmount, setContributeAmount] = useState('');
+  const [capacity, setCapacity] = useState<number | null>(null);
+  const [capacityLoading, setCapacityLoading] = useState(true);
 
   const loadGoals = useCallback(async () => {
     try {
@@ -170,12 +175,53 @@ export default function GoalsTracker({ networth }: Props) {
     loadGoals();
   }, [loadGoals]);
 
+  // Kapasitas tabungan: rata-rata cash surplus 6 periode yang sudah selesai
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch('/api/savings-rate');
+        if (!res.ok) throw new Error('savings-rate unavailable');
+        const data = await res.json();
+        const todayStr = new Date().toISOString().slice(0, 10);
+        const closed = (data.periods || []).filter((p: { end_date: string }) => p.end_date < todayStr);
+        const window = closed.slice(-6);
+        if (!cancelled) {
+          setCapacity(
+            window.length > 0
+              ? Math.max(
+                  0,
+                  window.reduce((s: number, p: { cash_surplus: number }) => s + (p.cash_surplus || 0), 0) /
+                    window.length
+                )
+              : null
+          );
+        }
+      } catch {
+        if (!cancelled) setCapacity(null);
+      } finally {
+        if (!cancelled) setCapacityLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const activeGoals = useMemo(() => goals.filter((g) => !g.completed), [goals]);
   const completedGoals = useMemo(() => goals.filter((g) => g.completed), [goals]);
 
   const totalTarget = useMemo(() => activeGoals.reduce((s, g) => s + g.target_amount, 0), [activeGoals]);
   const totalSaved = useMemo(() => activeGoals.reduce((s, g) => s + g.current_amount, 0), [activeGoals]);
   const overallProgress = useMemo(() => totalTarget > 0 ? (totalSaved / totalTarget) * 100 : 0, [totalTarget, totalSaved]);
+
+  const todayStr = useMemo(() => new Date().toISOString().slice(0, 10), []);
+  const paceAnalysis = useMemo<PortfolioAnalysis | null>(() => {
+    if (activeGoals.length === 0) return null;
+    const autoMonthly = new Map<number, number>();
+    for (const [id, src] of autoSources) autoMonthly.set(id, src.amount);
+    return analyzeGoalsPortfolio(activeGoals, autoMonthly, capacity, todayStr);
+  }, [activeGoals, autoSources, capacity, todayStr]);
 
   const latestNetworth = networth.length > 0 ? networth[networth.length - 1] : null;
 
@@ -262,6 +308,7 @@ export default function GoalsTracker({ networth }: Props) {
       await loadGoals();
     } catch (err) {
       console.error('Failed to delete goal:', err);
+      toast.error(err instanceof Error ? err.message : 'Gagal menyimpan perubahan goal');
     }
   };
 
@@ -273,6 +320,7 @@ export default function GoalsTracker({ networth }: Props) {
       await loadGoals();
     } catch (err) {
       console.error('Failed to toggle goal:', err);
+      toast.error(err instanceof Error ? err.message : 'Gagal menyimpan perubahan goal');
     }
   };
 
@@ -293,6 +341,7 @@ export default function GoalsTracker({ networth }: Props) {
       await loadGoals();
     } catch (err) {
       console.error('Failed to contribute:', err);
+      toast.error(err instanceof Error ? err.message : 'Gagal menyimpan perubahan goal');
     }
   };
 
@@ -356,7 +405,7 @@ export default function GoalsTracker({ networth }: Props) {
 
         <div className="glass-card p-5">
           <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-gold-500/10 dark:bg-gold-700/20/30 text-gold-600 dark:text-gold-400">
+              <div className="p-2 rounded-lg bg-gold-500/10 dark:bg-gold-500/20 text-gold-600 dark:text-gold-400">
                 <Clock className="w-5 h-5" />
               </div>
               <div>
@@ -388,6 +437,9 @@ export default function GoalsTracker({ networth }: Props) {
             </div>
           </div>
       </div>
+
+      {/* Pace Intelligence Panel */}
+      <GoalPacePanel analysis={paceAnalysis} capacityLoading={capacityLoading} today={todayStr} />
 
       {/* Action Bar */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -588,7 +640,7 @@ export default function GoalsTracker({ networth }: Props) {
                     <div className="flex items-center gap-1">
                       <button
                         onClick={() => handleToggleComplete(goal)}
-                        className="p-1.5 rounded-md hover:bg-gold-500/5 dark:hover:bg-gold-700/30/20 text-gold-500 transition"
+                        className="p-1.5 rounded-md hover:bg-gold-500/5 dark:hover:bg-gold-500/20 text-gold-500 transition"
                         title="Reopen goal"
                       >
                         <Circle className="w-4 h-4" />
@@ -754,7 +806,8 @@ export default function GoalsTracker({ networth }: Props) {
                     className={`w-8 h-8 rounded-full transition-all ${
                       form.color === color ? 'ring-2 ring-offset-2 ring-offset-background scale-110' : 'hover:scale-105'
                     }`}
-                    style={{ backgroundColor: color, ringColor: color }}
+                    // `ringColor` is not CSS; Tailwind's ring reads --tw-ring-color.
+                    style={{ backgroundColor: color, '--tw-ring-color': color } as React.CSSProperties}
                     title={color}
                   />
                 ))}

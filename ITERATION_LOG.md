@@ -1,5 +1,417 @@
 # Iteration Log
 
+## 2026-11-23 — Fitur: Hapus data networth dari UI (selama ini hanya bisa via DB langsung)
+
+### Hasil
+- **Gap nyata:** data networth bisa diedit (`/networth/edit`) tapi tidak pernah bisa dihapus dari UI. `deleteNetworthApi` ada di `api.ts` tapi tidak dipakai komponen mana pun; endpoint `DELETE /api/networth/[periodId]` (dengan `recalcNetworthMoM()`) sudah lama tersedia. Entri salah/duplikat harus dihapus manual via SQLite.
+- **Fix:** tombol **Delete** di NetworthTable (baris desktop + kartu mobile, target sentuh 44×44, warna red-600/red-400). Konfirmasi via `ConfirmDialog` destructive ("Data networth {bulan} akan dihapus permanen"). Sukses: baris hilang dari state lokal + `toast.success`; gagal: baris tetap + `toast.error` berpesan server — `deleteNetworthApi` kini `assertOk()` (konsisten serial audit res.ok; sebelumnya mengabaikan status HTTP).
+- **Testing:** `networth-table-delete.test.tsx` baru (3 test: batal confirm → tanpa API call; konfirmasi → DELETE dengan `period_id` + baris hilang + toast sukses; API 400 → baris tetap + toast error berpesan server). Suite **825/825 hijau** (89 files). Build Complete.
+- **Git workflow:** Branch `feat/innovation-networth-delete` → PR #397 (merged).
+
+## 2026-11-22 — Bug Fix: Edit recurring transaction tidak lagi crash server (500 → 400 dengan alasan jelas)
+
+### Hasil
+- **Bug nyata dari log PM2** (22 Nov 07:31 & 07:32): user edit recurring transaction → `PUT /api/recurring/:id` → `TypeError: SQLite3 can only bind numbers, strings, bigints, buffers, and null` → Astro unhandled rejection → 500. Route PUT **tanpa validasi sama sekali** (POST sudah divalidasi penuh; PUT kosong) dan tanpa try/catch.
+- **Kelas trigger:** amount NaN (`Number('1.293.194')` → bind NULL → NOT NULL constraint), nilai objek (mis. `goal_id`), field join seperti `goal_name` ikut ter-bind.
+- **Fix:** `updateRecurringTransaction` kini whitelist kolom updatable (title, category, amount, type, payment_method, done, active, end_date, created_at, goal_id) — field asing dibuang; amount non-finite → error `Amount must be a valid number`; goal_id harus integer/null; NOT NULL constraint ditampilkan sebagai `<kolom> cannot be empty`. Route PUT try/catch → 400 JSON berisi alasan; `assertOk` di client kini menampilkan pesan itu ke user, bukan crash.
+- **Testing:** 3 assertions baru di `recurring-update.test.ts` (NaN amount, goal_id objek, field asing dibuang). Suite **822/822 hijau** (88 files). Build Complete, clean deploy (`rm -rf dist/` → build → restart).
+- **Git workflow:** Branch `fix/innovation-recurring-update-hardening` → PR #395.
+
+## Sesi 16 Nov 2026: Goals Pace Intelligence Hub (GH PR #375)
+
+### Ringkasan
+Meningkatkan halaman Goals (`/goals`) menjadi **Goals Pace Intelligence Hub**:
+- **Domain Engine Terpusat (`src/lib/goals-engine.ts`, pure client-safe)**:
+  - `computeGoalPace()`: progres aktual vs ekspektasi waktu (expected-by-now marker), klasifikasi 5 status pace (*Di Maju Jadwal, Sesuai Jadwal, Terlambat, Berisiko, Lewat Tenggat*), required/month, proyeksi ETA berbasis auto-setoran recurring, milestone 25/50/75 berikutnya + shortfall.
+  - `analyzeGoalsPortfolio()`: agregasi kebutuhan setoran vs kapasitas surplus 6 periode selesai dari `/api/savings-rate`, klasifikasi kelayakan (*Longgar, Pas-Pasan, Kurang Mampu*), coverage auto-setoran, milestone terdekat lintas goal, dan insight deterministik Bahasa Indonesia.
+  - `simulateBoost()`: alokasi setoran ekstra pro-rata ke kebutuhan setoran, ETA baru per goal, total bulan dipercepat, dan warning over-capacity terhadap surplus.
+- **UI Intelligence Panel (`src/components/GoalPacePanel.tsx`, terintegrasi `GoalsTracker.tsx`)**:
+  - 4 KPI: On Track count, Setoran Wajib/bln dengan badge kelayakan, Auto Coverage %, Milestone Terdekat.
+  - Tabel pace per goal: dual progress bar (aktual vs marker ekspektasi waktu), badge status, chip ETA (tepat waktu / meleset N bulan), required vs auto setoran, sisa/lewat hari.
+  - Simulator setoran ekstra: preset cepat + slider, KPI tepat-waktu sebelum/sesudah, total bulan dipercepat, beban total vs kapasitas %.
+- **Koreksi regresi antislop eksisting**: kelas Tailwind invalid `dark:bg-gold-700/20/30` dan `dark:hover:bg-gold-700/30/20` di GoalsTracker diperbaiki; badge memakai shade valid dual-theme WCAG AA, zero em-dash, state loading/empty.
+
+### Hasil Verifikasi
+- Test suite: **748/748 tests pass** (71 test files), bertambah 33 tests (`src/__tests__/goals-engine.test.ts` 27 + `src/__tests__/goals-pace-panel.test.tsx` 6).
+- `npm run build` bersih; tsc 0 error baru vs main (50 baseline).
+- PM2 clean rebuild & deployment terverifikasi di port 4321.
+
+## Sesi 14 Nov 2026: Weekly Spending & Pacing Intelligence Hub (/weekly) (PR #372)
+
+### Ringkasan
+Mengubah halaman `/weekly` menjadi **Weekly Spending & Pacing Intelligence Hub**:
+- **Domain Engine Terpusat (`src/lib/weekly-pacing-engine.ts`)**:
+  - Trajektori burn-rate kumulatif per minggu vs plafon anggaran periodik lengkap dengan status pacing (*under_budget, on_track, approaching, exceeded*).
+  - Kalkulator Batas Aman Belanja Harian (*Safe-to-Spend Allowance*) untuk sisa hari dalam siklus gaji dengan target rasio tabungan dinamis (0% s/d 50%) dan tabel simulasi proyeksi surplus/defisit akhir periode.
+  - Evaluasi Skor Disiplin Pacing (0-100) dan deteksi pola *Kickoff Spike* (belanja berlebih di minggu pertama) serta lonjakan belanja akhir pekan (*Weekend Surge*).
+  - Helper filter transaksi mingguan cepat berdasarkan query, kategori, dan jenis hari (*weekend/weekday*).
+- **Enrichment DB Backend (`src/lib/db.ts`)**:
+  - Menghitung breakdown nominal dan frekuensi belanja hari kerja (*weekday*) vs akhir pekan (*weekend*) per minggu.
+  - Menyertakan daftar transaksi lengkap per minggu (`transactions`) terurut kronologis untuk interactive audit drill-down.
+- **UI Intelligence Hub (`src/components/WeeklyTracker.tsx`, `src/pages/weekly.astro`)**:
+  - 4 Kartu KPI Headline: Total Pemasukan, Total Realisasi Belanja, Plafon Mingguan Rata-rata, dan Skor Disiplin Pacing dengan badge tier (*Disiplin Prima, Terkendali, Waspada, Kritis*).
+  - 3 Tab Interaktif:
+    1. **Ritme & Pacing**: Grafik batang realisasi mingguan vs plafon, grafik kurva kumulatif burn-rate, kartu progres per minggu dengan detail kategori, tren laju harian WoW, dan donat distribusi kategori.
+    2. **Safe-to-Spend Simulator**: Slider target tabungan, metrik batas belanja harian aman, status kelonggaran pacing, dan skenario komparasi proyeksi tabungan.
+    3. **Audit Transaksi & Weekend**: Komparasi visual hari kerja vs akhir pekan, pencarian transaksi real-time, filter kategori, dan filter hari kerja vs akhir pekan.
+  - Kepatuhan antislop: Bebas karakter em-dash (R-02), kontras tinggi WCAG AA untuk Light & Dark mode, dan penanganan state data/loading/empty.
+
+### Hasil Verifikasi
+- Test suite: **704/704 tests pass** (70 test files), bertambah 9 tests dari `src/__tests__/weekly-pacing-engine.test.ts` dan `src/__tests__/weekly-tracker-hub.test.tsx`.
+- Astro build: Berhasil tanpa error.
+- Deployment: PM2 `financial-dashboard` restarted & running sehat di port 4321.
+
+
+### Ringkasan
+Mengubah halaman `/forecast` menjadi **Predictive Financial Intelligence Hub**:
+- **Domain Engine Terpusat (`src/lib/forecast-engine.ts`)**:
+  - Ensembel 5 model proyeksi belanja: Momentum Regresi OLS, Pace Harian Konstan, Kurva Siklus Gaji Tertimbang (front-loaded gajian decay), Batas Atas Konservatif (+25% burn-rate cushion), dan Batas Bawah Penghematan / Frugal (-25% burn-rate). Menghitung rentang *Cone of Uncertainty* (spread ketidakpastian).
+  - Kalkulator Alokasi Belanja Harian Aman (*Daily Burn Quota*) berbasis sisa hari kalender dan target plafon dinamis dengan klasifikasi kelayakan (*Sangat Longgar, Terkendali, Ketat, Batas Terlampaui*).
+  - Proyeksi Tabungan Bersih & Laju Tabungan Akhir Bulan (EOM Net Savings) sesuai envelope rule FIN-235 (Investasi = tabungan).
+  - Estimasi Timeline Kejenuhan Kategori (*Burn-Rate & Days to Exhaustion*).
+  - Simulator Interaktif Koreksi Arah Tengah Bulan (*Mid-Period Course Correction What-If*): penyesuaian belanja harian (-50% s/d +30%) serta injeksi beban tak terduga (*emergency shock*).
+- **Enrichment API Backend (`src/pages/api/forecast/index.ts`)**:
+  - Menyediakan total pemasukan (`income`) dari `getMonthlyIncomeByPeriod`, akumulasi investasi (`investTotal`), ringkasan multi-model, alokasi harian aman, dan timeline kejenuhan kategori dengan tetap backward-compatible.
+- **UI Intelligence Hub (`src/components/Forecast.tsx`, `src/pages/forecast.astro`)**:
+  - Hero Header dengan pemilih periode evaluasi dan progres hari siklus gaji (hari ke-X dari Y).
+  - 4 Kartu KPI: Realisasi Belanja, Proyeksi Akhir Bulan (dengan badge akurasi & rentang ketidakpastian), Kuota Harian Aman (dengan pill kelayakan), dan Proyeksi Tabungan EOM (nominal & savings rate %).
+  - 5 Tab navigasi terstruktur: **Multi-Model & Trajektori** (grafik trajektori kumulatif + kartu ensembel 5 model), **Simulator Kuota Harian** (slider target plafon dinamis), **Koreksi Arah (What-If)** (preset cepat + slider penyesuaian + kalkulasi instan dampak surplus kas), **Burn-Rate & Kejenuhan Pagu** (progress bar konsumsi pagu dan estimasi hari habis), serta **Historis & Utilisasi Kartu** (utilisasi kartu kredit + riwayat 6 bulan).
+  - Mematuhi antislop: bebas em-dash, kontras WCAG AA dual-theme light/dark, dan state loading/error/empty.
+
+### Verifikasi
+- 695/695 unit tests hijau (68 test files), termasuk 14 test baru di `src/__tests__/forecast-engine.test.ts` dan `src/__tests__/forecast-component.test.tsx`.
+- `npm run build` sukses bersih.
+- PM2 clean rebuild & deployment terverifikasi di port 4321.
+
+## Sesi 12 Nov 2026: What-If Scenario Intelligence Hub & Simulator
+
+### Ringkasan
+Mengubah halaman `/what-if` menjadi **What-If Scenario Intelligence Hub & Simulator**:
+- **Enrichment Backend (`src/pages/api/scenario/index.ts`)**: Mengecualikan kategori `Invest` dari total belanja hidup (`avgSpending`) sesuai aturan FIN-235, menambahkan `avgInvest`, serta menyertakan daftar target finansial aktif (`goals`) untuk menghitung dampak percepatan pencapaian target.
+- **Domain Engine Terpusat (`src/lib/what-if-engine.ts`)**: Menyediakan simulasi multi-horizon (6, 12, 24, 36, 60 bulan), perhitungan bunga majemuk tahunan (0% s/d 18% p.a.), preset skenario cepat (*Frugal Sprint -20%*, *Kenaikan Gaji +15%*, *Investasi 10% p.a.*, *Belanja Besar -15 Jt*), kalkulasi akselerasi milestone kekayaan bersih, dampak ETA target finansial, dan insight deterministik Bahasa Indonesia tanpa em-dash.
+- **UI Intelligence Hub (`src/components/WhatIfPlanner.tsx`, `src/pages/what-if.astro`)**:
+  - Hero Command Strip dengan pemilih horizon (6B-60B), quick preset pills, dan 4 kartu KPI (Proyeksi Net Worth, Surplus Bulanan, Rasio Tabungan, Tambahan Compounding).
+  - 3 Tab interaktif tersinkronisasi URL (`?tab=projection|levers|compare`): **Proyeksi & Milestone** (grafik garis Baseline vs Skenario Aktif vs Pembanding, grafik bar Arus Kas, kartu Milestone & Goal Impact), **Kontrol Skenario** (slider pemasukan, imbal hasil tahunan, pengeluaran per kategori non-Invest, kejadian satu kali), dan **Simpan & Bandingkan** (simpan snapshot ke `localStorage`, pin ke grafik, hapus dengan konfirmasi `useConfirm`).
+  - Memenuhi standar antislop (WCAG AA light/dark, zero em-dash, skeleton loading, error/empty state).
+
+### Verifikasi
+- 681/681 unit tests passing (66 test files), termasuk `src/__tests__/what-if-intelligence-hub.test.tsx`.
+- `npm run build` sukses tanpa error.
+- PM2 clean rebuild & deployment terverifikasi di port 4321.
+
+## Sesi 11 Nov 2026: Savings Rate Intelligence Hub & Target Simulator (GH PR #367)
+
+### Ringkasan
+Mengubah halaman `/savings-rate` menjadi **Savings Rate Intelligence Hub & Target Simulator**:
+- **Enrichment Backend (`src/lib/db.ts`)**: Memperluas `getSavingsRate()` dengan metrik dekomposisi per siklus (`invest`, `living_expense`, `cash_surplus`, `invest_rate`) serta agregat `total_invested`, `total_cash_surplus`, dan `avg_invest_rate` secara backward-compatible dengan tetap mempertahankan aturan Invest sebagai tabungan (FIN-235).
+- **Domain Engine Terpusat (`src/lib/savings-rate-engine.ts`)**: Menyediakan klasifikasi 6 tier WCAG AA dual-theme (`Defisit`, `Merintis`, `Cukup`, `Sehat`, `Prima`, `Siap FIRE`), dekomposisi komposisi tabungan, simulator target What-If beserta proyeksi bunga majemuk 12 & 36 siklus, progres milestone berikutnya, serta insight deterministik dalam Bahasa Indonesia tanpa em-dash.
+- **UI Intelligence Hub (`src/components/SavingsRateTracker.tsx`, `src/pages/savings-rate.astro`)**:
+  - Hero Command Strip dengan pemilih siklus gaji, pill tier berkontras tinggi light/dark, bar komposisi Biaya Hidup vs Investasi vs Surplus Kas, dan 4 kartu KPI ringkas.
+  - 3 Tab interaktif tersinkronisasi URL (`?period=...&tab=...`): **Ringkasan & Tren** (grafik garis Rate vs Target 20%/30%/50%, grafik komposisi nominal, distribusi tier, dan progres milestone), **Simulator Target** (preset target, slider efisiensi biaya, penyesuaian pemasukan, tambahan investasi, serta proyeksi 1 & 3 tahun), dan **Riwayat & Rincian** (pencarian, filter tahun/tier, tabel sortable desktop + kartu responsif mobile).
+  - Memperbaiki pelanggaran antislop sebelumnya (kontras teks di atas gradasi hex, kelas Tailwind `/10/40` tidak valid, warna chart indigo di luar palet, serta state loading/error/empty).
+
+### Verifikasi
+- 675/675 unit tests hijau (65 test files), termasuk 8 test baru di `src/__tests__/savings-rate-intelligence-hub.test.tsx`
+- `npm run build` bersih tanpa error
+- PM2 clean rebuild & deployment terverifikasi di port 4321
+
+## Sesi 10 Nov 2026: Financial Health Intelligence Hub & What-If Score Simulator (GH PR #365)
+
+### Ringkasan
+Mengubah halaman Financial Health Score (`/health`) menjadi **Financial Health Intelligence Hub**:
+- **Domain Engine Terpusat (`src/lib/health-engine.ts`)**: Menyatukan kalkulasi 5 pilar (Savings Rate, Budget Adherence, Networth Growth, Spending Control, Consistency), memperbaiki Spending Control agar mengecualikan kategori `Invest` (Invest = tabungan), serta memperbaiki `prevScore` agar menggunakan skor konsistensi riil periode sebelumnya (bukan hardcoded `10`).
+- **Eliminasi Props Serialization `devalue` (`src/pages/health.astro`, `src/pages/api/health/index.ts`)**: Menghapus serialisasi props `summaries` dan `categories` di level SSR Astro dan menyajikan daftar periode, tren historis per pilar, `rawContext`, serta `prescriptions` terurut potensi kenaikan poin langsung via `/api/health`.
+- **UI Intelligence Hub (`src/components/HealthScore.tsx`)**:
+  - Hero Command Strip dengan SVG Score Gauge, Grade Pill, tren MoM, dan 4 kartu metrik eksekutif (Pilar Terkuat, Bottleneck Utama, Ruang Kenaikan Skor, Rata-rata 3 Siklus).
+  - 3 Tab interaktif: **Ringkasan & Pilar** (Radar 5 Pilar Chart.js + Line Tren + Rencana Aksi Prioritas), **Simulator Skor** (What-If Booster interaktif dengan preset & slider real-time), dan **Riwayat & Metodologi** (tabel historis clickable per siklus gaji).
+  - Sinkronisasi query URL `?month=...`, validasi antislop (WCAG AA dual-theme, zero em-dash, valid Tailwind tokens), serta state loading/error/empty lengkap.
+
+### Verifikasi
+- 667/667 unit tests passing (64 test files), termasuk `src/__tests__/health-intelligence-hub.test.tsx`.
+- `npm run build` sukses tanpa error.
+- PM2 clean rebuild & deployment terverifikasi di port 4321.
+
+## Sesi 09 Nov 2026: Sinking Funds & Dedicated Cash Reserves Intelligence Hub (GH PR #362)
+
+### Ringkasan
+Menghadirkan fitur baru **Sinking Funds & Dedicated Cash Reserves Intelligence Hub** (`/sinking-funds`):
+- **Sinking Funds Domain Engine (`src/lib/sinking-funds-engine.ts`)**:
+  - Menghitung sisa siklus gaji tanggal 21 s/d 20 menuju tenggat waktu pos tabungan.
+  - Perhitungan rekomendasi setoran bulanan (`monthlyRequired`) otomatis per pos.
+  - Evaluasi pacing kesehatan (`funded`, `on_track`, `needs_attention`, `overdue`).
+  - Mesin simulasi Waterfall Allocation: mendistribusikan surplus tabungan kas secara berjenjang dari Tier 1 (Kewajiban Pokok/Wajib), Tier 2 (Proteksi & Buffer Darurat), hingga Tier 3 (Gaya Hidup & Gear Upgrade).
+- **UI Interaktif Sinking Funds Hub (`src/components/SinkingFundsHub.tsx`)**:
+  - Kartu metrik: Total Dana Terkumpul, Komitmen Setoran Bulanan, Status Kesehatan Pos, dan Kapasitas Tabungan.
+  - Filter tab prioritas per tier (Semua, Tier 1, Tier 2, Tier 3).
+  - Card grid pos dana dengan visual progress bar, sisa siklus gaji, dan tombol cepat `+ Setor Tabungan`.
+  - Simulator Waterfall Surplus Interaktif dengan preset tombol cepat dan tabel rincian hasil alokasi.
+  - Dialog modal untuk Tambah / Edit pos dana dan Quick Deposit dengan persistensi `localStorage`.
+- **Integrasi Navigasi & Testing**:
+  - Ditambahkan ke Astro route `/sinking-funds` (`src/pages/sinking-funds.astro`).
+  - Integrasi ke `FintechSidebar.tsx`, `MobileSidebar.tsx`, dan `CommandPalette.tsx` di bawah grup PLANNING.
+  - 18 unit tests baru (`sinking-funds-engine.test.ts` & `sinking-funds-hub.test.tsx`), seluruh 659 tests project hijau (63 files).
+  - Patuh kurasi Antislop (dual-theme, kontras tinggi WCAG AA, tanpa em-dash).
+
+### Verifikasi
+- 659/659 unit tests passing (63 test files)
+- `npm run build` sukses tanpa error
+- PM2 clean rebuild & deployment terverifikasi di port 4321
+
+## Sesi 06 Nov 2026 — Subscription & Recurring Audit Intelligence Hub (GH PR #355)
+
+### Ringkasan
+Mentransformasi halaman Recurring Cost Analyzer (`/recurring-audit`) menjadi **Subscription & Recurring Audit Intelligence Hub**:
+- **Dashboard KPI Kesehatan Komitmen & Rasio Beban Rutin**:
+  - Menghitung **Recurring-to-Income Burden Ratio** (persentase beban rutin terhadap total pendapatan bulanan) dengan badge status kesehatan (*Sangat Sehat <15%*, *Moderat 15-25%*, *Beban Tinggi 25-40%*, *Beban Kritis >40%*).
+  - Menampilkan total komitmen bulanan & proyeksi tahunan, total komitmen berjangka yang akan terbebas, dan item komitmen terbesar.
+- **Simulator Pemangkasan Komitmen (What-If Kill-Switch)**:
+  - Checkbox interaktif untuk memilih langganan atau pengeluaran rutin yang disimulasikan untuk diputus/dibatalkan.
+  - Preset cepat 1-klik: *Pangkas Streaming*, *Simulasi Bebas Cicilan*, *Pangkas Top 3*, dan *Reset*.
+  - Kalkulasi dampak instan: Kas Bulanan Terbebas, Penghematan Kas Tahunan, Sisa Komitmen Rutin, dan Rasio Beban Baru.
+  - **Efek Pengganda Kekayaan 5 Tahun (The Subscription Multiplier)**: Proyeksi akumulasi kekayaan majemuk (*compound interest*) untuk horizon 1, 3, dan 5 tahun dengan pilihan imbal hasil (5%, 7%, 10% p.a.).
+- **Pilar Komitmen & Distribusi Beban Finansial**:
+  - Segmented distribution bar dan pengelompokan 4 pilar fungsional: *Keluarga & Tempat Tinggal*, *Cicilan & Kewajiban Berjangka*, *Utilitas & Langganan Digital*, dan *Investasi & Zakat*.
+  - Donut chart komposisi kategori komitmen teratas.
+- **Roadmap Pelepasan Arus Kas Cicilan Berjangka**:
+  - Linimasa kronologis tanggal jatuh tempo berakhirnya komitmen berjangka dan running cumulative nominal kas bulanan yang otomatis kembali bebas.
+- **Insight & Rekomendasi Audit Deterministik**:
+  - Poin-poin evaluasi rasio beban, peluang penghematan, dan optimasi cicilan berulang dalam Bahasa Indonesia.
+- **Tabel Interaktif**:
+  - Filter tipe (Cash, Credit Expense, Credit Payment) dan toggle tampilkan/sembunyikan komitmen jeda (*paused*).
+  - Fitur pencarian real-time nama komitmen dan kategori.
+  - Checkbox simulasi cut langsung di baris tabel.
+- **Standar Kualitas & Antislop**:
+  - Bebas karakter em-dash (R-02).
+  - Kepatuhan kontras WCAG AA di light maupun dark mode (R-25).
+  - Desain adaptif ramah layar mobile (R-03).
+  - 16 pengujian unit baru (100% lulus, total 604 passing across 56 test files).
+
+### Perubahan File
+- **`src/lib/recurring-audit-engine.ts`**: Modul analitik beban rutin, simulasi kill-switch, proyeksi bunga majemuk 5 tahun, pilar komitmen, dan roadmap pelepasan kas.
+- **`src/components/RecurringCostAnalyzer.tsx`**: Komponen antarmuka pengguna interaktif dengan navigasi 3 tab (*Ringkasan & Radar*, *Simulator Kill-Switch*, *Daftar Komitmen*), preset, chart donut, dan checklist simulasi.
+- **`src/pages/recurring-audit.astro`**: Pembaruan judul dan pengantar halaman.
+- **`src/lib/db.ts`**: Menambahkan field `latestIncome` pada `getRecurringCostAnalysis()`.
+- **`src/__tests__/recurring-audit-engine.test.ts`**: Suite pengujian unit mesin analitik dan simulasi (12 tes).
+- **`src/__tests__/recurring-audit-hub.test.tsx`**: Suite pengujian unit komponen antarmuka pengguna dan interaksi (4 tes).
+
+### Verifikasi
+- 604/604 unit tests passing (56 test files)
+- `npm run build` sukses tanpa error
+- PM2 clean rebuild & deployment terverifikasi di port 4321
+
+## Sesi 05 Nov 2026 — Credit Card Debt Payoff Simulator & Credit Health Hub (GH PR #353)
+
+### Ringkasan
+Menghadirkan **Credit Card Debt Payoff Simulator & Credit Health Intelligence Hub** terintegrasi pada modul `/credit-card`:
+- **Tab Navigasi Terpadu**: Menyediakan navigasi tab ganda (`Ringkasan & Transaksi` dan `Debt Payoff & Health Hub`) pada halaman Credit Card Tracker.
+- **Radar Kesehatan Kredit & Batas Limit**:
+  - Pengaturan limit kredit interaktif dengan preset cepat (10 Jt, 15 Jt, 20 Jt, 30 Jt, 50 Jt) atau nilai kustom yang tersimpan di `localStorage`.
+  - Pemanfaatan Limit (Credit Utilization Gauge) dengan status kesehatan visual: Optimal (<30%), Moderat (30-50%), Tinggi (50-75%), Kritis (>75%).
+  - Rasio Beban Cicilan & Utang terhadap Penghasilan Bulanan (Debt-to-Income / DTI Ratio).
+  - Rekomendasi Cerdas Finansial deterministik dalam Bahasa Indonesia berdasarkan profil kesehatan utang berjalan.
+- **Simulator Pelunasan Utang (Snowball vs Avalanche)**:
+  - Pemilihan strategi: **Avalanche** (prioritaskan bunga tertinggi untuk penghematan biaya finansial) vs **Snowball** (prioritaskan saldo terkecil untuk momentum psikologis).
+  - Slider & Preset Alokasi Ekstra Bulanan (+Rp 0, +Rp 250rb, +Rp 500rb, +Rp 1jt, +Rp 2jt).
+  - 4 Kartu KPI Komparasi Hasil: Waktu Bebas Utang (Bulan & Estimasi Tanggal), Bulan Dihemat vs Normal, Estimasi Penghematan Bunga/Admin, dan Alokasi Bulanan Total.
+  - Urutan Pelunasan Komitmen (Item Payoff Sequence) & Trajektori Penurunan Saldo Utang Bulanan.
+- **Linimasa Pelepasan Arus Kas (Cash Flow Liberation)**:
+  - Rekapitulasi kronologis pelepasan arus kas dari cicilan aktif yang selesai berurutan, menampilkan nominal bulanan yang kembali bebas dan sisa kewajiban angsuran.
+- **Kualitas & Antislop**:
+  - Bebas karakter em-dash (R-02).
+  - Kontras warna WCAG AA di light maupun dark mode (R-25).
+  - UI adaptif dan ramah perangkat bergerak (R-03).
+  - 14 pengujian unit baru (100% lulus, total 588 passing across 54 test files).
+
+### Perubahan File
+- **`src/lib/debt-simulator.ts`**: Mesin kalkulasi Snowball/Avalanche, rasio pemanfaatan limit, DTI, dan linimasa pelepasan arus kas.
+- **`src/components/DebtPayoffHub.tsx`**: Komponen UI interaktif simulator pelunasan utang dan radar kesehatan limit kredit.
+- **`src/components/CreditCardTracker.tsx`**: Integrasi tab switcher dan peredam render antar modul.
+- **`src/__tests__/debt-simulator.test.ts`**: Suite pengujian unit mesin simulasi utang (8 tes).
+- **`src/__tests__/debt-payoff-hub.test.tsx`**: Suite pengujian unit komponen UI dan interaksi user (6 tes).
+
+### Verifikasi
+- 588/588 unit tests passing (54 test files)
+- `npm run build` sukses tanpa error
+- PM2 clean rebuild & deployment terverifikasi di port 4321
+
+## Sesi 03 Nov 2026 — Month Comparison Intelligence Hub (GH PR #351)
+
+### Ringkasan
+Meningkatkan halaman Compare Months (`/compare`) menjadi **Month Comparison Intelligence Hub**:
+- **REST API Endpoint GET `/api/compare` & Eliminasi Astro Island Bloat**: Menghilangkan serialisasi ratusan/ribuan baris transaksi mentah melalui props SSR Astro island. Data di-fetch secara asynchronous via REST API dengan query parameter fleksibel (`period_a`, `period_b`, `category`).
+- **Sinkronisasi URL & Preset Cepat**: Dilengkapi kontrol preset 1-klik (*Bulan Ini vs Lalu*, *vs 2 Bulan Lalu*, *Tahun Lalu (YoY)*, dan *Tukar Periode (Swap)*), tersinkronisasi otomatis dengan query string browser (`?period_a=...&period_b=...`).
+- **Executive Intelligence Briefing (Ringkasan Eksekutif)**: Poin-poin narasi deterministik dalam Bahasa Indonesia yang merangkum perbedaan total belanja, kategori pemicu lonjakan biaya terbesar, efisiensi biaya terbaik, dan pergeseran status surplus/tabungan.
+- **6 Kartu Komparasi Finansial KPI**: Total Pengeluaran, Total Pemasukan, Tabungan Bersih (Surplus), Savings Rate (%), Total Net Worth, dan Rata-rata per Transaksi beserta frekuensi transaksi, lengkap dengan indikator delta nominal & persentase.
+- **Highlight Pemicu Utama (Top Drivers of Change)**: Kartu *Pemicu Lonjakan Biaya (Top Kenaikan)* & *Pemicu Efisiensi Biaya (Top Penghematan)* yang dapat diklik langsung untuk memicu drill-down transaksi.
+- **Visualisasi Komparasi Terpadu (Bar, Cash vs Credit, Radar)**: Grouped Bar Chart kategori teratas (Chart.js), kartu perbandingan Cash vs Kredit, dan visualisasi profil radar chart.
+- **Tabel Analisis Variansi Kategori & Modal Drill-down Transaksi**: Filter status instan (*Semua*, *Kenaikan / Boros*, *Penurunan / Hemat*, *Kategori Baru*) dan pencarian nama kategori. Klik baris kategori membuka dialog modal Radix untuk melihat transaksi individual Periode A vs Periode B secara side-by-side.
+- **Standar Kualitas & Antislop**: Bebas em-dash (R-02), kepatuhan kontras WCAG AA light/dark mode, dan penambahan suite pengujian `src/__tests__/month-comparison-hub.test.tsx` (574/574 unit tests passing).
+
+### File yang Diubah
+- **`src/lib/db.ts`**: Menambahkan interface `ComparePeriodSummary`, `CategoryCompareRow`, `CompareResult` dan query function `getMonthComparison()`.
+- **`src/pages/api/compare.ts`**: REST API endpoint GET `/api/compare`.
+- **`src/components/MonthComparison.tsx`**: Komponen UI komprehensif dengan state management, preset cepat, bar chart, filter, dan dialog drill-down transaksi.
+- **`src/pages/compare.astro`**: Membersihkan serialisasi props SSR berat menjadi lightweight client island.
+- **`src/__tests__/month-comparison-hub.test.tsx`**: Pengujian unit komprehensif untuk fungsi database dan interaksi antarmuka pengguna.
+
+### Verifikasi
+- 574/574 unit tests passing (52 test files)
+- `npm run build` sukses tanpa error
+- PM2 clean rebuild & deployment terverifikasi di port 4321
+
+
+## Sesi 02 Nov 2026 — Budget Pace & Burn-Rate Intelligence Hub (GH PR #349)
+
+### Ringkasan
+Meningkatkan halaman Budget Pace (`/budget-pace`) menjadi **Budget Pace & Burn-Rate Intelligence Hub**:
+- **Pemilihan Periode Interaktif**: Mendukung dropdown selektor periode siklus gaji (21 s/d 20) untuk memantau performa bulan berjalan maupun riwayat bulan-bulan lampau, tersinkronisasi dengan query string URL (`?period_id=...`).
+- **4 Kartu Metrik Burn-Rate & Waktu**: Status Pacing & Waktu Siklus (hari elapsed vs total vs sisa), Sisa Anggaran & Alokasi Harian Aman (safe daily allowance), Kecepatan Belanja Aktual (burn rate per hari & rasio kecepatan terhadap anggaran normal), serta Proyeksi Akhir Periode & Estimasi Tanggal Anggaran Habis (run-out date alert jika over pace).
+- **Kurva Pacing & Trajektori Anggaran Kumulatif (Responsive SVG)**: Visualisasi kurva kumulatif aktual vs garis target benchmark linier vs garis batas anggaran vs proyeksi trajektori hingga akhir periode, dilengkapi penanda pin Hari Ini, pin Estimasi Habis, dan tooltip interaktif.
+- **Simulator Penyesuaian Belanja Harian (What-If)**: Kontrol slider pengeluaran harian tersisa dengan preset cepat (Batas Aman, Hemat 25%, Frugal 50%) untuk memproyeksikan total pengeluaran dan surplus/defisit akhir periode secara real-time.
+- **Kartu Kategori Cerdas dengan Filter & Pencarian**: Filter status (Semua, Over Pace, Warning, On Track, Under Budget), instant search bar, jarum penanda ekspektasi pusingan pada progress bar, serta komparasi kecepatan aktual vs alokasi aman harian.
+- **Modal Drill-Down Transaksi Kategori (Dialog)**: Klik kartu kategori manapun membuka detail modal dialog yang memuat statistik limit vs belanja, rekomendasi tindakan taktis, dan daftar transaksi lengkap pada siklus gaji tersebut.
+- **Antislop & Aksesibilitas**: Zero em-dash (R-02), kepatuhan kontras WCAG AA di light/dark mode, keyboard navigasi modal (Escape/Close), dan pengujian unit komprehensif pada `src/__tests__/budget-pace-burn-rate.test.tsx` (568/568 passed).
+
+### Detail Perubahan
+- **`src/lib/db.ts`**: Memperluas interface `BudgetPaceCategory` dan `BudgetPaceResult` dengan metrik `safe_daily_burn`, `actual_daily_burn`, `budget_burn_rate_ratio`, `run_out_day`, `run_out_date`, `available_periods`, `daily_timeline`, serta relasi transaksi per kategori.
+- **`src/components/BudgetPace.tsx`**: Rombak komponen UI menjadi Intelligence Hub lengkap dengan SVG trajectory chart, selector periode, What-If slider simulator, filter status, search input, dan Radix/shadcn Dialog drill-down transaksi.
+- **`src/pages/budget-pace.astro`**: Perbarui judul dan deskripsi halaman ke format baru yang clean dan antislop.
+- **`src/__tests__/budget-pace-burn-rate.test.tsx`**: Suite pengujian unit komprehensif menguji perhitungan DB dan interaksi UI komponen.
+
+### Verifikasi
+- 568/568 unit tests passing (51 test files)
+- `npm run build` sukses tanpa error
+- PM2 reload & zero downtime deployment
+
+## Sesi 01 Nov 2026 — Achievements & Milestone Journey Hub (GH PR #347)
+
+### Ringkasan
+Meningkatkan halaman Achievements (`/achievements`) menjadi **Achievements & Milestone Journey Hub**:
+- **REST Endpoint GET `/api/achievements`**: Menghilangkan Astro devalue serialization pitfall pada props island, mendukung dynamic client hydration dengan state loading skeleton dan error fallback yang tangguh.
+- **Interactive Badge Detail Modal (Dialog)**: Klik badge manapun (terbuka atau terkunci) membuka modal dialog detail elegan (Radix/shadcn Dialog) yang menampilkan kriteria target, rincian progress bar, kekurangan nominal/periode (shortfall), tanggal perolehan pertama kali, dan reward poin XP.
+- **Linimasa Milestone Kronologis**: Tab linimasa jejak rekam pencapaian finansial dari awal pencatatan transaksi hingga saat ini, diurutkan secara kronologis dengan tanggal perolehan dan highlight milestone berikutnya.
+- **Peringkat Finansial & Matriks XP**: Sistem progres gamifikasi 10 tingkatan level (Level 1 Pemula Finansial hingga Level 10 Legenda Finansial) dengan akumulasi XP per tier (Bronze: 10 XP, Silver: 25 XP, Gold: 50 XP, Platinum: 100 XP), progress bar ke level berikutnya, dan rincian perolehan poin per tier.
+- **Filter Cerdas & Pencarian Real-Time**: Filter status instan (Semua, Terbuka, Terkunci), filter kategori (Net Worth, Tabungan, Disiplin, Durasi, Diversitas), filter tier (Bronze, Silver, Gold, Platinum), serta instant search bar.
+- **Antislop Compliance**: Zero em-dash (R-02) di seluruh konten dan fallback database, kontras WCAG AA di mode terang dan gelap, aksesibilitas keyboard (Escape/Tab/Enter), dan 6 unit test baru di `src/__tests__/achievements-hub.test.tsx` (562/562 tests pass).
+
+### File yang Diubah
+- **`src/pages/api/achievements.ts`**: Endpoint API baru yang melayani payload `AchievementsResult`.
+- **`src/lib/api.ts`**: Menambahkan fungsi helper `fetchAchievements()`.
+- **`src/lib/db.ts`**: Membersihkan karakter em-dash pada nilai fallback `getAchievements()`.
+- **`src/pages/achievements.astro`**: Transisi island ke client-side fetch murni tanpa serialisasi prop devalue.
+- **`src/components/Achievements.tsx`**: Peningkatan komprehensif menjadi hub interaktif 3 tab, search/filter, dan dialog modal detail lencana.
+- **`src/__tests__/achievements-hub.test.tsx`**: 6 unit test komprehensif mencakup master header, pencarian, filter status, pembukaan dialog detail, tab navigation, dan verifikasi zero em-dash.
+
+### Verifikasi
+- Test suite: 562/562 lulus (50 test files).
+- Build Astro: Berhasil tanpa error.
+- PM2 process: Restarted & healthy di port 4321.
+
+## Sesi 31 Okt 2026 — FIRE Intelligence Hub & Multi-Tier Freedom Simulator (GH PR #345)
+
+### Ringkasan
+Meningkatkan halaman FIRE (`/fire`) menjadi **FIRE Intelligence Hub & Multi-Tier Freedom Simulator**:
+- **Multi-Tier FIRE Model**: Mendukung 5 skenario pensiun dini interaktif (Lean FIRE 75%, Standard FIRE 100%, Chubby FIRE 130%, Fat FIRE 175%, Barista FIRE 50%) dengan kartu selektor interaktif dan perhitungan otomatis target modal secara real-time.
+- **6 Metrik Finansial KPI**: Target FIRE aktif, Progres Kekayaan Bersih (%), Estimasi Waktu Bebas Finansial, Simpanan Bulanan Simpul & Tingkat Tabungan, Kesiapan Coast FIRE (modal dibutuhkan hari ini vs aktual), serta Kapasitas Passive Income Aman per bulan/tahun.
+- **Milestone Freedom Pathways**: 4 tahapan tonggak kebebasan finansial (25% Quarter FI, 50% Halfway FI, 75% Three-Quarter FI, 100% Full Freedom) lengkap dengan progress bar dan nominal target.
+- **Simulator Asumsi & Percepatan Interaktif**: Kontrol slider untuk Safe Withdrawal Rate (SWR 2.5% s/d 6.0%), Return Investasi Riil (Nominal 4% s/d 15%), Asumsi Inflasi (1% s/d 6%), Penyesuaian Pengeluaran Bulanan (-30% s/d +30%), Boost Tabungan Tambahan (Rp 0 s/d Rp 10 Juta/bln), serta Usia Sekarang & Usia Target Coast FIRE.
+- **Trajektori Pertumbuhan Portofolio (Chart.js)**: Visualisasi tren saldo terhadap garis batas target FIRE, plus toggle komposisi tabungan pokok vs keuntungan bunga majemuk akumulatif.
+- **Jadwal Proyeksi Tahunan**: Tabel proyeksi tahun demi tahun dengan kolom saldo, tabungan pokok, keuntungan majemuk, persentase target, dan badge milestone (toggle 5 tahun pertama / semua tahun).
+- **Koreksi Antislop & Aksesibilitas**: Zero em-dash (R-02), warna token valid WCAG AA di light/dark mode, no dead controls, dan 8 unit test komprehensif di `src/__tests__/fire-intelligence-hub.test.tsx` (total 556/556 passed).
+
+### Perubahan
+- **`src/components/FireCalculator.tsx`**: implementasi komprehensif Multi-Tier Strategy Selector, 6 kartu KPI, Milestone Freedom Pathways, Simulator Asumsi, Chart.js visualizer, dan Tabel Jadwal Tahunan.
+- **`src/pages/fire.astro`**: pembaruan judul dan deskripsi halaman ke FIRE Intelligence Hub.
+- **`src/pages/api/fire/index.ts`**: perbaikan string em-dash ke colon standar.
+- **`src/__tests__/fire-intelligence-hub.test.tsx`**: 8 unit test komprehensif mencakup selector tier, respon slider asumsi, kalkulasi Coast FIRE, dan milestone.
+
+### Verifikasi
+- Test suite: 556/556 lulus (49 test files).
+- Build Astro: Berhasil tanpa error.
+- PM2 process: Restarted & healthy di port 4321.
+
+## Sesi 30 Okt 2026 — Budget Recommendations Intelligence Hub & Strategy Modes (GH PR #343)
+
+### Ringkasan
+Meningkatkan halaman Budget Recommendations (`/recommendations`) menjadi **Budget Recommendations Intelligence Hub**:
+- **Pilihan 4 Strategi Rekomendasi Interaktif**:
+  - `Cerdas (Default P80)`: Formula smart blend berbasis persentil 80 dan rata-rata menurut tingkat volatilitas.
+  - `Aman (+10% Buffer)`: Margin keamanan ekstra 10% untuk mencegah over budget di kategori rentan fluktuasi.
+  - `Disiplin (Median)`: Mode penghematan anggaran ketat berbasis median bulanan tanpa buffer.
+  - `Kustom (-20% s/d +30%)`: Slider interaktif dengan pembulatan langkah IDR 50.000 untuk presisi pengaturan target.
+- **Budget Impact Bar & 6 Metrik KPI**: Memperlihatkan perbandingan Total Limit Saat Ini vs Total Rekomendasi Baru dan selisih anggaran bulanan (+/- IDR), serta 6 kartu KPI ringkas (Total Kategori, Perlu Update, Over Budget, Tanpa Limit, Tren Naik, Volatilitas Tinggi) yang berfungsi ganda sebagai filter interaktif.
+- **Filter Cepat & Pencarian Real-time**: Search input nama kategori dan filter tabs status (`Semua`, `Perlu Update`, `Over Budget`, `Tanpa Limit`).
+- **Action per Kategori (Single Apply & Batch Update)**: Tombol `Terapkan` langsung per baris dengan loading spinner dan feedback status `Diterapkan`, serta tombol `Terapkan Semua` dengan progress tracking.
+- **Drill-down Modal Analisis Kategori**: Dialog detail historis (Rata-rata, Median, Maksimum, P80, Tren %, Volatilitas, Standar Deviasi) lengkap dengan form penyesuaian limit kustom sebelum disimpan.
+- **Antislop & WCAG AA**: Mengganti styling dengan kelas warna konsisten dual-theme (dark/light), touch target 44px, dan zero em-dash pada seluruh teks UI.
+- **Unit Test**: 7 unit test komprehensif di `src/__tests__/budget-recommendations-hub.test.tsx` (total test suite 548/548 lulus).
+
+### Perubahan
+- **`src/components/BudgetRecommendations.tsx`**: perombakan total komponen menjadi intelligence hub dengan strategy mode switcher, impact bar, 6 KPI cards, search/filter bar, single apply per baris, dan drill-down analysis modal.
+- **`src/__tests__/budget-recommendations-hub.test.tsx`**: unit test mencakup formula pembulatan, kalkulasi strategi rekomendasi, render KPI, search filtering, status filtering, single-item apply via API, dan modal drill-down.
+
+### Verifikasi
+- 548/548 tests pass (48 file).
+- `npm run build` clean tanpa error.
+- Database `data/` dan `financial.db` tidak disentuh.
+
+## Sesi 29 Okt 2026 — Spending Calendar Intelligence Hub & No-Spend Days Tracker (GH PR #341)
+
+### Ringkasan
+Meningkatkan halaman Spending Calendar (`/calendar`) menjadi **Spending Calendar Intelligence Hub & No-Spend Days Tracker**:
+- **6 Metrik KPI Finansial**: Menampilkan Period Spend, Daily Average Spend, No-Spend Days (dengan zero-spend rate percentage), Peak Spend Day, Weekend Spend distribution, dan Active Days count.
+- **Filter Cepat & Kategori**: Dropdown kategori real-time, filter jenis pengeluaran (All Expenses, Cash Only, Credit Card Only, CC Payments), tombol toggle **No-Spend Focus** mode, serta chip highlight intensitas (Peak, Med, Low, Zero).
+- **Day-of-Week Spending Rhythm**: Visual mini bar chart sebaran pengeluaran per hari (Minggu sampai Sabtu) untuk membaca pola kebiasaan mingguan.
+- **Enhanced Day Detail Dialog**: Ringkasan distribusi kategori per tanggal, split Cash vs Credit, dan tabel transaksi interaktif dengan tautan langsung ke transaksi.
+- **Koreksi Token & Antislop**: Memperbaiki kelas CSS invalid `dark:bg-gold-700/20/30` menjadi token valid, mendukung dual-theme dark/light mode dengan kontras WCAG AA, dan zero em-dash di UI copy.
+- **Unit Test**: 8 unit test komprehensif di `src/__tests__/spending-calendar-hub.test.tsx` (total test suite 541/541 lulus).
+
+### Perubahan
+- **`src/components/SpendingCalendar.tsx`**: implementasi 6 kartu KPI finansial, filter kategori dan tipe pembayaran, mode No-Spend Focus, rhythm bar mingguan, dan dialog detail hari yang diperkaya.
+- **`src/pages/calendar.astro`**: mengintegrasikan passing `categories` dari `getCategories()`.
+- **`src/__tests__/spending-calendar-hub.test.tsx`**: 8 unit test komprehensif mencakup kalkulasi KPI, filter kategori, filter tipe, toggle No-Spend, custom event quick-add, dan modal detail hari.
+
+### Verifikasi
+- 541/541 tests pass (47 file), `npm run build` clean (5.3s).
+- Database `data/` dan `financial.db` tidak disentuh.
+
+
+## Sesi 26 Okt 2026 — Category Budget Adherence & Filter Hub (GH PR #339)
+
+### Ringkasan
+Meningkatkan halaman Budget Report (`/budget`) dengan **Category Budget Adherence & Management Hub**:
+- **Budget Adherence Overview**: Metrik agregat efisiensi anggaran (`% Used`) lengkap dengan visual dynamic progress bar (emerald <80%, gold 80-100%, coral >100%) dan perhitungan sisa buffer anggaran.
+- **Search & Quick Filter Hub**: Pencarian real-time kategori pengeluaran dan tab filter cepat (`All`, `Over Budget`, `Near Limit`, `On Track`, `No Limit`) dengan pill badge jumlah kategori dinamis.
+- **Interactive KPI Alerts**: Kartu Alerts di ringkasan KPI dapat diklik langsung untuk memfilter kategori yang melebihi atau mendekati batas limit.
+- **Koreksi Status & Anti-Slop**: Mengoreksi kategori tanpa limit (`limit === 0`) menjadi badge `No Limit` (outline/slate) dan tidak lagi keliru dilabeli `On Track`. Memperbaiki efek hover baris tabel di dark mode serta mematuhi aturan WCAG AA dan zero em-dash di UI copy.
+
+### Perubahan
+- **`src/components/BudgetReport.tsx`**: visual progress adherence, search bar, status filter tabs, interactive alerts toggle, koreksi badge status kategori, dan perbaikan styling hover dual-mode.
+- **`src/__tests__/budget-report-hub.test.tsx`**: 6 unit test mencakup KPI calculation, adherence bar, klasifikasi status kategori, filter tab, dynamic search, reset button, dan modal drill-down transaksi.
+
+### Verifikasi
+- 524/524 tests pass (44 file), `npm run build` clean (5.4s).
+- Database `data/` dan `financial.db` tidak disentuh.
+
+
+## Sesi 23 Okt 2026 — Recurring Transactions Overview & Filter Hub (GH PR #333)
+
+### Ringkasan
+Meningkatkan halaman Recurring Transactions (`/recurring`) dengan **Recurring Overview & Management Hub**:
+- **Glance KPI Cards**: Menampilkan 4 kartu ringkasan komitmen keuangan bulanan otomatis: Total Bulanan Aktif (dengan status badge aktif & jeda), Komitmen Cash periodik, Kewajiban Kredit otomatis, dan Auto-Alokasi Goal tabungan berkala.
+- **Search & Quick Filter Bar**: Pencarian real-time (judul/kategori/nama goal) dan tab filter cepat (`All`, `Active`, `Paused`, `Cash`, `Credit`, `Goals`) lengkap dengan pill badge jumlah transaksi.
+- **Installment Badge Indicator**: Indikator batas waktu jatuh tempo cicilan (`until YYYY-MM`) pada tabel desktop dan kartu mobile.
+- **Antislop & Dual Mode Compliance**: Desain clean, kontras WCAG AA di light/dark mode, tanpa em-dash di UI copy, dan tap target ramah mobile (>= 44px).
+
+### Perubahan
+- **`src/components/RecurringManager.tsx`**: implementasi KPI cards memoized, search state, quick filter tabs, responsive empty state dengan tombol reset, dan styling fintech tokens.
+- **`src/__tests__/recurring-manager-hub.test.tsx`**: unit test komprehensif untuk kalkulasi agregasi KPI, pencarian real-time, filter tab status, dan tombol reset filter.
+
+### Verifikasi
+- 493/493 tests pass (38 file), `npm run build` clean (5.4s).
+- Database `data/` dan `financial.db` tidak disentuh.
+
+
 ## Sesi 21 Okt 2026 — Credit Card Active Installments & Conversion Action (GH PR #330)
 
 ### Ringkasan
@@ -2531,3 +2943,214 @@ Audit KUR-59/FIN-015+016: foundation shadcn + migrasi tabel & form ternyata suda
 - **Git workflow:** Branch `feat/innovation-savings-invest-unification` → PR #326 merged ke `main`.
 - **Build/Deploy:** `npm run build` clean, PM2 `financial-dashboard` restarted & online di port 4321.
 
+
+## 2026-10-24 — Daily Innovation: Cash Flow Intelligence with 50/30/20 Allocation & Multi-Period Trends
+
+### Hasil
+- **Inovasi Baru di Cash Flow (`/cashflow`):**
+  1. **50/30/20 Cash Allocation Rule Lens:** Menghitung perbandingan real-time pengeluaran kas bulanan terhadap formula 50% Needs, 30% Wants, 20% Savings/Invest. Dilengkapi segmented progress bar visual serta status kesehatan alokasi.
+  2. **Multi-Period Cash Flow Trends & History:** Tab baru "Trend & History" dengan grafik gabungan (Bar Inflow/Outflow + Line Net Flow), tabel riwayat periode dengan status Surplus/Defisit, dan 4 kartu metrik KPI kesehatan cash flow (Surplus Streak, Inflow/Outflow Ratio, Rata-rata Net Flow Bulanan, Total Akumulasi Surplus).
+  3. **Modul Analitik & Unit Tests:** Menambahkan `src/lib/cashflow-analytics.ts` untuk komputasi analitik cash flow, unit tests `src/__tests__/cashflow-analytics.test.ts` (9 tests) dan component tests `src/__tests__/cashflow-waterfall.test.tsx` (3 tests). Total test suite meningkat menjadi **505/505 hijau** (40 test files).
+  4. **Antislop & Dual-Theme:** Mendukung penuh tema light/dark mode dengan glass-card styling, kontras WCAG AA, dan copy clean tanpa em-dash.
+
+## 2026-10-25 — Daily Innovation: Portfolio Rebalancing & Investment Hub (/portfolio)
+
+### Hasil
+- **Inovasi Baru di Portfolio (`/portfolio`):**
+  1. **Kalkulator & Engine Rebalancing Alokasi Aset:** Memungkinkan evaluasi deviasi alokasi aset aktual terhadap target model portofolio (Balanced 40/30/20/10, Aggressive Growth 60/25/10/5, Defensive Preservation 35/35/25/5, atau Custom). Dilengkapi status drift per aset (Overweight, Underweight, Seimbang) dan panduan rekomendasi rebalancing.
+  2. **Smart Cash Inflow Rebalancer:** Menghitung distribusi optimal dana baru/injeksi modal (misal dari tabungan atau gaji bulanan) secara presisi ke aset-aset yang underweight agar portofolio kembali seimbang tanpa harus menjual aset yang ada.
+  3. **Holdings & Positions Tracker:** Integrasi penuh ke database `investments` dan API CRUD (`/api/investments`), memungkinkan penambahan dan pelacakan posisi saham/reksadana/kripto dengan metrik valuasi, harga beli rata-rata, harga terkini, dan unrealized gain/loss.
+  4. **Radar Dividen & Passive Income:** Proyeksi pendapatan pasif dividen tahunan dan bulanan dari aset dividen seperti BBRI (32 lot kepemilikan, harga pasar, yield TTM ~11%, dan riwayat pembayaran dividen dari cache KSEI/Yahoo).
+  5. **Modul Domain & Unit Tests:** Menambahkan engine kalkulasi `src/lib/portfolio-rebalance.ts`, unit tests `src/__tests__/portfolio-rebalance.test.ts` (5 tests), dan component tests `src/__tests__/portfolio-hub.test.tsx` (3 tests). Total test suite bertambah menjadi **513/513 hijau** (42 test files).
+  6. **Antislop & Dual-Mode UI:** Mendukung penuh Light dan Dark mode, glass-card styling, kontras WCAG AA, dan copy clean tanpa em-dash.
+
+  ## 2026-10-28 — Daily Innovation: Emergency Fund Runway & Stress-Test Command Center (/runway)
+
+  ### Hasil
+  - **Inovasi Baru di Emergency Fund Runway (`/runway`):**
+   1. **Stress-Test & Burn-Rate Simulator Interaktif:** Memungkinkan simulasi real-time ketahanan finansial dalam menghadapi syok finansial mendadak (misal biaya medis tak terduga Rp 15 juta) atau perubahan pengeluaran (misal Mode Hemat Biaya Pokok, pemotongan pengeluaran 25%, dsb). Menghitung delta perubahan bulan runway secara dinamis.
+   2. **Tangga Target Dana Darurat (Emergency Fund Tiers):** Visualisasi target dana darurat 3 level: Survival Buffer (3 bulan biaya pokok), Standar Keamanan (6 bulan pengeluaran reguler), dan Benteng Finansial (12 bulan kebebasan finansial total). Dilengkapi kalkulator kecepatan menabung bulanan untuk menutup gap kekurangan dana.
+   3. **Tangga Likuiditas Aset (Liquidity Ladder):** Mengelompokkan seluruh aset ke dalam 4 tier likuiditas (Tier 1: T+0 Instan, Tier 2: T+1 s/d T+2 Cepat, Tier 3: T+2 s/d T+3 Ekuitas Pasar, Tier 4: T+3+ Kurang Likuid) lengkap dengan kalkulasi diskon likuiditas darurat realistis.
+   4. **Lintasan Historis & Rekomendasi Taktis:** Visualisasi sparkline tren runway dari periode ke periode serta tips penguatan likuiditas otomatis.
+   5. **Modul Domain & Unit Tests:** Menambahkan domain engine `src/lib/runway-simulator.ts`, unit tests `src/__tests__/runway-simulator.test.ts` (5 tests), dan component tests `src/__tests__/runway-hub.test.tsx` (4 tests). Total test suite bertambah menjadi **533/533 hijau** (46 test files).
+   6. **Antislop & Dual-Mode UI:** Mendukung penuh Light dan Dark mode, glass-card styling, kontras tinggi WCAG AA, dan copy clean tanpa em-dash (R-02).
+
+   ## 2026-11-08 — Daily Innovation: Spending Mix & Financial Agility Intelligence Hub (/spending-mix)
+
+   ### Hasil
+   - **Inovasi Baru di Spending Mix (`/spending-mix`):**
+     1. **Financial Agility Scoring Engine (`src/lib/spending-mix-engine.ts`):** Mengukur tingkat kelenturan struktur biaya operasional bulanan (0-100) berdasarkan rasio belanja variabel (discretionary) terhadap komitmen tetap (recurring), lengkap dengan indikator tier (Tinggi, Moderat, Rendah) dan interpretasi daya tahan darurat.
+     2. **Detektor Fixed-Cost Creep:** Melacak tren pergeseran porsi pengeluaran tetap antar periode untuk mendeteksi inflasi gaya hidup (lifestyle creep) atau beban langganan yang merayap naik secara perlahan.
+     3. **Simulasi Survival Mode Interaktif:** Slider pemangkasan belanja darurat (0% hingga 100%) dengan tombol preset instan (25% Pangkas Ringan, 50% Hemat Ketat, 75% Frugal Survival, 100% Lockdown Belanja). Menghitung secara real-time dana tunai yang seketika terbebas per bulan, proyeksi akumulasi per tahun, dan rasio beban baru.
+     4. **Profil Elastisitas Belanja Variabel (3 Tiers):** Mengelompokkan pos belanja fleksibel ke dalam 3 tier elastisitas: Sangat Elastis (mudah dipotong 100%), Semi-Elastis (dapat ditekan 30-50%), dan Variabel Esensial (kebutuhan dasar fluktuatif) lengkap dengan tabel rincian kategori.
+     5. **Audit Transaksi & Explorer:** Filter transaksi periode aktif (Semua, Komitmen Tetap, Belanja Fleksibel) dengan pencarian judul/kategori secara instan.
+     6. **Peningkatan Data Layer (`src/lib/db.ts`):** Memperbaiki query `getRecurringVsDiscretionary` agar daftar periode historis tetap lengkap saat memilih periode tertentu, serta mengekstraksi rincian kategori dan transaksi audit.
+     7. **Testing & Antislop Compliance:** Menambahkan 18 unit & component tests baru (`spending-mix-engine.test.ts` & `spending-mix-hub.test.tsx`). Total test suite meningkat menjadi **641/641 hijau** (61 test files). Mematuhi standar antislop: kontras WCAG AA (dual-theme), tidak ada em-dash (R-02), dan styling fintech intentional.
+   - **Git workflow:** Branch `feat/innovation-spending-mix-hub` → PR #360 merged ke `main`.
+
+
+
+
+## 2026-11-15 — Daily Innovation: Money Flow Sankey Intelligence Hub (/flow)
+
+### Hasil
+- **Halaman Baru `/flow`:** Peta aliran dana (Sankey diagram) satu periode gaji: node Pemasukan di kiri mengalir ke setiap kategori peruntukan di kanan, ketebalan pita proporsional dengan nominal. Tanpa dependensi baru (SVG kustom: layout node, ribbon bezier, hover highlight, native tooltip).
+- **Semantik Kas yang Benar:** Outflow hanya dari transaksi `done` bertipe `cash` + `credit_payment` (biaya kartu kredit dihitung saat pelunasan, bukan saat mencatat); `credit_expense` dikecualikan. Kategori `Invest` dirutekan sebagai aliran wealth, sisa pemasukan menjadi node Tabungan (atau node Defisit merah jika pengeluaran melebihi pemasukan).
+- **KPI & Insight:** 4 kartu KPI (Pemasukan, Total Keluar, Sisa/Defisit, Savings Rate), insight chips (konsentrasi top-3 aliran, porsi pelunasan kredit, alokasi invest), dan ranking Aliran Terbesar dengan bar proporsional.
+- **Engine Domain:** `src/lib/flow-analytics.ts` (buildFlowGraph + buildFlowInsights), unit tests `flow-analytics.test.ts` (6 tests) dan component tests `flow-map-hub.test.tsx` (5 tests). Total suite **715/715 hijau** (72 files).
+- **Verifikasi Browser:** Login → `/flow` → island hydrate (9 node, 8 ribbon, KPI live), switch periode Nov→Okt OK, dark/light toggle OK, kontras AA. Auth enforced (302 unauth).
+- **Antislop:** Dual-theme WCAG AA, copy tanpa em-dash, loading/empty/error states lengkap.
+- **Git workflow:** Branch `feat/innovation-money-flow-sankey` → PR #374 merged ke `main`.
+
+## 2026-11-17 — Daily Innovation: Data Health Integrity Hub (/diagnostics)
+
+### Hasil
+- **Halaman Baru `/diagnostics`:** Pusat pemeriksaan integritas database yang mengotomatisasi 10 mode kegagalan data yang sudah dikenal (sebelumnya hanya terdeteksi manual lewat sesi debugging): transaksi yatim (period_id tanpa periods), periode ganda (rentang tanggal sama), penanda tanggal anomali (bukan tanggal 1/21, bekas bug timezone), tagihan lampau done=0 yang tersembunyi dari ringkasan, pelunasan kredit salah tipe cash, kategori tak terdaftar (autocomplete kosong), created_time hilang, created_time di masa depan (bekas overwrite saat edit), transaksi nominal nol, dan label bulan non-English.
+- **Skor Kesehatan 0-100:** Hero ring dengan skor teragregasi (deduksi per temuan diskalakan volume, dibatasi cap per check: high 30, medium 15, low 8) dan label status (Sangat Sehat / Baik / Perlu Perawatan / Kritis). Setiap temuan punya kartu severity badge, deskripsi dampak, saran perbaikan, dan daftar contoh baris yang bisa dibuka-tutup (maks 5 contoh).
+- **Engine Murni:** `src/lib/data-diagnostics.ts` (runDataDiagnostics + healthLabel), API read-only `GET /api/diagnostics`, komponen island `DataHealthHub.tsx`. Data nyata: skor 74 (Perlu Perawatan) dengan 19 kategori tak terdaftar, 435 created_time hilang (impor historis 2023), 6 transaksi nominal nol.
+- **Navigasi:** Ditambahkan ke sidebar desktop/mobile (grup Reports, ikon ShieldCheck) dan Command Palette (31 pages).
+- **Testing:** Unit tests `data-diagnostics.test.ts` (12 tests: semua detektor, cap deduksi, kombinasi multi-check, batas sampel) + component tests `data-health-hub.test.tsx` (4 tests: loading, expand sampel, all-clear, error+retry). Total suite **764/764 hijau** (76 files).
+- **Antislop:** Dual-theme WCAG AA (badge severity dan ring skor teruji di light/dark), copy tanpa em-dash, loading/error/empty states lengkap, tanpa dependensi baru.
+- **Git workflow:** Branch `feat/innovation-data-health-hub` → PR merged ke `main`.
+
+## 2026-11-18 — Daily Innovation: Annual Money Rewind (/rewind)
+
+### Hasil
+- **Halaman Baru `/rewind`:** Rekap setahun penuh wrapped-style dari periode gaji yang start_date-nya jatuh di tahun terpilih. Selector tahun otomatis dari tabel periods (2026, 2025, ...).
+- **Persona Keuangan Tahunan:** Engine 5 tier dari kombinasi savings rate + porsi invest (Arsitek Kekayaan / Penabung Disiplin / Pengelola Seimbang / Mulai Menabung / Butuh Rem Keuangan) lengkap dengan blurb satu kalimat.
+- **KPI & Visual:** 4 kartu KPI (pemasukan, keluar, savings rate, net worth akhir tahun + pertumbuhan %), bar ganda ritme bulanan masuk/keluar per periode dengan penanda bulan terberat & ringan, top-5 kategori dengan bar proporsional, dan sorotan tahun (jumlah transaksi, investasi teralokasi, transaksi terbesar).
+- **Semantik Kas:** Outcome = transaksi done bertipe cash + credit_payment (credit_expense dikecualikan), konsisten dengan /flow.
+- **Engine & API:** src/lib/rewind-analytics.ts (buildRewindReport, gradeRewind, availableRewindYears) + GET /api/rewind?year= (read-only, auth middleware). Navigasi ditambahkan ke sidebar desktop/mobile (grup Reports, ikon Sparkles) dan Command Palette (32 pages).
+- **Testing:** rewind-analytics.test.ts (5 tests) + rewind-hub.test.tsx (3 tests: loading, empty, error+retry). Total suite **772/772 hijau** (78 files).
+- **Verifikasi Nyata:** API live vs DB (2026: 10 periode, 91 tx, persona Butuh Rem Keuangan; 2025: 12 periode); browser CDP cookie injection → island hydrate, 4 KPI + 10 bar, tanpa horizontal overflow.
+- **Antislop:** Dual-theme WCAG AA (pattern glass-card DataHealthHub), loading/empty/error states, copy tanpa em-dash, tanpa dependensi baru.
+- **Git workflow:** Branch feat/innovation-annual-rewind → PR #377 merged ke main.
+
+## 2026-11-19 — Daily Innovation: Real Value / Inflation Hub (/inflation)
+
+### Hasil
+- **Halaman Baru `/inflation`:** Seluruh riwayat pemasukan & pengeluaran direstat ke rupiah hari ini. Gaji nominal naik, tapi daya beli ikut naik atau hanya mengikuti harga? Dijawab dengan koreksi inflasi konstan per tahun.
+- **Slider Asumsi Inflasi:** Range 0-10% (default 3.5%) + preset cepat 2.0 / 3.5 / 5.0. API `/api/real-value` hanya mengirim baris mentah per periode; seluruh matematika jalan di client sehingga geser slider langsung menghitung ulang tanpa refetch.
+- **Engine Murni (`src/lib/real-value-engine.ts`):** `buildRawRows()` (agregasi per periode, semantik kas konsisten /flow + /rewind: done cash + credit_payment, credit_expense & unpaid dikecualikan), `inflationFactor()` ((1+r)^tahun, clamp negatif & masa depan), `buildRealValueReport()` (inflasi kumulatif, perubahan endpoint gaji/belanja riil, surplus riil, erosi referensi Rp1jt), `gradeRealValue()` verdict 4 tone: Gaji Melaju / Seimbang dengan Inflasi / Standar Hidup Menguntit / Gaji Tertinggal Inflasi (+Defisit Riil).
+- **UI:** Verdict hero, 4 KPI (inflasi kumulatif, perubahan gaji riil, perubahan belanja riil, surplus riil terakhir), callout erosi "Rp1jt di {periode} lama setara RpX hari ini", bar surplus riil per periode (hijau/merah, tooltip nominal vs riil). Tanpa dependensi baru.
+- **Navigasi:** Sidebar desktop + mobile (grup Reports, ikon CircleDollarSign) dan Command Palette (33 pages).
+- **Testing:** `real-value-engine.test.ts` (15 tests) + `real-value-hub.test.tsx` (4 tests: loading+KPI, recompute slider, empty, error+retry) + mock lucide command-palette diperbarui. Total suite **791/791 hijau** (80 files).
+- **Verifikasi Nyata:** Full clean rebuild (stop → rm dist/.astro/.vite → build → start ecosystem), PM2 online, `/inflation` HTTP 200 dengan sesi, API live mengembalikan 39 periode (Sep 2023 → Nov 2026), CSS hash live resolve 200 (tanpa stale build), auth enforced (302/401 tanpa sesi).
+- **Antislop:** Dual-theme WCAG AA (semua teks + slider + preset chip punya pasangan dark), copy tanpa em-dash, loading/empty/error states lengkap.
+- **Git workflow:** Branch `feat/innovation-real-value-inflation` → PR #379 merged ke `main`.
+
+## 2026-11-20 — Daily Innovation: Auto-Repair Satu Klik di Data Health Hub (/diagnostics)
+
+### Hasil
+- **Menutup loop deteksi → perbaikan:** 6 temuan mekanis di `/diagnostics` kini punya tombol **Perbaiki otomatis** langsung di kartu temuan. Cek yang butuh pertimbangan manusia (transaksi yatim, periode ganda, tagihan lampau unpaid, nominal nol) sengaja tidak ada auto-fix.
+- **Perbaikan yang didukung (`POST /api/diagnostics/fix`, admin-only via middleware):** created_time hilang & created_time masa depan → `date || 'T12:00:00.000Z'`; kategori tak terdaftar → didaftarkan via `ensureCategory` (palet warna hashed); pelunasan kredit tertanda cash → `credit_payment` (heuristik identik dengan detektor); penanda tanggal anomali → disamakan dengan `start_date` periode; label bulan Indonesia → English (skip no-op untuk Sept/Nov/Apr yang ejaannya identik).
+- **Metadata murni:** `FIXABLE_CHECKS` di `src/lib/data-diagnostics.ts` (judul + body konfirmasi per check), teruji integritas id-nya terhadap temuan engine.
+- **UX:** Konfirmasi memakai ConfirmDialog singleton (bukan window.confirm), toast sonner "N baris diperbaiki", laporan otomatis di-refresh setelah sukses, tombol disabled saat perbaikan berjalan. Viewer diblokir middleware (403).
+- **Testing:** FIXABLE_CHECKS integrity (2 tests) + alur fix hub: tombol hanya muncul di check fixable, POST payload benar, refetch setelah sukses (1 test). Total suite **794/794 hijau** (80 files).
+- **Verifikasi Nyata (data live):** Auth enforced (401 tanpa sesi, 400 untuk checkId tak dikenal dengan sesi). Eksekusi nyata di DB live: 19 kategori terdaftar, 435 created_time dipulihkan → **skor kesehatan data 74 → 97 (Sangat Sehat)**; sisa temuan hanya zero_amount 6 (butuh keputusan manual hapus/isi nominal). Sanity check pasca-fix: 0 orphan, 0 missing created_time.
+- **Bug ditemukan & dipatch saat verifikasi:** label Sept/Nov/Apr identik di ID/EN sehingga no-op rewrite mengembangkan hitungan fixed (11 padahal detektor 0). Patch: skip bila label hasil terjemahan sama dengan label kini (PR #381).
+- **Antislop:** Dual-theme WCAG AA (tombol emerald punya pasangan dark), copy tanpa em-dash, tanpa dependensi baru.
+- **Git workflow:** Branch `feat/innovation-data-health-autofix` → PR #380 merged; follow-up `fix/innovation-autofix-month-noop` → PR #381 merged. Full clean rebuild + PM2 ecosystem restart, CSS hash live resolve 200.
+
+## 2026-11-21 — Daily Innovation: Safe-to-Spend Card Hidup di Dashboard
+
+### Hasil
+- **Komponen yatim dihidupkan:** `SafeToSpend.tsx` (209 baris) sudah ada sejak lama tapi tidak pernah diimpor di mana pun — JSX-nya cacat (prop `className` duplikat di elemen root, struktur div tidak seimbang) sehingga mustahil dikompilasi. Diperbaiki dan dipasang sebagai **kartu pertama section Flow** di Dashboard: jawaban pertanyaan harian "berapa boleh dibelanjakan hari ini" dari API `/api/safe-to-spend` yang sudah ada.
+- **Isi kartu:** angka utama `daily_safe_to_spend` per hari + badge status (Sehat/Hemat/Over Budget), progress "Hari ini" vs batas aman dengan sisa/over, hari tersisa, rata-rata 7 hari, dan bar sisa budget periode dengan persentase waktu terpakai.
+- **State siklus gaji (bug UX ditemukan saat verifikasi):** tiap tanggal 21 sebelum kickoff, tidak ada periode DB yang mencakup hari ini dan API lama mengembalikan 404 generik sehingga kartu error. Kini API mengembalikan kode `no_active_period` dan kartu merendernya sebagai **empty state netral** dengan nudge kickoff (bukan pesan gagal).
+- **Antislop:** loading skeleton, error + tombol retry, empty state lengkap (R-27); kontras dark-mode dinaikkan dari slate-500 ke slate-400 (computed: dark rgb(148,163,184) di atas rgba(20,26,52), light rgb(71,85,105) di atas putih, keduanya WCAG AA); copy tanpa em-dash; tanpa dependensi baru.
+- **Testing:** `safe-to-spend.test.tsx` 4 test (render healthy + angka, status over, empty state no_active_period, error + retry refetch). Total suite 797/798 hijau (1 gagal = `budget-pace-burn-rate.test.tsx`, pre-existing di main, tergantung DB live).
+- **Verifikasi nyata:** clean rebuild + PM2 restart, CSS hash live 200; island ter-hydrate di browser dengan sesi, empty state tampil sesuai kondisi nyata hari ini (21 Nov, kickoff Desember belum jalan); API `?period_id=` mengembalikan angka benar untuk periode November live (status over, sisa -9.580.993).
+- **Git workflow:** Branch `feat/innovation-safe-to-spend-card` → PR #383 merged ke `main`.
+
+## 2026-11-22 — Marathon Iteration: Budget Pace di Jeda Periode (fallback periode terakhir)
+
+### Hasil
+- **Bug:** di jeda antara hari gajian (21) dan kickoff bulan baru, `getBudgetPace()` tanpa `period_id` mengembalikan hasil kosong (`period_id: 0`, `total_budget: 0`) sehingga `/budget-pace` salah menampilkan "Belum Ada Limit Anggaran Ditetapkan" dan selector periode hilang. Test `budget-pace-burn-rate.test.tsx` (yang gagal sejak 21 Nov) ternyata menangkap bug nyata ini, bukan flaky.
+- **Fix:** bila tidak ada periode aktif, fallback ke periode terakhir yang sudah dimulai (`start_date <= today`); hasil diberi flag opsional `is_fallback_period` (aditif, API tetap kompatibel).
+- **UI:** banner status sky di atas KPI: "Belum ada periode aktif untuk hari ini. Menampilkan periode terakhir (X)" + tautan kickoff ke Dashboard. Pasangan warna light/dark (slate-700/slate-200, sky-700/sky-400), copy tanpa em-dash.
+- **Testing:** +2 test UI (banner muncul saat fallback, tersembunyi saat periode aktif). Suite **800/800 hijau** (81 files).
+- **Git workflow:** Branch `fix/innovation-budget-pace-period-gap` → PR.
+
+## 2026-11-22 — Marathon Iteration: 3 Bug Nyata dari `tsc --noEmit` (Credit Card sort, Analytics drill-down, CollapsibleSection)
+
+### Hasil
+- **Metode:** `npx tsc --noEmit` (49 error) dipilah: error tipe Chart.js/kosmetik dibiarkan, error yang menandakan perilaku salah di runtime diperbaiki. Sisa 40 error (tipe opsi Chart.js, mock test, `Locals.user`).
+- **`/credit-card` — header tabel kosong & sort crash:** `CreditCardTracker` memanggil `SortableHeader` dengan props lama (`label`/`toggleSort`/`isSorted`/`align`) padahal komponen menerima `children`/`onSort`/`currentDirection`/`className`. Akibatnya 7 header kolom (2 tabel) tampil tanpa label dan klik header memanggil `onSort` undefined (TypeError). Diperbaiki ke API yang benar; `align="right"` → `className="text-right"`.
+- **`/analytics` — drill-down kategori salah periode:** `fetchTransactions({ month, category })` membuang `month` (tidak ada di tipe/param) sehingga dialog "Transactions for X in <bulan>" menampilkan transaksi kategori itu **sepanjang masa**. Kini `month` diteruskan (API server sudah resolve `month` → `period_id`); `period_id` tetap diprioritaskan bila keduanya ada.
+- **`CollapsibleSection`:** atribut `className` duplikat membuat `glass-card p-5` tertimpa; digabung. (Komponen belum dipakai di halaman mana pun; dicegah jadi jebakan.)
+- **Testing:** +1 test komponen (header Title/Amount punya label, klik tidak throw) + `api-fetch-transactions.test.ts` (2 test). Kedua test regresi terbukti **merah di kode lama**, hijau setelah fix. Suite **803/803 hijau** (82 files).
+- **Git workflow:** Branch `fix/innovation-typecheck-real-bugs` → PR.
+
+## 2026-11-22 — Marathon Iteration: Settings › Monthly Income edit/hapus benar-benar tersimpan
+
+### Hasil
+- **Bug (ditemukan dari `tsc`):** `IncomeSettings` memanggil `updateMonthlyIncomeApi`/`deleteMonthlyIncomeApi` dengan **label bulan** ("November 2026") padahal route `/api/income/:id` mem-`parseInt` id → 400 "Invalid period_id". Karena UI update optimistik dan helper tidak cek `res.ok`, edit/hapus terlihat sukses lalu kembali setelah reload. Test lama bahkan mengunci perilaku salah (`toHaveBeenCalledWith('August 2026', …)`).
+- **Fix:** baris dikunci dengan `period_id` (edit + hapus, tabel dan kartu mobile); PUT mengirim `date` baris sendiri (route default ke hari ini bila kosong, menggeser urutan); tambah baris → refetch agar baris baru punya `period_id`; helper income `assertOk()` melempar error berisi pesan server; komponen menampilkan `toast.error` dan form tetap terbuka untuk retry, `toast.success` saat berhasil.
+- **Testing:** test edit diperbaiki (period_id 37 + date), +test hapus kirim period_id, +test gagal API → toast error & form tetap terbuka. Ketiganya merah di kode lama. Suite **805/805 hijau** (82 files).
+- **Antislop:** tidak ada perubahan visual selain toast sonner yang sudah dipakai global.
+- **Git workflow:** Branch `fix/innovation-income-settings-period-id` → PR.
+
+## 2026-11-22 — Marathon Iteration: /networth/edit benar-benar menyimpan (period_id + error terlihat)
+
+### Hasil
+- **Bug (pola sama dengan Monthly Income):** `NetworthEditForm` memanggil `updateNetworthApi(month, …)` dengan label bulan → `PUT /api/networth/November%202026` → 400 "Invalid period_id". Helper tidak cek `res.ok` dan form menampilkan **"Networth updated successfully!"** walau gagal. Payload juga mengirim `date: ''` yang akan mengosongkan tanggal baris bila PUT lolos.
+- **Fix:** form menyimpan `period_id` + `date` baris saat load; Save memakai `period_id` dan tanggal asli; `updateNetworthApi` melempar error berpesan server (`assertOk`); error tampil sebagai alert merah (light/dark: red-700/red-300); tombol Save disabled saat menyimpan atau bila bulan tidak punya data networth (pesan "Data networth untuk X tidak ditemukan.").
+- **Testing:** `networth-edit-form.test.tsx` baru (3 test: simpan via period_id + date, error API tampil tanpa sukses palsu, bulan tak dikenal → Save disabled); ketiganya merah di kode lama. Suite **808/808 hijau** (83 files). `tsc` error 40 → 35.
+- **Git workflow:** Branch `fix/innovation-networth-edit-period-id` → PR.
+
+## 2026-11-22 — Marathon Iteration: Settings › Categories menampilkan error server (duplikat tidak lagi "sukses palsu")
+
+### Hasil
+- **Audit:** dari 28 helper mutasi di `src/lib/api.ts`, mayoritas tidak memeriksa `res.ok`. Dipilih cakupan sempit yang komponennya sudah siap menampilkan error: `CategorySettings` sudah `try/catch → setError`, tapi helper tak pernah melempar.
+- **Bug:** tambah kategori dengan nama yang sudah ada → `POST /api/categories` 409 "Category already exists", namun form tertutup seolah berhasil (tidak ada yang ditambahkan). Rename ke nama yang dipakai kategori lain (409) juga diam-diam batal.
+- **Fix:** `createCategory` / `updateCategoryApi` / `deleteCategoryApi` memakai `assertOk()` (pesan: "Tambah kategori gagal (409): Category already exists"); pesan tampil lewat banner error yang sudah ada di komponen.
+- **Sisa (dicatat, belum diubah):** helper transaksi/recurring/goal/investment/bulk juga belum cek `res.ok`; `createTransaction` sengaja membaca body 409 duplikat, jadi perlu per-caller, bukan perubahan massal.
+- **Testing:** `api-category-errors.test.ts` (4 test: 409 create, 201 create, 409 rename, 500 non-JSON delete). Suite **812/812 hijau** (84 files).
+- **Git workflow:** Branch `fix/innovation-category-api-errors` → PR.
+
+## 2026-11-22 — Marathon Iteration: Goals & Portfolio update/hapus tidak lagi gagal diam-diam
+
+### Hasil
+- **Lanjutan audit `res.ok`:** `createGoalApi`/`createInvestmentApi` sudah melempar error, tetapi `updateGoalApi`, `deleteGoalApi`, `updateInvestmentApi`, `deleteInvestmentApi` mengabaikan status HTTP. Semua pemanggil (`GoalsTracker`, `PortfolioTracker`, `PortfolioHub`) sudah membungkus dengan try/catch, jadi kegagalan server (404/400/500) sebelumnya dianggap sukses dan alur lanjut (refetch/close) seolah tersimpan.
+- **Fix:** keempat helper memakai `assertOk()` (pesan "Update goal gagal (404): Goal not found"). `GoalsTracker` hapus/toggle/kontribusi sebelumnya hanya `console.error` → kini juga `toast.error` (sonner global). Portfolio sudah punya `setError`.
+- **Sisa audit:** transaksi (create/update/toggle/delete/bulk/repeat/installment), recurring, kickoff, deleteNetworth — butuh penanganan per-caller (mis. 409 duplikat transaksi dibaca sebagai body).
+- **Testing:** `api-goals-investments-errors.test.ts` (2 test: 2xx resolve, 4xx/5xx/non-JSON reject berpesan). Suite **814/814 hijau** (85 files).
+- **Git workflow:** Branch `fix/innovation-goals-investments-api-errors` → PR.
+
+## 2026-11-22 — Marathon Iteration: Recurring & Kickoff menampilkan alasan gagal dari server
+
+### Hasil
+- **Recurring:** `createRecurringTransaction` / `updateRecurringTransactionApi` / `deleteRecurringTransactionApi` mengabaikan status HTTP, padahal `RecurringManager` sudah `try/catch → setError`. Validasi server (400 "Amount must be…", 404) sebelumnya terlihat seperti sukses. Kini `assertOk()`.
+- **Kickoff bulan baru:** `MonthKickoffModal` hanya menampilkan "Failed to start new month." untuk semua kegagalan; server mengirim alasan (mis. 409 "Month already kicked off (income record exists)", 400 "Month is required") → kini alasan server ditampilkan.
+- **Catatan audit:** `deleteNetworthApi` tidak dipakai komponen mana pun. Sisa helper tanpa cek status: kelompok transaksi (perlu penanganan 409 duplikat per caller).
+- **Testing:** `recurring-kickoff-errors.test.tsx` (3 test: create 400, update/delete 404, modal kickoff menampilkan alasan 409). Suite hijau penuh.
+- **Git workflow:** Branch `fix/innovation-recurring-kickoff-errors` → PR.
+
+## 2026-11-22 — Marathon Iteration: Revert & toast gagal di tabel transaksi akhirnya hidup
+
+### Hasil
+- **Temuan:** `TransactionTable` dan `Dashboard` sudah menulis jalur gagal lengkap untuk toggle Paid/Unpaid, edit, hapus, dan aksi massal (revert optimistic update + `toast.error`). Namun 5 helper (`updateTransactionApi`, `toggleTransactionDoneApi`, `deleteTransactionApi`, `deleteTransactionsBulkApi`, `updateTransactionsBulkApi`) tidak pernah melempar → saat server gagal, UI tetap menampilkan "Marked as paid"/"Transaction updated" dan state lokal tidak di-revert (data kembali setelah reload).
+- **Fix:** kelima helper memakai `assertOk()`; jalur revert/toast yang sudah ada kini benar-benar jalan. `createTransaction` / `repeatTransactionApi` sengaja tidak diubah (pemanggil membaca body 409 duplikat).
+- **Audit `res.ok` selesai** untuk helper mutasi yang dipakai UI (kategori, income, networth, goals, investasi, recurring, kickoff, transaksi). `deleteNetworthApi` tidak dipakai.
+- **Testing:** `transaction-api-errors.test.tsx` (2 test: sukses resolve + bulk tetap mengembalikan body; 404/400/500 reject dengan alasan server). Suite **819/819 hijau** (87 files).
+- **Git workflow:** Branch `fix/innovation-transaction-api-errors` → PR.
+
+## 2026-11-22 — Marathon Iteration: Tooltip catatan transaksi muncul + cincin warna goal benar
+
+### Hasil
+- **Catatan transaksi tak terlihat:** ikon catatan di tabel transaksi (desktop + kartu mobile) memakai `<StickyNote title={row.notes} />`. lucide-react 0.400 meneruskan `title` sebagai **atribut** `<svg>` (diverifikasi di test: atribut ada, elemen `<title>` tidak ada) → browser tidak menampilkan tooltip dan screen reader tidak membacanya. Diganti komponen `NoteIndicator`: tooltip di `<span title>`, ikon `aria-hidden`, teks `sr-only` "Catatan: …".
+- **Cincin warna goal:** swatch warna di form goal memakai `style={{ ringColor }}` — bukan properti CSS, jadi cincin terpilih memakai warna default. Kini `--tw-ring-color` (variabel yang dibaca utility `ring-*` Tailwind).
+- Ditemukan dari sisa `tsc --noEmit` (2 kelas error hilang); sisa error kini Chart.js options, konversi tipe `done`, `Locals.user`, ikon CommandPalette `strokeWidth`.
+- **Testing:** `note-indicator.test.tsx` (2 test: tooltip di wrapper bukan svg, teks sr-only). Suite **821/821 hijau** (88 files).
+- **Antislop:** tanpa perubahan warna/teks selain teks sr-only; kontras tetap.
+- **Git workflow:** Branch `fix/innovation-note-tooltip-ring-color` → PR.
+
+## 2026-11-22 — Marathon Iteration (DX): tipe `Transaction.done` sesuai data nyata
+
+### Hasil
+- `Transaction.done` dideklarasikan `boolean`, padahal SQLite/API mengirim `0/1` (dan fixture JSON lama boolean). Akibatnya kode yang benar (`done === 1`, `done: newDone ? 1 : 0`) butuh cast `as Transaction` dan memunculkan 7 error `tsc` (Dashboard, TransactionTable, DailyBudgetIndicator).
+- Tipe kini `boolean | 0 | 1` dengan komentar "uji dengan truthiness". Satu pemanggil yang benar-benar butuh boolean (ekspor CSV `paid`) di-coerce `Boolean(t.done)` — output CSV tidak berubah (fungsi sudah memakai truthiness → "Yes"/"No").
+- `tsc --noEmit`: 32 → **25** error (sisa: tipe opsi Chart.js, mock test, `Locals.user`, ikon CommandPalette `strokeWidth`, fixture data.ts).
+- **Testing:** suite **821/821 hijau** (88 files), build Complete. Tidak ada perubahan runtime.
+- **Git workflow:** Branch `chore/innovation-transaction-done-type` → PR.

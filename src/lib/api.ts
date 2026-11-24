@@ -1,9 +1,11 @@
 import type { Transaction, NetworthRecord, MonthlySummary, Category, Investment, PortfolioSummary } from './data';
 import { getActivePeriod } from './utils';
 
-export async function fetchTransactions(filters?: { periodId?: number; type?: string; search?: string; category?: string }): Promise<Transaction[]> {
+export async function fetchTransactions(filters?: { periodId?: number; month?: string; type?: string; search?: string; category?: string }): Promise<Transaction[]> {
   const params = new URLSearchParams();
   if (filters?.periodId) params.set('period_id', String(filters.periodId));
+  // `month` (period label) is resolved to a period server-side; ignored when periodId is set.
+  else if (filters?.month) params.set('month', filters.month);
   if (filters?.type) params.set('type', filters.type);
   if (filters?.search) params.set('search', filters.search);
   if (filters?.category) params.set('category', filters.category);
@@ -25,24 +27,29 @@ export async function createTransaction(tx: Omit<Transaction, 'id'>): Promise<Tr
   return res.json();
 }
 
+// Callers (TransactionTable, Dashboard) already revert optimistic UI and toast on
+// rejection; these helpers must actually reject on HTTP errors for that to run.
 export async function updateTransactionApi(id: number, tx: Partial<Transaction>): Promise<void> {
-  await fetch(`/api/transactions/${id}`, {
+  const res = await fetch(`/api/transactions/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(tx),
   });
+  await assertOk(res, 'Update transaksi');
 }
 
 export async function toggleTransactionDoneApi(id: number, done: boolean): Promise<void> {
-  await fetch(`/api/transactions/${id}`, {
+  const res = await fetch(`/api/transactions/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ done }),
   });
+  await assertOk(res, 'Update status bayar');
 }
 
 export async function deleteTransactionApi(id: number): Promise<void> {
-  await fetch(`/api/transactions/${id}`, { method: 'DELETE' });
+  const res = await fetch(`/api/transactions/${id}`, { method: 'DELETE' });
+  await assertOk(res, 'Hapus transaksi');
 }
 
 export async function convertToInstallmentApi(
@@ -121,11 +128,13 @@ export async function updateNetworthApi(periodId: number, record: Partial<Networ
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(record),
   });
-  return res.json().catch(() => ({ success: res.ok }));
+  await assertOk(res, 'Update networth');
+  return res.json().catch(() => ({ success: true }));
 }
 
 export async function deleteNetworthApi(periodId: number): Promise<void> {
-  await fetch(`/api/networth/${periodId}`, { method: 'DELETE' });
+  const res = await fetch(`/api/networth/${periodId}`, { method: 'DELETE' });
+  await assertOk(res, 'Hapus networth');
 }
 
 export async function fetchSummaries(): Promise<MonthlySummary[]> {
@@ -144,27 +153,32 @@ export async function createCategory(cat: Omit<Category, 'id' | 'created_at'>): 
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(cat),
   });
+  // 409 "Category already exists" used to look like success (form closed, nothing added).
+  await assertOk(res, 'Tambah kategori');
   return res.json();
 }
 
 export async function updateCategoryApi(id: number, cat: Partial<Omit<Category, 'id' | 'created_at'>>): Promise<void> {
-  await fetch(`/api/categories/${id}`, {
+  const res = await fetch(`/api/categories/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(cat),
   });
+  await assertOk(res, 'Update kategori');
 }
 
 export async function deleteCategoryApi(id: number): Promise<void> {
-  await fetch(`/api/categories/${id}`, { method: 'DELETE' });
+  const res = await fetch(`/api/categories/${id}`, { method: 'DELETE' });
+  await assertOk(res, 'Hapus kategori');
 }
 
 export async function deleteTransactionsBulkApi(ids: number[]): Promise<void> {
-  await fetch('/api/transactions', {
+  const res = await fetch('/api/transactions', {
     method: 'DELETE',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ ids }),
   });
+  await assertOk(res, 'Hapus transaksi massal');
 }
 
 export async function updateTransactionsBulkApi(ids: number[], updates: Partial<Transaction>): Promise<{ updated: number }> {
@@ -173,6 +187,7 @@ export async function updateTransactionsBulkApi(ids: number[], updates: Partial<
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ ids, updates }),
   });
+  await assertOk(res, 'Update transaksi massal');
   return res.json();
 }
 
@@ -189,24 +204,39 @@ export async function fetchMonthlyIncome(): Promise<MonthlyIncome[]> {
   return res.json();
 }
 
-export async function upsertMonthlyIncomeApi(record: Omit<MonthlyIncome, 'other_income'> & { other_income?: number }): Promise<void> {
-  await fetch('/api/income', {
+async function assertOk(res: Response, action: string): Promise<void> {
+  if (res.ok) return;
+  let detail = '';
+  try {
+    const body: unknown = await res.json();
+    if (body && typeof body === 'object' && 'error' in body && typeof body.error === 'string') detail = body.error;
+  } catch {
+    /* non-JSON error body */
+  }
+  throw new Error(`${action} gagal (${res.status})${detail ? `: ${detail}` : ''}`);
+}
+
+export async function upsertMonthlyIncomeApi(record: Omit<MonthlyIncome, 'other_income' | 'period_id'> & { other_income?: number }): Promise<void> {
+  const res = await fetch('/api/income', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(record),
   });
+  await assertOk(res, 'Simpan income');
 }
 
 export async function updateMonthlyIncomeApi(periodId: number, record: Partial<MonthlyIncome>): Promise<void> {
-  await fetch(`/api/income/${periodId}`, {
+  const res = await fetch(`/api/income/${periodId}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(record),
   });
+  await assertOk(res, 'Update income');
 }
 
 export async function deleteMonthlyIncomeApi(periodId: number): Promise<void> {
-  await fetch(`/api/income/${periodId}`, { method: 'DELETE' });
+  const res = await fetch(`/api/income/${periodId}`, { method: 'DELETE' });
+  await assertOk(res, 'Hapus income');
 }
 
 export interface RecurringTransaction {
@@ -235,19 +265,22 @@ export async function createRecurringTransaction(tx: Omit<RecurringTransaction, 
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(tx),
   });
+  await assertOk(res, 'Tambah recurring');
   return res.json();
 }
 
 export async function updateRecurringTransactionApi(id: number, tx: Partial<Omit<RecurringTransaction, 'id'>> & { goal_id?: number | null }): Promise<void> {
-  await fetch(`/api/recurring/${id}`, {
+  const res = await fetch(`/api/recurring/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(tx),
   });
+  await assertOk(res, 'Update recurring');
 }
 
 export async function deleteRecurringTransactionApi(id: number): Promise<void> {
-  await fetch(`/api/recurring/${id}`, { method: 'DELETE' });
+  const res = await fetch(`/api/recurring/${id}`, { method: 'DELETE' });
+  await assertOk(res, 'Hapus recurring');
 }
 
 export interface KickoffStatus {
@@ -333,15 +366,17 @@ export async function createGoalApi(goal: Omit<FinancialGoal, 'id' | 'completed'
 }
 
 export async function updateGoalApi(id: number, goal: Partial<FinancialGoal>): Promise<void> {
-  await fetch(`/api/goals/${id}`, {
+  const res = await fetch(`/api/goals/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(goal),
   });
+  await assertOk(res, 'Update goal');
 }
 
 export async function deleteGoalApi(id: number): Promise<void> {
-  await fetch(`/api/goals/${id}`, { method: 'DELETE' });
+  const res = await fetch(`/api/goals/${id}`, { method: 'DELETE' });
+  await assertOk(res, 'Hapus goal');
 }
 
 // ─── Investments API ─────────────────────────────────────────────────────────
@@ -370,18 +405,29 @@ export async function createInvestmentApi(inv: Omit<Investment, 'id' | 'created_
 }
 
 export async function updateInvestmentApi(id: number, inv: Partial<Investment>): Promise<void> {
-  await fetch(`/api/investments/${id}`, {
+  const res = await fetch(`/api/investments/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(inv),
   });
+  await assertOk(res, 'Update investasi');
 }
 
 export async function deleteInvestmentApi(id: number): Promise<void> {
-  await fetch(`/api/investments/${id}`, { method: 'DELETE' });
+  const res = await fetch(`/api/investments/${id}`, { method: 'DELETE' });
+  await assertOk(res, 'Hapus investasi');
 }
 
 export async function fetchPortfolioSummary(): Promise<PortfolioSummary> {
   const res = await fetch('/api/investments/summary');
   return res.json();
 }
+
+export async function fetchAchievements(): Promise<any> {
+  const res = await fetch('/api/achievements');
+  if (!res.ok) {
+    throw new Error('Failed to fetch achievements');
+  }
+  return res.json();
+}
+

@@ -19,6 +19,15 @@ import {
 } from '@/components/ui/table';
 import { useSortState } from '../hooks/useSortState';
 import SortableHeader from './SortableHeader';
+import { Input } from '@/components/ui/input';
+import {
+  calculateParetoConcentration,
+  classifyMerchants,
+  detectMerchantSurges,
+  ARCHETYPE_META,
+  type MerchantInput,
+  type MerchantArchetype,
+} from '../lib/merchant-intelligence-engine';
 import {
   Store,
   Hash,
@@ -26,7 +35,17 @@ import {
   ArrowUpDown,
   BarChart3,
   Clock,
+  Search,
+  X,
+  Radar,
+  Layers,
+  AlertTriangle,
+  TrendingDown,
+  Sparkles,
+  Info,
 } from 'lucide-react';
+
+const ARCHETYPE_ORDER: MerchantArchetype[] = ['staple', 'recurring', 'high_ticket', 'occasional'];
 
 interface Props {
   transactions: Transaction[];
@@ -79,6 +98,8 @@ export default function MerchantAnalysis({
   );
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [viewMode, setViewMode] = useState<'all' | 'period'>('period');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [archetypeFilter, setArchetypeFilter] = useState<'all' | MerchantArchetype>('all');
 
   // All unique categories from the data
   const allCategories = useMemo(() => {
@@ -187,10 +208,72 @@ export default function MerchantAnalysis({
 
   const displayMerchants = viewMode === 'period' ? periodMerchants : allMerchants;
 
+  // ─── Merchant Intelligence: classify, filter, concentrate ─────────────────
+  const classifiedMerchants = useMemo(() => {
+    return classifyMerchants(displayMerchants.map((m): MerchantInput => ({
+      title: m.title,
+      category: m.category,
+      totalPaid: m.totalPaid,
+      txCount: m.txCount,
+      avgAmount: m.avgAmount,
+      maxAmount: m.maxAmount,
+      periods: m.periods,
+      monthlyData: m.monthlyData,
+    })));
+  }, [displayMerchants]);
+
+  const filteredMerchants = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    return classifiedMerchants.filter((m) => {
+      if (q && !m.title.toLowerCase().includes(q)) return false;
+      if (archetypeFilter !== 'all' && m.archetype !== archetypeFilter) return false;
+      return true;
+    });
+  }, [classifiedMerchants, searchQuery, archetypeFilter]);
+
+  const concentration = useMemo(() => {
+    return calculateParetoConcentration(
+      filteredMerchants.map((m): MerchantInput => ({
+        title: m.title,
+        category: m.category,
+        totalPaid: m.totalPaid,
+        txCount: m.txCount,
+        avgAmount: m.avgAmount,
+        maxAmount: m.maxAmount,
+        periods: m.periods,
+        monthlyData: m.monthlyData,
+      })),
+    );
+  }, [filteredMerchants]);
+
+  const selectedPeriodLabel = useMemo(() => {
+    return summaries.find((s) => s.period_id === selectedPeriodId)?.month ?? '';
+  }, [summaries, selectedPeriodId]);
+
+  const surges = useMemo(() => {
+    if (viewMode !== 'period' || !selectedPeriodLabel) return [];
+    return detectMerchantSurges(
+      selectedPeriodLabel,
+      filteredMerchants.map((m): MerchantInput => ({
+        title: m.title,
+        category: m.category,
+        totalPaid: m.totalPaid,
+        txCount: m.txCount,
+        avgAmount: m.avgAmount,
+        maxAmount: m.maxAmount,
+        periods: m.periods,
+        monthlyData: m.monthlyData,
+      })),
+    );
+  }, [viewMode, selectedPeriodLabel, filteredMerchants]);
+
   // Sort state
   const { sort, toggleSort, sortData, isSorted } = useSortState();
 
-  const getCellValue = (m: AggregatedMerchant, key: string): number | string => {
+  const getCellValue = (
+    m: (typeof filteredMerchants)[number],
+    key: string,
+  ): number | string => {
     switch (key) {
       case 'title':
         return m.title.toLowerCase();
@@ -213,11 +296,11 @@ export default function MerchantAnalysis({
 
   const sortedMerchants = useMemo(() => {
     return sortData(
-      displayMerchants,
+      filteredMerchants,
       getCellValue,
       (data) => [...data].sort((a, b) => b.totalPaid - a.totalPaid)
     );
-  }, [displayMerchants, sortData, getCellValue]);
+  }, [filteredMerchants, sortData, getCellValue]);
 
   // Stats
   const stats = useMemo(() => {
@@ -258,10 +341,6 @@ export default function MerchantAnalysis({
     for (const c of categories) map[c.name] = c.color;
     return map;
   }, [categories]);
-
-  const selectedPeriodLabel = useMemo(() => {
-    return summaries.find((s) => s.period_id === selectedPeriodId)?.month ?? '';
-  }, [summaries, selectedPeriodId]);
 
   // Top N most frequent merchants (across all time)
   const frequentMerchants = useMemo(() => {
@@ -322,6 +401,44 @@ export default function MerchantAnalysis({
               ))}
             </SelectContent>
           </Select>
+
+          <Select
+            value={archetypeFilter}
+            onValueChange={(v) => setArchetypeFilter(v as 'all' | MerchantArchetype)}
+          >
+            <SelectTrigger className="w-[190px]">
+              <SelectValue placeholder="Semua arketipe" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Semua Arketipe</SelectItem>
+              {ARCHETYPE_ORDER.map((key) => (
+                <SelectItem key={key} value={key}>
+                  {ARCHETYPE_META[key].label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="relative w-full sm:w-[240px]">
+          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Input
+            type="text"
+            placeholder="Cari merchant..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9 pr-8 h-9 text-sm rounded-xl"
+            aria-label="Cari merchant"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white"
+              aria-label="Bersihkan pencarian"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
 
         {viewMode === 'period' && selectedPeriodId != null && (
@@ -330,6 +447,101 @@ export default function MerchantAnalysis({
           </Badge>
         )}
       </div>
+
+      {/* ─── Pareto Concentration ─────────────────────────────────────────── */}
+      {concentration.totalSpend > 0 && (
+        <div className="glass-card p-5">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
+            <h3 className="text-base font-semibold flex items-center gap-2 text-slate-800 dark:text-white/80">
+              <Layers className="w-4 h-4 text-slate-500" />
+              Konsentrasi Belanja (Pareto)
+            </h3>
+            <Badge variant="outline" className={`text-[10px] px-1.5 py-0 border ${concentration.badgeBg}`}>
+              {concentration.statusLabel}
+            </Badge>
+          </div>
+          <p className="text-xs text-slate-600 dark:text-white/50">
+            {viewMode === 'period'
+              ? `Distribusi belanja ${selectedPeriodLabel}`
+              : 'Distribusi belanja seluruh periode'}
+            {' '}: {concentration.paretoCount} merchant teratas menyerap {concentration.paretoSharePct}% belanja,
+            sisanya {concentration.tailCount} merchant (long tail) hanya {100 - concentration.paretoSharePct}%.
+          </p>
+
+          <div className="flex h-3 w-full overflow-hidden rounded-full bg-slate-200/60 dark:bg-white/[0.08] mt-4">
+            <div
+              className="h-full bg-gold-500/80 transition-all duration-500"
+              style={{ width: `${concentration.paretoSharePct}%` }}
+            />
+            <div
+              className="h-full bg-mint-500/60 transition-all duration-500"
+              style={{ width: `${100 - concentration.paretoSharePct}%` }}
+            />
+          </div>
+          <div className="flex flex-wrap justify-between gap-2 mt-2 text-xs">
+            <span className="flex items-center gap-1.5 text-slate-700 dark:text-slate-200">
+              <span className="w-2.5 h-2.5 rounded-full bg-gold-500/80 shrink-0" />
+              Pareto set: {concentration.paretoCount} merchant · {formatIdr(concentration.paretoSpend)}
+            </span>
+            <span className="flex items-center gap-1.5 text-slate-600 dark:text-white/50">
+              <span className="w-2.5 h-2.5 rounded-full bg-mint-500/60 shrink-0" />
+              Long tail: {concentration.tailCount} merchant · {formatIdr(concentration.tailSpend)}
+            </span>
+          </div>
+
+          {concentration.status === 'highly_concentrated' && (
+            <p className="text-xs text-red-600 dark:text-red-400 mt-3 flex items-center gap-1.5">
+              <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+              Belanja sangat bergantung pada segelintir vendor. Gangguan di satu vendor bisa mengganggu anggaran.
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* ─── Surge Radar (period view) ────────────────────────────────────── */}
+      {viewMode === 'period' && surges.length > 0 && (
+        <div className="glass-card p-5">
+          <h3 className="text-base font-semibold flex items-center gap-2 text-slate-800 dark:text-white/80">
+            <Radar className="w-4 h-4 text-slate-500" />
+            Surge Radar: {selectedPeriodLabel}
+          </h3>
+          <p className="text-xs text-slate-600 dark:text-white/50">
+            Perbandingan belanja periode ini vs rata-rata periode sebelumnya (ambang +/-40%).
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-4">
+            {surges.slice(0, 8).map((s) => (
+              <div
+                key={s.title}
+                className="flex items-center justify-between gap-2 p-2.5 rounded-lg border border-border dark:border-white/[0.06] bg-background dark:bg-white/[0.03]"
+              >
+                <div className="min-w-0">
+                  <p className="text-sm font-medium truncate" title={s.title}>{s.title}</p>
+                  <p className="text-[11px] text-slate-500 truncate">
+                    {s.direction === 'new'
+                      ? 'Merchant baru'
+                      : `Baseline: ${formatIdr(s.baselineAvg)}`}
+                  </p>
+                </div>
+                <div className="text-right shrink-0">
+                  <p className="text-sm font-semibold font-mono">{formatIdr(s.currentAmount)}</p>
+                  <span className={`inline-flex items-center gap-1 text-[11px] font-medium border rounded-full px-1.5 py-0 ${s.badgeBg}`}>
+                    {s.direction === 'up' && <TrendingUp className="w-3 h-3" />}
+                    {s.direction === 'down' && <TrendingDown className="w-3 h-3" />}
+                    {s.direction === 'new' && <Sparkles className="w-3 h-3" />}
+                    {s.direction === 'new' ? 'Baru' : `${s.deltaPct > 0 ? '+' : ''}${s.deltaPct}%`}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+          {surges.length > 8 && (
+            <p className="text-[11px] text-slate-500 mt-3 flex items-center gap-1.5">
+              <Info className="w-3 h-3 shrink-0" />
+              +{surges.length - 8} merchant lain di luar ambang normal.
+            </p>
+          )}
+        </div>
+      )}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
@@ -424,8 +636,9 @@ export default function MerchantAnalysis({
                   : 'All-Time Merchant Summary'}
               </h3>
               <p className="text-xs mt-0.5 text-slate-600 dark:text-white/50">
-                {sortedMerchants.length} merchant{sortedMerchants.length !== 1 ? 's' : ''}
-                {selectedCategory !== 'all' && ` in "${selectedCategory}"`}
+                {sortedMerchants.length} dari {displayMerchants.length} merchant
+                {selectedCategory !== 'all' && ` di "${selectedCategory}"`}
+                {searchQuery.trim() && ` cocok dengan "${searchQuery.trim()}"`}
               </p>
             </div>
           </div>
@@ -433,7 +646,7 @@ export default function MerchantAnalysis({
             <div className="text-center py-12">
               <Store className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
               <p className="text-slate-500 dark:text-slate-500 text-sm">
-                No merchant data available{selectedCategory !== 'all' ? ` for category "${selectedCategory}"` : ''}.
+                Tidak ada merchant yang cocok dengan filter saat ini.
               </p>
             </div>
           ) : (
@@ -506,8 +719,29 @@ export default function MerchantAnalysis({
                       <TableCell className="text-xs text-slate-500 w-8">
                         {idx + 1}
                       </TableCell>
-                      <TableCell className="font-medium max-w-[200px] truncate" title={m.title}>
-                        {m.title}
+                      <TableCell className="font-medium max-w-[240px]">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className="truncate" title={m.title}>{m.title}</span>
+                          <span
+                            className={`hidden sm:inline-flex shrink-0 text-[10px] px-1.5 py-0 border rounded-full ${m.archetypeBadge}`}
+                          >
+                            {m.archetypeLabel}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 mt-1">
+                          <div className="w-16 sm:w-24 h-1 rounded-full bg-slate-200/60 dark:bg-white/[0.08] overflow-hidden">
+                            <div
+                              className="h-full bg-gold-500/70 rounded-full"
+                              style={{ width: `${Math.min(100, m.sharePct)}%` }}
+                            />
+                          </div>
+                          <span className="text-[10px] text-slate-500">{m.sharePct}%</span>
+                          {m.inPareto && (
+                            <span className="text-[10px] text-gold-600 dark:text-gold-400 font-medium">
+                              Pareto
+                            </span>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-1.5">

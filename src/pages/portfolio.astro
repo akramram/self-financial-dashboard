@@ -1,16 +1,18 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import NetworthComposition from '../components/NetworthComposition';
+import PortfolioHub from '../components/PortfolioHub';
 import { getNetworth } from '../lib/db';
 
 const networth = getNetworth();
 ---
 
-<Layout title="Investment Portfolio · Financial Dashboard">
+<Layout title="Investment Portfolio & Rebalance Hub · Financial Dashboard">
   <div class="mb-6">
-    <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Investment Portfolio</h1>
-    <p class="text-slate-600 dark:text-white/50 text-sm">Portfolio allocation and breakdown from networth data</p>
+    <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Investment Portfolio & Rebalance Hub</h1>
+    <p class="text-slate-600 dark:text-white/50 text-sm">
+      Kelola alokasi aset, kalkulator rebalancing portofolio, pelacakan posisi investasi, dan radar dividen.
+    </p>
   </div>
 
-  <NetworthComposition data={networth} client:load />
+  <PortfolioHub data={networth} client:load />
 </Layout>

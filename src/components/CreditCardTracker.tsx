@@ -35,9 +35,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { CreditCard, ArrowDownLeft, ArrowUpRight, TrendingUp, AlertTriangle, CheckCircle2, Wallet, Clock, CalendarClock, Split } from 'lucide-react';
+import { CreditCard, ArrowDownLeft, ArrowUpRight, TrendingUp, AlertTriangle, CheckCircle2, Wallet, Clock, CalendarClock, Split, Flame } from 'lucide-react';
 import { useSortState } from '../hooks/useSortState';
 import SortableHeader from './SortableHeader';
+import DebtPayoffHub from './DebtPayoffHub';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend, Filler);
 
@@ -49,6 +50,7 @@ export default function CreditCardTracker() {
   const [convertingTx, setConvertingTx] = useState<Transaction | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedPeriod, setSelectedPeriod] = useState<string>('latest');
+  const [activeTab, setActiveTab] = useState<'tracker' | 'debt_hub'>('tracker');
 
   // All hooks BEFORE any early returns (Rules of Hooks)
   const { toggleSort, sortData, isSorted } = useSortState();
@@ -260,7 +262,7 @@ export default function CreditCardTracker() {
       {
         label: 'Credit Expenses',
         data: balanceTrend.map((b) => b.expenses),
-        // KUR-213 E2: red is a breach signal, not a series color — expenses
+        // KUR-213 E2: red is a breach signal, not a series color: expenses
         // render neutral; red stays reserved for genuine over-limit states.
         backgroundColor: '#64748b',
         borderRadius: 4,
@@ -320,25 +322,67 @@ export default function CreditCardTracker() {
 
   return (
     <div className="space-y-6">
-      {/* Period Filter */}
-      <div className="flex items-center gap-3">
-        <CreditCard className="w-5 h-5 text-gold-500" />
-        <span className="text-sm font-medium text-slate-600 dark:text-white/60">Period:</span>
-        <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="latest">Latest Period</SelectItem>
-            {periodOptions.map((p) => (
-              <SelectItem key={p.month} value={p.month}>{p.month}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      {/* Tab Switcher & Period Filter */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        {/* Tab pills */}
+        <div className="flex items-center gap-1 bg-slate-100 dark:bg-white/[0.06] p-1 rounded-xl border border-slate-200 dark:border-white/10">
+          <button
+            type="button"
+            onClick={() => setActiveTab('tracker')}
+            className={`text-xs px-3.5 py-1.5 rounded-lg font-semibold transition-all flex items-center gap-1.5 ${
+              activeTab === 'tracker'
+                ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm'
+                : 'text-slate-600 dark:text-white/60 hover:text-slate-900'
+            }`}
+          >
+            <CreditCard className="w-3.5 h-3.5" />
+            Ringkasan & Transaksi
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('debt_hub')}
+            className={`text-xs px-3.5 py-1.5 rounded-lg font-semibold transition-all flex items-center gap-1.5 ${
+              activeTab === 'debt_hub'
+                ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm'
+                : 'text-slate-600 dark:text-white/60 hover:text-slate-900'
+            }`}
+          >
+            <Flame className="w-3.5 h-3.5 text-amber-500" />
+            Debt Payoff & Health Hub
+          </button>
+        </div>
+
+        {/* Period Filter (Tracker tab only) */}
+        {activeTab === 'tracker' && (
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-medium text-slate-600 dark:text-white/60">Period:</span>
+            <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="latest">Latest Period</SelectItem>
+                {periodOptions.map((p) => (
+                  <SelectItem key={p.month} value={p.month}>{p.month}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {activeTab === 'debt_hub' ? (
+        <DebtPayoffHub
+          transactions={transactions}
+          recurring={recurring}
+          summaries={summaries}
+          activePeriodMonth={activeSummary?.month}
+          categoryColorMap={categoryColorMap}
+        />
+      ) : (
+        <>
+          {/* Summary Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Card 1: Outstanding Balance */}
         <div className="glass-card p-5">
           
@@ -672,10 +716,10 @@ export default function CreditCardTracker() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <SortableHeader label="Title" sortKey="title" toggleSort={toggleSort} isSorted={isSorted} />
-                  <SortableHeader label="Category" sortKey="category" toggleSort={toggleSort} isSorted={isSorted} />
-                  <SortableHeader label="Amount" sortKey="amount" toggleSort={toggleSort} isSorted={isSorted} align="right" />
-                  <SortableHeader label="Payment Method" sortKey="payment_method" toggleSort={toggleSort} isSorted={isSorted} />
+                  <SortableHeader sortKey="title" currentDirection={isSorted('title')} onSort={toggleSort}>Title</SortableHeader>
+                  <SortableHeader sortKey="category" currentDirection={isSorted('category')} onSort={toggleSort}>Category</SortableHeader>
+                  <SortableHeader sortKey="amount" currentDirection={isSorted('amount')} onSort={toggleSort} className="text-right">Amount</SortableHeader>
+                  <SortableHeader sortKey="payment_method" currentDirection={isSorted('payment_method')} onSort={toggleSort}>Payment Method</SortableHeader>
                   <TableHead className="w-[100px]">Status</TableHead>
                   <TableHead className="w-[110px] text-right">Action</TableHead>
                 </TableRow>
@@ -752,9 +796,9 @@ export default function CreditCardTracker() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <SortableHeader label="Title" sortKey="title" toggleSort={toggleSort} isSorted={isSorted} />
-                  <SortableHeader label="Amount" sortKey="amount" toggleSort={toggleSort} isSorted={isSorted} align="right" />
-                  <SortableHeader label="Date" sortKey="date" toggleSort={toggleSort} isSorted={isSorted} />
+                  <SortableHeader sortKey="title" currentDirection={isSorted('title')} onSort={toggleSort}>Title</SortableHeader>
+                  <SortableHeader sortKey="amount" currentDirection={isSorted('amount')} onSort={toggleSort} className="text-right">Amount</SortableHeader>
+                  <SortableHeader sortKey="date" currentDirection={isSorted('date')} onSort={toggleSort}>Date</SortableHeader>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -828,6 +872,8 @@ export default function CreditCardTracker() {
           </Table>
         
       </div>
+        </>
+      )}
 
       {convertingTx && (
         <ConvertToInstallmentModal

@@ -3,7 +3,7 @@ import {
   LayoutDashboard, ArrowRightLeft, PieChart, Target, Settings,
   TrendingUp, Calendar, Shield, Wallet, CreditCard, Menu, X, Bell,
   Trophy, Flame, Heart, BarChart3, FlaskConical, Briefcase, PiggyBank,
-  Repeat, Search, FileText, GitCompare, Activity, Layers, CalendarDays, Zap, Grid3x3,
+  Repeat, Search, FileText, GitCompare, Activity, Layers, CalendarDays, Zap, Grid3x3, Waves, ShieldCheck, Sparkles, CircleDollarSign,
 } from 'lucide-react';
 import { openAlertsDrawer } from '../lib/alertsStore';
 
@@ -45,6 +45,7 @@ const PLANNING = [
   { path: '/what-if', label: 'What-If', icon: FlaskConical },
   { path: '/forecast', label: 'Forecast', icon: TrendingUp },
   { path: '/portfolio', label: 'Portfolio', icon: Briefcase },
+  { path: '/sinking-funds', label: 'Sinking Funds', icon: Target },
   { path: '/networth', label: 'Net Worth', icon: PiggyBank },
 ];
 
@@ -54,8 +55,12 @@ const REPORTS = [
   { path: '/yearly', label: 'Yearly', icon: CalendarDays },
   { path: '/compare', label: 'Compare', icon: GitCompare },
   { path: '/cashflow', label: 'Cashflow', icon: BarChart3 },
+  { path: '/flow', label: 'Money Flow', icon: Waves },
+  { path: '/inflation', label: 'Inflasi', icon: CircleDollarSign },
   { path: '/recurring', label: 'Recurring', icon: Repeat },
   { path: '/recurring-audit', label: 'Recurring Audit', icon: Search },
+  { path: '/diagnostics', label: 'Data Health', icon: ShieldCheck },
+  { path: '/rewind', label: 'Rewind', icon: Sparkles },
   { path: '/recommendations', label: 'Tips', icon: Trophy },
 ];
 

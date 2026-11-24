@@ -20,7 +20,11 @@ export const PUT: APIRoute = async ({ request, params }) => {
   const id = Number(params.id);
   const body = await parseJsonBody(request);
   if (!body) return jsonError('Invalid JSON body');
-  updateRecurringTransaction(id, body);
+  try {
+    updateRecurringTransaction(id, body);
+  } catch (e: any) {
+    return jsonError(e?.message || 'Invalid update payload');
+  }
   return new Response(JSON.stringify({ success: true }), {
     headers: { 'Content-Type': 'application/json' },
   });

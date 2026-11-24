@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion, useReducedMotion } from 'motion/react';
 import QuickAddTransactionModal from './QuickAddTransactionModal';
 import { Plus } from 'lucide-react';
 
@@ -19,6 +20,7 @@ import { Plus } from 'lucide-react';
 export default function QuickAddFAB() {
   const [open, setOpen] = useState(false);
   const [preset, setPreset] = useState<{ title?: string | null; amount?: string | null; date?: string | null } | null>(null);
+  const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -67,14 +69,16 @@ export default function QuickAddFAB() {
   return (
     <>
       {/* Floating Action Button, desktop only (mobile uses bottom-tab center button) */}
-      <button
+      <motion.button
         onClick={() => { setPreset(null); setOpen(true); }}
-        className="hidden lg:flex fixed bottom-8 right-8 z-40 w-14 h-14 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg hover:shadow-xl transition-all hover:scale-110 items-center justify-center group"
+        whileHover={shouldReduceMotion ? undefined : { scale: 1.08 }}
+        whileTap={shouldReduceMotion ? undefined : { scale: 0.94 }}
+        className="hidden lg:flex fixed bottom-8 right-8 z-40 w-14 h-14 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg hover:shadow-xl transition-colors items-center justify-center group cursor-pointer"
         aria-label="Quick add transaction (Shift+N)"
         title="Quick Add Transaction (Shift+N)"
       >
         <Plus className="w-7 h-7 transition-transform group-hover:rotate-90" />
-      </button>
+      </motion.button>
 
       {/* Quick Add — same sheet modal everywhere (KUR-245 regresi 1) */}
       <QuickAddTransactionModal open={open} onOpenChange={setOpen} preset={preset} />

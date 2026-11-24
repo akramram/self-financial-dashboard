@@ -1,34 +1,17 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import HealthScore from '../components/HealthScore';
-import { getMonthlySummary, getCategories, db } from '../lib/db';
-
-const summaries = getMonthlySummary();
-const categories = getCategories();
-
-// Enrich summaries with income from DB
-const incomeRows = db.prepare('SELECT mi.period_id, mi.income, p.month FROM monthly_income mi JOIN periods p ON mi.period_id = p.id').all() as any[];
-const incomeMap = new Map(incomeRows.map((r) => [r.month, r.income]));
-for (const s of summaries) {
-  const income = incomeMap.get(s.month) || 0;
-  s.income = income;
-  const invest = s.invest_total ?? 0;
-  s.savings = income - (s.outcome.total - invest);
-  s.savings_rate_pct = income > 0 ? Number(((s.savings / income) * 100).toFixed(2)) : 0;
-}
 ---
 
-<Layout title="Health Score - Financial Dashboard">
+<Layout title="Financial Health Intelligence Hub - Financial Dashboard">
   <div class="mb-6">
-    <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Financial Health Score</h1>
-    <p class="text-slate-600 dark:text-white/50 text-sm">
-      A composite score (0-100) based on savings rate, budget adherence, networth growth, spending control, and consistency.
+    <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+      Financial Health Intelligence Hub
+    </h1>
+    <p class="text-slate-600 dark:text-white/60 text-sm mt-1">
+      Skor komposit 5 pilar kesehatan finansial (0-100), radar perbandingan antar siklus gaji, simulator What-If kenaikan skor, dan rencana aksi prioritas.
     </p>
   </div>
 
-  <HealthScore
-    summaries={summaries}
-    categories={categories}
-    client:load
-  />
+  <HealthScore client:load />
 </Layout>

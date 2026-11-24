@@ -171,7 +171,7 @@ export const GET: APIRoute = async ({ request }) => {
   } else if (currentNetworth >= fireNumber) {
     // Already FI!
     yearsToFi = 0;
-    projectedFiDate = 'Now — You are already financially independent! 🎉';
+    projectedFiDate = 'Now: You are already financially independent! 🎉';
     
     // Still show a few years of projection
     let currentBalance = currentNetworth;
