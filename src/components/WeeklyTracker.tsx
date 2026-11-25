@@ -802,7 +802,7 @@ export default function WeeklyTracker() {
                 onChange={(e) => setTargetSavingsRate(parseInt(e.target.value, 10))}
                 className="w-full accent-emerald-500 cursor-pointer"
               />
-              <div className="flex justify-between text-[10px] text-slate-400 mt-1">
+              <div className="flex justify-between text-[10px] text-slate-500 mt-1">
                 <span>0% (Semua Dibelanjakan)</span>
                 <span>20% (Rekomendasi Sehat)</span>
                 <span>50% (Frugal Maksimal)</span>
@@ -1039,7 +1039,7 @@ export default function WeeklyTracker() {
                         <TableCell className="font-medium text-slate-900 dark:text-slate-100">
                           {tx.title}
                           {tx.created_time && (
-                            <span className="block text-[10px] text-slate-400 font-normal">
+                            <span className="block text-[10px] text-slate-500 font-normal">
                               {new Date(tx.created_time).toLocaleDateString('id-ID', {
                                 weekday: 'short',
                                 day: 'numeric',

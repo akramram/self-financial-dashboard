@@ -247,12 +247,12 @@ export default function ConvertToInstallmentModal({ open, transaction, onClose, 
                     onChange={(e) => setInterestPercent(e.target.value)}
                     className="h-9 pr-8 text-sm"
                   />
-                  <span className="absolute right-3 top-2 text-xs text-slate-400 font-medium">%</span>
+                  <span className="absolute right-3 top-2 text-xs text-slate-500 font-medium">%</span>
                 </div>
               </>
             ) : (
               <div className="relative">
-                <span className="absolute left-3 top-2 text-xs text-slate-400 font-medium">Rp</span>
+                <span className="absolute left-3 top-2 text-xs text-slate-500 font-medium">Rp</span>
                 <Input
                   type="number"
                   step="1000"
@@ -277,7 +277,7 @@ export default function ConvertToInstallmentModal({ open, transaction, onClose, 
               </span>
             </div>
             <div className="relative">
-              <span className="absolute left-3 top-2 text-xs text-slate-400 font-medium">Rp</span>
+              <span className="absolute left-3 top-2 text-xs text-slate-500 font-medium">Rp</span>
               <Input
                 id="admin-fee-input"
                 type="number"
