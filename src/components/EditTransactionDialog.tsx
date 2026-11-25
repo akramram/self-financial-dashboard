@@ -110,7 +110,7 @@ export default function EditTransactionDialog({
             <Label htmlFor="edit-amount" className="text-xs text-muted-foreground">Amount</Label>
             <Input
               id="edit-amount"
-              type="number"
+              type="text" inputMode="decimal"
               value={transaction.amount ?? ''}
               onChange={(e) => onChange('amount', parseFloat(e.target.value) || 0)}
             />

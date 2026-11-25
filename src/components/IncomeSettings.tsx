@@ -160,7 +160,7 @@ export default function IncomeSettings() {
                 ))}
               </select>
               <Input
-                type="number"
+                type="text" inputMode="decimal"
                 value={newYear}
                 onChange={(e) => setNewYear(Number(e.target.value))}
                 className="w-24 h-9 text-xs"
@@ -170,7 +170,7 @@ export default function IncomeSettings() {
           <div className="space-y-1.5 sm:col-span-1">
             <Label className="text-xs">Primary Income (IDR)</Label>
             <Input
-              type="number"
+              type="text" inputMode="decimal"
               value={newIncome}
               onChange={(e) => setNewIncome(e.target.value)}
               placeholder="0"
@@ -180,7 +180,7 @@ export default function IncomeSettings() {
           <div className="space-y-1.5 sm:col-span-1">
             <Label className="text-xs">Other Income (IDR)</Label>
             <Input
-              type="number"
+              type="text" inputMode="decimal"
               value={newOtherIncome}
               onChange={(e) => setNewOtherIncome(e.target.value)}
               placeholder="0"
@@ -224,7 +224,7 @@ export default function IncomeSettings() {
                       <TableCell className="font-medium text-xs">{row.month}</TableCell>
                       <TableCell className="text-right">
                         <Input
-                          type="number"
+                          type="text" inputMode="decimal"
                           value={editForm.income ?? ''}
                           onChange={(e) => setEditForm((p) => ({ ...p, income: Number(e.target.value) }))}
                           className="h-8 text-xs text-right w-36 ml-auto"
@@ -232,7 +232,7 @@ export default function IncomeSettings() {
                       </TableCell>
                       <TableCell className="text-right">
                         <Input
-                          type="number"
+                          type="text" inputMode="decimal"
                           value={editForm.other_income ?? ''}
                           onChange={(e) => setEditForm((p) => ({ ...p, other_income: Number(e.target.value) }))}
                           className="h-8 text-xs text-right w-36 ml-auto"
@@ -317,14 +317,14 @@ export default function IncomeSettings() {
                   <div className="space-y-2">
                     <Label className="text-xs">Primary Income</Label>
                     <Input
-                      type="number"
+                      type="text" inputMode="decimal"
                       value={editForm.income ?? ''}
                       onChange={(e) => setEditForm((p) => ({ ...p, income: Number(e.target.value) }))}
                       className="h-9 text-sm"
                     />
                     <Label className="text-xs">Other Income</Label>
                     <Input
-                      type="number"
+                      type="text" inputMode="decimal"
                       value={editForm.other_income ?? ''}
                       onChange={(e) => setEditForm((p) => ({ ...p, other_income: Number(e.target.value) }))}
                       className="h-9 text-sm"

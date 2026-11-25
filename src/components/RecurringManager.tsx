@@ -441,7 +441,7 @@ export default function RecurringManager() {
               <div className="space-y-1.5">
                 <Label>Amount (IDR)</Label>
                 <Input
-                  type="number"
+                  type="text" inputMode="decimal"
                   value={addForm.amount}
                   onChange={(e) => setAddForm((p) => ({ ...p, amount: e.target.value }))}
                   placeholder="0"
@@ -489,7 +489,7 @@ export default function RecurringManager() {
               <div className="space-y-1.5">
                 <Label>Tgl Transaksi</Label>
                 <Input
-                  type="number"
+                  type="text" inputMode="decimal"
                   min={1}
                   max={28}
                   value={addForm.created_at}
@@ -601,7 +601,7 @@ export default function RecurringManager() {
                         </TableCell>
                         <TableCell>
                           <Input
-                            type="number"
+                            type="text" inputMode="decimal"
                             value={editForm.amount ?? 0}
                             onChange={(e) => setEditForm((p) => ({ ...p, amount: Number(e.target.value) }))}
                             className="h-8 text-xs text-right"
@@ -632,7 +632,7 @@ export default function RecurringManager() {
                         </TableCell>
                         <TableCell>
                           <Input
-                            type="number"
+                            type="text" inputMode="decimal"
                             min={1}
                             max={28}
                             value={editForm.created_at ?? defaultDay()}
@@ -794,7 +794,7 @@ export default function RecurringManager() {
                         </SelectContent>
                       </Select>
                       <Input
-                        type="number"
+                        type="text" inputMode="decimal"
                         value={editForm.amount ?? 0}
                         onChange={(e) => setEditForm((p) => ({ ...p, amount: Number(e.target.value) }))}
                         className="h-9 text-sm text-right"
@@ -810,7 +810,7 @@ export default function RecurringManager() {
                         </SelectContent>
                       </Select>
                       <Input
-                        type="number"
+                        type="text" inputMode="decimal"
                         min={1}
                         max={28}
                         value={editForm.created_at ?? defaultDay()}

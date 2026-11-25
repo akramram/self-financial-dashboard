@@ -726,7 +726,7 @@ export default function GoalsTracker({ networth }: Props) {
                 <Label htmlFor="goal-target">Target Amount (IDR) *</Label>
                 <Input
                   id="goal-target"
-                  type="number"
+                  type="text" inputMode="decimal"
                   placeholder="10000000"
                   value={form.target_amount}
                   onChange={(e) => handleFormChange('target_amount', e.target.value)}
@@ -737,7 +737,7 @@ export default function GoalsTracker({ networth }: Props) {
                 <Label htmlFor="goal-current">Current Amount (IDR)</Label>
                 <Input
                   id="goal-current"
-                  type="number"
+                  type="text" inputMode="decimal"
                   placeholder="0"
                   value={form.current_amount}
                   onChange={(e) => handleFormChange('current_amount', e.target.value)}
@@ -885,7 +885,7 @@ export default function GoalsTracker({ networth }: Props) {
               <Label htmlFor="contribute-amount">Amount (IDR)</Label>
               <Input
                 id="contribute-amount"
-                type="number"
+                type="text" inputMode="decimal"
                 placeholder="500000"
                 value={contributeAmount}
                 onChange={(e) => setContributeAmount(e.target.value)}

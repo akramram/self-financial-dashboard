@@ -92,7 +92,7 @@ export default function MonthKickoffModal({ open, onOpenChange, nextMonth, recur
               <Label htmlFor="salary">Monthly Salary (IDR)</Label>
               <Input
                 id="salary"
-                type="number"
+                type="text" inputMode="decimal"
                 value={salary}
                 onChange={(e) => setSalary(e.target.value)}
                 placeholder="Enter your salary"

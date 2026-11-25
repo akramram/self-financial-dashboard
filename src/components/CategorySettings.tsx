@@ -178,7 +178,7 @@ export default function CategorySettings() {
             <div className="space-y-1.5">
               <Label className="text-xs">Monthly Limit (IDR)</Label>
               <Input
-                type="number"
+                type="text" inputMode="decimal"
                 value={addForm.monthly_limit}
                 onChange={(e) => setAddForm((p) => ({ ...p, monthly_limit: e.target.value }))}
                 placeholder="0"
@@ -268,7 +268,7 @@ export default function CategorySettings() {
                       </TableCell>
                       <TableCell>
                         <Input
-                          type="number"
+                          type="text" inputMode="decimal"
                           value={editForm.monthly_limit ?? 0}
                           onChange={(e) => setEditForm((p) => ({ ...p, monthly_limit: Number(e.target.value) }))}
                           className="h-8 text-xs text-right"
@@ -360,7 +360,7 @@ export default function CategorySettings() {
                     <Label className="text-xs">Monthly Limit</Label>
                     <Label className="text-xs">Color</Label>
                     <Input
-                      type="number"
+                      type="text" inputMode="decimal"
                       value={editForm.monthly_limit ?? 0}
                       onChange={(e) => setEditForm((p) => ({ ...p, monthly_limit: Number(e.target.value) }))}
                       className="h-9 text-sm"

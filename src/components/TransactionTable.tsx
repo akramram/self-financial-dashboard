@@ -641,7 +641,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                       <div className="relative flex-1">
                         <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 dark:text-white/50 text-xs">Rp</span>
                         <Input
-                          type="number"
+                          type="text" inputMode="decimal"
                           aria-label="Filter minimum amount (Rupiah)"
                           placeholder="Min"
                           value={amountMin}
@@ -653,7 +653,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                       <div className="relative flex-1">
                         <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 dark:text-white/50 text-xs">Rp</span>
                         <Input
-                          type="number"
+                          type="text" inputMode="decimal"
                           aria-label="Filter maximum amount (Rupiah)"
                           placeholder="Max"
                           value={amountMax}

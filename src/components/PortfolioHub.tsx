@@ -549,7 +549,7 @@ export default function PortfolioHub({ data }: Props) {
                   <div key={asset.key} className="space-y-1">
                     <Label className="text-xs text-slate-600 dark:text-white/70">{asset.key} (%)</Label>
                     <Input
-                      type="number"
+                      type="text" inputMode="decimal"
                       min={0}
                       max={100}
                       value={activeTargets[asset.key] ?? 0}
@@ -650,7 +650,7 @@ export default function PortfolioHub({ data }: Props) {
                   <span className="absolute left-3 top-3 text-xs text-slate-500">Rp</span>
                   <Input
                     id="inflow-input"
-                    type="number"
+                    type="text" inputMode="decimal"
                     step={500000}
                     min={0}
                     value={cashInflow}
@@ -1046,7 +1046,7 @@ export default function PortfolioHub({ data }: Props) {
                 <Label htmlFor="form-qty" className="text-xs">Jumlah Lembar</Label>
                 <Input
                   id="form-qty"
-                  type="number"
+                  type="text" inputMode="decimal"
                   min={0}
                   value={form.quantity || 0}
                   onChange={(e) => setForm((p) => ({ ...p, quantity: parseFloat(e.target.value) || 0 }))}
@@ -1058,7 +1058,7 @@ export default function PortfolioHub({ data }: Props) {
                 <Label htmlFor="form-buy" className="text-xs">Harga Beli</Label>
                 <Input
                   id="form-buy"
-                  type="number"
+                  type="text" inputMode="decimal"
                   min={0}
                   value={form.avg_purchase_price || 0}
                   onChange={(e) =>
@@ -1072,7 +1072,7 @@ export default function PortfolioHub({ data }: Props) {
                 <Label htmlFor="form-current" className="text-xs">Harga Kini</Label>
                 <Input
                   id="form-current"
-                  type="number"
+                  type="text" inputMode="decimal"
                   min={0}
                   value={form.current_price || 0}
                   onChange={(e) =>

@@ -341,7 +341,7 @@ export default function DebtPayoffHub({
           <div className="flex items-center gap-2 p-3 bg-indigo-50/50 dark:bg-indigo-950/20 rounded-xl border border-indigo-200/60 dark:border-indigo-500/20">
             <span className="text-xs text-slate-600 dark:text-white/70 whitespace-nowrap">Input Limit Baru (Rp):</span>
             <Input
-              type="number"
+              type="text" inputMode="decimal"
               value={limitInputStr}
               onChange={(e) => setLimitInputStr(e.target.value)}
               onBlur={handleCustomLimitBlur}

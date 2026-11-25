@@ -143,7 +143,7 @@ export default function NetworthEditForm() {
                     className="flex-1 bg-muted"
                   />
                   <Input
-                    type="number"
+                    type="text" inputMode="decimal"
                     value={value}
                     onChange={(e) => handleChange(key, e.target.value)}
                     placeholder="0"

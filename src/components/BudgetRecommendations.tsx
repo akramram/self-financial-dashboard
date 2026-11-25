@@ -922,7 +922,7 @@ export default function BudgetRecommendations() {
                 <div className="flex items-center gap-2">
                   <Input
                     id="custom-limit-input"
-                    type="number"
+                    type="text" inputMode="decimal"
                     step={10000}
                     value={modalCustomLimit}
                     onChange={(e) => setModalCustomLimit(e.target.value)}

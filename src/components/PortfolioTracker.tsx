@@ -587,7 +587,7 @@ export default function PortfolioTracker() {
               <Label htmlFor="inv-qty">Quantity</Label>
               <Input
                 id="inv-qty"
-                type="number"
+                type="text" inputMode="decimal"
                 step="any"
                 min="0"
                 value={form.quantity || 0}
@@ -607,7 +607,7 @@ export default function PortfolioTracker() {
               <Label htmlFor="inv-avg-price">Avg Purchase Price</Label>
               <Input
                 id="inv-avg-price"
-                type="number"
+                type="text" inputMode="decimal"
                 step="any"
                 min="0"
                 value={form.avg_purchase_price || 0}
@@ -618,7 +618,7 @@ export default function PortfolioTracker() {
               <Label htmlFor="inv-current-price">Current Price</Label>
               <Input
                 id="inv-current-price"
-                type="number"
+                type="text" inputMode="decimal"
                 step="any"
                 min="0"
                 value={form.current_price || 0}

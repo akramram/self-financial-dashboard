@@ -684,7 +684,7 @@ export default function SinkingFundsHub() {
             </Label>
             <Input
               id="surplus-input"
-              type="number"
+              type="text" inputMode="decimal"
               value={surplusInput}
               onChange={(e) => setSurplusInput(Math.max(0, Number(e.target.value)))}
               className="h-9 text-sm font-semibold tabular-nums text-foreground bg-background"
@@ -856,7 +856,7 @@ export default function SinkingFundsHub() {
                   </Label>
                   <Input
                     id="fund-target"
-                    type="number"
+                    type="text" inputMode="decimal"
                     placeholder="Contoh: 3000000"
                     value={formTargetAmount}
                     onChange={(e) => setFormTargetAmount(e.target.value)}
@@ -871,7 +871,7 @@ export default function SinkingFundsHub() {
                   </Label>
                   <Input
                     id="fund-current"
-                    type="number"
+                    type="text" inputMode="decimal"
                     placeholder="Contoh: 1000000"
                     value={formCurrentAmount}
                     onChange={(e) => setFormCurrentAmount(e.target.value)}
@@ -974,7 +974,7 @@ export default function SinkingFundsHub() {
               </Label>
               <Input
                 id="deposit-amount"
-                type="number"
+                type="text" inputMode="decimal"
                 placeholder="Contoh: 500000"
                 value={depositAmount}
                 onChange={(e) => setDepositAmount(e.target.value)}

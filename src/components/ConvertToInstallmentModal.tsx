@@ -185,7 +185,7 @@ export default function ConvertToInstallmentModal({ open, transaction, onClose, 
             </div>
             <Input
               id="months-input"
-              type="number"
+              type="text" inputMode="decimal"
               min={2}
               max={60}
               value={months}
@@ -239,7 +239,7 @@ export default function ConvertToInstallmentModal({ open, transaction, onClose, 
                 </div>
                 <div className="relative">
                   <Input
-                    type="number"
+                    type="text" inputMode="decimal"
                     step="0.01"
                     min="0"
                     placeholder="Contoh: 1.25"
@@ -254,7 +254,7 @@ export default function ConvertToInstallmentModal({ open, transaction, onClose, 
               <div className="relative">
                 <span className="absolute left-3 top-2 text-xs text-slate-500 font-medium">Rp</span>
                 <Input
-                  type="number"
+                  type="text" inputMode="decimal"
                   step="1000"
                   min="0"
                   placeholder="Contoh: 25000"
@@ -280,7 +280,7 @@ export default function ConvertToInstallmentModal({ open, transaction, onClose, 
               <span className="absolute left-3 top-2 text-xs text-slate-500 font-medium">Rp</span>
               <Input
                 id="admin-fee-input"
-                type="number"
+                type="text" inputMode="decimal"
                 step="1000"
                 min="0"
                 placeholder="0 jika tanpa biaya admin"
