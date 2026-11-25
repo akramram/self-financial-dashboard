@@ -514,7 +514,8 @@ export default function PortfolioTracker() {
                               size="sm"
                               variant="ghost"
                               onClick={() => openEdit(inv)}
-                              className="h-7 w-7 p-0"
+                              className="h-7 w-7 p-0 min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0"
+                              aria-label={`Edit ${inv.name}`}
                             >
                               <Pencil className="w-3.5 h-3.5" />
                             </Button>
@@ -522,7 +523,8 @@ export default function PortfolioTracker() {
                               size="sm"
                               variant="ghost"
                               onClick={() => setDeleteConfirmId(inv.id)}
-                              className="h-7 w-7 p-0 text-red-500 hover:text-red-700"
+                              className="h-7 w-7 p-0 min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0 text-red-500 hover:text-red-700"
+                              aria-label={`Hapus ${inv.name}`}
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                             </Button>

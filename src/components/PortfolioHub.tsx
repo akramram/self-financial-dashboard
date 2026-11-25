@@ -855,7 +855,8 @@ export default function PortfolioHub({ data }: Props) {
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => handleOpenEdit(inv)}
-                                className="h-8 w-8 p-0"
+                                className="h-8 w-8 p-0 min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0"
+                                aria-label={`Edit ${inv.name}`}
                               >
                                 <Pencil className="w-3.5 h-3.5" />
                               </Button>
@@ -863,7 +864,8 @@ export default function PortfolioHub({ data }: Props) {
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => setDeleteConfirmId(inv.id)}
-                                className="h-8 w-8 p-0 text-coral-500 hover:text-coral-600"
+                                className="h-8 w-8 p-0 min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0 text-coral-500 hover:text-coral-600"
+                                aria-label={`Hapus ${inv.name}`}
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
                               </Button>
