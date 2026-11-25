@@ -645,7 +645,7 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
                 </div>
 
                 {/* Recommendation insight */}
-                <div className="mt-3.5 p-3 rounded-lg bg-mint-500/10 border border-mint-500/20 text-xs text-slate-700 dark:text-mint-200 flex items-center gap-2">
+                <div className="mt-3.5 p-3 rounded-lg bg-mint-500/10 border border-mint-500/20 text-xs text-slate-700 dark:text-mint-400 flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-mint-600 shrink-0" />
                   <span>{allocation.recommendation}</span>
                 </div>
@@ -862,7 +862,7 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
             {/* Surplus Streak */}
             <div className="glass-card p-5">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-gold-100 dark:bg-gold-900/30">
+                <div className="p-2 rounded-lg bg-gold-500/15 dark:bg-gold-500/15">
                   <Flame className="w-5 h-5 text-gold-700 dark:text-gold-400" />
                 </div>
                 <div>
@@ -922,7 +922,7 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
             {/* Total Net Accumulated */}
             <div className="glass-card p-5">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-mint-100 dark:bg-mint-900/30">
+                <div className="p-2 rounded-lg bg-mint-500/15 dark:bg-mint-500/15">
                   <PiggyBank className="w-5 h-5 text-mint-700 dark:text-mint-400" />
                 </div>
                 <div>

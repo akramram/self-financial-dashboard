@@ -174,7 +174,7 @@ export default function BudgetAlerts({ summaries, categories, activeMonth, trans
                   : 'bg-gold-500';
               const bgColor = alert.isOver
                 ? 'bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800'
-                : 'bg-gold-500/5 dark:bg-gold-700/10/30 border-gold-400/20 dark:border-gold-700/40';
+                : 'bg-gold-500/5 dark:bg-gold-700/10 border-gold-400/20 dark:border-gold-700/40';
               const textColor = alert.isOver
                 ? 'text-red-700 dark:text-red-300'
                 : 'text-gold-700 dark:text-gold-300';

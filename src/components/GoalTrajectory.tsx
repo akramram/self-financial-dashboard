@@ -142,7 +142,7 @@ export default function GoalTrajectory() {
           )}
         </div>
       {!data.has_sufficient_data && (
-          <div className="rounded-md border border-gold-400/20 dark:border-gold-700/40/60 bg-gold-500/5 dark:bg-gold-700/20 px-3 py-2 text-xs text-gold-700 dark:text-gold-300 flex items-start gap-2">
+          <div className="rounded-md border border-gold-400/20 dark:border-gold-700/40 bg-gold-500/5 dark:bg-gold-700/20 px-3 py-2 text-xs text-gold-700 dark:text-gold-300 flex items-start gap-2">
             <Info className="w-3.5 h-3.5 mt-0.5 shrink-0" />
             <span>
               Data networth belum cukup (butuh minimal 2 entri). Proyeksi tidak dapat dihitung -

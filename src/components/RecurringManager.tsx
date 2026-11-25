@@ -367,14 +367,14 @@ export default function RecurringManager() {
                   onClick={() => setTypeFilter(tab.id as any)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors shrink-0 flex items-center gap-1.5 ${
                     isActive
-                      ? 'bg-mint-500/15 text-mint-700 dark:text-mint-300 border border-mint-500/30'
+                      ? 'bg-mint-500/15 text-mint-700 dark:text-mint-400 border border-mint-500/30'
                       : 'text-slate-600 dark:text-white/60 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.04]'
                   }`}
                 >
                   <span>{tab.label}</span>
                   <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${
                     isActive
-                      ? 'bg-mint-500/25 text-mint-800 dark:text-mint-200'
+                      ? 'bg-mint-500/25 text-mint-700 dark:text-mint-400'
                       : 'bg-slate-200/80 dark:bg-white/10 text-slate-600 dark:text-white/50'
                   }`}>
                     {tab.count}

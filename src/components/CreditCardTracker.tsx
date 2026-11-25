@@ -570,7 +570,7 @@ export default function CreditCardTracker() {
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <Badge className="bg-mint-500/10 text-mint-700 dark:text-mint-300 border-mint-500/20 text-xs">
+            <Badge className="bg-mint-500/10 text-mint-700 dark:text-mint-400 border-mint-500/20 text-xs">
               {installmentSummary.activeCount} Active
             </Badge>
             {installmentSummary.monthlyObligation > 0 && (
@@ -630,7 +630,7 @@ export default function CreditCardTracker() {
                           Paused
                         </Badge>
                       ) : (
-                        <Badge className="bg-mint-500/10 text-mint-700 dark:text-mint-300 border-mint-500/30 text-[10px]">
+                        <Badge className="bg-mint-500/10 text-mint-700 dark:text-mint-400 border-mint-500/30 text-[10px]">
                           Active
                         </Badge>
                       )}

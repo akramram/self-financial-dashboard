@@ -421,7 +421,7 @@ export default function Achievements({ initialData }: Props) {
                 </span>
                 <Badge
                   variant="outline"
-                  className="text-[11px] font-bold border-mint-500/40 text-mint-700 dark:text-mint-300 bg-mint-500/10"
+                  className="text-[11px] font-bold border-mint-500/40 text-mint-700 dark:text-mint-400 bg-mint-500/10"
                 >
                   {data.levelInfo.title}
                 </Badge>
@@ -922,7 +922,7 @@ export default function Achievements({ initialData }: Props) {
               </div>
             </div>
 
-            <Badge variant="outline" className="text-xs font-semibold border-mint-500/30 text-mint-700 dark:text-mint-300">
+            <Badge variant="outline" className="text-xs font-semibold border-mint-500/30 text-mint-700 dark:text-mint-400">
               {unlockedTimeline.length} Tonggak Tercapai
             </Badge>
           </div>

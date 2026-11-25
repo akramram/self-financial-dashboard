@@ -18,14 +18,14 @@ interface Props {
 
 const SEVERITY_COLORS: Record<Anomaly['severity'], string> = {
   high: 'border-red-300 bg-red-50 dark:border-red-800 dark:bg-red-950/30',
-  medium: 'border-gold-400/30 bg-gold-500/5 dark:border-gold-700/40 dark:bg-gold-700/10/30',
+  medium: 'border-gold-400/30 bg-gold-500/5 dark:border-gold-700/40 dark:bg-gold-700/10',
   low: 'border-mint-400/30 bg-mint-500/5 dark:border-mint-700/40 dark:bg-mint-700/10',
 };
 
 const SEVERITY_BADGE: Record<Anomaly['severity'], string> = {
   high: 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300',
-  medium: 'bg-gold-500/10 text-gold-700 dark:bg-gold-700/20/40 dark:text-gold-300',
-  low: 'bg-mint-500/10 text-mint-700 dark:bg-mint-700/20 dark:text-mint-300',
+  medium: 'bg-gold-500/10 text-gold-700 dark:bg-gold-700/20 dark:text-gold-300',
+  low: 'bg-mint-500/10 text-mint-700 dark:bg-mint-700/20 dark:text-mint-400',
 };
 
 const REASON_LABELS: Record<Anomaly['reason'], string> = {
@@ -116,7 +116,7 @@ export default function AnomalyAlerts({ month }: Props) {
                 className={`text-[11px] px-1.5 py-0 rounded-full font-medium transition cursor-pointer border ${
                   severityFilter === 'medium'
                     ? 'bg-gold-600 text-slate-900 dark:text-white border-gold-600 ring-2 ring-gold-400/30'
-                    : 'bg-gold-500/10 text-gold-700 border-gold-400/20 hover:bg-gold-400/20 dark:bg-gold-700/20/40 dark:text-gold-300 dark:border-gold-700/40 dark:hover:bg-gold-700/30/60'
+                    : 'bg-gold-500/10 text-gold-700 border-gold-400/20 hover:bg-gold-400/20 dark:bg-gold-700/20 dark:text-gold-300 dark:border-gold-700/40 dark:hover:bg-gold-700/30'
                 }`}
               >
                 {mediumCount} medium
@@ -128,7 +128,7 @@ export default function AnomalyAlerts({ month }: Props) {
                 className={`text-[11px] px-1.5 py-0 rounded-full font-medium transition cursor-pointer border ${
                   severityFilter === 'low'
                     ? 'bg-mint-600 text-slate-900 dark:text-white border-mint-600 ring-2 ring-mint-400/30'
-                    : 'bg-mint-500/10 text-mint-700 border-mint-400/20 hover:bg-mint-400/20 dark:bg-mint-700/20 dark:text-mint-300 dark:border-mint-700/40 dark:hover:bg-mint-700/30/60'
+                    : 'bg-mint-500/10 text-mint-700 border-mint-400/20 hover:bg-mint-400/20 dark:bg-mint-700/20 dark:text-mint-400 dark:border-mint-700/40 dark:hover:bg-mint-700/30'
                 }`}
               >
                 {lowCount} low

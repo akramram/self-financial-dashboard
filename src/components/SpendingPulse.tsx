@@ -138,10 +138,10 @@ export default function SpendingPulse({ summaries, activeMonth, transactions }: 
     },
     'on-track': {
       color: 'text-gold-700 dark:text-gold-400',
-      bg: 'bg-gold-500/5 dark:bg-gold-700/20/20',
+      bg: 'bg-gold-500/5 dark:bg-gold-700/20',
       border: 'border-gold-400/20 dark:border-gold-700/40',
       bar: 'bg-gold-500/50',
-      track: 'bg-gold-500/10 dark:bg-gold-700/20/50',
+      track: 'bg-gold-500/10 dark:bg-gold-700/20',
       icon: <Activity className="w-5 h-5" />,
       label: 'Spending on pace with the period',
       badge: 'On Track',

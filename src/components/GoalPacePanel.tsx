@@ -36,7 +36,7 @@ const STATUS_META: Record<GoalPaceStatus, { label: string; cls: string; icon: Re
   },
   on_track: {
     label: 'Sesuai Jadwal',
-    cls: 'bg-mint-500/15 text-mint-700 dark:bg-mint-500/10 dark:text-mint-300',
+    cls: 'bg-mint-500/15 text-mint-700 dark:bg-mint-500/10 dark:text-mint-400',
     icon: <CheckCircle2 className="w-3 h-3" />,
   },
   behind: {

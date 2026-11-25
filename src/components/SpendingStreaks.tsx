@@ -175,7 +175,7 @@ export default function SpendingStreaks() {
         {/* Current streak */}
         <div className={`rounded-xl border p-6 shadow-sm transition ${
           data.currentStreak > 0
-            ? 'bg-gradient-to-br from-coral-500/5 to-gold-500/5 dark:from-coral-700/10/40 dark:to-gold-700/5/30 border-coral-400/20 dark:border-coral-700/40'
+            ? 'bg-gradient-to-br from-coral-500/5 to-gold-500/5 dark:from-coral-700/10 dark:to-gold-700/5 border-coral-400/20 dark:border-coral-700/40'
             : 'bg-slate-100 dark:bg-white/[0.03] border-slate-200 dark:border-white/[0.06]'
         }`}>
           <div className="flex items-center justify-between">
@@ -369,7 +369,7 @@ export default function SpendingStreaks() {
               key={b.id}
               className={`rounded-xl border p-4 transition ${
                 b.unlocked
-                  ? 'bg-gradient-to-br from-gold-500/5 to-gold-500/5 dark:from-gold-700/10/30 dark:to-gold-700/5/20 border-gold-400/20 dark:border-gold-700/40'
+                  ? 'bg-gradient-to-br from-gold-500/5 to-gold-500/5 dark:from-gold-700/10 dark:to-gold-700/5 border-gold-400/20 dark:border-gold-700/40'
                   : 'bg-slate-100 dark:bg-white/[0.03] border-slate-200 dark:border-white/[0.06] opacity-70'
               }`}
             >

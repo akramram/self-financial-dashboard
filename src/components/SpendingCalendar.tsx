@@ -407,7 +407,7 @@ export default function SpendingCalendar({ transactions, periods, categories }: 
 
   const getHeatColor = (total: number, isZeroDay: boolean) => {
     if (noSpendMode && isZeroDay) {
-      return 'bg-mint-500/20 text-mint-700 dark:text-mint-300 border-mint-500/40 shadow-sm';
+      return 'bg-mint-500/20 text-mint-700 dark:text-mint-400 border-mint-500/40 shadow-sm';
     }
     if (total === 0) {
       return 'bg-slate-100 dark:bg-white/[0.02] text-slate-600 dark:text-white/50 border-slate-200 dark:border-white/[0.06]';
@@ -426,7 +426,7 @@ export default function SpendingCalendar({ transactions, periods, categories }: 
     if (ratio <= 0.75) {
       return 'bg-gold-500/10 dark:bg-gold-500/20 text-gold-700 dark:text-gold-300 border-gold-400/30 dark:border-gold-500/30';
     }
-    return 'bg-coral-500/15 dark:bg-coral-500/25 text-coral-700 dark:text-coral-300 border-coral-400/30 dark:border-coral-500/40 font-semibold';
+    return 'bg-coral-500/15 dark:bg-coral-500/25 text-coral-700 dark:text-coral-400 border-coral-400/30 dark:border-coral-500/40 font-semibold';
   };
 
   // Weekday alignment grid
