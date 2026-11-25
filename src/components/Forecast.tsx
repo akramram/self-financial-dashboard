@@ -476,7 +476,7 @@ export default function Forecast() {
             </div>
             <div className="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center justify-between">
               <span>Savings Rate: {f.eomSavings?.projectedSavingsRatePct ?? 0}%</span>
-              <span className="text-slate-400 dark:text-slate-500">Gaji: {formatIdr(f.income)}</span>
+              <span className="text-slate-500 dark:text-slate-500">Gaji: {formatIdr(f.income)}</span>
             </div>
           </div>
         </div>
@@ -666,8 +666,8 @@ export default function Forecast() {
                         {m.description}
                       </div>
                       <div className="mt-2 pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[10px]">
-                        <span className="text-slate-400">Deviasi:</span>
-                        <span className={`font-semibold ${delta > 0 ? 'text-rose-500' : delta < 0 ? 'text-emerald-500' : 'text-slate-400'}`}>
+                        <span className="text-slate-500">Deviasi:</span>
+                        <span className={`font-semibold ${delta > 0 ? 'text-rose-500' : delta < 0 ? 'text-emerald-500' : 'text-slate-500'}`}>
                           {delta > 0 ? '+' : ''}{delta !== 0 ? formatIdr(delta) : '0'}
                         </span>
                       </div>
@@ -725,7 +725,7 @@ export default function Forecast() {
                 className="w-full accent-emerald-500 cursor-pointer"
               />
 
-              <div className="flex justify-between text-[11px] text-slate-400">
+              <div className="flex justify-between text-[11px] text-slate-500">
                 <span>Minimal Belanja: {formatIdr(f.totalSpent)}</span>
                 <span>Plafon Historis: {formatIdr(f.targetCeiling)}</span>
                 <span>Maksimal: {formatIdr(Math.round(f.targetCeiling * 1.5))}</span>
@@ -878,7 +878,7 @@ export default function Forecast() {
                   onChange={(e) => setDiscretionaryAdjustment(parseInt(e.target.value, 10))}
                   className="w-full accent-emerald-500 cursor-pointer"
                 />
-                <div className="flex justify-between text-[11px] text-slate-400">
+                <div className="flex justify-between text-[11px] text-slate-500">
                   <span>-50% (Hemat Ekstrem)</span>
                   <span>0% (Stabil)</span>
                   <span>+30% (Longgar)</span>
@@ -903,7 +903,7 @@ export default function Forecast() {
                   onChange={(e) => setShockExpense(parseInt(e.target.value, 10))}
                   className="w-full accent-amber-500 cursor-pointer"
                 />
-                <div className="flex justify-between text-[11px] text-slate-400">
+                <div className="flex justify-between text-[11px] text-slate-500">
                   <span>Rp 0</span>
                   <span>Rp 1.500.000</span>
                   <span>Rp 3.000.000</span>
@@ -952,7 +952,7 @@ export default function Forecast() {
                     <div className="text-[11px] text-slate-500">Ritme Belanja Harian Baru</div>
                     <div className="text-xl font-bold text-slate-900 dark:text-white mt-1">
                       {formatIdr(courseCorrection.newDailyBurnRate)}
-                      <span className="text-xs font-normal text-slate-400">/hari</span>
+                      <span className="text-xs font-normal text-slate-500">/hari</span>
                     </div>
                     <div className="text-xs text-slate-500 mt-1">
                       Sisa {f.daysRemaining} hari kalender

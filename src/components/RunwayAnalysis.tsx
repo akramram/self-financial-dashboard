@@ -199,7 +199,7 @@ function LiquidityBar({ breakdown }: { breakdown: AssetBreakdown[] }) {
               }`}
             />
             <span className="text-slate-700 dark:text-white/70 font-medium">{b.name}</span>
-            <span className="text-slate-400 dark:text-white/60">({Math.round(b.liquidityPct * 100)}%)</span>
+            <span className="text-slate-500 dark:text-white/60">({Math.round(b.liquidityPct * 100)}%)</span>
           </div>
         ))}
       </div>

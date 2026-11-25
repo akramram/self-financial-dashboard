@@ -430,7 +430,7 @@ export default function BudgetRecommendations() {
             <span className="font-mono font-semibold text-emerald-600 dark:text-emerald-400 min-w-[3rem]">
               {customBuffer > 0 ? `+${customBuffer}%` : `${customBuffer}%`}
             </span>
-            <span className="text-slate-400 text-[11px]">
+            <span className="text-slate-500 text-[11px]">
               (Mengatur margin toleransi rekomendasi untuk semua kategori)
             </span>
           </div>
@@ -723,7 +723,7 @@ export default function BudgetRecommendations() {
                             {stat.trendPct}%
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 text-[11px] text-slate-400">
+                          <span className="inline-flex items-center gap-1 text-[11px] text-slate-500">
                             <Minus className="w-3 h-3" /> Stabil
                           </span>
                         )}
@@ -752,7 +752,7 @@ export default function BudgetRecommendations() {
                             {formatIdr(stat.currentLimit)}
                           </span>
                         ) : (
-                          <span className="text-slate-400 italic text-[11px]">Belum diatur</span>
+                          <span className="text-slate-500 italic text-[11px]">Belum diatur</span>
                         )}
                       </TableCell>
 
@@ -768,7 +768,7 @@ export default function BudgetRecommendations() {
                           {formatIdr(recLimit)}
                         </span>
                         {isChanged && !isNew && stat.currentLimit > 0 && (
-                          <span className="text-[10px] ml-1 text-slate-400">
+                          <span className="text-[10px] ml-1 text-slate-500">
                             ({recLimit > stat.currentLimit ? '+' : ''}
                             {(((recLimit - stat.currentLimit) / stat.currentLimit) * 100).toFixed(0)}%)
                           </span>
@@ -807,7 +807,7 @@ export default function BudgetRecommendations() {
                               )}
                             </Button>
                           ) : (
-                            <span className="text-[11px] text-slate-400 flex items-center gap-1">
+                            <span className="text-[11px] text-slate-500 flex items-center gap-1">
                               <Check className="w-3 h-3 text-emerald-500" /> Sesuai
                             </span>
                           )}

@@ -585,7 +585,7 @@ export default function FireCalculator() {
                   </p>
                 </div>
                 <div className="pt-2 border-t border-slate-200/60 dark:border-white/[0.06]">
-                  <span className="text-[10px] text-slate-400 block uppercase font-medium">Target Modal</span>
+                  <span className="text-[10px] text-slate-500 block uppercase font-medium">Target Modal</span>
                   <span className="text-xs font-bold text-slate-900 dark:text-slate-100">
                     {formatIdr(targetForTier)}
                   </span>
@@ -722,7 +722,7 @@ export default function FireCalculator() {
           </div>
           <div className="text-2xl font-bold text-slate-900 dark:text-white mb-1">
             {formatIdr(monthlySafePassiveIncome)}
-            <span className="text-xs font-normal text-slate-400 ml-1">/bulan</span>
+            <span className="text-xs font-normal text-slate-500 ml-1">/bulan</span>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400">
             Atau {formatIdr(annualSafePassiveIncome)}/tahun jika mulai ditarik hari ini
@@ -841,7 +841,7 @@ export default function FireCalculator() {
               className="w-full accent-emerald-600 cursor-pointer"
               data-testid="slider-wr"
             />
-            <div className="flex justify-between text-[10px] text-slate-400">
+            <div className="flex justify-between text-[10px] text-slate-500">
               <span>2.5% (Konservatif)</span>
               <span>4.0% (Standar)</span>
               <span>6.0% (Agresif)</span>
@@ -864,7 +864,7 @@ export default function FireCalculator() {
               className="w-full accent-blue-600 cursor-pointer"
               data-testid="slider-er"
             />
-            <div className="flex justify-between text-[10px] text-slate-400">
+            <div className="flex justify-between text-[10px] text-slate-500">
               <span>4% (Obligasi/Depo)</span>
               <span>8% (Campuran)</span>
               <span>15% (Saham Agresif)</span>
@@ -887,7 +887,7 @@ export default function FireCalculator() {
               className="w-full accent-amber-600 cursor-pointer"
               data-testid="slider-inf"
             />
-            <div className="flex justify-between text-[10px] text-slate-400">
+            <div className="flex justify-between text-[10px] text-slate-500">
               <span>1.0% (Rendah)</span>
               <span>3.5% (Historis BI)</span>
               <span>6.0% (Tinggi)</span>
@@ -912,7 +912,7 @@ export default function FireCalculator() {
               className="w-full accent-emerald-600 cursor-pointer"
               data-testid="slider-expense-adjust"
             />
-            <div className="flex justify-between text-[10px] text-slate-400">
+            <div className="flex justify-between text-[10px] text-slate-500">
               <span>-30% Hemat</span>
               <span>Baseline</span>
               <span>+30% Longgar</span>
@@ -935,7 +935,7 @@ export default function FireCalculator() {
               className="w-full accent-teal-600 cursor-pointer"
               data-testid="slider-extra-savings"
             />
-            <div className="flex justify-between text-[10px] text-slate-400">
+            <div className="flex justify-between text-[10px] text-slate-500">
               <span>Rp 0</span>
               <span>+Rp 5 Juta</span>
               <span>+Rp 10 Juta</span>
@@ -980,7 +980,7 @@ export default function FireCalculator() {
                 />
               </div>
             </div>
-            <div className="flex justify-between text-[10px] text-slate-400">
+            <div className="flex justify-between text-[10px] text-slate-500">
               <span>Usia Sekarang</span>
               <span>Usia Target Pensiun</span>
             </div>
@@ -1183,7 +1183,7 @@ export default function FireCalculator() {
                         {row.milestone}
                       </Badge>
                     ) : (
-                      <span className="text-slate-400">-</span>
+                      <span className="text-slate-500">-</span>
                     )}
                   </TableCell>
                 </TableRow>

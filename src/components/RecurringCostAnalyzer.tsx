@@ -545,7 +545,7 @@ export default function RecurringCostAnalyzer() {
                         </div>
 
                         <div className="text-right">
-                          <span className="text-[11px] text-slate-400 block">Akumulasi Kas Bebas</span>
+                          <span className="text-[11px] text-slate-500 block">Akumulasi Kas Bebas</span>
                           <span className="font-bold text-emerald-600 dark:text-emerald-400 text-sm">
                             +{formatIdr(item.cumulativeFreed)}/bln
                           </span>
@@ -795,7 +795,7 @@ export default function RecurringCostAnalyzer() {
                         <div className={`text-xs font-bold ${isCut ? 'text-rose-600 dark:text-rose-400' : 'text-slate-900 dark:text-white'}`}>
                           {isCut ? `-${formatIdr(item.amount)}` : formatIdr(item.amount)}
                         </div>
-                        <div className="text-[10px] text-slate-400">
+                        <div className="text-[10px] text-slate-500">
                           {((item.amount / (monthlyTotal || 1)) * 100).toFixed(0)}% dari beban
                         </div>
                       </div>
@@ -893,7 +893,7 @@ export default function RecurringCostAnalyzer() {
                           />
                         </TableCell>
                         <TableCell className="font-semibold text-slate-900 dark:text-white">
-                          <span className={isCut ? 'line-through text-slate-400' : ''}>
+                          <span className={isCut ? 'line-through text-slate-500' : ''}>
                             {item.title}
                           </span>
                           {!item.active && (

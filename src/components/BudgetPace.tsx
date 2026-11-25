@@ -976,13 +976,13 @@ export default function BudgetPace() {
                   {/* Daily Burn Rate & Metrics */}
                   <div className="grid grid-cols-2 gap-2 text-xs pt-1 border-t border-slate-100 dark:border-white/5">
                     <div>
-                      <span className="text-slate-400 block text-[11px]">Kecepatan Aktual</span>
+                      <span className="text-slate-500 block text-[11px]">Kecepatan Aktual</span>
                       <span className="font-medium text-slate-800 dark:text-slate-200">
                         {formatIdr(cat.actual_daily_burn)} / hari
                       </span>
                     </div>
                     <div>
-                      <span className="text-slate-400 block text-[11px]">Alokasi Aman</span>
+                      <span className="text-slate-500 block text-[11px]">Alokasi Aman</span>
                       <span className="font-medium text-emerald-600 dark:text-emerald-400">
                         {formatIdr(cat.safe_daily_burn)} / hari
                       </span>

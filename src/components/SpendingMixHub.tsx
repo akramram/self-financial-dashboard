@@ -325,7 +325,7 @@ export default function SpendingMixHub() {
               <span className="text-3xl font-extrabold text-slate-900 dark:text-white">
                 {agilityScore.score}
               </span>
-              <span className="text-xs text-slate-400">/ 100</span>
+              <span className="text-xs text-slate-500">/ 100</span>
             </div>
           </div>
           <div className="mt-4">
@@ -355,7 +355,7 @@ export default function SpendingMixHub() {
               </div>
             </div>
           </div>
-          <div className="mt-4 text-xs text-slate-400">
+          <div className="mt-4 text-xs text-slate-500">
             Dapat dipotong langsung saat krisis
           </div>
         </div>
@@ -378,7 +378,7 @@ export default function SpendingMixHub() {
               </div>
             </div>
           </div>
-          <div className="mt-4 text-xs text-slate-400">
+          <div className="mt-4 text-xs text-slate-500">
             Biaya wajib & langganan terikat
           </div>
         </div>
@@ -508,14 +508,14 @@ export default function SpendingMixHub() {
                     }}
                   />
                   <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none pb-8">
-                    <span className="text-xs text-slate-400">Total Spend</span>
+                    <span className="text-xs text-slate-500">Total Spend</span>
                     <span className="text-base font-bold text-slate-900 dark:text-white">
                       {formatIdr(currentPeriod.total)}
                     </span>
                   </div>
                 </div>
               ) : (
-                <div className="h-56 flex items-center justify-center text-slate-400 text-sm">
+                <div className="h-56 flex items-center justify-center text-slate-500 text-sm">
                   Tidak ada data untuk periode ini
                 </div>
               )}
@@ -524,14 +524,14 @@ export default function SpendingMixHub() {
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-blue-500 shrink-0" />
                   <div>
-                    <div className="text-slate-400">Tetap: {currentPeriod.recurring_pct}%</div>
+                    <div className="text-slate-500">Tetap: {currentPeriod.recurring_pct}%</div>
                     <div className="font-semibold text-slate-800 dark:text-slate-200">{formatIdr(currentPeriod.recurring)}</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-emerald-500 shrink-0" />
                   <div>
-                    <div className="text-slate-400">Fleksibel: {currentPeriod.discretionary_pct}%</div>
+                    <div className="text-slate-500">Fleksibel: {currentPeriod.discretionary_pct}%</div>
                     <div className="font-semibold text-slate-800 dark:text-slate-200">{formatIdr(currentPeriod.discretionary)}</div>
                   </div>
                 </div>
@@ -575,7 +575,7 @@ export default function SpendingMixHub() {
                   />
                 </div>
               ) : (
-                <div className="h-56 flex items-center justify-center text-slate-400 text-sm">
+                <div className="h-56 flex items-center justify-center text-slate-500 text-sm">
                   Dibutuhkan minimal 2 periode data
                 </div>
               )}
@@ -651,7 +651,7 @@ export default function SpendingMixHub() {
 
               {/* Quick Presets */}
               <div className="flex items-center gap-2 flex-wrap pt-2">
-                <span className="text-xs text-slate-400">Preset Cepat:</span>
+                <span className="text-xs text-slate-500">Preset Cepat:</span>
                 <button
                   type="button"
                   onClick={() => setCutSlider(25)}
@@ -807,7 +807,7 @@ export default function SpendingMixHub() {
                 <TableBody>
                   {elasticity.items.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={4} className="text-center py-6 text-slate-400 text-xs">
+                      <TableCell colSpan={4} className="text-center py-6 text-slate-500 text-xs">
                         Tidak ada kategori variabel pada periode ini
                       </TableCell>
                     </TableRow>
@@ -919,7 +919,7 @@ export default function SpendingMixHub() {
                 <TableBody>
                   {filteredTxs.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={4} className="text-center py-6 text-slate-400 text-xs">
+                      <TableCell colSpan={4} className="text-center py-6 text-slate-500 text-xs">
                         Tidak ada transaksi yang cocok dengan kriteria pencarian
                       </TableCell>
                     </TableRow>
@@ -955,7 +955,7 @@ export default function SpendingMixHub() {
               </Table>
             </div>
             {filteredTxs.length > 50 && (
-              <p className="text-xs text-center text-slate-400">
+              <p className="text-xs text-center text-slate-500">
                 Menampilkan 50 transaksi teratas dari total {filteredTxs.length} transaksi
               </p>
             )}
