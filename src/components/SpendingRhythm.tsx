@@ -269,7 +269,7 @@ export default function SpendingRhythm() {
               ? `${data.peakHour === 0 ? 12 : data.peakHour > 12 ? data.peakHour - 12 : data.peakHour} ${data.peakHour < 12 ? 'AM' : 'PM'}`
               : '-'}
           </p>
-          <p className="text-xs text-emerald-500/70 mt-0.5">most active time</p>
+          <p className="text-xs text-emerald-700 dark:text-emerald-400 mt-0.5">most active time</p>
         </div>
       </div>
 
