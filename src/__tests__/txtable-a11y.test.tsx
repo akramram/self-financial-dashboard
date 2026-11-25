@@ -116,6 +116,18 @@ describe('TransactionTable — a11y/contrast regression', () => {
     expect(container.querySelectorAll('[aria-live="polite"]').length).toBeGreaterThanOrEqual(2);
   });
 
+  it('desktop rows are keyboard-operable: Enter opens the detail sheet', () => {
+    window.history.replaceState(null, '', '/');
+    const { getAllByRole } = render(
+      <TransactionTable transactions={[makeTx(1)]} showMonth periods={periods} />
+    );
+    const rows = getAllByRole('row').filter((r) => r.getAttribute('tabindex') === '0');
+    expect(rows.length).toBeGreaterThanOrEqual(1);
+    expect(rows[0].className).toContain('focus-visible:ring-2');
+    fireEvent.keyDown(rows[0], { key: 'Enter' });
+    expect(document.querySelector('[role="dialog"]')).toBeInTheDocument();
+  });
+
   it('paid/unpaid chips and row toggles keep light-mode-safe color pairs', () => {
     window.history.replaceState(null, '', '/');
     const { container } = render(
