@@ -3209,3 +3209,16 @@ Audit KUR-59/FIN-015+016: foundation shadcn + migrasi tabel & form ternyata suda
 - **Sweep `emerald-600` → `emerald-700` light (PR #421):** ±206 titik di 47 komponen + 2 lib — pasangan light 3.8:1 → ≥4.5:1 (AA); dark tetap `dark:emerald-400`. Scan `brand-color-aa` diperluas mewajibkan pasangan baru.
 - **Testing:** suite hijau penuh (861 test / 100 files), build ✓, deploy PM2 + curl 200.
 - **Catatan proses:** WIP sweep ditinggalkan agent R4 saat kuota API habis (~21:15) di branch `fix/innovation-emerald600-aa`; di-stash lalu diselesaikan & diverifikasi manual 23:08.
+
+## 2026-11-25 — Marathon R5: UX mobile — tap target, loading/empty state, input & gesture
+
+### Hasil
+- **Tap target ikon-only (PR #422):** 5 tombol ikon-only 28–32px (collapse BudgetAlerts, Edit/Delete PortfolioTracker & PortfolioHub) kini ≥44px di mobile (`min-h-[44px] min-w-[44px]`, dilepas di desktop) + aria-label nama investasi. Test scan `tap-targets`.
+- **LoadingState (PR #423):** komponen `ui/loading-state.tsx` (spinner aria-hidden + role="status" aria-live="polite", kontras AA) menggantikan 10 div "Loading..." polos di 7 komponen (CategoryMatrix ×2, CategorySettings, IncomeSettings ×2, NetworthEditForm, RecurringManager ×2, BudgetReport, SpendingAnalytics). Test `loading-state` (render).
+- **EmptyState (PR #424):** komponen `ui/empty-state.tsx` (ikon aria-hidden + aria-live + hint + CTA link ≥44px) menggantikan 4 empty state polos; NetworthTable kosong kini punya CTA "Add first record" → /add; IncomeSettings dapat hint formulir. Test `empty-state` (2).
+- **aria-current="page" (PR #425):** nav aktif FintechSidebar + FintechBottomTabs kini ditandai `aria-current="page"` (screen reader mengumumkan posisi halaman). Test `nav-aria-current` (2).
+- **touch-action manipulation (PR #426):** button/a/[role=button]/label/select bebas delay tap ~300ms iOS double-tap-zoom; pinch-zoom tetap hidup. Diverifikasi di CSS hasil build. Test `touch-action`.
+- **Scroll & tap polish (PR #427):** Sheet + Dialog `overscroll-contain` (reach-end tidak meneruskan scroll ke body di belakang overlay); `-webkit-tap-highlight-color: transparent` pada target interaktif. Test `scroll-contain` (2).
+- **Input numerik mobile (PR #428 + #429):** 46 input `type="number"` di 16 komponen → `type="text" inputMode="decimal"` (pola TransactionFormFields): keyboard numerik tetap muncul, spinner desktop hilang, wheel-scroll iOS tidak mengubah nilai. Follow-up #429: assert nilai test sinking-funds jadi string. Test scan `inputmode-decimal`.
+- **Testing:** suite hijau penuh **872 test / 107 files**; `npm run build` Complete tiap PR; deploy PM2 verified (status online, curl 200) per iterasi.
+- **Git workflow:** branch → PR #422–#429 merged satu per satu; log marathon `findash-r5.md` per iterasi.
