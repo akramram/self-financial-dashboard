@@ -509,8 +509,8 @@ describe('DB — Recurring Cost Analysis', () => {
 
     const result = analyzeRecurringCosts();
     expect(result.largestItem).not.toBeNull();
-    expect(result.largestItem.title).toBe('Large');
-    expect(result.largestItem.amount).toBe(500000);
+    expect(result.largestItem?.title).toBe('Large');
+    expect(result.largestItem?.amount).toBe(500000);
   });
 
   it('computes average per item correctly', () => {
@@ -630,7 +630,7 @@ describe('DB — Budget Pace', () => {
     let total_budget = 0, total_spent = 0;
     const paceCats = categories.map((cat: any) => {
       const limit = cat.monthly_limit || 0;
-      const spent = spendingMap.get(cat.name) || 0;
+      const spent = Number(spendingMap.get(cat.name) || 0);
       const spent_pct = limit > 0 ? (spent / limit) * 100 : 0;
       const pace_diff = spent_pct - time_elapsed_pct;
       total_budget += limit;
