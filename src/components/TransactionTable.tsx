@@ -536,7 +536,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                 className={`h-7 px-2.5 rounded-full text-[11px] font-medium inline-flex items-center gap-1.5 transition-colors border ${
                   active
                     ? value === 'unpaid'
-                      ? 'bg-gold-500/15 border-gold-500/40 text-gold-600 dark:text-gold-400'
+                      ? 'bg-gold-500/15 border-gold-500/40 text-gold-700 dark:text-gold-400'
                       : 'bg-emerald-500/15 border-emerald-500/40 text-emerald-600 dark:text-emerald-400'
                     : 'bg-slate-100 dark:bg-white/[0.04] border-slate-300 dark:border-white/[0.08] text-slate-600 dark:text-white/50 hover:text-slate-700 dark:hover:text-white/70'
                 }`}
@@ -713,14 +713,14 @@ export default function TransactionTable({ transactions, showMonth = true, perio
               Outflow <span className="font-semibold text-slate-700 dark:text-white/80">{formatIdr(total)}</span>
             </span>
             <span className="text-xs text-slate-500 dark:text-white/50">
-              Cash <span className="font-semibold text-mint-600 dark:text-mint-400">{formatIdr(cash)}</span>
+              Cash <span className="font-semibold text-mint-700 dark:text-mint-400">{formatIdr(cash)}</span>
             </span>
             <span className="text-xs text-slate-500 dark:text-white/50">
               Credit <span className="font-semibold text-coral-600 dark:text-coral-400">{formatIdr(credit)}</span>
             </span>
             {unpaidCount > 0 && (
               <span className="text-xs text-slate-500 dark:text-white/50">
-                Unpaid <span className="font-semibold text-gold-600 dark:text-gold-400">{unpaidCount} · {formatIdr(unpaid)}</span>
+                Unpaid <span className="font-semibold text-gold-700 dark:text-gold-400">{unpaidCount} · {formatIdr(unpaid)}</span>
               </span>
             )}
           </>
@@ -839,9 +839,9 @@ export default function TransactionTable({ transactions, showMonth = true, perio
 
                 const typeColorClass =
                   row.type === 'cash'
-                    ? 'text-mint-600 dark:text-mint-400'
+                    ? 'text-mint-700 dark:text-mint-400'
                     : row.type === 'credit_payment'
-                    ? 'text-gold-600 dark:text-gold-400'
+                    ? 'text-gold-700 dark:text-gold-400'
                     : 'text-coral-600 dark:text-coral-400';
                 const typeBgClass =
                   row.type === 'cash'
@@ -956,9 +956,9 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                 ? row.date
                 : createdDate.toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' });
               const typeColorClass =
-                row.type === 'cash' ? 'text-mint-500 dark:text-mint-400'
-                : row.type === 'credit_payment' ? 'text-gold-600 dark:text-gold-400'
-                : 'text-coral-500 dark:text-coral-400';
+                row.type === 'cash' ? 'text-mint-700 dark:text-mint-400'
+                : row.type === 'credit_payment' ? 'text-gold-700 dark:text-gold-400'
+                : 'text-coral-600 dark:text-coral-400';
               const typeLabel =
                 row.type === 'cash' ? 'Cash' : row.type === 'credit_payment' ? 'Credit Pay' : 'Credit';
               return (
@@ -968,7 +968,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                   tabIndex={0}
                   onClick={() => setDetailTx(row)}
                   onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setDetailTx(row); } }}
-                  className="flex items-center gap-3 px-4 py-3 cursor-pointer active:bg-slate-100 dark:active:bg-white/[0.05] transition-colors"
+                  className="flex items-center gap-3 px-4 py-3 cursor-pointer active:bg-slate-100 dark:active:bg-white/[0.05] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-emerald-500/50 transition-colors"
                 >
                   <button
                     onClick={async (e) => {
