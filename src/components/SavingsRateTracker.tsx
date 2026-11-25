@@ -1325,7 +1325,9 @@ export default function SavingsRateTracker() {
                         <TableRow
                           key={p.period_id}
                           onClick={() => setSelectedPeriodId(p.period_id)}
-                          className={`cursor-pointer ${
+                          tabIndex={0}
+                          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedPeriodId(p.period_id); } }}
+                          className={`cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-emerald-500/50 ${
                             isFocused ? 'bg-emerald-50/60 dark:bg-emerald-950/20' : ''
                           }`}
                         >

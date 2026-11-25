@@ -1109,7 +1109,9 @@ export default function HealthScore({ summaries: initialSummaries }: Props) {
                           setSelectedMonth(row.month);
                           setActiveTab('overview');
                         }}
-                        className={`cursor-pointer transition-colors hover:bg-slate-100 dark:hover:bg-white/[0.05] ${
+                        tabIndex={0}
+                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedMonth(row.month); setActiveTab('overview'); } }}
+                        className={`cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-emerald-500/50 hover:bg-slate-100 dark:hover:bg-white/[0.05] ${
                           isActive ? 'bg-emerald-50/70 dark:bg-emerald-950/30 font-semibold' : ''
                         }`}
                       >

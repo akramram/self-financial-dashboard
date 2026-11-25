@@ -942,7 +942,9 @@ export default function SpendingCalendar({ transactions, periods, categories }: 
                           onClick={() => {
                             window.location.href = `/transactions?tid=${tx.id}`;
                           }}
-                          className="cursor-pointer hover:bg-slate-100 dark:hover:bg-white/[0.05] transition-colors"
+                          tabIndex={0}
+                          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); window.location.href = `/transactions?tid=${tx.id}`; } }}
+                          className="cursor-pointer hover:bg-slate-100 dark:hover:bg-white/[0.05] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-emerald-500/50 transition-colors"
                         >
                           <TableCell className="font-medium text-slate-900 dark:text-white">
                             {tx.title}
