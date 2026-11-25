@@ -6,6 +6,7 @@ import {
   Repeat, Search, FileText, GitCompare, Activity, Layers, CalendarDays, Grid3x3, ShieldCheck, Sparkles, CircleDollarSign,
   Plus, LogOut, Flame, Moon, ArrowUpRight, ArrowDownRight,
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { formatIdr } from '../lib/utils';
 
 interface TxResult {
@@ -17,7 +18,7 @@ interface TxResult {
   done?: number | boolean;
 }
 
-type IconType = React.ComponentType<{ className?: string }>;
+type IconType = LucideIcon;
 
 interface CommandItem {
   id: string;
