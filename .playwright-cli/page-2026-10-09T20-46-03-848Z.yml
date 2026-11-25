@@ -1,0 +1,18 @@
+- generic [active] [ref=f27e1]:
+  - generic [ref=f27e2]:
+    - button "Open menu" [ref=f27e3] [cursor=pointer]
+    - button "Search pages and actions" [ref=f27e6] [cursor=pointer]:
+      - generic [ref=f27e9]: Search…
+    - generic [ref=f27e10]:
+      - link "Settings" [ref=f27e11] [cursor=pointer]:
+        - /url: /settings
+      - button "Toggle theme" [ref=f27e15] [cursor=pointer]: 🌙
+      - generic [ref=f27e16]: ⚡ Admin
+      - button "Logout" [ref=f27e17] [cursor=pointer]: ⏻
+  - main [ref=f27e20]:
+    - heading "Settings" [level=1] [ref=f27e22]
+  - generic [ref=f27e25]:
+    - button [ref=f27e26]
+    - button [ref=f27e32]
+    - button [ref=f27e36]
+    - button [ref=f27e41]

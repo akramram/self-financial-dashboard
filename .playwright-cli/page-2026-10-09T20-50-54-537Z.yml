@@ -1,0 +1,517 @@
+- generic [active] [ref=f38e1]:
+  - complementary [ref=f38e3]:
+    - generic [ref=f38e4]:
+      - link "FD" [ref=f38e5] [cursor=pointer]:
+        - /url: /
+      - generic [ref=f38e7]: FinDash
+      - button "Close menu" [ref=f38e8] [cursor=pointer]
+    - navigation [ref=f38e12]:
+      - link "Dashboard" [ref=f38e13] [cursor=pointer]:
+        - /url: /
+      - link "Transactions" [ref=f38e21] [cursor=pointer]:
+        - /url: /transactions
+      - link "Analytics" [ref=f38e26] [cursor=pointer]:
+        - /url: /analytics
+      - link "Planning" [ref=f38e31] [cursor=pointer]:
+        - /url: /goals
+      - link "Settings" [ref=f38e37] [cursor=pointer]:
+        - /url: /settings
+      - link "Budget" [ref=f38e43] [cursor=pointer]:
+        - /url: /budget
+      - link "Budget Pace" [ref=f38e48] [cursor=pointer]:
+        - /url: /budget-pace
+      - link "Savings" [ref=f38e52] [cursor=pointer]:
+        - /url: /savings-rate
+      - link "Calendar" [ref=f38e57] [cursor=pointer]:
+        - /url: /calendar
+      - link "Runway" [ref=f38e61] [cursor=pointer]:
+        - /url: /runway
+      - link "Credit" [ref=f38e65] [cursor=pointer]:
+        - /url: /credit-card
+      - paragraph [ref=f38e69]: Analytics
+      - link "Streaks" [ref=f38e70] [cursor=pointer]:
+        - /url: /streaks
+      - link "Achievements" [ref=f38e74] [cursor=pointer]:
+        - /url: /achievements
+      - link "Health Score" [ref=f38e82] [cursor=pointer]:
+        - /url: /health
+      - link "Spending Mix" [ref=f38e86] [cursor=pointer]:
+        - /url: /spending-mix
+      - link "Rhythm" [ref=f38e92] [cursor=pointer]:
+        - /url: /spending-rhythm
+      - link "Spending DNA" [ref=f38e96] [cursor=pointer]:
+        - /url: /dna
+      - link "Category Matrix" [ref=f38e100] [cursor=pointer]:
+        - /url: /matrix
+      - link "Merchants" [ref=f38e104] [cursor=pointer]:
+        - /url: /merchants
+      - paragraph [ref=f38e109]: Planning
+      - link "FIRE" [ref=f38e110] [cursor=pointer]:
+        - /url: /fire
+      - link "What-If" [ref=f38e114] [cursor=pointer]:
+        - /url: /what-if
+      - link "Forecast" [ref=f38e118] [cursor=pointer]:
+        - /url: /forecast
+      - link "Portfolio" [ref=f38e123] [cursor=pointer]:
+        - /url: /portfolio
+      - link "Net Worth" [ref=f38e128] [cursor=pointer]:
+        - /url: /networth
+      - paragraph [ref=f38e133]: Reports
+      - link "Weekly" [ref=f38e134] [cursor=pointer]:
+        - /url: /weekly
+      - link "Monthly" [ref=f38e138] [cursor=pointer]:
+        - /url: /report
+      - link "Yearly" [ref=f38e143] [cursor=pointer]:
+        - /url: /yearly
+      - link "Compare" [ref=f38e147] [cursor=pointer]:
+        - /url: /compare
+      - link "Cashflow" [ref=f38e154] [cursor=pointer]:
+        - /url: /cashflow
+      - link "Recurring" [ref=f38e158] [cursor=pointer]:
+        - /url: /recurring
+      - link "Recurring Audit" [ref=f38e165] [cursor=pointer]:
+        - /url: /recurring-audit
+      - link "Tips" [ref=f38e170] [cursor=pointer]:
+        - /url: /recommendations
+    - button "Alerts, 31 active" [ref=f38e179] [cursor=pointer]:
+      - generic [ref=f38e183]: 31 alerts
+      - generic [ref=f38e184]: "31"
+  - generic [ref=f38e185]:
+    - button "Open menu" [ref=f38e186] [cursor=pointer]
+    - button "Search pages and actions" [ref=f38e189] [cursor=pointer]:
+      - generic [ref=f38e192]: Search…
+    - generic [ref=f38e193]:
+      - link "Settings" [ref=f38e194] [cursor=pointer]:
+        - /url: /settings
+      - button "Toggle theme" [ref=f38e198] [cursor=pointer]: 🌙
+      - generic [ref=f38e199]: ⚡ Admin
+      - button "Logout" [ref=f38e200] [cursor=pointer]: ⏻
+  - main [ref=f38e203]:
+    - generic [ref=f38e205]:
+      - generic [ref=f38e206]:
+        - generic [ref=f38e207]:
+          - paragraph [ref=f38e208]: Pulse
+          - combobox [ref=f38e209] [cursor=pointer]
+          - combobox [ref=f38e212]
+        - generic [ref=f38e215]:
+          - generic [ref=f38e216]:
+            - paragraph [ref=f38e217]: Available Balance
+            - text: IDR 0
+            - generic [ref=f38e218]:
+              - generic [ref=f38e219]: +IDR 4.289.118
+              - generic [ref=f38e223]: vs last period
+            - generic [ref=f38e224]:
+              - generic [ref=f38e225]:
+                - generic [ref=f38e226]: Income Allocation
+                - generic [ref=f38e227]: 91% spent
+              - generic [ref=f38e230]:
+                - generic [ref=f38e231]: Spent IDR 20.986.977
+                - generic [ref=f38e234]: Saved IDR 2.013.023
+          - generic [ref=f38e237]:
+            - generic [ref=f38e238]: 63%
+            - generic [ref=f38e244]:
+              - paragraph [ref=f38e245]: 11 days left
+              - paragraph [ref=f38e249]: Day 19 of 30
+        - generic [ref=f38e250]:
+          - heading "Credit Snapshot" [level=3] [ref=f38e251]
+          - generic [ref=f38e252]:
+            - generic [ref=f38e254]:
+              - generic [ref=f38e255]: Credit Payment (Prior Month)
+              - generic [ref=f38e256]: IDR 13.296.977
+            - generic [ref=f38e260]:
+              - generic [ref=f38e261]: Current Month Credit Expenses
+              - generic [ref=f38e262]: IDR 7.731.679
+            - paragraph [ref=f38e265]: Credit expenses this month will be paid next month.
+        - generic [ref=f38e266]:
+          - generic [ref=f38e269]:
+            - paragraph [ref=f38e274]: Income
+            - generic [ref=f38e275]: IDR 23.000.000
+            - generic [ref=f38e276]: +IDR 0
+          - generic [ref=f38e287]:
+            - paragraph [ref=f38e293]: Spent
+            - generic [ref=f38e294]: IDR 20.986.977
+            - generic [ref=f38e295]: IDR -4.289.118
+          - generic [ref=f38e306]:
+            - paragraph [ref=f38e311]: Net Worth
+            - generic [ref=f38e312]: IDR 45.994.229
+          - link "Health score loading of 100, view details" [ref=f38e317] [cursor=pointer]:
+            - generic [ref=f38e319]:
+              - paragraph [ref=f38e325]: Health
+              - generic [ref=f38e326]: —
+      - generic [ref=f38e332]:
+        - paragraph [ref=f38e333]: Flow
+        - generic [ref=f38e335]:
+          - generic [ref=f38e337]:
+            - generic [ref=f38e338]:
+              - generic [ref=f38e339]:
+                - heading "Spending Pulse" [level=3] [ref=f38e343]
+                - generic [ref=f38e344]: Over Pace
+              - paragraph [ref=f38e345]: Spending faster than expected - you've spent 135% of the expected amount for this point in the period.
+              - generic [ref=f38e346]:
+                - generic [ref=f38e347]:
+                  - generic [ref=f38e348]: Time Elapsed
+                  - paragraph [ref=f38e352]: Day 21 of 31
+                  - paragraph [ref=f38e353]: 68% through period
+                - generic [ref=f38e354]:
+                  - generic [ref=f38e355]: Spend vs Expected
+                  - paragraph [ref=f38e358]: IDR 20.986.977
+                  - paragraph [ref=f38e359]: "Expected: IDR 15.580.645"
+                - generic [ref=f38e360]:
+                  - generic [ref=f38e361]: Cash vs Credit
+                  - generic [ref=f38e364]:
+                    - generic [ref=f38e365]: IDR 7.690.000
+                    - generic [ref=f38e366]: /
+                    - generic [ref=f38e367]: IDR 13.296.977
+                  - generic [ref=f38e368]:
+                    - generic [ref=f38e369]: ● Cash
+                    - generic [ref=f38e370]: ● Credit
+              - generic [ref=f38e374]:
+                - generic [ref=f38e375]: "Projected period total:"
+                - generic [ref=f38e376]: IDR 30.980.776
+                - generic [ref=f38e377]: vs
+                - generic [ref=f38e378]: IDR 23.000.000
+                - generic [ref=f38e379]: income
+            - generic [ref=f38e380]:
+              - img [ref=f38e381]:
+                - generic [ref=f38e384]: PACE
+                - generic [ref=f38e385]: 135%
+                - generic [ref=f38e386]: 0%
+                - generic [ref=f38e387]: 200%
+              - paragraph [ref=f38e388]: "% of expected spend"
+          - generic [ref=f38e389]:
+            - generic [ref=f38e390]:
+              - generic [ref=f38e391]: Time
+              - generic [ref=f38e394]: 68%
+            - generic [ref=f38e395]:
+              - generic [ref=f38e396]: Spend
+              - generic [ref=f38e399]: 91%
+            - generic [ref=f38e400]:
+              - generic [ref=f38e401]: Budget
+              - generic [ref=f38e404]: 91%
+        - generic [ref=f38e406]:
+          - heading "Today's Budget" [level=3] [ref=f38e410]
+          - generic [ref=f38e411]:
+            - generic [ref=f38e412]:
+              - generic [ref=f38e414]:
+                - paragraph [ref=f38e415]: Daily Allowance
+                - paragraph [ref=f38e416]: IDR 167.752
+                - paragraph [ref=f38e417]: 12 days left • IDR 2.013.023 remaining
+              - generic [ref=f38e422]:
+                - generic [ref=f38e423]: Today
+                - generic [ref=f38e424]: IDR 0 / IDR 167.752 (0%)
+            - generic [ref=f38e426]:
+              - generic [ref=f38e427]:
+                - generic [ref=f38e428]:
+                  - paragraph [ref=f38e429]: Last 7 Days
+                  - paragraph [ref=f38e430]: line = allowance
+                - generic [ref=f38e431]:
+                  - 'generic "2026-10-04: IDR 1.698.280" [ref=f38e433]'
+                  - 'generic "2026-10-05: IDR 128.000" [ref=f38e435]'
+                  - 'generic "2026-10-06: IDR 22.500" [ref=f38e437]'
+                  - 'generic "2026-10-07: IDR 277.529" [ref=f38e439]'
+                  - 'generic "2026-10-08: IDR 0" [ref=f38e441]'
+                  - 'generic "2026-10-09: IDR 413.200" [ref=f38e443]'
+                  - 'generic "2026-10-10: IDR 0" [ref=f38e445]'
+                - generic [ref=f38e447]:
+                  - generic [ref=f38e448]: S
+                  - generic [ref=f38e449]: M
+                  - generic [ref=f38e450]: T
+                  - generic [ref=f38e451]: W
+                  - generic [ref=f38e452]: T
+                  - generic [ref=f38e453]: F
+                  - generic [ref=f38e454]: S
+              - generic [ref=f38e455]:
+                - paragraph [ref=f38e456]: Left Today
+                - paragraph [ref=f38e457]: IDR 167.752
+        - generic [ref=f38e459]:
+          - heading "Top Categories" [level=3] [ref=f38e460]
+          - generic [ref=f38e461]:
+            - generic [ref=f38e462]:
+              - heading "Category Budgets" [level=3] [ref=f38e467]
+              - generic [ref=f38e468]: 12 categories
+            - generic [ref=f38e469]:
+              - generic [ref=f38e470] [cursor=pointer]:
+                - generic [ref=f38e471]:
+                  - generic [ref=f38e472]: Credit Card
+                  - generic [ref=f38e475]:
+                    - generic "21% lebih tinggi dari periode sebelumnya" [ref=f38e476]: 21%
+                    - generic [ref=f38e481]: IDR 13.296.977
+                - progressbar [ref=f38e483]
+              - generic [ref=f38e485] [cursor=pointer]:
+                - generic [ref=f38e486]:
+                  - generic [ref=f38e487]: Istri
+                  - generic [ref=f38e490]:
+                    - generic "-26% lebih rendah dari periode sebelumnya" [ref=f38e491]: 26%
+                    - generic [ref=f38e496]: IDR 3.364.300
+                - progressbar [ref=f38e498]
+              - generic [ref=f38e500] [cursor=pointer]:
+                - generic [ref=f38e501]:
+                  - generic [ref=f38e502]: Tagihan
+                  - generic [ref=f38e505]:
+                    - generic "Sama dengan periode sebelumnya" [ref=f38e506]: "-"
+                    - generic [ref=f38e509]: IDR 3.281.025
+                - progressbar [ref=f38e511]
+              - generic [ref=f38e513] [cursor=pointer]:
+                - generic [ref=f38e514]:
+                  - generic [ref=f38e515]: Belanja
+                  - generic [ref=f38e518]:
+                    - generic "-62% lebih rendah dari periode sebelumnya" [ref=f38e519]: 62%
+                    - generic [ref=f38e524]: IDR 1.659.349
+                - progressbar [ref=f38e526]
+              - generic [ref=f38e528] [cursor=pointer]:
+                - generic [ref=f38e529]:
+                  - generic [ref=f38e530]: Family
+                  - generic [ref=f38e533]:
+                    - generic "Sama dengan periode sebelumnya" [ref=f38e534]: "-"
+                    - generic [ref=f38e537]: IDR 1.500.000
+                - progressbar [ref=f38e539]
+              - generic [ref=f38e541] [cursor=pointer]:
+                - generic [ref=f38e542]:
+                  - generic [ref=f38e543]: Belanja Pribadi
+                  - generic [ref=f38e546]:
+                    - generic "-47% lebih rendah dari periode sebelumnya" [ref=f38e547]: 47%
+                    - generic [ref=f38e552]: IDR 1.344.812
+                - progressbar [ref=f38e554]
+            - button "Show all 12 categories" [ref=f38e556] [cursor=pointer]
+        - generic [ref=f38e557]:
+          - heading "Top Merchants" [level=3] [ref=f38e558]
+          - generic [ref=f38e559]:
+            - generic [ref=f38e561]:
+              - generic [ref=f38e562]:
+                - generic [ref=f38e563]: "1"
+                - generic [ref=f38e564]: CC Payment — September 2026
+              - generic [ref=f38e565]: IDR 13.296.977
+            - generic [ref=f38e569]:
+              - generic [ref=f38e570]:
+                - generic [ref=f38e571]: "2"
+                - generic [ref=f38e572]: Istri
+              - generic [ref=f38e573]: IDR 3.000.000
+            - generic [ref=f38e577]:
+              - generic [ref=f38e578]:
+                - generic [ref=f38e579]: "3"
+                - generic [ref=f38e580]: Family
+              - generic [ref=f38e581]: IDR 1.500.000
+            - generic [ref=f38e585]:
+              - generic [ref=f38e586]:
+                - generic [ref=f38e587]: "4"
+                - generic [ref=f38e588]: Cicilan Tyranno
+              - generic [ref=f38e589]: IDR 1.293.194
+            - generic [ref=f38e593]:
+              - generic [ref=f38e594]:
+                - generic [ref=f38e595]: "5"
+                - generic [ref=f38e596]: Kontrakan
+              - generic [ref=f38e597]: IDR 1.150.000
+      - generic [ref=f38e600]:
+        - generic [ref=f38e601]:
+          - paragraph [ref=f38e602]: Act
+          - button [ref=f38e603] [cursor=pointer]
+        - generic [ref=f38e607]:
+          - button "Add Transaction" [ref=f38e608] [cursor=pointer]
+          - link "Full form →" [ref=f38e610] [cursor=pointer]:
+            - /url: /add
+      - generic [ref=f38e612]:
+        - paragraph [ref=f38e613]: Insights
+        - generic [ref=f38e614]:
+          - heading "Net Worth Trend" [level=3] [ref=f38e616]
+          - generic [ref=f38e620]:
+            - heading "Runway" [level=3] [ref=f38e621]
+            - generic [ref=f38e626]:
+              - paragraph [ref=f38e627]: "-"
+              - paragraph [ref=f38e628]: months of emergency fund
+          - generic [ref=f38e631]:
+            - heading "Goals" [level=3] [ref=f38e632]
+            - link "All goals" [ref=f38e633] [cursor=pointer]:
+              - /url: /goals
+        - generic [ref=f38e640]:
+          - heading "Insights" [level=3] [ref=f38e641]
+          - generic [ref=f38e645]:
+            - generic [ref=f38e651]:
+              - generic [ref=f38e652]:
+                - generic [ref=f38e653]: Spending Trend
+                - generic [ref=f38e654]: Good
+              - paragraph [ref=f38e655]: Total spending is down 17.0% vs September 2026 (IDR 20.986.977 vs IDR 25.276.095)
+            - generic [ref=f38e661]:
+              - generic [ref=f38e662]:
+                - generic [ref=f38e663]: All Caught Up
+                - generic [ref=f38e664]: Good
+              - paragraph [ref=f38e665]: All transactions for October 2026 are marked as paid
+            - generic [ref=f38e671]:
+              - generic [ref=f38e672]:
+                - generic [ref=f38e673]: Networth Change
+                - generic [ref=f38e674]: Good
+              - paragraph [ref=f38e675]: Networth grew by IDR 4.307.161 (+10.33%) vs last month
+            - generic [ref=f38e681]:
+              - generic [ref=f38e682]:
+                - generic [ref=f38e683]: Low Savings Rate
+                - generic [ref=f38e684]: Watch
+              - paragraph [ref=f38e685]: Savings rate is only 8.8%. Try to keep it above 20%
+      - generic [ref=f38e686]:
+        - generic [ref=f38e687]:
+          - paragraph [ref=f38e688]: Feed
+          - link "View all →" [ref=f38e689] [cursor=pointer]:
+            - /url: /transactions
+        - generic [ref=f38e690]:
+          - textbox "Search transactions... ( / )" [ref=f38e695]
+          - table [ref=f38e698]:
+            - rowgroup [ref=f38e699]:
+              - row [ref=f38e700]:
+                - columnheader "Paid ▲ ▼" [ref=f38e701] [cursor=pointer]:
+                  - generic [ref=f38e702]:
+                    - text: Paid
+                    - generic [ref=f38e703]:
+                      - generic [ref=f38e704]: ▲
+                      - generic [ref=f38e705]: ▼
+                - columnheader "Title ▲ ▼" [ref=f38e706] [cursor=pointer]:
+                  - generic [ref=f38e707]:
+                    - text: Title
+                    - generic [ref=f38e708]:
+                      - generic [ref=f38e709]: ▲
+                      - generic [ref=f38e710]: ▼
+                - columnheader "Category ▲ ▼" [ref=f38e711] [cursor=pointer]:
+                  - generic [ref=f38e712]:
+                    - text: Category
+                    - generic [ref=f38e713]:
+                      - generic [ref=f38e714]: ▲
+                      - generic [ref=f38e715]: ▼
+                - columnheader "Date ▲ ▼" [ref=f38e716] [cursor=pointer]:
+                  - generic [ref=f38e717]:
+                    - text: Date
+                    - generic [ref=f38e718]:
+                      - generic [ref=f38e719]: ▲
+                      - generic [ref=f38e720]: ▼
+                - columnheader "Amount ▲ ▼" [ref=f38e721] [cursor=pointer]:
+                  - generic [ref=f38e722]:
+                    - text: Amount
+                    - generic [ref=f38e723]:
+                      - generic [ref=f38e724]: ▲
+                      - generic [ref=f38e725]: ▼
+                - columnheader "Type ▲ ▼" [ref=f38e726] [cursor=pointer]:
+                  - generic [ref=f38e727]:
+                    - text: Type
+                    - generic [ref=f38e728]:
+                      - generic [ref=f38e729]: ▲
+                      - generic [ref=f38e730]: ▼
+                - columnheader [ref=f38e731]
+            - rowgroup [ref=f38e732]:
+              - row [ref=f38e733] [cursor=pointer]:
+                - cell [ref=f38e734]:
+                  - button "Paid" [ref=f38e735]
+                - cell "Cicilan Tyranno" [ref=f38e736]
+                - cell "Tagihan" [ref=f38e737]
+                - cell "17 Okt 2026" [ref=f38e739]
+                - cell "IDR 1.293.194" [ref=f38e740]
+                - cell "Credit" [ref=f38e741]
+                - cell [ref=f38e742]
+              - row [ref=f38e745] [cursor=pointer]:
+                - cell [ref=f38e746]:
+                  - button "Paid" [ref=f38e747]
+                - cell "Grab Unlimited" [ref=f38e748]
+                - cell "Istri" [ref=f38e749]
+                - cell "9 Okt 2026" [ref=f38e751]
+                - cell "IDR 14.000" [ref=f38e752]
+                - cell "Credit" [ref=f38e753]
+                - cell [ref=f38e754]
+              - row [ref=f38e757] [cursor=pointer]:
+                - cell [ref=f38e758]:
+                  - button "Paid" [ref=f38e759]
+                - cell "Airism Jacket" [ref=f38e760]
+                - cell "Belanja Pribadi" [ref=f38e761]
+                - cell "9 Okt 2026" [ref=f38e763]
+                - cell "IDR 149.200" [ref=f38e764]
+                - cell "Credit" [ref=f38e765]
+                - cell [ref=f38e766]
+              - row [ref=f38e769] [cursor=pointer]:
+                - cell [ref=f38e770]:
+                  - button "Paid" [ref=f38e771]
+                - cell "DS4 Controller" [ref=f38e772]
+                - cell "Belanja Pribadi" [ref=f38e773]
+                - cell "9 Okt 2026" [ref=f38e775]
+                - cell "IDR 110.000" [ref=f38e776]
+                - cell "Credit" [ref=f38e777]
+                - cell [ref=f38e778]
+              - row [ref=f38e781] [cursor=pointer]:
+                - cell [ref=f38e782]:
+                  - button "Paid" [ref=f38e783]
+                - cell "Celana Cargo" [ref=f38e784]
+                - cell "Belanja Pribadi" [ref=f38e785]
+                - cell "9 Okt 2026" [ref=f38e787]
+                - cell "IDR 140.000" [ref=f38e788]
+                - cell "Credit" [ref=f38e789]
+                - cell [ref=f38e790]
+              - row [ref=f38e793] [cursor=pointer]:
+                - cell [ref=f38e794]:
+                  - button "Paid" [ref=f38e795]
+                - cell "Paket Data" [ref=f38e796]
+                - cell "Belanja Pribadi" [ref=f38e797]
+                - cell "7 Okt 2026" [ref=f38e799]
+                - cell "IDR 15.107" [ref=f38e800]
+                - cell "Credit" [ref=f38e801]
+                - cell [ref=f38e802]
+              - row [ref=f38e805] [cursor=pointer]:
+                - cell [ref=f38e806]:
+                  - button "Paid" [ref=f38e807]
+                - cell "Listrik" [ref=f38e808]
+                - cell "Tagihan" [ref=f38e809]
+                - cell "7 Okt 2026" [ref=f38e811]
+                - cell "IDR 103.418" [ref=f38e812]
+                - cell "Credit" [ref=f38e813]
+                - cell [ref=f38e814]
+              - row [ref=f38e817] [cursor=pointer]:
+                - cell [ref=f38e818]:
+                  - button "Paid" [ref=f38e819]
+                - cell "Emping" [ref=f38e820]
+                - cell "Makanan" [ref=f38e821]
+                - cell "7 Okt 2026" [ref=f38e823]
+                - cell "IDR 79.600" [ref=f38e824]
+                - cell "Credit" [ref=f38e825]
+                - cell [ref=f38e826]
+              - row [ref=f38e829] [cursor=pointer]:
+                - cell [ref=f38e830]:
+                  - button "Paid" [ref=f38e831]
+                - cell "Galon" [ref=f38e832]
+                - cell "Belanja" [ref=f38e833]
+                - cell "7 Okt 2026" [ref=f38e835]
+                - cell "IDR 36.000" [ref=f38e836]
+                - cell "Credit" [ref=f38e837]
+                - cell [ref=f38e838]
+              - row [ref=f38e841] [cursor=pointer]:
+                - cell [ref=f38e842]:
+                  - button "Paid" [ref=f38e843]
+                - cell "Roller Bulu & Double Tape" [ref=f38e844]
+                - cell "Belanja" [ref=f38e845]
+                - cell "7 Okt 2026" [ref=f38e847]
+                - cell "IDR 43.404" [ref=f38e848]
+                - cell "Credit" [ref=f38e849]
+                - cell [ref=f38e850]
+          - generic [ref=f38e853]:
+            - paragraph [ref=f38e854]: Showing 1–10 of 65
+            - generic [ref=f38e855]:
+              - button "Previous" [disabled]
+              - generic [ref=f38e856]: 1 / 7
+              - button "Next" [ref=f38e857] [cursor=pointer]
+      - generic [ref=f38e858]:
+        - paragraph [ref=f38e859]: Charts
+        - heading "Cash Outcome vs Credit Payment" [level=3] [ref=f38e861]
+        - heading "Savings Rate Trend" [level=3] [ref=f38e865]
+        - heading "Category Spending Trend" [level=3] [ref=f38e869]
+        - heading "Latest Month Categories" [level=3] [ref=f38e874]
+        - generic [ref=f38e877]:
+          - heading "Period vs Average" [level=3] [ref=f38e878]
+          - paragraph [ref=f38e881]: Need at least 2 periods of data to compare.
+  - navigation [ref=f38e883]:
+    - link "Home" [ref=f38e884] [cursor=pointer]:
+      - /url: /
+    - link "Txns" [ref=f38e892] [cursor=pointer]:
+      - /url: /transactions
+    - button "Quick add transaction" [ref=f38e897] [cursor=pointer]
+    - link "Analytics" [ref=f38e899] [cursor=pointer]:
+      - /url: /analytics
+    - link "Planning" [ref=f38e904] [cursor=pointer]:
+      - /url: /goals
+  - generic:
+    - region "Notifications alt+T"
+  - generic [ref=f38e912]:
+    - button [ref=f38e913]
+    - button [ref=f38e919]
+    - button [ref=f38e923]
+    - button [ref=f38e928]

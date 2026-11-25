@@ -1,0 +1,107 @@
+- generic [active] [ref=e1]:
+  - complementary [ref=e3]:
+    - generic [ref=e4]:
+      - link "FD" [ref=e5] [cursor=pointer]:
+        - /url: /
+      - generic [ref=e7]: FinDash
+      - button "Toggle sidebar" [ref=e8] [cursor=pointer]
+    - navigation [ref=e12]:
+      - link "Dashboard" [ref=e13] [cursor=pointer]:
+        - /url: /
+      - link "Transactions" [ref=e20] [cursor=pointer]:
+        - /url: /transactions
+      - link "Analytics" [ref=e25] [cursor=pointer]:
+        - /url: /analytics
+      - link "Planning" [ref=e30] [cursor=pointer]:
+        - /url: /goals
+      - link "Settings" [ref=e36] [cursor=pointer]:
+        - /url: /settings
+      - link "Budget" [ref=e42] [cursor=pointer]:
+        - /url: /budget
+      - link "Budget Pace" [ref=e47] [cursor=pointer]:
+        - /url: /budget-pace
+      - link "Savings" [ref=e51] [cursor=pointer]:
+        - /url: /savings-rate
+      - link "Calendar" [ref=e56] [cursor=pointer]:
+        - /url: /calendar
+      - link "Runway" [ref=e60] [cursor=pointer]:
+        - /url: /runway
+      - link "Credit" [ref=e64] [cursor=pointer]:
+        - /url: /credit-card
+      - paragraph [ref=e68]: Analytics
+      - link "Streaks" [ref=e69] [cursor=pointer]:
+        - /url: /streaks
+      - link "Achievements" [ref=e73] [cursor=pointer]:
+        - /url: /achievements
+      - link "Health Score" [ref=e81] [cursor=pointer]:
+        - /url: /health
+      - link "Spending Mix" [ref=e85] [cursor=pointer]:
+        - /url: /spending-mix
+      - link "Rhythm" [ref=e91] [cursor=pointer]:
+        - /url: /spending-rhythm
+      - link "Spending DNA" [ref=e95] [cursor=pointer]:
+        - /url: /dna
+      - link "Category Matrix" [ref=e99] [cursor=pointer]:
+        - /url: /matrix
+      - link "Merchants" [ref=e103] [cursor=pointer]:
+        - /url: /merchants
+      - paragraph [ref=e108]: Planning
+      - link "FIRE" [ref=e109] [cursor=pointer]:
+        - /url: /fire
+      - link "What-If" [ref=e113] [cursor=pointer]:
+        - /url: /what-if
+      - link "Forecast" [ref=e117] [cursor=pointer]:
+        - /url: /forecast
+      - link "Portfolio" [ref=e122] [cursor=pointer]:
+        - /url: /portfolio
+      - link "Net Worth" [ref=e127] [cursor=pointer]:
+        - /url: /networth
+      - paragraph [ref=e132]: Reports
+      - link "Weekly" [ref=e133] [cursor=pointer]:
+        - /url: /weekly
+      - link "Monthly" [ref=e137] [cursor=pointer]:
+        - /url: /report
+      - link "Yearly" [ref=e142] [cursor=pointer]:
+        - /url: /yearly
+      - link "Compare" [ref=e146] [cursor=pointer]:
+        - /url: /compare
+      - link "Cashflow" [ref=e153] [cursor=pointer]:
+        - /url: /cashflow
+      - link "Recurring" [ref=e157] [cursor=pointer]:
+        - /url: /recurring
+      - link "Recurring Audit" [ref=e164] [cursor=pointer]:
+        - /url: /recurring-audit
+      - link "Tips" [ref=e169] [cursor=pointer]:
+        - /url: /recommendations
+    - generic [ref=e177]:
+      - button "Alerts, 31 active" [ref=e178] [cursor=pointer]:
+        - generic [ref=e182]: "31"
+        - generic [ref=e183]: 31 alerts
+      - generic [ref=e184]: 31 alerts
+  - generic [ref=e186]:
+    - button "Search pages and actions" [ref=e187] [cursor=pointer]:
+      - generic [ref=e190]: Search
+      - generic [ref=e191]: ⌘K
+    - button "Toggle theme" [ref=e192] [cursor=pointer]: 🌙
+    - link "+ Add" [ref=e193] [cursor=pointer]:
+      - /url: /add
+  - generic [ref=e194]:
+    - main [ref=e195]:
+      - generic [ref=e197]:
+        - generic [ref=e198]:
+          - generic [ref=e199]: 💰
+          - heading "Financial Dashboard" [level=1] [ref=e200]
+          - paragraph [ref=e201]: Sign in to continue
+        - generic [ref=e202]:
+          - generic [ref=e203]:
+            - generic [ref=e204]: Username
+            - textbox "Username" [ref=e205]
+          - generic [ref=e206]:
+            - generic [ref=e207]: Password
+            - textbox "Password" [ref=e208]
+          - button "Sign in" [ref=e209] [cursor=pointer]
+        - paragraph [ref=e210]: Financial Dashboard · Secure login
+    - contentinfo [ref=e211]: Financial Dashboard · Built with Astro & React
+  - generic:
+    - button "Quick add transaction (Shift+N)" [ref=e212] [cursor=pointer]
+    - region "Notifications alt+T"

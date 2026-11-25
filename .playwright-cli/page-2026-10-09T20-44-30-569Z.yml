@@ -1,0 +1,642 @@
+- generic [active] [ref=f21e1]:
+  - complementary [ref=f21e3]:
+    - generic [ref=f21e4]:
+      - link "FD" [ref=f21e5] [cursor=pointer]:
+        - /url: /
+      - generic [ref=f21e7]: FinDash
+      - button "Toggle sidebar" [ref=f21e8] [cursor=pointer]
+    - navigation [ref=f21e12]:
+      - link "Dashboard" [ref=f21e13] [cursor=pointer]:
+        - /url: /
+      - link "Transactions" [ref=f21e20] [cursor=pointer]:
+        - /url: /transactions
+      - link "Analytics" [ref=f21e25] [cursor=pointer]:
+        - /url: /analytics
+      - link "Planning" [ref=f21e30] [cursor=pointer]:
+        - /url: /goals
+      - link "Settings" [ref=f21e36] [cursor=pointer]:
+        - /url: /settings
+      - link "Budget" [ref=f21e43] [cursor=pointer]:
+        - /url: /budget
+      - link "Budget Pace" [ref=f21e48] [cursor=pointer]:
+        - /url: /budget-pace
+      - link "Savings" [ref=f21e52] [cursor=pointer]:
+        - /url: /savings-rate
+      - link "Calendar" [ref=f21e57] [cursor=pointer]:
+        - /url: /calendar
+      - link "Runway" [ref=f21e61] [cursor=pointer]:
+        - /url: /runway
+      - link "Credit" [ref=f21e65] [cursor=pointer]:
+        - /url: /credit-card
+      - paragraph [ref=f21e69]: Analytics
+      - link "Streaks" [ref=f21e70] [cursor=pointer]:
+        - /url: /streaks
+      - link "Achievements" [ref=f21e74] [cursor=pointer]:
+        - /url: /achievements
+      - link "Health Score" [ref=f21e82] [cursor=pointer]:
+        - /url: /health
+      - link "Spending Mix" [ref=f21e86] [cursor=pointer]:
+        - /url: /spending-mix
+      - link "Rhythm" [ref=f21e92] [cursor=pointer]:
+        - /url: /spending-rhythm
+      - link "Spending DNA" [ref=f21e96] [cursor=pointer]:
+        - /url: /dna
+      - link "Category Matrix" [ref=f21e100] [cursor=pointer]:
+        - /url: /matrix
+      - link "Merchants" [ref=f21e104] [cursor=pointer]:
+        - /url: /merchants
+      - paragraph [ref=f21e109]: Planning
+      - link "FIRE" [ref=f21e110] [cursor=pointer]:
+        - /url: /fire
+      - link "What-If" [ref=f21e114] [cursor=pointer]:
+        - /url: /what-if
+      - link "Forecast" [ref=f21e118] [cursor=pointer]:
+        - /url: /forecast
+      - link "Portfolio" [ref=f21e123] [cursor=pointer]:
+        - /url: /portfolio
+      - link "Net Worth" [ref=f21e128] [cursor=pointer]:
+        - /url: /networth
+      - paragraph [ref=f21e133]: Reports
+      - link "Weekly" [ref=f21e134] [cursor=pointer]:
+        - /url: /weekly
+      - link "Monthly" [ref=f21e138] [cursor=pointer]:
+        - /url: /report
+      - link "Yearly" [ref=f21e143] [cursor=pointer]:
+        - /url: /yearly
+      - link "Compare" [ref=f21e147] [cursor=pointer]:
+        - /url: /compare
+      - link "Cashflow" [ref=f21e154] [cursor=pointer]:
+        - /url: /cashflow
+      - link "Recurring" [ref=f21e158] [cursor=pointer]:
+        - /url: /recurring
+      - link "Recurring Audit" [ref=f21e165] [cursor=pointer]:
+        - /url: /recurring-audit
+      - link "Tips" [ref=f21e170] [cursor=pointer]:
+        - /url: /recommendations
+    - generic [ref=f21e178]:
+      - button "Alerts, 31 active" [ref=f21e179] [cursor=pointer]:
+        - generic [ref=f21e183]: "31"
+        - generic [ref=f21e184]: 31 alerts
+      - generic [ref=f21e185]: 31 alerts
+  - generic [ref=f21e187]:
+    - button "Search pages and actions" [ref=f21e188] [cursor=pointer]:
+      - generic [ref=f21e191]: Search
+      - generic [ref=f21e192]: ⌘K
+    - button "Toggle theme" [ref=f21e193] [cursor=pointer]: 🌙
+    - generic [ref=f21e194]: ⚡ Admin
+    - button "Logout" [ref=f21e195] [cursor=pointer]: ⏻
+    - link "+ Add" [ref=f21e196] [cursor=pointer]:
+      - /url: /add
+  - generic [ref=f21e197]:
+    - main [ref=f21e198]:
+      - generic [ref=f21e199]:
+        - heading "Settings" [level=1] [ref=f21e200]
+        - generic [ref=f21e202]:
+          - generic [ref=f21e203]: Data Export
+          - generic [ref=f21e209]:
+            - button "Export JSON (All)" [ref=f21e210] [cursor=pointer]
+            - button "Export Transactions CSV" [ref=f21e211] [cursor=pointer]
+            - button "Export Networth CSV" [ref=f21e212] [cursor=pointer]
+            - button "Export Summary CSV" [ref=f21e213] [cursor=pointer]
+        - generic [ref=f21e215]:
+          - heading "Import Data" [level=3] [ref=f21e216]
+          - generic [ref=f21e217]:
+            - text: File (JSON or CSV)
+            - button "File (JSON or CSV)" [ref=f21e218]
+        - generic [ref=f21e220]:
+          - heading "Monthly Income" [level=3] [ref=f21e221]
+          - generic [ref=f21e222]:
+            - generic [ref=f21e223]:
+              - text: Month
+              - generic [ref=f21e224]:
+                - combobox [ref=f21e225]:
+                  - option "January" [selected]
+                  - option "February"
+                  - option "March"
+                  - option "April"
+                  - option "May"
+                  - option "June"
+                  - option "July"
+                  - option "August"
+                  - option "September"
+                  - option "October"
+                  - option "November"
+                  - option "December"
+                - spinbutton [ref=f21e226]: "2026"
+            - generic [ref=f21e227]:
+              - text: Income
+              - spinbutton "0" [ref=f21e228]
+            - generic [ref=f21e229]:
+              - text: Other Income
+              - spinbutton "0" [ref=f21e230]
+            - button "Add / Update" [ref=f21e231] [cursor=pointer]
+          - table [ref=f21e234]:
+            - rowgroup [ref=f21e235]:
+              - row [ref=f21e236]:
+                - columnheader "Month" [ref=f21e237]
+                - columnheader "Income" [ref=f21e238]
+                - columnheader "Other Income" [ref=f21e239]
+                - columnheader "Total" [ref=f21e240]
+                - columnheader [ref=f21e241]
+            - rowgroup [ref=f21e242]:
+              - row [ref=f21e243]:
+                - cell "September 2023" [ref=f21e244]
+                - cell "IDR 10.900.000" [ref=f21e245]
+                - cell "IDR 0" [ref=f21e246]
+                - cell "IDR 10.900.000" [ref=f21e247]
+                - cell [ref=f21e248]:
+                  - generic [ref=f21e249]:
+                    - button "Edit" [ref=f21e250] [cursor=pointer]
+                    - button "Delete" [ref=f21e251] [cursor=pointer]
+              - row [ref=f21e252]:
+                - cell "October 2023" [ref=f21e253]
+                - cell "IDR 9.100.000" [ref=f21e254]
+                - cell "IDR 0" [ref=f21e255]
+                - cell "IDR 9.100.000" [ref=f21e256]
+                - cell [ref=f21e257]:
+                  - generic [ref=f21e258]:
+                    - button "Edit" [ref=f21e259] [cursor=pointer]
+                    - button "Delete" [ref=f21e260] [cursor=pointer]
+              - row [ref=f21e261]:
+                - cell "November 2023" [ref=f21e262]
+                - cell "IDR 8.900.000" [ref=f21e263]
+                - cell "IDR 0" [ref=f21e264]
+                - cell "IDR 8.900.000" [ref=f21e265]
+                - cell [ref=f21e266]:
+                  - generic [ref=f21e267]:
+                    - button "Edit" [ref=f21e268] [cursor=pointer]
+                    - button "Delete" [ref=f21e269] [cursor=pointer]
+              - row [ref=f21e270]:
+                - cell "December 2023" [ref=f21e271]
+                - cell "IDR 8.900.000" [ref=f21e272]
+                - cell "IDR 0" [ref=f21e273]
+                - cell "IDR 8.900.000" [ref=f21e274]
+                - cell [ref=f21e275]:
+                  - generic [ref=f21e276]:
+                    - button "Edit" [ref=f21e277] [cursor=pointer]
+                    - button "Delete" [ref=f21e278] [cursor=pointer]
+              - row [ref=f21e279]:
+                - cell "January 2024" [ref=f21e280]
+                - cell "IDR 25.400.000" [ref=f21e281]
+                - cell "IDR 0" [ref=f21e282]
+                - cell "IDR 25.400.000" [ref=f21e283]
+                - cell [ref=f21e284]:
+                  - generic [ref=f21e285]:
+                    - button "Edit" [ref=f21e286] [cursor=pointer]
+                    - button "Delete" [ref=f21e287] [cursor=pointer]
+              - row [ref=f21e288]:
+                - cell "February 2024" [ref=f21e289]
+                - cell "IDR 8.950.000" [ref=f21e290]
+                - cell "IDR 0" [ref=f21e291]
+                - cell "IDR 8.950.000" [ref=f21e292]
+                - cell [ref=f21e293]:
+                  - generic [ref=f21e294]:
+                    - button "Edit" [ref=f21e295] [cursor=pointer]
+                    - button "Delete" [ref=f21e296] [cursor=pointer]
+              - row [ref=f21e297]:
+                - cell "March 2024" [ref=f21e298]
+                - cell "IDR 9.400.000" [ref=f21e299]
+                - cell "IDR 0" [ref=f21e300]
+                - cell "IDR 9.400.000" [ref=f21e301]
+                - cell [ref=f21e302]:
+                  - generic [ref=f21e303]:
+                    - button "Edit" [ref=f21e304] [cursor=pointer]
+                    - button "Delete" [ref=f21e305] [cursor=pointer]
+              - row [ref=f21e306]:
+                - cell "April 2024" [ref=f21e307]
+                - cell "IDR 29.433.333" [ref=f21e308]
+                - cell "IDR 0" [ref=f21e309]
+                - cell "IDR 29.433.333" [ref=f21e310]
+                - cell [ref=f21e311]:
+                  - generic [ref=f21e312]:
+                    - button "Edit" [ref=f21e313] [cursor=pointer]
+                    - button "Delete" [ref=f21e314] [cursor=pointer]
+              - row [ref=f21e315]:
+                - cell "May 2024" [ref=f21e316]
+                - cell "IDR 17.000.000" [ref=f21e317]
+                - cell "IDR 0" [ref=f21e318]
+                - cell "IDR 17.000.000" [ref=f21e319]
+                - cell [ref=f21e320]:
+                  - generic [ref=f21e321]:
+                    - button "Edit" [ref=f21e322] [cursor=pointer]
+                    - button "Delete" [ref=f21e323] [cursor=pointer]
+              - row [ref=f21e324]:
+                - cell "June 2024" [ref=f21e325]
+                - cell "IDR 17.000.000" [ref=f21e326]
+                - cell "IDR 0" [ref=f21e327]
+                - cell "IDR 17.000.000" [ref=f21e328]
+                - cell [ref=f21e329]:
+                  - generic [ref=f21e330]:
+                    - button "Edit" [ref=f21e331] [cursor=pointer]
+                    - button "Delete" [ref=f21e332] [cursor=pointer]
+              - row [ref=f21e333]:
+                - cell "July 2024" [ref=f21e334]
+                - cell "IDR 17.001.000" [ref=f21e335]
+                - cell "IDR 0" [ref=f21e336]
+                - cell "IDR 17.001.000" [ref=f21e337]
+                - cell [ref=f21e338]:
+                  - generic [ref=f21e339]:
+                    - button "Edit" [ref=f21e340] [cursor=pointer]
+                    - button "Delete" [ref=f21e341] [cursor=pointer]
+              - row [ref=f21e342]:
+                - cell "August 2024" [ref=f21e343]
+                - cell "IDR 17.000.000" [ref=f21e344]
+                - cell "IDR 0" [ref=f21e345]
+                - cell "IDR 17.000.000" [ref=f21e346]
+                - cell [ref=f21e347]:
+                  - generic [ref=f21e348]:
+                    - button "Edit" [ref=f21e349] [cursor=pointer]
+                    - button "Delete" [ref=f21e350] [cursor=pointer]
+              - row [ref=f21e351]:
+                - cell "September 2024" [ref=f21e352]
+                - cell "IDR 17.000.000" [ref=f21e353]
+                - cell "IDR 0" [ref=f21e354]
+                - cell "IDR 17.000.000" [ref=f21e355]
+                - cell [ref=f21e356]:
+                  - generic [ref=f21e357]:
+                    - button "Edit" [ref=f21e358] [cursor=pointer]
+                    - button "Delete" [ref=f21e359] [cursor=pointer]
+              - row [ref=f21e360]:
+                - cell "October 2024" [ref=f21e361]
+                - cell "IDR 10.000.000" [ref=f21e362]
+                - cell "IDR 0" [ref=f21e363]
+                - cell "IDR 10.000.000" [ref=f21e364]
+                - cell [ref=f21e365]:
+                  - generic [ref=f21e366]:
+                    - button "Edit" [ref=f21e367] [cursor=pointer]
+                    - button "Delete" [ref=f21e368] [cursor=pointer]
+              - row [ref=f21e369]:
+                - cell "November 2024" [ref=f21e370]
+                - cell "IDR 10.000.000" [ref=f21e371]
+                - cell "IDR 0" [ref=f21e372]
+                - cell "IDR 10.000.000" [ref=f21e373]
+                - cell [ref=f21e374]:
+                  - generic [ref=f21e375]:
+                    - button "Edit" [ref=f21e376] [cursor=pointer]
+                    - button "Delete" [ref=f21e377] [cursor=pointer]
+              - row [ref=f21e378]:
+                - cell "December 2024" [ref=f21e379]
+                - cell "IDR 10.000.000" [ref=f21e380]
+                - cell "IDR 0" [ref=f21e381]
+                - cell "IDR 10.000.000" [ref=f21e382]
+                - cell [ref=f21e383]:
+                  - generic [ref=f21e384]:
+                    - button "Edit" [ref=f21e385] [cursor=pointer]
+                    - button "Delete" [ref=f21e386] [cursor=pointer]
+              - row [ref=f21e387]:
+                - cell "January 2025" [ref=f21e388]
+                - cell "IDR 10.000.000" [ref=f21e389]
+                - cell "IDR 0" [ref=f21e390]
+                - cell "IDR 10.000.000" [ref=f21e391]
+                - cell [ref=f21e392]:
+                  - generic [ref=f21e393]:
+                    - button "Edit" [ref=f21e394] [cursor=pointer]
+                    - button "Delete" [ref=f21e395] [cursor=pointer]
+              - row [ref=f21e396]:
+                - cell "February 2025" [ref=f21e397]
+                - cell "IDR 18.500.000" [ref=f21e398]
+                - cell "IDR 0" [ref=f21e399]
+                - cell "IDR 18.500.000" [ref=f21e400]
+                - cell [ref=f21e401]:
+                  - generic [ref=f21e402]:
+                    - button "Edit" [ref=f21e403] [cursor=pointer]
+                    - button "Delete" [ref=f21e404] [cursor=pointer]
+              - row [ref=f21e405]:
+                - cell "March 2025" [ref=f21e406]
+                - cell "IDR 15.000.000" [ref=f21e407]
+                - cell "IDR 0" [ref=f21e408]
+                - cell "IDR 15.000.000" [ref=f21e409]
+                - cell [ref=f21e410]:
+                  - generic [ref=f21e411]:
+                    - button "Edit" [ref=f21e412] [cursor=pointer]
+                    - button "Delete" [ref=f21e413] [cursor=pointer]
+              - row [ref=f21e414]:
+                - cell "April 2025" [ref=f21e415]
+                - cell "IDR 18.000.000" [ref=f21e416]
+                - cell "IDR 0" [ref=f21e417]
+                - cell "IDR 18.000.000" [ref=f21e418]
+                - cell [ref=f21e419]:
+                  - generic [ref=f21e420]:
+                    - button "Edit" [ref=f21e421] [cursor=pointer]
+                    - button "Delete" [ref=f21e422] [cursor=pointer]
+              - row [ref=f21e423]:
+                - cell "May 2025" [ref=f21e424]
+                - cell "IDR 10.000.000" [ref=f21e425]
+                - cell "IDR 0" [ref=f21e426]
+                - cell "IDR 10.000.000" [ref=f21e427]
+                - cell [ref=f21e428]:
+                  - generic [ref=f21e429]:
+                    - button "Edit" [ref=f21e430] [cursor=pointer]
+                    - button "Delete" [ref=f21e431] [cursor=pointer]
+              - row [ref=f21e432]:
+                - cell "June 2025" [ref=f21e433]
+                - cell "IDR 10.000.000" [ref=f21e434]
+                - cell "IDR 0" [ref=f21e435]
+                - cell "IDR 10.000.000" [ref=f21e436]
+                - cell [ref=f21e437]:
+                  - generic [ref=f21e438]:
+                    - button "Edit" [ref=f21e439] [cursor=pointer]
+                    - button "Delete" [ref=f21e440] [cursor=pointer]
+              - row [ref=f21e441]:
+                - cell "July 2025" [ref=f21e442]
+                - cell "IDR 10.000.000" [ref=f21e443]
+                - cell "IDR 0" [ref=f21e444]
+                - cell "IDR 10.000.000" [ref=f21e445]
+                - cell [ref=f21e446]:
+                  - generic [ref=f21e447]:
+                    - button "Edit" [ref=f21e448] [cursor=pointer]
+                    - button "Delete" [ref=f21e449] [cursor=pointer]
+              - row [ref=f21e450]:
+                - cell "August 2025" [ref=f21e451]
+                - cell "IDR 18.514.000" [ref=f21e452]
+                - cell "IDR 0" [ref=f21e453]
+                - cell "IDR 18.514.000" [ref=f21e454]
+                - cell [ref=f21e455]:
+                  - generic [ref=f21e456]:
+                    - button "Edit" [ref=f21e457] [cursor=pointer]
+                    - button "Delete" [ref=f21e458] [cursor=pointer]
+              - row [ref=f21e459]:
+                - cell "September 2025" [ref=f21e460]
+                - cell "IDR 18.500.000" [ref=f21e461]
+                - cell "IDR 0" [ref=f21e462]
+                - cell "IDR 18.500.000" [ref=f21e463]
+                - cell [ref=f21e464]:
+                  - generic [ref=f21e465]:
+                    - button "Edit" [ref=f21e466] [cursor=pointer]
+                    - button "Delete" [ref=f21e467] [cursor=pointer]
+              - row [ref=f21e468]:
+                - cell "October 2025" [ref=f21e469]
+                - cell "IDR 18.500.000" [ref=f21e470]
+                - cell "IDR 0" [ref=f21e471]
+                - cell "IDR 18.500.000" [ref=f21e472]
+                - cell [ref=f21e473]:
+                  - generic [ref=f21e474]:
+                    - button "Edit" [ref=f21e475] [cursor=pointer]
+                    - button "Delete" [ref=f21e476] [cursor=pointer]
+              - row [ref=f21e477]:
+                - cell "November 2025" [ref=f21e478]
+                - cell "IDR 18.500.000" [ref=f21e479]
+                - cell "IDR 0" [ref=f21e480]
+                - cell "IDR 18.500.000" [ref=f21e481]
+                - cell [ref=f21e482]:
+                  - generic [ref=f21e483]:
+                    - button "Edit" [ref=f21e484] [cursor=pointer]
+                    - button "Delete" [ref=f21e485] [cursor=pointer]
+              - row [ref=f21e486]:
+                - cell "December 2025" [ref=f21e487]
+                - cell "IDR 23.950.000" [ref=f21e488]
+                - cell "IDR 0" [ref=f21e489]
+                - cell "IDR 23.950.000" [ref=f21e490]
+                - cell [ref=f21e491]:
+                  - generic [ref=f21e492]:
+                    - button "Edit" [ref=f21e493] [cursor=pointer]
+                    - button "Delete" [ref=f21e494] [cursor=pointer]
+              - row [ref=f21e495]:
+                - cell "January 2026" [ref=f21e496]
+                - cell "IDR 18.500.000" [ref=f21e497]
+                - cell "IDR 0" [ref=f21e498]
+                - cell "IDR 18.500.000" [ref=f21e499]
+                - cell [ref=f21e500]:
+                  - generic [ref=f21e501]:
+                    - button "Edit" [ref=f21e502] [cursor=pointer]
+                    - button "Delete" [ref=f21e503] [cursor=pointer]
+              - row [ref=f21e504]:
+                - cell "February 2026" [ref=f21e505]
+                - cell "IDR 10.000.000" [ref=f21e506]
+                - cell "IDR 0" [ref=f21e507]
+                - cell "IDR 10.000.000" [ref=f21e508]
+                - cell [ref=f21e509]:
+                  - generic [ref=f21e510]:
+                    - button "Edit" [ref=f21e511] [cursor=pointer]
+                    - button "Delete" [ref=f21e512] [cursor=pointer]
+              - row [ref=f21e513]:
+                - cell "March 2026" [ref=f21e514]
+                - cell "IDR 28.500.000" [ref=f21e515]
+                - cell "IDR 0" [ref=f21e516]
+                - cell "IDR 28.500.000" [ref=f21e517]
+                - cell [ref=f21e518]:
+                  - generic [ref=f21e519]:
+                    - button "Edit" [ref=f21e520] [cursor=pointer]
+                    - button "Delete" [ref=f21e521] [cursor=pointer]
+              - row [ref=f21e522]:
+                - cell "April 2026" [ref=f21e523]
+                - cell "IDR 20.500.000" [ref=f21e524]
+                - cell "IDR 0" [ref=f21e525]
+                - cell "IDR 20.500.000" [ref=f21e526]
+                - cell [ref=f21e527]:
+                  - generic [ref=f21e528]:
+                    - button "Edit" [ref=f21e529] [cursor=pointer]
+                    - button "Delete" [ref=f21e530] [cursor=pointer]
+              - row [ref=f21e531]:
+                - cell "May 2026" [ref=f21e532]
+                - cell "IDR 18.500.000" [ref=f21e533]
+                - cell "IDR 0" [ref=f21e534]
+                - cell "IDR 18.500.000" [ref=f21e535]
+                - cell [ref=f21e536]:
+                  - generic [ref=f21e537]:
+                    - button "Edit" [ref=f21e538] [cursor=pointer]
+                    - button "Delete" [ref=f21e539] [cursor=pointer]
+              - row [ref=f21e540]:
+                - cell "June 2026" [ref=f21e541]
+                - cell "IDR 18.000.000" [ref=f21e542]
+                - cell "IDR 800.000" [ref=f21e543]
+                - cell "IDR 18.800.000" [ref=f21e544]
+                - cell [ref=f21e545]:
+                  - generic [ref=f21e546]:
+                    - button "Edit" [ref=f21e547] [cursor=pointer]
+                    - button "Delete" [ref=f21e548] [cursor=pointer]
+              - row [ref=f21e549]:
+                - cell "July 2026" [ref=f21e550]
+                - cell "IDR 18.000.000" [ref=f21e551]
+                - cell "IDR 0" [ref=f21e552]
+                - cell "IDR 18.000.000" [ref=f21e553]
+                - cell [ref=f21e554]:
+                  - generic [ref=f21e555]:
+                    - button "Edit" [ref=f21e556] [cursor=pointer]
+                    - button "Delete" [ref=f21e557] [cursor=pointer]
+              - row [ref=f21e558]:
+                - cell "August 2026" [ref=f21e559]
+                - cell "IDR 18.000.000" [ref=f21e560]
+                - cell "IDR 0" [ref=f21e561]
+                - cell "IDR 18.000.000" [ref=f21e562]
+                - cell [ref=f21e563]:
+                  - generic [ref=f21e564]:
+                    - button "Edit" [ref=f21e565] [cursor=pointer]
+                    - button "Delete" [ref=f21e566] [cursor=pointer]
+              - row [ref=f21e567]:
+                - cell "September 2026" [ref=f21e568]
+                - cell "IDR 23.000.000" [ref=f21e569]
+                - cell "IDR 0" [ref=f21e570]
+                - cell "IDR 23.000.000" [ref=f21e571]
+                - cell [ref=f21e572]:
+                  - generic [ref=f21e573]:
+                    - button "Edit" [ref=f21e574] [cursor=pointer]
+                    - button "Delete" [ref=f21e575] [cursor=pointer]
+              - row [ref=f21e576]:
+                - cell "October 2026" [ref=f21e577]
+                - cell "IDR 23.000.000" [ref=f21e578]
+                - cell "IDR 0" [ref=f21e579]
+                - cell "IDR 23.000.000" [ref=f21e580]
+                - cell [ref=f21e581]:
+                  - generic [ref=f21e582]:
+                    - button "Edit" [ref=f21e583] [cursor=pointer]
+                    - button "Delete" [ref=f21e584] [cursor=pointer]
+        - generic [ref=f21e586]:
+          - heading "Categories" [level=3] [ref=f21e587]
+          - button "+ Add Category" [ref=f21e588] [cursor=pointer]
+          - table [ref=f21e591]:
+            - rowgroup [ref=f21e592]:
+              - row [ref=f21e593]:
+                - columnheader "Color" [ref=f21e594]
+                - columnheader "Name" [ref=f21e595]
+                - columnheader "Monthly Limit" [ref=f21e596]
+                - columnheader [ref=f21e597]
+            - rowgroup [ref=f21e598]:
+              - row [ref=f21e599]:
+                - cell [ref=f21e600]
+                - cell "Belanja" [ref=f21e602]
+                - cell "IDR 3.000.000" [ref=f21e603]
+                - cell [ref=f21e604]:
+                  - generic [ref=f21e605]:
+                    - button "Edit" [ref=f21e606] [cursor=pointer]
+                    - button "Delete" [ref=f21e607] [cursor=pointer]
+              - row [ref=f21e608]:
+                - cell [ref=f21e609]
+                - cell "Belanja Pribadi" [ref=f21e611]
+                - cell "IDR 1.000.000" [ref=f21e612]
+                - cell [ref=f21e613]:
+                  - generic [ref=f21e614]:
+                    - button "Edit" [ref=f21e615] [cursor=pointer]
+                    - button "Delete" [ref=f21e616] [cursor=pointer]
+              - row [ref=f21e617]:
+                - cell [ref=f21e618]
+                - cell "Cash Pribadi" [ref=f21e620]
+                - cell "IDR 500.000" [ref=f21e621]
+                - cell [ref=f21e622]:
+                  - generic [ref=f21e623]:
+                    - button "Edit" [ref=f21e624] [cursor=pointer]
+                    - button "Delete" [ref=f21e625] [cursor=pointer]
+              - row [ref=f21e626]:
+                - cell [ref=f21e627]
+                - cell "Cash Rumah Bulanan" [ref=f21e629]
+                - cell "IDR 500.000" [ref=f21e630]
+                - cell [ref=f21e631]:
+                  - generic [ref=f21e632]:
+                    - button "Edit" [ref=f21e633] [cursor=pointer]
+                    - button "Delete" [ref=f21e634] [cursor=pointer]
+              - row [ref=f21e635]:
+                - cell [ref=f21e636]
+                - cell "Credit Card" [ref=f21e638]
+                - cell "-" [ref=f21e639]
+                - cell [ref=f21e640]:
+                  - generic [ref=f21e641]:
+                    - button "Edit" [ref=f21e642] [cursor=pointer]
+                    - button "Delete" [ref=f21e643] [cursor=pointer]
+              - row [ref=f21e644]:
+                - cell [ref=f21e645]
+                - cell "Family" [ref=f21e647]
+                - cell "IDR 1.700.000" [ref=f21e648]
+                - cell [ref=f21e649]:
+                  - generic [ref=f21e650]:
+                    - button "Edit" [ref=f21e651] [cursor=pointer]
+                    - button "Delete" [ref=f21e652] [cursor=pointer]
+              - row [ref=f21e653]:
+                - cell [ref=f21e654]
+                - cell "Hiburan" [ref=f21e656]
+                - cell "-" [ref=f21e657]
+                - cell [ref=f21e658]:
+                  - generic [ref=f21e659]:
+                    - button "Edit" [ref=f21e660] [cursor=pointer]
+                    - button "Delete" [ref=f21e661] [cursor=pointer]
+              - row [ref=f21e662]:
+                - cell [ref=f21e663]
+                - cell "Invest" [ref=f21e665]
+                - cell "IDR 2.000.000" [ref=f21e666]
+                - cell [ref=f21e667]:
+                  - generic [ref=f21e668]:
+                    - button "Edit" [ref=f21e669] [cursor=pointer]
+                    - button "Delete" [ref=f21e670] [cursor=pointer]
+              - row [ref=f21e671]:
+                - cell [ref=f21e672]
+                - cell "Istri" [ref=f21e674]
+                - cell "IDR 3.200.000" [ref=f21e675]
+                - cell [ref=f21e676]:
+                  - generic [ref=f21e677]:
+                    - button "Edit" [ref=f21e678] [cursor=pointer]
+                    - button "Delete" [ref=f21e679] [cursor=pointer]
+              - row [ref=f21e680]:
+                - cell [ref=f21e681]
+                - cell "Langganan" [ref=f21e683]
+                - cell "-" [ref=f21e684]
+                - cell [ref=f21e685]:
+                  - generic [ref=f21e686]:
+                    - button "Edit" [ref=f21e687] [cursor=pointer]
+                    - button "Delete" [ref=f21e688] [cursor=pointer]
+              - row [ref=f21e689]:
+                - cell [ref=f21e690]
+                - cell "Makanan" [ref=f21e692]
+                - cell "-" [ref=f21e693]
+                - cell [ref=f21e694]:
+                  - generic [ref=f21e695]:
+                    - button "Edit" [ref=f21e696] [cursor=pointer]
+                    - button "Delete" [ref=f21e697] [cursor=pointer]
+              - row [ref=f21e698]:
+                - cell [ref=f21e699]
+                - cell "Peliharaan" [ref=f21e701]
+                - cell "-" [ref=f21e702]
+                - cell [ref=f21e703]:
+                  - generic [ref=f21e704]:
+                    - button "Edit" [ref=f21e705] [cursor=pointer]
+                    - button "Delete" [ref=f21e706] [cursor=pointer]
+              - row [ref=f21e707]:
+                - cell [ref=f21e708]
+                - cell "Qurban" [ref=f21e710]
+                - cell "-" [ref=f21e711]
+                - cell [ref=f21e712]:
+                  - generic [ref=f21e713]:
+                    - button "Edit" [ref=f21e714] [cursor=pointer]
+                    - button "Delete" [ref=f21e715] [cursor=pointer]
+              - row [ref=f21e716]:
+                - cell [ref=f21e717]
+                - cell "Rumah Bulanan" [ref=f21e719]
+                - cell "-" [ref=f21e720]
+                - cell [ref=f21e721]:
+                  - generic [ref=f21e722]:
+                    - button "Edit" [ref=f21e723] [cursor=pointer]
+                    - button "Delete" [ref=f21e724] [cursor=pointer]
+              - row [ref=f21e725]:
+                - cell [ref=f21e726]
+                - cell "Tagihan" [ref=f21e728]
+                - cell "IDR 3.500.000" [ref=f21e729]
+                - cell [ref=f21e730]:
+                  - generic [ref=f21e731]:
+                    - button "Edit" [ref=f21e732] [cursor=pointer]
+                    - button "Delete" [ref=f21e733] [cursor=pointer]
+              - row [ref=f21e734]:
+                - cell [ref=f21e735]
+                - cell "Test" [ref=f21e737]
+                - cell "-" [ref=f21e738]
+                - cell [ref=f21e739]:
+                  - generic [ref=f21e740]:
+                    - button "Edit" [ref=f21e741] [cursor=pointer]
+                    - button "Delete" [ref=f21e742] [cursor=pointer]
+              - row [ref=f21e743]:
+                - cell [ref=f21e744]
+                - cell "Transportasi" [ref=f21e746]
+                - cell "-" [ref=f21e747]
+                - cell [ref=f21e748]:
+                  - generic [ref=f21e749]:
+                    - button "Edit" [ref=f21e750] [cursor=pointer]
+                    - button "Delete" [ref=f21e751] [cursor=pointer]
+              - row [ref=f21e752]:
+                - cell [ref=f21e753]
+                - cell "Zakat" [ref=f21e755]
+                - cell "-" [ref=f21e756]
+                - cell [ref=f21e757]:
+                  - generic [ref=f21e758]:
+                    - button "Edit" [ref=f21e759] [cursor=pointer]
+                    - button "Delete" [ref=f21e760] [cursor=pointer]
+    - contentinfo [ref=f21e761]: Financial Dashboard · Built with Astro & React
+  - generic:
+    - button "Quick add transaction (Shift+N)" [ref=f21e762] [cursor=pointer]
+    - region "Notifications alt+T"

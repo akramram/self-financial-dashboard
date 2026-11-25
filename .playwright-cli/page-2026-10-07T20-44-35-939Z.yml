@@ -1,0 +1,22 @@
+- generic [active]:
+  - dialog "Alerts" [ref=f1e1]:
+    - generic [ref=f1e2]:
+      - heading "Alerts" [level=2] [ref=f1e4]
+      - generic [ref=f1e5]: 3 aktif
+      - generic [ref=f1e6]: 1 dibisukan
+      - button "Preferensi Alert" [ref=f1e7] [cursor=pointer]
+    - button "Close" [ref=f1e9] [cursor=pointer]
+  - dialog "Alerts-bug" [ref=f1e11]:
+    - generic [ref=f1e12]:
+      - heading "Alerts" [level=2] [ref=f1e14]
+      - generic [ref=f1e15]: 3 aktif
+      - button [ref=f1e16] [cursor=pointer]
+    - button [ref=f1e18] [cursor=pointer]
+  - button "3 alerts 3" [ref=f1e21] [cursor=pointer]:
+    - generic [ref=f1e23]: 3 alerts
+    - generic [ref=f1e24]: "3"
+  - generic [ref=f1e26]:
+    - generic [ref=f1e27]:
+      - paragraph [ref=f1e28]: Food is over budget
+      - paragraph [ref=f1e29]: detail
+    - button [ref=f1e30] [cursor=pointer]

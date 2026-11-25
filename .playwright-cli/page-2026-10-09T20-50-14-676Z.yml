@@ -1,0 +1,342 @@
+- generic [active] [ref=f36e1]:
+  - complementary [ref=f36e3]:
+    - generic [ref=f36e4]:
+      - link "FD" [ref=f36e5] [cursor=pointer]:
+        - /url: /
+      - generic [ref=f36e7]: FinDash
+      - button "Close menu" [ref=f36e8] [cursor=pointer]
+    - navigation [ref=f36e12]:
+      - link "Dashboard" [ref=f36e13] [cursor=pointer]:
+        - /url: /
+      - link "Transactions" [ref=f36e20] [cursor=pointer]:
+        - /url: /transactions
+      - link "Analytics" [ref=f36e26] [cursor=pointer]:
+        - /url: /analytics
+      - link "Planning" [ref=f36e31] [cursor=pointer]:
+        - /url: /goals
+      - link "Settings" [ref=f36e37] [cursor=pointer]:
+        - /url: /settings
+      - link "Budget" [ref=f36e43] [cursor=pointer]:
+        - /url: /budget
+      - link "Budget Pace" [ref=f36e48] [cursor=pointer]:
+        - /url: /budget-pace
+      - link "Savings" [ref=f36e52] [cursor=pointer]:
+        - /url: /savings-rate
+      - link "Calendar" [ref=f36e57] [cursor=pointer]:
+        - /url: /calendar
+      - link "Runway" [ref=f36e61] [cursor=pointer]:
+        - /url: /runway
+      - link "Credit" [ref=f36e65] [cursor=pointer]:
+        - /url: /credit-card
+      - paragraph [ref=f36e69]: Analytics
+      - link "Streaks" [ref=f36e70] [cursor=pointer]:
+        - /url: /streaks
+      - link "Achievements" [ref=f36e74] [cursor=pointer]:
+        - /url: /achievements
+      - link "Health Score" [ref=f36e82] [cursor=pointer]:
+        - /url: /health
+      - link "Spending Mix" [ref=f36e86] [cursor=pointer]:
+        - /url: /spending-mix
+      - link "Rhythm" [ref=f36e92] [cursor=pointer]:
+        - /url: /spending-rhythm
+      - link "Spending DNA" [ref=f36e96] [cursor=pointer]:
+        - /url: /dna
+      - link "Category Matrix" [ref=f36e100] [cursor=pointer]:
+        - /url: /matrix
+      - link "Merchants" [ref=f36e104] [cursor=pointer]:
+        - /url: /merchants
+      - paragraph [ref=f36e109]: Planning
+      - link "FIRE" [ref=f36e110] [cursor=pointer]:
+        - /url: /fire
+      - link "What-If" [ref=f36e114] [cursor=pointer]:
+        - /url: /what-if
+      - link "Forecast" [ref=f36e118] [cursor=pointer]:
+        - /url: /forecast
+      - link "Portfolio" [ref=f36e123] [cursor=pointer]:
+        - /url: /portfolio
+      - link "Net Worth" [ref=f36e128] [cursor=pointer]:
+        - /url: /networth
+      - paragraph [ref=f36e133]: Reports
+      - link "Weekly" [ref=f36e134] [cursor=pointer]:
+        - /url: /weekly
+      - link "Monthly" [ref=f36e138] [cursor=pointer]:
+        - /url: /report
+      - link "Yearly" [ref=f36e143] [cursor=pointer]:
+        - /url: /yearly
+      - link "Compare" [ref=f36e147] [cursor=pointer]:
+        - /url: /compare
+      - link "Cashflow" [ref=f36e154] [cursor=pointer]:
+        - /url: /cashflow
+      - link "Recurring" [ref=f36e158] [cursor=pointer]:
+        - /url: /recurring
+      - link "Recurring Audit" [ref=f36e165] [cursor=pointer]:
+        - /url: /recurring-audit
+      - link "Tips" [ref=f36e170] [cursor=pointer]:
+        - /url: /recommendations
+    - button "Alerts, 31 active" [ref=f36e179] [cursor=pointer]:
+      - generic [ref=f36e183]: 31 alerts
+      - generic [ref=f36e184]: "31"
+  - generic [ref=f36e185]:
+    - button "Open menu" [ref=f36e186] [cursor=pointer]
+    - button "Search pages and actions" [ref=f36e189] [cursor=pointer]:
+      - generic [ref=f36e192]: Search…
+    - generic [ref=f36e193]:
+      - link "Settings" [ref=f36e194] [cursor=pointer]:
+        - /url: /settings
+      - button "Toggle theme" [ref=f36e198] [cursor=pointer]: 🌙
+      - generic [ref=f36e199]: ⚡ Admin
+      - button "Logout" [ref=f36e200] [cursor=pointer]: ⏻
+  - main [ref=f36e203]:
+    - generic [ref=f36e204]:
+      - heading "Transactions" [level=1] [ref=f36e205]
+      - paragraph [ref=f36e206]: All cash and credit expenses
+    - generic [ref=f36e209]:
+      - generic [ref=f36e210]:
+        - generic [ref=f36e211]:
+          - textbox "Search title, category, notes..." [ref=f36e213]
+          - combobox [ref=f36e214] [cursor=pointer]
+          - combobox [ref=f36e217]
+          - combobox [ref=f36e218] [cursor=pointer]
+          - combobox [ref=f36e221]
+          - combobox [ref=f36e222] [cursor=pointer]
+          - combobox [ref=f36e225]
+          - button "Export" [ref=f36e226] [cursor=pointer]
+        - generic [ref=f36e227]:
+          - button "Unpaid" [ref=f36e228] [cursor=pointer]
+          - button "Paid 970" [ref=f36e230] [cursor=pointer]:
+            - text: Paid
+            - generic [ref=f36e232]: "970"
+          - button "Advanced Filters" [ref=f36e233] [cursor=pointer]
+      - generic [ref=f36e234]:
+        - paragraph [ref=f36e235]: 970 transactions
+        - generic [ref=f36e236]: Outflow IDR 766.052.732
+        - generic [ref=f36e237]: Cash IDR 283.664.367
+        - generic [ref=f36e238]: Credit IDR 482.388.365
+      - generic [ref=f36e240]:
+        - button [ref=f36e241] [cursor=pointer]:
+          - button "Mark Cicilan Tyranno unpaid" [ref=f36e242]: Paid
+          - generic [ref=f36e243]:
+            - paragraph [ref=f36e245]: Cicilan Tyranno
+            - paragraph [ref=f36e246]: Tagihan · 17 Okt 2026 · Credit
+          - generic [ref=f36e247]:
+            - paragraph [ref=f36e248]: IDR 1.293.194
+            - paragraph [ref=f36e249]: October 2026
+        - button [ref=f36e250] [cursor=pointer]:
+          - button "Mark Grab Unlimited unpaid" [ref=f36e251]: Paid
+          - generic [ref=f36e252]:
+            - paragraph [ref=f36e254]: Grab Unlimited
+            - paragraph [ref=f36e255]: Istri · 9 Okt 2026 · Credit
+          - generic [ref=f36e256]:
+            - paragraph [ref=f36e257]: IDR 14.000
+            - paragraph [ref=f36e258]: October 2026
+        - button [ref=f36e259] [cursor=pointer]:
+          - button "Mark Airism Jacket unpaid" [ref=f36e260]: Paid
+          - generic [ref=f36e261]:
+            - paragraph [ref=f36e263]: Airism Jacket
+            - paragraph [ref=f36e264]: Belanja Pribadi · 9 Okt 2026 · Credit
+          - generic [ref=f36e265]:
+            - paragraph [ref=f36e266]: IDR 149.200
+            - paragraph [ref=f36e267]: October 2026
+        - button [ref=f36e268] [cursor=pointer]:
+          - button "Mark DS4 Controller unpaid" [ref=f36e269]: Paid
+          - generic [ref=f36e270]:
+            - paragraph [ref=f36e272]: DS4 Controller
+            - paragraph [ref=f36e273]: Belanja Pribadi · 9 Okt 2026 · Credit
+          - generic [ref=f36e274]:
+            - paragraph [ref=f36e275]: IDR 110.000
+            - paragraph [ref=f36e276]: October 2026
+        - button [ref=f36e277] [cursor=pointer]:
+          - button "Mark Celana Cargo unpaid" [ref=f36e278]: Paid
+          - generic [ref=f36e279]:
+            - paragraph [ref=f36e281]: Celana Cargo
+            - paragraph [ref=f36e282]: Belanja Pribadi · 9 Okt 2026 · Credit
+          - generic [ref=f36e283]:
+            - paragraph [ref=f36e284]: IDR 140.000
+            - paragraph [ref=f36e285]: October 2026
+        - button [ref=f36e286] [cursor=pointer]:
+          - button "Mark Paket Data unpaid" [ref=f36e287]: Paid
+          - generic [ref=f36e288]:
+            - paragraph [ref=f36e290]: Paket Data
+            - paragraph [ref=f36e291]: Belanja Pribadi · 7 Okt 2026 · Credit
+          - generic [ref=f36e292]:
+            - paragraph [ref=f36e293]: IDR 15.107
+            - paragraph [ref=f36e294]: October 2026
+        - button [ref=f36e295] [cursor=pointer]:
+          - button "Mark Listrik unpaid" [ref=f36e296]: Paid
+          - generic [ref=f36e297]:
+            - paragraph [ref=f36e299]: Listrik
+            - paragraph [ref=f36e300]: Tagihan · 7 Okt 2026 · Credit
+          - generic [ref=f36e301]:
+            - paragraph [ref=f36e302]: IDR 103.418
+            - paragraph [ref=f36e303]: October 2026
+        - button [ref=f36e304] [cursor=pointer]:
+          - button "Mark Emping unpaid" [ref=f36e305]: Paid
+          - generic [ref=f36e306]:
+            - paragraph [ref=f36e308]: Emping
+            - paragraph [ref=f36e309]: Makanan · 7 Okt 2026 · Credit
+          - generic [ref=f36e310]:
+            - paragraph [ref=f36e311]: IDR 79.600
+            - paragraph [ref=f36e312]: October 2026
+        - button [ref=f36e313] [cursor=pointer]:
+          - button "Mark Galon unpaid" [ref=f36e314]: Paid
+          - generic [ref=f36e315]:
+            - paragraph [ref=f36e317]: Galon
+            - paragraph [ref=f36e318]: Belanja · 7 Okt 2026 · Credit
+          - generic [ref=f36e319]:
+            - paragraph [ref=f36e320]: IDR 36.000
+            - paragraph [ref=f36e321]: October 2026
+        - button [ref=f36e322] [cursor=pointer]:
+          - button "Mark Roller Bulu & Double Tape unpaid" [ref=f36e323]: Paid
+          - generic [ref=f36e324]:
+            - paragraph [ref=f36e326]: Roller Bulu & Double Tape
+            - paragraph [ref=f36e327]: Belanja · 7 Okt 2026 · Credit
+          - generic [ref=f36e328]:
+            - paragraph [ref=f36e329]: IDR 43.404
+            - paragraph [ref=f36e330]: October 2026
+        - button [ref=f36e331] [cursor=pointer]:
+          - button "Mark Paket Data unpaid" [ref=f36e332]: Paid
+          - generic [ref=f36e333]:
+            - paragraph [ref=f36e335]: Paket Data
+            - paragraph [ref=f36e336]: Belanja Pribadi · 6 Okt 2026 · Credit
+          - generic [ref=f36e337]:
+            - paragraph [ref=f36e338]: IDR 10.000
+            - paragraph [ref=f36e339]: October 2026
+        - button [ref=f36e340] [cursor=pointer]:
+          - button "Mark Hydro Coco unpaid" [ref=f36e341]: Paid
+          - generic [ref=f36e342]:
+            - paragraph [ref=f36e344]: Hydro Coco
+            - paragraph [ref=f36e345]: Belanja Pribadi · 6 Okt 2026 · Credit
+          - generic [ref=f36e346]:
+            - paragraph [ref=f36e347]: IDR 12.500
+            - paragraph [ref=f36e348]: October 2026
+        - button [ref=f36e349] [cursor=pointer]:
+          - button "Mark Dessert Box unpaid" [ref=f36e350]: Paid
+          - generic [ref=f36e351]:
+            - paragraph [ref=f36e353]: Dessert Box
+            - paragraph [ref=f36e354]: Istri · 5 Okt 2026 · Credit
+          - generic [ref=f36e355]:
+            - paragraph [ref=f36e356]: IDR 128.000
+            - paragraph [ref=f36e357]: October 2026
+        - button [ref=f36e358] [cursor=pointer]:
+          - button "Mark Grab Car unpaid" [ref=f36e359]: Paid
+          - generic [ref=f36e360]:
+            - paragraph [ref=f36e362]: Grab Car
+            - paragraph [ref=f36e363]: Istri · 4 Okt 2026 · Credit
+          - generic [ref=f36e364]:
+            - paragraph [ref=f36e365]: IDR 39.500
+            - paragraph [ref=f36e366]: October 2026
+        - button [ref=f36e367] [cursor=pointer]:
+          - button "Mark Grabcar unpaid" [ref=f36e368]: Paid
+          - generic [ref=f36e369]:
+            - paragraph [ref=f36e371]: Grabcar
+            - paragraph [ref=f36e372]: Istri · 4 Okt 2026 · Credit
+          - generic [ref=f36e373]:
+            - paragraph [ref=f36e374]: IDR 35.800
+            - paragraph [ref=f36e375]: October 2026
+        - button [ref=f36e376] [cursor=pointer]:
+          - button "Mark Grab Bike unpaid" [ref=f36e377]: Paid
+          - generic [ref=f36e378]:
+            - paragraph [ref=f36e380]: Grab Bike
+            - paragraph [ref=f36e381]: Istri · 4 Okt 2026 · Credit
+          - generic [ref=f36e382]:
+            - paragraph [ref=f36e383]: IDR 6.000
+            - paragraph [ref=f36e384]: October 2026
+        - button [ref=f36e385] [cursor=pointer]:
+          - button "Mark Pizza unpaid" [ref=f36e386]: Paid
+          - generic [ref=f36e387]:
+            - paragraph [ref=f36e389]: Pizza
+            - paragraph [ref=f36e390]: Makanan · 4 Okt 2026 · Credit
+          - generic [ref=f36e391]:
+            - paragraph [ref=f36e392]: IDR 166.980
+            - paragraph [ref=f36e393]: October 2026
+        - button [ref=f36e394] [cursor=pointer]:
+          - button "Mark Kontrakan unpaid" [ref=f36e395]: Paid
+          - generic [ref=f36e396]:
+            - paragraph [ref=f36e398]: Kontrakan
+            - paragraph [ref=f36e399]: Tagihan · 4 Okt 2026 · Cash
+          - generic [ref=f36e400]:
+            - paragraph [ref=f36e401]: IDR 1.150.000
+            - paragraph [ref=f36e402]: October 2026
+        - button [ref=f36e403] [cursor=pointer]:
+          - button "Mark Fast Charger unpaid" [ref=f36e404]: Paid
+          - generic [ref=f36e405]:
+            - paragraph [ref=f36e407]: Fast Charger
+            - paragraph [ref=f36e408]: Invest · 4 Okt 2026 · Cash
+          - generic [ref=f36e409]:
+            - paragraph [ref=f36e410]: IDR 300.000
+            - paragraph [ref=f36e411]: October 2026
+        - button [ref=f36e412] [cursor=pointer]:
+          - button "Mark Belanja Warung unpaid" [ref=f36e413]: Paid
+          - generic [ref=f36e414]:
+            - paragraph [ref=f36e416]: Belanja Warung
+            - paragraph [ref=f36e417]: Belanja · 3 Okt 2026 · Credit
+          - generic [ref=f36e418]:
+            - paragraph [ref=f36e419]: IDR 107.000
+            - paragraph [ref=f36e420]: October 2026
+        - button [ref=f36e421] [cursor=pointer]:
+          - button "Mark Board Game unpaid" [ref=f36e422]: Paid
+          - generic [ref=f36e423]:
+            - generic [ref=f36e424]:
+              - paragraph [ref=f36e425]: Board Game
+              - img "PO WNI Simulator" [ref=f36e426]
+            - paragraph [ref=f36e429]: Hiburan · 3 Okt 2026 · Credit
+          - generic [ref=f36e430]:
+            - paragraph [ref=f36e431]: IDR 350.435
+            - paragraph [ref=f36e432]: October 2026
+        - button [ref=f36e433] [cursor=pointer]:
+          - button "Mark Nasi Padang unpaid" [ref=f36e434]: Paid
+          - generic [ref=f36e435]:
+            - paragraph [ref=f36e437]: Nasi Padang
+            - paragraph [ref=f36e438]: Makanan · 3 Okt 2026 · Credit
+          - generic [ref=f36e439]:
+            - paragraph [ref=f36e440]: IDR 46.000
+            - paragraph [ref=f36e441]: October 2026
+        - button [ref=f36e442] [cursor=pointer]:
+          - button "Mark Belanja Bulanan unpaid" [ref=f36e443]: Paid
+          - generic [ref=f36e444]:
+            - paragraph [ref=f36e446]: Belanja Bulanan
+            - paragraph [ref=f36e447]: Belanja · 3 Okt 2026 · Credit
+          - generic [ref=f36e448]:
+            - paragraph [ref=f36e449]: IDR 940.145
+            - paragraph [ref=f36e450]: October 2026
+        - button [ref=f36e451] [cursor=pointer]:
+          - button "Mark Belanja Warung unpaid" [ref=f36e452]: Paid
+          - generic [ref=f36e453]:
+            - paragraph [ref=f36e455]: Belanja Warung
+            - paragraph [ref=f36e456]: Belanja · 2 Okt 2026 · Credit
+          - generic [ref=f36e457]:
+            - paragraph [ref=f36e458]: IDR 107.000
+            - paragraph [ref=f36e459]: October 2026
+        - button [ref=f36e460] [cursor=pointer]:
+          - button "Mark Nasi Goreng Solaria unpaid" [ref=f36e461]: Paid
+          - generic [ref=f36e462]:
+            - paragraph [ref=f36e464]: Nasi Goreng Solaria
+            - paragraph [ref=f36e465]: Makanan · 2 Okt 2026 · Credit
+          - generic [ref=f36e466]:
+            - paragraph [ref=f36e467]: IDR 76.500
+            - paragraph [ref=f36e468]: October 2026
+      - generic [ref=f36e469]:
+        - paragraph [ref=f36e470]: Showing 1–25 of 970
+        - generic [ref=f36e471]:
+          - button "First" [disabled]
+          - button "Prev" [disabled]
+          - generic [ref=f36e472]: 1 / 39
+          - button "Next" [ref=f36e473] [cursor=pointer]
+          - button "Last" [ref=f36e474] [cursor=pointer]
+  - navigation [ref=f36e476]:
+    - link "Home" [ref=f36e477] [cursor=pointer]:
+      - /url: /
+    - link "Txns" [ref=f36e484] [cursor=pointer]:
+      - /url: /transactions
+    - button "Quick add transaction" [ref=f36e490] [cursor=pointer]
+    - link "Analytics" [ref=f36e492] [cursor=pointer]:
+      - /url: /analytics
+    - link "Planning" [ref=f36e497] [cursor=pointer]:
+      - /url: /goals
+  - generic:
+    - region "Notifications alt+T"
+  - generic [ref=f36e505]:
+    - button [ref=f36e506]
+    - button [ref=f36e512]
+    - button [ref=f36e516]
+    - button [ref=f36e521]

@@ -1,0 +1,103 @@
+- generic [active] [ref=f1e1]:
+  - complementary [ref=f1e3]:
+    - generic [ref=f1e4]:
+      - link "FD" [ref=f1e5] [cursor=pointer]:
+        - /url: /
+      - generic [ref=f1e7]: FinDash
+      - button "Toggle sidebar" [ref=f1e8] [cursor=pointer]
+    - navigation [ref=f1e12]:
+      - link "Dashboard" [ref=f1e13] [cursor=pointer]:
+        - /url: /
+      - link "Transactions" [ref=f1e20] [cursor=pointer]:
+        - /url: /transactions
+      - link "Analytics" [ref=f1e25] [cursor=pointer]:
+        - /url: /analytics
+      - link "Planning" [ref=f1e30] [cursor=pointer]:
+        - /url: /goals
+      - link "Settings" [ref=f1e36] [cursor=pointer]:
+        - /url: /settings
+      - link "Budget" [ref=f1e42] [cursor=pointer]:
+        - /url: /budget
+      - link "Budget Pace" [ref=f1e47] [cursor=pointer]:
+        - /url: /budget-pace
+      - link "Savings" [ref=f1e51] [cursor=pointer]:
+        - /url: /savings-rate
+      - link "Calendar" [ref=f1e56] [cursor=pointer]:
+        - /url: /calendar
+      - link "Runway" [ref=f1e60] [cursor=pointer]:
+        - /url: /runway
+      - link "Credit" [ref=f1e64] [cursor=pointer]:
+        - /url: /credit-card
+      - paragraph [ref=f1e68]: Analytics
+      - link "Streaks" [ref=f1e69] [cursor=pointer]:
+        - /url: /streaks
+      - link "Achievements" [ref=f1e73] [cursor=pointer]:
+        - /url: /achievements
+      - link "Health Score" [ref=f1e81] [cursor=pointer]:
+        - /url: /health
+      - link "Spending Mix" [ref=f1e85] [cursor=pointer]:
+        - /url: /spending-mix
+      - link "Rhythm" [ref=f1e91] [cursor=pointer]:
+        - /url: /spending-rhythm
+      - link "Spending DNA" [ref=f1e95] [cursor=pointer]:
+        - /url: /dna
+      - link "Category Matrix" [ref=f1e99] [cursor=pointer]:
+        - /url: /matrix
+      - link "Merchants" [ref=f1e103] [cursor=pointer]:
+        - /url: /merchants
+      - paragraph [ref=f1e108]: Planning
+      - link "FIRE" [ref=f1e109] [cursor=pointer]:
+        - /url: /fire
+      - link "What-If" [ref=f1e113] [cursor=pointer]:
+        - /url: /what-if
+      - link "Forecast" [ref=f1e117] [cursor=pointer]:
+        - /url: /forecast
+      - link "Portfolio" [ref=f1e122] [cursor=pointer]:
+        - /url: /portfolio
+      - link "Net Worth" [ref=f1e127] [cursor=pointer]:
+        - /url: /networth
+      - paragraph [ref=f1e132]: Reports
+      - link "Weekly" [ref=f1e133] [cursor=pointer]:
+        - /url: /weekly
+      - link "Monthly" [ref=f1e137] [cursor=pointer]:
+        - /url: /report
+      - link "Yearly" [ref=f1e142] [cursor=pointer]:
+        - /url: /yearly
+      - link "Compare" [ref=f1e146] [cursor=pointer]:
+        - /url: /compare
+      - link "Cashflow" [ref=f1e153] [cursor=pointer]:
+        - /url: /cashflow
+      - link "Recurring" [ref=f1e157] [cursor=pointer]:
+        - /url: /recurring
+      - link "Recurring Audit" [ref=f1e164] [cursor=pointer]:
+        - /url: /recurring-audit
+      - link "Tips" [ref=f1e169] [cursor=pointer]:
+        - /url: /recommendations
+    - link "17 17 alerts" [ref=f1e178] [cursor=pointer]:
+      - /url: /
+      - generic [ref=f1e182]: "17"
+      - generic [ref=f1e183]: 17 alerts
+  - generic [ref=f1e185]:
+    - button "Search pages and actions" [ref=f1e186] [cursor=pointer]:
+      - generic [ref=f1e189]: Search
+      - generic [ref=f1e190]: ⌘K
+    - button "Toggle theme" [ref=f1e191] [cursor=pointer]: 🌙
+    - link "+ Add" [ref=f1e192] [cursor=pointer]:
+      - /url: /add
+  - generic [ref=f1e193]:
+    - main [ref=f1e194]:
+      - generic [ref=f1e196]:
+        - generic [ref=f1e197]:
+          - generic [ref=f1e198]: 💰
+          - heading "Financial Dashboard" [level=1] [ref=f1e199]
+          - paragraph [ref=f1e200]: Sign in to continue
+        - generic [ref=f1e201]:
+          - generic [ref=f1e202]:
+            - generic [ref=f1e203]: Username
+            - textbox "Username" [ref=f1e204]
+          - generic [ref=f1e205]:
+            - generic [ref=f1e206]: Password
+            - textbox "Password" [ref=f1e207]
+          - button "Sign in" [ref=f1e208] [cursor=pointer]
+        - paragraph [ref=f1e209]: Financial Dashboard · Secure login
+    - contentinfo [ref=f1e210]: Financial Dashboard · Built with Astro & React

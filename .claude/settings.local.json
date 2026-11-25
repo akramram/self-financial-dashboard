@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(/Users/user/hermes-workspace/self-financial-dashboard/scripts/paperclip-issue-update.sh:*)",
+      "Bash(/Users/user/hermes-workspace/self-financial-dashboard/scripts/paperclip:*)",
+      "Bash(curl:*)",
+      "Bash(env)",
+      "Bash(env:*)"
+    ],
+    "additionalDirectories": [
+      "/Users/user/.paperclip/instances/default/companies/94b82aa4-36bb-4a61-b577-94c3204c506f",
+      "/Users/user/.paperclip/instances/default/companies/94b82aa4-36bb-4a61-b577-94c3204c506f/acp-engine/agents/3b33045f-dcee-47ed-9e14-390c316a0aa9",
+      "/Users/user/.paperclip/instances/default/workspaces/3b33045f-dcee-47ed-9e14-390c316a0aa9"
+    ],
+    "defaultMode": "default"
+  }
+}

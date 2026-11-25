@@ -122,7 +122,7 @@ export default function NetworthTable({ networth }: Props) {
               <SortableHeader sortKey="pct" currentDirection={isSorted('pct')} onSort={toggleSort} className="text-right">MoM %</SortableHeader>
               <SortableHeader sortKey="yoy_change" currentDirection={isSorted('yoy_change')} onSort={toggleSort} className="text-right">YoY Change</SortableHeader>
               <SortableHeader sortKey="yoy_pct" currentDirection={isSorted('yoy_pct')} onSort={toggleSort} className="text-right">YoY %</SortableHeader>
-              <TableHead></TableHead>
+              <TableHead className="sr-only">Aksi</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -152,7 +152,7 @@ export default function NetworthTable({ networth }: Props) {
                 <TableCell className="text-right">{renderYoY(row, 'pct')}</TableCell>
                 <TableCell>
                   <div className="flex items-center gap-1">
-                    <Button variant="ghost" size="sm" className="h-7 text-xs text-mint-500 hover:text-mint-600" asChild>
+                    <Button variant="ghost" size="sm" className="h-7 text-xs text-mint-700 dark:text-mint-400 hover:underline" asChild>
                       <a href={`/networth/edit?month=${encodeURIComponent(row.month)}`}>Edit</a>
                     </Button>
                     <Button
@@ -211,7 +211,7 @@ export default function NetworthTable({ networth }: Props) {
                   </span>
                   <a
                     href={`/networth/edit?month=${encodeURIComponent(row.month)}`}
-                    className="min-h-[44px] min-w-[44px] px-3 inline-flex items-center justify-center rounded-lg text-xs font-medium text-mint-500 hover:bg-mint-500/10 transition-colors"
+                    className="min-h-[44px] min-w-[44px] px-3 inline-flex items-center justify-center rounded-lg text-xs font-medium text-mint-700 dark:text-mint-400 hover:bg-mint-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 transition-colors"
                   >
                     Edit
                   </a>

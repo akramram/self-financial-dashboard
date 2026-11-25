@@ -1,0 +1,479 @@
+- generic [active] [ref=f4e1]:
+  - complementary [ref=f4e3]:
+    - generic [ref=f4e4]:
+      - link "FD" [ref=f4e5] [cursor=pointer]:
+        - /url: /
+      - generic [ref=f4e7]: FinDash
+      - button "Toggle sidebar" [ref=f4e8] [cursor=pointer]
+    - navigation [ref=f4e12]:
+      - link "Dashboard" [ref=f4e13] [cursor=pointer]:
+        - /url: /
+      - link "Transactions" [ref=f4e20] [cursor=pointer]:
+        - /url: /transactions
+      - link "Analytics" [ref=f4e26] [cursor=pointer]:
+        - /url: /analytics
+      - link "Planning" [ref=f4e31] [cursor=pointer]:
+        - /url: /goals
+      - link "Settings" [ref=f4e37] [cursor=pointer]:
+        - /url: /settings
+      - link "Budget" [ref=f4e43] [cursor=pointer]:
+        - /url: /budget
+      - link "Budget Pace" [ref=f4e48] [cursor=pointer]:
+        - /url: /budget-pace
+      - link "Savings" [ref=f4e52] [cursor=pointer]:
+        - /url: /savings-rate
+      - link "Calendar" [ref=f4e57] [cursor=pointer]:
+        - /url: /calendar
+      - link "Runway" [ref=f4e61] [cursor=pointer]:
+        - /url: /runway
+      - link "Credit" [ref=f4e65] [cursor=pointer]:
+        - /url: /credit-card
+      - paragraph [ref=f4e69]: Analytics
+      - link "Streaks" [ref=f4e70] [cursor=pointer]:
+        - /url: /streaks
+      - link "Achievements" [ref=f4e74] [cursor=pointer]:
+        - /url: /achievements
+      - link "Health Score" [ref=f4e82] [cursor=pointer]:
+        - /url: /health
+      - link "Spending Mix" [ref=f4e86] [cursor=pointer]:
+        - /url: /spending-mix
+      - link "Rhythm" [ref=f4e92] [cursor=pointer]:
+        - /url: /spending-rhythm
+      - link "Spending DNA" [ref=f4e96] [cursor=pointer]:
+        - /url: /dna
+      - link "Category Matrix" [ref=f4e100] [cursor=pointer]:
+        - /url: /matrix
+      - link "Merchants" [ref=f4e104] [cursor=pointer]:
+        - /url: /merchants
+      - paragraph [ref=f4e109]: Planning
+      - link "FIRE" [ref=f4e110] [cursor=pointer]:
+        - /url: /fire
+      - link "What-If" [ref=f4e114] [cursor=pointer]:
+        - /url: /what-if
+      - link "Forecast" [ref=f4e118] [cursor=pointer]:
+        - /url: /forecast
+      - link "Portfolio" [ref=f4e123] [cursor=pointer]:
+        - /url: /portfolio
+      - link "Net Worth" [ref=f4e128] [cursor=pointer]:
+        - /url: /networth
+      - paragraph [ref=f4e133]: Reports
+      - link "Weekly" [ref=f4e134] [cursor=pointer]:
+        - /url: /weekly
+      - link "Monthly" [ref=f4e138] [cursor=pointer]:
+        - /url: /report
+      - link "Yearly" [ref=f4e143] [cursor=pointer]:
+        - /url: /yearly
+      - link "Compare" [ref=f4e147] [cursor=pointer]:
+        - /url: /compare
+      - link "Cashflow" [ref=f4e154] [cursor=pointer]:
+        - /url: /cashflow
+      - link "Recurring" [ref=f4e158] [cursor=pointer]:
+        - /url: /recurring
+      - link "Recurring Audit" [ref=f4e165] [cursor=pointer]:
+        - /url: /recurring-audit
+      - link "Tips" [ref=f4e170] [cursor=pointer]:
+        - /url: /recommendations
+    - generic [ref=f4e178]:
+      - button "Alerts, 31 active" [ref=f4e179] [cursor=pointer]:
+        - generic [ref=f4e183]: "31"
+        - generic [ref=f4e184]: 31 alerts
+      - generic [ref=f4e185]: 31 alerts
+  - generic [ref=f4e187]:
+    - button "Search pages and actions" [ref=f4e188] [cursor=pointer]:
+      - generic [ref=f4e191]: Search
+      - generic [ref=f4e192]: ⌘K
+    - button "Toggle theme" [ref=f4e193] [cursor=pointer]: 🌙
+    - generic [ref=f4e194]: ⚡ Admin
+    - button "Logout" [ref=f4e195] [cursor=pointer]: ⏻
+    - link "+ Add" [ref=f4e196] [cursor=pointer]:
+      - /url: /add
+  - generic [ref=f4e197]:
+    - main [ref=f4e198]:
+      - generic [ref=f4e199]:
+        - heading "Transactions" [level=1] [ref=f4e200]
+        - paragraph [ref=f4e201]: All cash and credit expenses
+      - generic [ref=f4e204]:
+        - generic [ref=f4e205]:
+          - generic [ref=f4e206]:
+            - textbox "Search title, category, notes..." [ref=f4e208]
+            - combobox [ref=f4e209] [cursor=pointer]:
+              - generic: All Types
+            - combobox [ref=f4e212] [cursor=pointer]:
+              - generic: All Periods
+            - combobox [ref=f4e215] [cursor=pointer]:
+              - generic: All Categories
+            - button "Export" [ref=f4e219] [cursor=pointer]
+          - generic [ref=f4e220]:
+            - button "Unpaid" [ref=f4e221] [cursor=pointer]
+            - button "Paid 970" [ref=f4e223] [cursor=pointer]:
+              - text: Paid
+              - generic [ref=f4e225]: "970"
+            - button "Advanced Filters" [ref=f4e226] [cursor=pointer]
+        - generic [ref=f4e227]:
+          - paragraph [ref=f4e228]: 970 transactions
+          - generic [ref=f4e229]: Outflow IDR 766.052.732
+          - generic [ref=f4e230]: Cash IDR 283.664.367
+          - generic [ref=f4e231]: Credit IDR 482.388.365
+        - table [ref=f4e235]:
+          - rowgroup [ref=f4e236]:
+            - row [ref=f4e237]:
+              - columnheader [ref=f4e238]:
+                - checkbox "Select all" [ref=f4e239] [cursor=pointer]
+              - columnheader "Paid ▲ ▼" [ref=f4e240] [cursor=pointer]:
+                - generic [ref=f4e241]:
+                  - text: Paid
+                  - generic [ref=f4e242]:
+                    - generic [ref=f4e243]: ▲
+                    - generic [ref=f4e244]: ▼
+              - columnheader "Month ▲ ▼" [ref=f4e245] [cursor=pointer]:
+                - generic [ref=f4e246]:
+                  - text: Month
+                  - generic [ref=f4e247]:
+                    - generic [ref=f4e248]: ▲
+                    - generic [ref=f4e249]: ▼
+              - columnheader "Title ▲ ▼" [ref=f4e250] [cursor=pointer]:
+                - generic [ref=f4e251]:
+                  - text: Title
+                  - generic [ref=f4e252]:
+                    - generic [ref=f4e253]: ▲
+                    - generic [ref=f4e254]: ▼
+              - columnheader "Category ▲ ▼" [ref=f4e255] [cursor=pointer]:
+                - generic [ref=f4e256]:
+                  - text: Category
+                  - generic [ref=f4e257]:
+                    - generic [ref=f4e258]: ▲
+                    - generic [ref=f4e259]: ▼
+              - columnheader "Date ▲ ▼" [ref=f4e260] [cursor=pointer]:
+                - generic [ref=f4e261]:
+                  - text: Date
+                  - generic [ref=f4e262]:
+                    - generic [ref=f4e263]: ▲
+                    - generic [ref=f4e264]: ▼
+              - columnheader "Amount ▲ ▼" [ref=f4e265] [cursor=pointer]:
+                - generic [ref=f4e266]:
+                  - text: Amount
+                  - generic [ref=f4e267]:
+                    - generic [ref=f4e268]: ▲
+                    - generic [ref=f4e269]: ▼
+              - columnheader "Type ▲ ▼" [ref=f4e270] [cursor=pointer]:
+                - generic [ref=f4e271]:
+                  - text: Type
+                  - generic [ref=f4e272]:
+                    - generic [ref=f4e273]: ▲
+                    - generic [ref=f4e274]: ▼
+              - columnheader [ref=f4e275]
+          - rowgroup [ref=f4e276]:
+            - row [ref=f4e277] [cursor=pointer]:
+              - cell [ref=f4e278]:
+                - checkbox "Select Cicilan Tyranno" [ref=f4e279]
+              - cell [ref=f4e280]:
+                - button "Paid" [ref=f4e281]
+              - cell "October 2026" [ref=f4e282]
+              - cell "Cicilan Tyranno" [ref=f4e283]
+              - cell "Tagihan" [ref=f4e284]
+              - cell "17 Okt 2026" [ref=f4e286]
+              - cell "IDR 1.293.194" [ref=f4e287]
+              - cell "Credit" [ref=f4e288]
+              - cell [ref=f4e290]
+            - row [ref=f4e294] [cursor=pointer]:
+              - cell [ref=f4e295]:
+                - checkbox "Select Grab Unlimited" [ref=f4e296]
+              - cell [ref=f4e297]:
+                - button "Paid" [ref=f4e298]
+              - cell "October 2026" [ref=f4e299]
+              - cell "Grab Unlimited" [ref=f4e300]
+              - cell "Istri" [ref=f4e301]
+              - cell "9 Okt 2026" [ref=f4e303]
+              - cell "IDR 14.000" [ref=f4e304]
+              - cell "Credit" [ref=f4e305]
+              - cell [ref=f4e307]
+            - row [ref=f4e311] [cursor=pointer]:
+              - cell [ref=f4e312]:
+                - checkbox "Select Airism Jacket" [ref=f4e313]
+              - cell [ref=f4e314]:
+                - button "Paid" [ref=f4e315]
+              - cell "October 2026" [ref=f4e316]
+              - cell "Airism Jacket" [ref=f4e317]
+              - cell "Belanja Pribadi" [ref=f4e318]
+              - cell "9 Okt 2026" [ref=f4e320]
+              - cell "IDR 149.200" [ref=f4e321]
+              - cell "Credit" [ref=f4e322]
+              - cell [ref=f4e324]
+            - row [ref=f4e328] [cursor=pointer]:
+              - cell [ref=f4e329]:
+                - checkbox "Select DS4 Controller" [ref=f4e330]
+              - cell [ref=f4e331]:
+                - button "Paid" [ref=f4e332]
+              - cell "October 2026" [ref=f4e333]
+              - cell "DS4 Controller" [ref=f4e334]
+              - cell "Belanja Pribadi" [ref=f4e335]
+              - cell "9 Okt 2026" [ref=f4e337]
+              - cell "IDR 110.000" [ref=f4e338]
+              - cell "Credit" [ref=f4e339]
+              - cell [ref=f4e341]
+            - row [ref=f4e345] [cursor=pointer]:
+              - cell [ref=f4e346]:
+                - checkbox "Select Celana Cargo" [ref=f4e347]
+              - cell [ref=f4e348]:
+                - button "Paid" [ref=f4e349]
+              - cell "October 2026" [ref=f4e350]
+              - cell "Celana Cargo" [ref=f4e351]
+              - cell "Belanja Pribadi" [ref=f4e352]
+              - cell "9 Okt 2026" [ref=f4e354]
+              - cell "IDR 140.000" [ref=f4e355]
+              - cell "Credit" [ref=f4e356]
+              - cell [ref=f4e358]
+            - row [ref=f4e362] [cursor=pointer]:
+              - cell [ref=f4e363]:
+                - checkbox "Select Paket Data" [ref=f4e364]
+              - cell [ref=f4e365]:
+                - button "Paid" [ref=f4e366]
+              - cell "October 2026" [ref=f4e367]
+              - cell "Paket Data" [ref=f4e368]
+              - cell "Belanja Pribadi" [ref=f4e369]
+              - cell "7 Okt 2026" [ref=f4e371]
+              - cell "IDR 15.107" [ref=f4e372]
+              - cell "Credit" [ref=f4e373]
+              - cell [ref=f4e375]
+            - row [ref=f4e379] [cursor=pointer]:
+              - cell [ref=f4e380]:
+                - checkbox "Select Listrik" [ref=f4e381]
+              - cell [ref=f4e382]:
+                - button "Paid" [ref=f4e383]
+              - cell "October 2026" [ref=f4e384]
+              - cell "Listrik" [ref=f4e385]
+              - cell "Tagihan" [ref=f4e386]
+              - cell "7 Okt 2026" [ref=f4e388]
+              - cell "IDR 103.418" [ref=f4e389]
+              - cell "Credit" [ref=f4e390]
+              - cell [ref=f4e392]
+            - row [ref=f4e396] [cursor=pointer]:
+              - cell [ref=f4e397]:
+                - checkbox "Select Emping" [ref=f4e398]
+              - cell [ref=f4e399]:
+                - button "Paid" [ref=f4e400]
+              - cell "October 2026" [ref=f4e401]
+              - cell "Emping" [ref=f4e402]
+              - cell "Makanan" [ref=f4e403]
+              - cell "7 Okt 2026" [ref=f4e405]
+              - cell "IDR 79.600" [ref=f4e406]
+              - cell "Credit" [ref=f4e407]
+              - cell [ref=f4e409]
+            - row [ref=f4e413] [cursor=pointer]:
+              - cell [ref=f4e414]:
+                - checkbox "Select Galon" [ref=f4e415]
+              - cell [ref=f4e416]:
+                - button "Paid" [ref=f4e417]
+              - cell "October 2026" [ref=f4e418]
+              - cell "Galon" [ref=f4e419]
+              - cell "Belanja" [ref=f4e420]
+              - cell "7 Okt 2026" [ref=f4e422]
+              - cell "IDR 36.000" [ref=f4e423]
+              - cell "Credit" [ref=f4e424]
+              - cell [ref=f4e426]
+            - row [ref=f4e430] [cursor=pointer]:
+              - cell [ref=f4e431]:
+                - checkbox "Select Roller Bulu & Double Tape" [ref=f4e432]
+              - cell [ref=f4e433]:
+                - button "Paid" [ref=f4e434]
+              - cell "October 2026" [ref=f4e435]
+              - cell "Roller Bulu & Double Tape" [ref=f4e436]
+              - cell "Belanja" [ref=f4e437]
+              - cell "7 Okt 2026" [ref=f4e439]
+              - cell "IDR 43.404" [ref=f4e440]
+              - cell "Credit" [ref=f4e441]
+              - cell [ref=f4e443]
+            - row [ref=f4e447] [cursor=pointer]:
+              - cell [ref=f4e448]:
+                - checkbox "Select Paket Data" [ref=f4e449]
+              - cell [ref=f4e450]:
+                - button "Paid" [ref=f4e451]
+              - cell "October 2026" [ref=f4e452]
+              - cell "Paket Data" [ref=f4e453]
+              - cell "Belanja Pribadi" [ref=f4e454]
+              - cell "6 Okt 2026" [ref=f4e456]
+              - cell "IDR 10.000" [ref=f4e457]
+              - cell "Credit" [ref=f4e458]
+              - cell [ref=f4e460]
+            - row [ref=f4e464] [cursor=pointer]:
+              - cell [ref=f4e465]:
+                - checkbox "Select Hydro Coco" [ref=f4e466]
+              - cell [ref=f4e467]:
+                - button "Paid" [ref=f4e468]
+              - cell "October 2026" [ref=f4e469]
+              - cell "Hydro Coco" [ref=f4e470]
+              - cell "Belanja Pribadi" [ref=f4e471]
+              - cell "6 Okt 2026" [ref=f4e473]
+              - cell "IDR 12.500" [ref=f4e474]
+              - cell "Credit" [ref=f4e475]
+              - cell [ref=f4e477]
+            - row [ref=f4e481] [cursor=pointer]:
+              - cell [ref=f4e482]:
+                - checkbox "Select Dessert Box" [ref=f4e483]
+              - cell [ref=f4e484]:
+                - button "Paid" [ref=f4e485]
+              - cell "October 2026" [ref=f4e486]
+              - cell "Dessert Box" [ref=f4e487]
+              - cell "Istri" [ref=f4e488]
+              - cell "5 Okt 2026" [ref=f4e490]
+              - cell "IDR 128.000" [ref=f4e491]
+              - cell "Credit" [ref=f4e492]
+              - cell [ref=f4e494]
+            - row [ref=f4e498] [cursor=pointer]:
+              - cell [ref=f4e499]:
+                - checkbox "Select Grab Car" [ref=f4e500]
+              - cell [ref=f4e501]:
+                - button "Paid" [ref=f4e502]
+              - cell "October 2026" [ref=f4e503]
+              - cell "Grab Car" [ref=f4e504]
+              - cell "Istri" [ref=f4e505]
+              - cell "4 Okt 2026" [ref=f4e507]
+              - cell "IDR 39.500" [ref=f4e508]
+              - cell "Credit" [ref=f4e509]
+              - cell [ref=f4e511]
+            - row [ref=f4e515] [cursor=pointer]:
+              - cell [ref=f4e516]:
+                - checkbox "Select Grabcar" [ref=f4e517]
+              - cell [ref=f4e518]:
+                - button "Paid" [ref=f4e519]
+              - cell "October 2026" [ref=f4e520]
+              - cell "Grabcar" [ref=f4e521]
+              - cell "Istri" [ref=f4e522]
+              - cell "4 Okt 2026" [ref=f4e524]
+              - cell "IDR 35.800" [ref=f4e525]
+              - cell "Credit" [ref=f4e526]
+              - cell [ref=f4e528]
+            - row [ref=f4e532] [cursor=pointer]:
+              - cell [ref=f4e533]:
+                - checkbox "Select Grab Bike" [ref=f4e534]
+              - cell [ref=f4e535]:
+                - button "Paid" [ref=f4e536]
+              - cell "October 2026" [ref=f4e537]
+              - cell "Grab Bike" [ref=f4e538]
+              - cell "Istri" [ref=f4e539]
+              - cell "4 Okt 2026" [ref=f4e541]
+              - cell "IDR 6.000" [ref=f4e542]
+              - cell "Credit" [ref=f4e543]
+              - cell [ref=f4e545]
+            - row [ref=f4e549] [cursor=pointer]:
+              - cell [ref=f4e550]:
+                - checkbox "Select Pizza" [ref=f4e551]
+              - cell [ref=f4e552]:
+                - button "Paid" [ref=f4e553]
+              - cell "October 2026" [ref=f4e554]
+              - cell "Pizza" [ref=f4e555]
+              - cell "Makanan" [ref=f4e556]
+              - cell "4 Okt 2026" [ref=f4e558]
+              - cell "IDR 166.980" [ref=f4e559]
+              - cell "Credit" [ref=f4e560]
+              - cell [ref=f4e562]
+            - row [ref=f4e566] [cursor=pointer]:
+              - cell [ref=f4e567]:
+                - checkbox "Select Kontrakan" [ref=f4e568]
+              - cell [ref=f4e569]:
+                - button "Paid" [ref=f4e570]
+              - cell "October 2026" [ref=f4e571]
+              - cell "Kontrakan" [ref=f4e572]
+              - cell "Tagihan" [ref=f4e573]
+              - cell "4 Okt 2026" [ref=f4e575]
+              - cell "IDR 1.150.000" [ref=f4e576]
+              - cell "Cash" [ref=f4e577]
+              - cell [ref=f4e579]
+            - row [ref=f4e583] [cursor=pointer]:
+              - cell [ref=f4e584]:
+                - checkbox "Select Fast Charger" [ref=f4e585]
+              - cell [ref=f4e586]:
+                - button "Paid" [ref=f4e587]
+              - cell "October 2026" [ref=f4e588]
+              - cell "Fast Charger" [ref=f4e589]
+              - cell "Invest" [ref=f4e590]
+              - cell "4 Okt 2026" [ref=f4e592]
+              - cell "IDR 300.000" [ref=f4e593]
+              - cell "Cash" [ref=f4e594]
+              - cell [ref=f4e596]
+            - row [ref=f4e600] [cursor=pointer]:
+              - cell [ref=f4e601]:
+                - checkbox "Select Belanja Warung" [ref=f4e602]
+              - cell [ref=f4e603]:
+                - button "Paid" [ref=f4e604]
+              - cell "October 2026" [ref=f4e605]
+              - cell "Belanja Warung" [ref=f4e606]
+              - cell "Belanja" [ref=f4e607]
+              - cell "3 Okt 2026" [ref=f4e609]
+              - cell "IDR 107.000" [ref=f4e610]
+              - cell "Credit" [ref=f4e611]
+              - cell [ref=f4e613]
+            - row [ref=f4e617] [cursor=pointer]:
+              - cell [ref=f4e618]:
+                - checkbox "Select Board Game" [ref=f4e619]
+              - cell [ref=f4e620]:
+                - button "Paid" [ref=f4e621]
+              - cell "October 2026" [ref=f4e622]
+              - cell [ref=f4e623]:
+                - text: Board Game
+                - img "PO WNI Simulator" [ref=f4e624]
+              - cell "Hiburan" [ref=f4e627]
+              - cell "3 Okt 2026" [ref=f4e629]
+              - cell "IDR 350.435" [ref=f4e630]
+              - cell "Credit" [ref=f4e631]
+              - cell [ref=f4e633]
+            - row [ref=f4e637] [cursor=pointer]:
+              - cell [ref=f4e638]:
+                - checkbox "Select Nasi Padang" [ref=f4e639]
+              - cell [ref=f4e640]:
+                - button "Paid" [ref=f4e641]
+              - cell "October 2026" [ref=f4e642]
+              - cell "Nasi Padang" [ref=f4e643]
+              - cell "Makanan" [ref=f4e644]
+              - cell "3 Okt 2026" [ref=f4e646]
+              - cell "IDR 46.000" [ref=f4e647]
+              - cell "Credit" [ref=f4e648]
+              - cell [ref=f4e650]
+            - row [ref=f4e654] [cursor=pointer]:
+              - cell [ref=f4e655]:
+                - checkbox "Select Belanja Bulanan" [ref=f4e656]
+              - cell [ref=f4e657]:
+                - button "Paid" [ref=f4e658]
+              - cell "October 2026" [ref=f4e659]
+              - cell "Belanja Bulanan" [ref=f4e660]
+              - cell "Belanja" [ref=f4e661]
+              - cell "3 Okt 2026" [ref=f4e663]
+              - cell "IDR 940.145" [ref=f4e664]
+              - cell "Credit" [ref=f4e665]
+              - cell [ref=f4e667]
+            - row [ref=f4e671] [cursor=pointer]:
+              - cell [ref=f4e672]:
+                - checkbox "Select Belanja Warung" [ref=f4e673]
+              - cell [ref=f4e674]:
+                - button "Paid" [ref=f4e675]
+              - cell "October 2026" [ref=f4e676]
+              - cell "Belanja Warung" [ref=f4e677]
+              - cell "Belanja" [ref=f4e678]
+              - cell "2 Okt 2026" [ref=f4e680]
+              - cell "IDR 107.000" [ref=f4e681]
+              - cell "Credit" [ref=f4e682]
+              - cell [ref=f4e684]
+            - row [ref=f4e688] [cursor=pointer]:
+              - cell [ref=f4e689]:
+                - checkbox "Select Nasi Goreng Solaria" [ref=f4e690]
+              - cell [ref=f4e691]:
+                - button "Paid" [ref=f4e692]
+              - cell "October 2026" [ref=f4e693]
+              - cell "Nasi Goreng Solaria" [ref=f4e694]
+              - cell "Makanan" [ref=f4e695]
+              - cell "2 Okt 2026" [ref=f4e697]
+              - cell "IDR 76.500" [ref=f4e698]
+              - cell "Credit" [ref=f4e699]
+              - cell [ref=f4e701]
+        - generic [ref=f4e705]:
+          - paragraph [ref=f4e706]: Showing 1–25 of 970
+          - generic [ref=f4e707]:
+            - button "First" [disabled]
+            - button "Prev" [disabled]
+            - generic [ref=f4e708]: 1 / 39
+            - button "Next" [ref=f4e709] [cursor=pointer]
+            - button "Last" [ref=f4e710] [cursor=pointer]
+    - contentinfo [ref=f4e711]: Financial Dashboard · Built with Astro & React
+  - generic:
+    - button "Quick add transaction (Shift+N)" [ref=f4e712] [cursor=pointer]
+    - region "Notifications alt+T"
