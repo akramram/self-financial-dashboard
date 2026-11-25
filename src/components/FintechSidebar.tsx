@@ -139,6 +139,7 @@ export default function FintechSidebar({ balance, alerts: initialAlerts = 0 }: P
   const NavButton = ({ item, isPrimary }: { item: typeof PRIMARY[0]; isPrimary: boolean }) => (
     <a
       href={item.path}
+      aria-current={isActive(item.path) ? 'page' : undefined}
       className={`
         w-full flex items-center rounded-xl transition-all duration-150 no-underline
         ${collapsed ? 'justify-center px-0 py-3' : 'px-3 py-2.5 gap-3'}

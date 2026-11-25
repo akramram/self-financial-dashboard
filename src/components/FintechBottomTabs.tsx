@@ -65,6 +65,7 @@ function TabButton({ tab, active }: { tab: typeof TABS[0]; active: boolean }) {
   return (
     <a
       href={tab.path}
+      aria-current={active ? 'page' : undefined}
       className="flex flex-col items-center justify-center gap-0.5 py-1 px-2 min-h-[44px] rounded-xl transition-colors relative no-underline flex-1"
     >
       {React.createElement(tab.icon, {
