@@ -855,8 +855,10 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                 return (
                   <TableRow
                     key={row.id}
+                    tabIndex={0}
                     onClick={() => setDetailTx(row)}
-                    className="cursor-pointer border-slate-200 dark:border-white/[0.04] hover:bg-slate-100 dark:hover:bg-white/[0.05] transition-colors"
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setDetailTx(row); } }}
+                    className="cursor-pointer border-slate-200 dark:border-white/[0.04] hover:bg-slate-100 dark:hover:bg-white/[0.05] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 transition-colors"
                   >
                     <TableCell className="py-2.5" onClick={(e) => e.stopPropagation()}>
                       <Checkbox
