@@ -1,21 +1,46 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from './ui/button';
-import { Download, FileJson, FileSpreadsheet, ArrowDownToLine, Loader2 } from 'lucide-react';
+import { Download, FileJson, FileSpreadsheet, ArrowDownToLine, Loader2, Database, HardDrive } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface ExportOption {
   id: string;
   title: string;
   description: string;
-  format: 'json' | 'csv';
+  format: 'json' | 'csv' | 'db';
   filenamePrefix: string;
   url: string;
   icon: typeof FileJson;
 }
 
+interface BackupMeta {
+  name: string;
+  size: number;
+  created_at: string;
+}
+
+const fmtSize = (n: number) => (n >= 1048576 ? `${(n / 1048576).toFixed(1)} MB` : `${Math.max(1, Math.round(n / 1024))} KB`);
+
 export default function ExportData() {
   const [loadingFile, setLoadingFile] = useState<string | null>(null);
+  const [snapshots, setSnapshots] = useState<BackupMeta[] | null>(null);
+  const [snapshotsError, setSnapshotsError] = useState(false);
   const dateSuffix = new Date().toISOString().slice(0, 10);
+
+  const loadSnapshots = useCallback(() => {
+    setSnapshotsError(false);
+    fetch('/api/backup/db?list=1')
+      .then((r) => {
+        if (!r.ok) throw new Error('list failed');
+        return r.json();
+      })
+      .then((d) => setSnapshots(Array.isArray(d.backups) ? d.backups : []))
+      .catch(() => setSnapshotsError(true));
+  }, []);
+
+  useEffect(() => {
+    loadSnapshots();
+  }, [loadSnapshots]);
 
   const exportOptions: ExportOption[] = [
     {
@@ -26,6 +51,15 @@ export default function ExportData() {
       filenamePrefix: `financial-data-${dateSuffix}.json`,
       url: '/api/export?format=json',
       icon: FileJson,
+    },
+    {
+      id: 'db',
+      title: 'Full Backup (SQLite .db)',
+      description: 'Live database snapshot with full schema and data — restorable as-is.',
+      format: 'db',
+      filenamePrefix: `financial-${dateSuffix}.db`,
+      url: '/api/backup/db',
+      icon: Database,
     },
     {
       id: 'transactions',
@@ -70,6 +104,7 @@ export default function ExportData() {
       document.body.removeChild(link);
       URL.revokeObjectURL(link.href);
       toast.success(`Downloaded ${filename}`);
+      if (url.startsWith('/api/backup/db')) loadSnapshots();
     } catch {
       toast.error('Export failed. Please try again.');
     } finally {
@@ -136,6 +171,57 @@ export default function ExportData() {
             </div>
           );
         })}
+      </div>
+
+      <div className="space-y-2.5">
+        <div className="flex items-center gap-2 pt-1">
+          <HardDrive className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
+          <h4 className="text-sm font-semibold text-slate-900 dark:text-white">Server snapshots</h4>
+          <span className="text-xs text-muted-foreground">newest 10 kept</span>
+        </div>
+
+        {snapshotsError ? (
+          <div className="flex items-center justify-between gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300">
+            <span>Failed to load snapshots.</span>
+            <Button variant="outline" size="sm" className="h-7 text-xs" onClick={loadSnapshots}>
+              Retry
+            </Button>
+          </div>
+        ) : snapshots === null ? (
+          <p className="flex items-center gap-2 text-xs text-muted-foreground">
+            <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />
+            Loading snapshots...
+          </p>
+        ) : snapshots.length === 0 ? (
+          <p className="text-xs text-muted-foreground">No snapshots yet — download a .db backup above to create the first one.</p>
+        ) : (
+          <ul className="divide-y divide-border/60 dark:divide-white/[0.06] rounded-lg border border-border/80 dark:border-white/[0.06] overflow-hidden">
+            {snapshots.map((b) => (
+              <li key={b.name} className="flex items-center justify-between gap-3 px-3 py-2 bg-surface">
+                <div className="min-w-0">
+                  <p className="text-xs font-medium text-slate-900 dark:text-white truncate font-mono">{b.name}</p>
+                  <p className="text-[11px] text-muted-foreground">
+                    {fmtSize(b.size)} · {new Date(b.created_at).toLocaleString()}
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-7 shrink-0 text-xs"
+                  onClick={() => triggerDownload(`/api/backup/db?file=${encodeURIComponent(b.name)}`, b.name)}
+                  disabled={loadingFile === b.name}
+                >
+                  {loadingFile === b.name ? (
+                    <Loader2 className="w-3 h-3 animate-spin" aria-hidden="true" />
+                  ) : (
+                    <ArrowDownToLine className="w-3 h-3 mr-1" aria-hidden="true" />
+                  )}
+                  Download
+                </Button>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );
