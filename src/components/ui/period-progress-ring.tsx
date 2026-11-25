@@ -133,7 +133,7 @@ export default function PeriodProgressRing({ activeMonth, className = '' }: Peri
           <Clock className="w-3 h-3" style={{ color: colors.ring }} />
           {info.label}
         </p>
-        <p className="text-[11px] text-slate-500 dark:text-white/30">
+        <p className="text-[11px] text-slate-500 dark:text-white/60">
           Day {info.daysElapsed} of {info.daysTotal}
         </p>
       </div>

@@ -77,7 +77,7 @@ export default function TopMerchantsMini({ transactions, activePeriodId }: Props
                 <span className="text-sm font-medium text-slate-700 dark:text-white/80 truncate">
                   {m.name}
                 </span>
-                <span className="text-[11px] text-slate-500 dark:text-white/25 hidden sm:inline">
+                <span className="text-[11px] text-slate-500 dark:text-white/60 hidden sm:inline">
                   ×{m.count}
                 </span>
               </div>

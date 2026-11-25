@@ -663,7 +663,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
                     <TableCell
                       className={`text-right font-medium ${
                         !hasLimit
-                          ? 'text-slate-400 dark:text-white/30'
+                          ? 'text-slate-400 dark:text-white/60'
                           : row.remaining < 0
                           ? 'text-red-600 dark:text-red-400'
                           : 'text-emerald-600 dark:text-emerald-400'
@@ -695,7 +695,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
                           </div>
                         </div>
                       ) : (
-                        <span className="text-xs text-slate-400 dark:text-white/30">No limit</span>
+                        <span className="text-xs text-slate-400 dark:text-white/60">No limit</span>
                       )}
                     </TableCell>
                     <TableCell>

@@ -118,7 +118,7 @@ export default function GoalsSnapshot() {
                   </div>
                   <div className="text-right shrink-0">
                     <p className="text-[11px] font-medium text-slate-600 dark:text-white/60">{etaLabel(g)}</p>
-                    <p className="text-[11px] text-slate-500 dark:text-white/30">est. finish</p>
+                    <p className="text-[11px] text-slate-500 dark:text-white/60">est. finish</p>
                   </div>
                 </a>
               </li>
