@@ -155,7 +155,7 @@ export default function BudgetAlerts({ summaries, categories, activeMonth, trans
             variant="ghost"
             size="sm"
             onClick={() => setCollapsed(!collapsed)}
-            className="h-7 w-7 p-0"
+            className="h-7 w-7 p-0 min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0"
             aria-label={collapsed ? 'Expand' : 'Collapse'}
           >
             {collapsed ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
