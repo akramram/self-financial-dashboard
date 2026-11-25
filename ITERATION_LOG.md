@@ -1,5 +1,17 @@
 # Iteration Log
 
+## 2026-11-25 — Fitur: Backup SQLite 1-klik + auto-backup sebelum kickoff
+
+### Hasil
+Safety-net database yang selama ini manual via CLI kini otomatis + ada di UI (**PR #402**).
+
+- **API `/api/backup/db`:** snapshot online via `better-sqlite3 db.backup()` (aman saat app berjalan, tidak seperti copy mentah ber-WAL). `?list=1` daftar snapshot di `data/backups/`; `?file=` download eksisting dengan validasi regex + cek keanggotaan (anti path traversal). Retensi 10 snapshot terbaru — backup CLI manual lama tidak disentuh.
+- **Kickoff auto-backup:** `POST /api/kickoff` snapshot reason `kickoff` sebelum tulis apa pun; gagal backup non-blocking, `backupError` ikut di response + tampil di MonthKickoffModal.
+- **UI Settings › Backup & Restore:** kartu ekspor **Full Backup (SQLite .db)** + bagian **Server snapshots** (size/waktu + download; state loading/empty/error+Retry).
+- **Verify:** endpoint diprobe langsung (list → snapshot 344KB → download sama besar → traversal 400 → missing 404); snapshot hasil `integrity_check ok` (1136 tx, 40 periode).
+- **Testing:** `backup-helper.test.ts` (4 test: filename traversal-safe, restorable, prune newest-N, abaikan file asing). Suite **829/829 hijau** (90 files), `tsc` 0 error, build Complete.
+- **Git workflow:** Branch `feat/innovation-db-backup` → PR #402 (merged).
+
 ## 2026-11-25 — Marathon: `tsc --noEmit` 25 → 0 error (3 PR)
 
 ### Hasil
