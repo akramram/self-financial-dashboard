@@ -549,7 +549,7 @@ export default function BudgetPace() {
         </h3>
         <p className="text-sm text-slate-600 dark:text-slate-300 max-w-md mx-auto">
           Tetapkan batas pengeluaran bulanan kategori pada halaman{' '}
-          <a href="/settings" className="font-medium text-emerald-600 dark:text-emerald-400 underline">
+          <a href="/settings" className="font-medium text-emerald-700 dark:text-emerald-400 underline">
             Pengaturan
           </a>{' '}
           untuk mengaktifkan fitur pemantauan kecepatan belanja dan burn-rate ini.
@@ -701,7 +701,7 @@ export default function BudgetPace() {
           </div>
           <div
             className={`text-2xl font-bold ${
-              data.total_projected > data.total_budget ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'
+              data.total_projected > data.total_budget ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-700 dark:text-emerald-400'
             }`}
           >
             {formatIdr(data.total_projected)}
@@ -712,7 +712,7 @@ export default function BudgetPace() {
                 Potensi Over: +{formatIdr(data.total_projected - data.total_budget)}
               </span>
             ) : (
-              <span className="text-emerald-600 dark:text-emerald-400 font-medium">
+              <span className="text-emerald-700 dark:text-emerald-400 font-medium">
                 Potensi Hemat: {formatIdr(data.total_budget - data.total_projected)}
               </span>
             )}
@@ -759,7 +759,7 @@ export default function BudgetPace() {
         <div className="glass-card p-5 sm:p-6 space-y-4 border border-emerald-500/20 bg-emerald-50/30 dark:bg-emerald-950/20">
           <div className="flex items-center justify-between flex-wrap gap-2">
             <div className="flex items-center gap-2">
-              <SlidersHorizontal className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+              <SlidersHorizontal className="h-5 w-5 text-emerald-700 dark:text-emerald-400" />
               <h3 className="text-base font-bold text-slate-900 dark:text-white">
                 Simulator Penyesuaian Belanja Harian (What-If)
               </h3>
@@ -842,7 +842,7 @@ export default function BudgetPace() {
                 </span>
                 <span
                   className={`text-sm font-bold ${
-                    simulationResults.simDeficit > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'
+                    simulationResults.simDeficit > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-700 dark:text-emerald-400'
                   }`}
                 >
                   {simulationResults.simDeficit > 0
@@ -948,7 +948,7 @@ export default function BudgetPace() {
                         className="w-3.5 h-3.5 rounded-full inline-block shadow-sm"
                         style={{ backgroundColor: cat.color }}
                       />
-                      <span className="font-semibold text-slate-900 dark:text-white text-sm group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                      <span className="font-semibold text-slate-900 dark:text-white text-sm group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">
                         {cat.category}
                       </span>
                     </div>
@@ -983,7 +983,7 @@ export default function BudgetPace() {
                     </div>
                     <div>
                       <span className="text-slate-500 block text-[11px]">Alokasi Aman</span>
-                      <span className="font-medium text-emerald-600 dark:text-emerald-400">
+                      <span className="font-medium text-emerald-700 dark:text-emerald-400">
                         {formatIdr(cat.safe_daily_burn)} / hari
                       </span>
                     </div>
@@ -999,7 +999,7 @@ export default function BudgetPace() {
                       </strong>
                     </span>
 
-                    <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400 flex items-center gap-0.5 group-hover:translate-x-1 transition-transform">
+                    <span className="text-xs font-medium text-emerald-700 dark:text-emerald-400 flex items-center gap-0.5 group-hover:translate-x-1 transition-transform">
                       Lihat Rincian ({cat.tx_count})
                       <ChevronRight className="h-3.5 w-3.5" />
                     </span>
@@ -1050,7 +1050,7 @@ export default function BudgetPace() {
                 </div>
                 <div>
                   <span className="text-slate-500 dark:text-slate-400 block mb-0.5">Sisa Anggaran</span>
-                  <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
+                  <span className="text-sm font-bold text-emerald-700 dark:text-emerald-400">
                     {formatIdr(activeCategory.remaining_budget)}
                   </span>
                 </div>

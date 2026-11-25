@@ -323,7 +323,7 @@ export default function ImportData() {
               </div>
               <div className="text-xs text-muted-foreground flex items-center gap-3">
                 <span>
-                  <strong className="text-emerald-600 dark:text-emerald-400">{result.imported}</strong> imported
+                  <strong className="text-emerald-700 dark:text-emerald-400">{result.imported}</strong> imported
                 </span>
                 <span>
                   <strong className="text-amber-600 dark:text-amber-400">{result.skipped}</strong> skipped

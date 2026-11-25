@@ -719,7 +719,7 @@ export default function RecurringManager() {
                       </TableCell>
                       <TableCell>
                         {item.done ? (
-                          <span className="text-xs text-emerald-600 font-medium">Paid</span>
+                          <span className="text-xs text-emerald-700 font-medium">Paid</span>
                         ) : (
                           <span className="text-xs text-slate-500 dark:text-white/50">-</span>
                         )}

@@ -121,12 +121,12 @@ export default function GoalTrajectory() {
         {/* Summary chips */}
         <div className="flex flex-wrap gap-2 mt-2">
           {summary.ahead > 0 && (
-            <Badge variant="outline" className="text-emerald-600 dark:text-emerald-400 border-emerald-300 dark:border-emerald-700">
+            <Badge variant="outline" className="text-emerald-700 dark:text-emerald-400 border-emerald-300 dark:border-emerald-700">
               <Rocket className="w-3 h-3 mr-1" /> {summary.ahead} Lebih Cepat
             </Badge>
           )}
           {summary.onTrack > 0 && (
-            <Badge variant="outline" className="text-emerald-600 dark:text-emerald-400 border-emerald-300 dark:border-emerald-700">
+            <Badge variant="outline" className="text-emerald-700 dark:text-emerald-400 border-emerald-300 dark:border-emerald-700">
               <CheckCircle2 className="w-3 h-3 mr-1" /> {summary.onTrack} On Track
             </Badge>
           )}
@@ -297,7 +297,7 @@ function GoalTrajectoryRowCard({ goal, hasData }: { goal: GoalTrajectoryRow; has
             !hasData
               ? ''
               : goal.status === 'ahead' || goal.status === 'on_track'
-                ? 'text-emerald-600 dark:text-emerald-400'
+                ? 'text-emerald-700 dark:text-emerald-400'
                 : goal.status === 'at_risk' || goal.status === 'behind'
                   ? 'text-gold-700 dark:text-gold-400'
                   : ''
@@ -316,7 +316,7 @@ function GoalTrajectoryRowCard({ goal, hasData }: { goal: GoalTrajectoryRow; has
             hasData && paceRatio !== null && paceRatio < 1
               ? 'text-gold-700 dark:text-gold-400'
               : hasData && paceRatio !== null && paceRatio >= 1
-                ? 'text-emerald-600 dark:text-emerald-400'
+                ? 'text-emerald-700 dark:text-emerald-400'
                 : ''
           }
         />

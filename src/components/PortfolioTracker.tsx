@@ -319,7 +319,7 @@ export default function PortfolioTracker() {
               )}
               <p className={`text-lg font-bold ${
                 (summary?.totalGainLoss ?? 0) >= 0
-                  ? 'text-emerald-600 dark:text-emerald-400'
+                  ? 'text-emerald-700 dark:text-emerald-400'
                   : 'text-red-600 dark:text-red-400'
               }`}>
                 {formatIdr(summary?.totalGainLoss ?? 0)}
@@ -330,7 +330,7 @@ export default function PortfolioTracker() {
           <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Return</p>
             <p className={`text-lg font-bold ${
               (summary?.totalGainLossPct ?? 0) >= 0
-                ? 'text-emerald-600 dark:text-emerald-400'
+                ? 'text-emerald-700 dark:text-emerald-400'
                 : 'text-red-600 dark:text-red-400'
             }`}>
               {(summary?.totalGainLossPct ?? 0) >= 0 ? '+' : ''}
@@ -398,7 +398,7 @@ export default function PortfolioTracker() {
                             {data.count} holding{data.count !== 1 ? 's' : ''} · {pct.toFixed(1)}% of portfolio
                           </span>
                           <span className={`text-xs font-medium ${
-                            gainLoss >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'
+                            gainLoss >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'
                           }`}>
                             {gainLoss >= 0 ? '+' : ''}{gainLossPct.toFixed(2)}%
                           </span>
@@ -502,7 +502,7 @@ export default function PortfolioTracker() {
                               <TrendingDown className="w-3 h-3 text-red-500" />
                             )}
                             <span className={`text-xs font-semibold ${
-                              gainLoss >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'
+                              gainLoss >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'
                             }`}>
                               {gainLoss >= 0 ? '+' : ''}{gainLossPct.toFixed(2)}%
                             </span>

@@ -72,8 +72,8 @@ export function calculateRecurringBurden(monthlyTotal: number, income: number): 
       ratioPct: Number(ratioPct.toFixed(1)),
       status: 'healthy',
       statusLabel: 'Sangat Sehat (< 15%)',
-      statusColor: 'text-emerald-600 dark:text-emerald-400',
-      badgeBg: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
+      statusColor: 'text-emerald-700 dark:text-emerald-400',
+      badgeBg: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20',
     };
   }
 

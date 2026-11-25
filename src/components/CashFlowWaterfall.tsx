@@ -462,11 +462,11 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
                 <div className="glass-card p-5">
                   <div className="flex items-center gap-3">
                     <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/30">
-                      <Wallet className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                      <Wallet className="w-5 h-5 text-emerald-700 dark:text-emerald-400" />
                     </div>
                     <div>
                       <p className="text-xs text-muted-foreground">Total Income</p>
-                      <p className="text-lg font-semibold text-emerald-600 dark:text-emerald-400">
+                      <p className="text-lg font-semibold text-emerald-700 dark:text-emerald-400">
                         {formatIdr(totalIncome)}
                       </p>
                     </div>
@@ -499,7 +499,7 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
                     >
                       <PiggyBank
                         className={`w-5 h-5 ${
-                          totalSavings >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'
+                          totalSavings >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'
                         }`}
                       />
                     </div>
@@ -507,7 +507,7 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
                       <p className="text-xs text-muted-foreground">Remaining</p>
                       <p
                         className={`text-lg font-semibold ${
-                          totalSavings >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'
+                          totalSavings >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'
                         }`}
                       >
                         {formatIdr(totalSavings)}
@@ -596,7 +596,7 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
                         {allocation.status.savings === 'good' ? 'Target >=20%' : 'Low Target'}
                       </Badge>
                     </div>
-                    <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
+                    <p className="text-lg font-bold text-emerald-700 dark:text-emerald-400">
                       {allocation.savingsPct}%
                     </p>
                     <p className="text-xs text-muted-foreground">{formatIdr(allocation.savingsAmount)}</p>
@@ -694,7 +694,7 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
                   <div className="flex items-center gap-3 p-3 rounded-lg bg-emerald-50 dark:bg-emerald-900/20">
                     <span className="text-lg">💰</span>
                     <span className="flex-1 font-medium text-sm">Total Income</span>
-                    <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+                    <span className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">
                       {formatIdr(totalIncome)}
                     </span>
                     <span className="text-xs text-muted-foreground w-12 text-right">100%</span>
@@ -755,7 +755,7 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
                     <span
                       className={`text-sm font-semibold ${
                         totalSavings >= 0
-                          ? 'text-emerald-600 dark:text-emerald-400'
+                          ? 'text-emerald-700 dark:text-emerald-400'
                           : 'text-red-600 dark:text-red-400'
                       }`}
                     >
@@ -764,7 +764,7 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
                     <span
                       className={`text-xs w-12 text-right ${
                         totalSavings >= 0
-                          ? 'text-emerald-600 dark:text-emerald-400'
+                          ? 'text-emerald-700 dark:text-emerald-400'
                           : 'text-red-600 dark:text-red-400'
                       }`}
                     >
@@ -789,7 +789,7 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
                           ? 'text-red-600 dark:text-red-400'
                           : savingsRate < 20
                           ? 'text-gold-700 dark:text-gold-400'
-                          : 'text-emerald-600 dark:text-emerald-400'
+                          : 'text-emerald-700 dark:text-emerald-400'
                       }`}
                     >
                       {savingsRate.toFixed(1)}%
@@ -838,12 +838,12 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
                     </p>
                   )}
                   {savingsRate >= 20 && savingsRate < 50 && (
-                    <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-2">
+                    <p className="text-xs text-emerald-700 dark:text-emerald-400 mt-2">
                       ✅ Rasio tabungan baik dan berada di jalur kebiasaan finansial yang sehat.
                     </p>
                   )}
                   {savingsRate >= 50 && (
-                    <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-2">
+                    <p className="text-xs text-emerald-700 dark:text-emerald-400 mt-2">
                       🎉 Rasio tabungan istimewa di atas 50%. Pertumbuhan aset berlangsung sangat pesat.
                     </p>
                   )}
@@ -879,7 +879,7 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
             <div className="glass-card p-5">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/30">
-                  <ShieldCheck className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                  <ShieldCheck className="w-5 h-5 text-emerald-700 dark:text-emerald-400" />
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Inflow / Outflow Ratio</p>
@@ -908,7 +908,7 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
                   <p
                     className={`text-lg font-bold ${
                       metrics.avgMonthlyNetFlow >= 0
-                        ? 'text-emerald-600 dark:text-emerald-400'
+                        ? 'text-emerald-700 dark:text-emerald-400'
                         : 'text-red-600 dark:text-red-400'
                     }`}
                   >
@@ -988,7 +988,7 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
                       <TableCell className="font-medium text-slate-900 dark:text-white">
                         {p.month}
                       </TableCell>
-                      <TableCell className="text-right text-emerald-600 dark:text-emerald-400 font-semibold">
+                      <TableCell className="text-right text-emerald-700 dark:text-emerald-400 font-semibold">
                         {formatIdr(p.inflow)}
                       </TableCell>
                       <TableCell className="text-right text-red-600 dark:text-red-400 font-medium">
@@ -997,7 +997,7 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
                       <TableCell
                         className={`text-right font-semibold ${
                           p.netFlow >= 0
-                            ? 'text-emerald-600 dark:text-emerald-400'
+                            ? 'text-emerald-700 dark:text-emerald-400'
                             : 'text-red-600 dark:text-red-400'
                         }`}
                       >
@@ -1038,7 +1038,7 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
                   <div className="grid grid-cols-2 gap-2 text-xs pt-1 border-t border-slate-200/60 dark:border-white/[0.05]">
                     <div>
                       <p className="text-muted-foreground">Inflow</p>
-                      <p className="font-semibold text-emerald-600 dark:text-emerald-400">
+                      <p className="font-semibold text-emerald-700 dark:text-emerald-400">
                         {formatIdr(p.inflow)}
                       </p>
                     </div>
@@ -1053,7 +1053,7 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
                       <p
                         className={`font-semibold ${
                           p.netFlow >= 0
-                            ? 'text-emerald-600 dark:text-emerald-400'
+                            ? 'text-emerald-700 dark:text-emerald-400'
                             : 'text-red-600 dark:text-red-400'
                         }`}
                       >

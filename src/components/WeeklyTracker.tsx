@@ -469,7 +469,7 @@ export default function WeeklyTracker() {
           <p className="text-xs text-slate-500 dark:text-white/50 font-medium">Total Realisasi Belanja</p>
           <p className="text-lg font-bold text-slate-900 dark:text-white">{formatIdr(weeklyData.totalSpend)}</p>
           {weeklyData.income > 0 && (
-            <p className={`text-xs mt-1 font-medium ${weeklyData.totalSpend <= weeklyData.income ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
+            <p className={`text-xs mt-1 font-medium ${weeklyData.totalSpend <= weeklyData.income ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
               {weeklyData.totalSpend <= weeklyData.income
                 ? `Surplus ${Math.round(((weeklyData.income - weeklyData.totalSpend) / weeklyData.income) * 100)}%`
                 : `Defisit ${Math.round(((weeklyData.totalSpend - weeklyData.income) / weeklyData.income) * 100)}%`}
@@ -512,7 +512,7 @@ export default function WeeklyTracker() {
       {disciplineScore && disciplineScore.insights.length > 0 && (
         <div className="glass-card p-5 border-emerald-500/20 bg-emerald-500/5 dark:bg-emerald-950/20">
           <h3 className="text-sm font-semibold flex items-center gap-2 text-slate-900 dark:text-white mb-3">
-            <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+            <ShieldCheck className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
             Temuan Intelijen Ritme Mingguan
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -729,7 +729,7 @@ export default function WeeklyTracker() {
                         {diff >= 0 ? (
                           <span className="text-rose-600 dark:text-rose-400">+{formatIdr(diff)} (+{diffPct}%)</span>
                         ) : (
-                          <span className="text-emerald-600 dark:text-emerald-400">{formatIdr(diff)} ({diffPct}%)</span>
+                          <span className="text-emerald-700 dark:text-emerald-400">{formatIdr(diff)} ({diffPct}%)</span>
                         )}
                       </div>
                     </div>
@@ -789,7 +789,7 @@ export default function WeeklyTracker() {
                 <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">
                   Target Rasio Tabungan / Investasi
                 </span>
-                <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
+                <span className="text-sm font-bold text-emerald-700 dark:text-emerald-400">
                   {targetSavingsRate}% ({formatIdr(safeDailyAllowance.targetSavingsAmount)})
                 </span>
               </div>
@@ -813,7 +813,7 @@ export default function WeeklyTracker() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
               <div className="p-4 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800">
                 <p className="text-xs text-slate-500 dark:text-white/50">Jatah Harian Aman (Safe Daily)</p>
-                <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">
+                <p className="text-xl font-bold text-emerald-700 dark:text-emerald-400 mt-1">
                   {formatIdr(safeDailyAllowance.safeDailyRemaining)}
                   <span className="text-xs text-slate-500 font-normal"> / hari</span>
                 </p>
@@ -895,7 +895,7 @@ export default function WeeklyTracker() {
                           <span
                             className={`font-bold ${
                               finalSavings >= safeDailyAllowance.targetSavingsAmount
-                                ? 'text-emerald-600 dark:text-emerald-400'
+                                ? 'text-emerald-700 dark:text-emerald-400'
                                 : finalSavings >= 0
                                 ? 'text-amber-600 dark:text-amber-400'
                                 : 'text-rose-600 dark:text-rose-400'

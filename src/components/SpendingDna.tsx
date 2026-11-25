@@ -325,7 +325,7 @@ export default function SpendingDna() {
 
   // ── Loyalty score gradient color
   const loyaltyColor = (score: number) => {
-    if (score >= 80) return 'text-emerald-600 dark:text-emerald-400';
+    if (score >= 80) return 'text-emerald-700 dark:text-emerald-400';
     if (score >= 60) return 'text-sky-600 dark:text-sky-400';
     if (score >= 40) return 'text-gold-700 dark:text-gold-400';
     return 'text-rose-600 dark:text-rose-400';

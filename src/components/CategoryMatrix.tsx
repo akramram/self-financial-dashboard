@@ -150,7 +150,7 @@ function TrendBadge({ trendPct }: { trendPct: number | null }) {
     );
   }
   return (
-    <span className="inline-flex items-center gap-0.5 text-xs text-emerald-600 dark:text-emerald-400">
+    <span className="inline-flex items-center gap-0.5 text-xs text-emerald-700 dark:text-emerald-400">
       <TrendingDown className="w-3 h-3" /> {trendPct}%
     </span>
   );
@@ -277,7 +277,7 @@ export default function CategoryMatrix({}: Props) {
               Darker color = higher spend relative to that category's peak.{' '}
               Click any cell to see the underlying transactions.{' '}
               <span className="text-rose-600 dark:text-rose-400">Red trend</span> = spending is increasing over time,{' '}
-              <span className="text-emerald-600 dark:text-emerald-400">green</span> = decreasing.
+              <span className="text-emerald-700 dark:text-emerald-400">green</span> = decreasing.
             </div>
           </div>
         </div>
@@ -462,7 +462,7 @@ export default function CategoryMatrix({}: Props) {
                       />
                       {r.category}
                     </span>
-                    <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 text-xs font-medium">
+                    <span className="inline-flex items-center gap-1 text-emerald-700 dark:text-emerald-400 text-xs font-medium">
                       <TrendingDown className="w-3 h-3" /> {r.trendPct}%
                     </span>
                   </div>

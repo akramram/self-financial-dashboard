@@ -381,7 +381,7 @@ export default function PortfolioHub({ data }: Props) {
             <div
               className={`p-2 rounded-lg ${
                 rebalanceData.isBalanced
-                  ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                  ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400'
                   : 'bg-gold-500/10 text-gold-700 dark:text-gold-400'
               }`}
             >
@@ -404,12 +404,12 @@ export default function PortfolioHub({ data }: Props) {
         {/* Projected Annual Dividend */}
         <div className="glass-card p-5">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+            <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-700 dark:text-emerald-400">
               <Coins className="w-5 h-5" />
             </div>
             <div>
               <p className="text-xs text-slate-500 dark:text-white/60">Est. Dividen Tahunan (BBRI)</p>
-              <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
+              <p className="text-xl font-bold text-emerald-700 dark:text-emerald-400">
                 {formatIdr(bbriStats.annualDividend)}
               </p>
               <p className="text-xs text-slate-500 dark:text-white/60 mt-0.5">
@@ -602,7 +602,7 @@ export default function PortfolioHub({ data }: Props) {
                         </Badge>
                       )}
                       {item.status === 'balanced' && (
-                        <Badge variant="outline" className="text-[11px] border-emerald-500/30 text-emerald-600 dark:text-emerald-400 bg-emerald-500/10">
+                        <Badge variant="outline" className="text-[11px] border-emerald-500/30 text-emerald-700 dark:text-emerald-400 bg-emerald-500/10">
                           Seimbang
                         </Badge>
                       )}
@@ -683,7 +683,7 @@ export default function PortfolioHub({ data }: Props) {
                     <span
                       className={`text-[11px] font-medium ${
                         item.inflowAllocation > 0
-                          ? 'text-emerald-600 dark:text-emerald-400'
+                          ? 'text-emerald-700 dark:text-emerald-400'
                           : 'text-slate-500 dark:text-white/50'
                       }`}
                     >
@@ -840,7 +840,7 @@ export default function PortfolioHub({ data }: Props) {
                             <span
                               className={`font-semibold ${
                                 gainLoss >= 0
-                                  ? 'text-emerald-600 dark:text-emerald-400'
+                                  ? 'text-emerald-700 dark:text-emerald-400'
                                   : 'text-coral-500'
                               }`}
                             >
@@ -921,7 +921,7 @@ export default function PortfolioHub({ data }: Props) {
 
               <div className="p-4 rounded-xl border border-slate-200 dark:border-white/[0.06] bg-slate-50/50 dark:bg-white/[0.02]">
                 <span className="text-xs text-slate-500 dark:text-white/60">Dividend Yield (TTM)</span>
-                <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400 mt-1">
+                <p className="text-lg font-bold text-emerald-700 dark:text-emerald-400 mt-1">
                   {bbriStats.dividendYield.toFixed(2)}%
                 </p>
                 <span className="text-[11px] text-slate-500 dark:text-white/50">Dividen per lembar / harga</span>
@@ -929,7 +929,7 @@ export default function PortfolioHub({ data }: Props) {
 
               <div className="p-4 rounded-xl border border-slate-200 dark:border-white/[0.06] bg-slate-50/50 dark:bg-white/[0.02]">
                 <span className="text-xs text-slate-500 dark:text-white/60">Proyeksi Dividen Tahunan</span>
-                <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400 mt-1">
+                <p className="text-lg font-bold text-emerald-700 dark:text-emerald-400 mt-1">
                   {formatIdr(bbriStats.annualDividend)}
                 </p>
                 <span className="text-[11px] text-slate-500 dark:text-white/50">Untuk 32 lot kepemilikan</span>
@@ -970,7 +970,7 @@ export default function PortfolioHub({ data }: Props) {
                         <TableCell className="text-xs text-right font-mono">
                           Rp {div.amount.toLocaleString('id-ID')}
                         </TableCell>
-                        <TableCell className="text-xs text-right font-mono font-semibold text-emerald-600 dark:text-emerald-400">
+                        <TableCell className="text-xs text-right font-mono font-semibold text-emerald-700 dark:text-emerald-400">
                           {formatIdr(div.amount * 3200)}
                         </TableCell>
                       </TableRow>

@@ -261,7 +261,7 @@ export default function SpendingRhythm() {
         </div>
 
         <div className="rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/30 p-4">
-          <div className="flex items-center gap-2 text-xs text-emerald-600 dark:text-emerald-400 mb-1">
+          <div className="flex items-center gap-2 text-xs text-emerald-700 dark:text-emerald-400 mb-1">
             <Clock className="w-3.5 h-3.5" /> Peak Hour
           </div>
           <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-300">

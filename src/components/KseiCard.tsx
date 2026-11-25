@@ -252,7 +252,7 @@ export default function KseiCard({ data }: Props) {
       )}
 
       {tokenMsg && (
-        <p data-testid="ksei-token-msg" className="text-[11px] text-emerald-600 dark:text-emerald-400/80 mt-1.5">
+        <p data-testid="ksei-token-msg" className="text-[11px] text-emerald-700 dark:text-emerald-400/80 mt-1.5">
           {tokenMsg}
         </p>
       )}

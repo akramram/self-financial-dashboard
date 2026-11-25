@@ -209,7 +209,7 @@ export default function DebtPayoffHub({
       case 'optimal':
         return {
           label: 'Optimal (<30%)',
-          colorClass: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30',
+          colorClass: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30',
           barClass: 'bg-emerald-500',
         };
       case 'moderate':
@@ -240,7 +240,7 @@ export default function DebtPayoffHub({
       case 'healthy':
         return {
           label: 'Sehat (<=20%)',
-          colorClass: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30',
+          colorClass: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30',
         };
       case 'moderate':
         return {
@@ -544,7 +544,7 @@ export default function DebtPayoffHub({
               <Zap className="w-3.5 h-3.5 text-amber-500" />
               Waktu Dihemat
             </div>
-            <p className="text-lg font-extrabold text-emerald-600 dark:text-emerald-400">
+            <p className="text-lg font-extrabold text-emerald-700 dark:text-emerald-400">
               {simulation.monthsSavedVsBaseline > 0
                 ? `${simulation.monthsSavedVsBaseline} Bulan Lebih Cepat`
                 : 'Pace Normal'}
@@ -629,7 +629,7 @@ export default function DebtPayoffHub({
                     </div>
 
                     <div className="text-right shrink-0">
-                      <Badge className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 text-[10px]">
+                      <Badge className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20 text-[10px]">
                         Lunas: {item.payoffDate}
                       </Badge>
                       <span className="text-[10px] text-slate-500 dark:text-white/50 block mt-0.5">
@@ -700,7 +700,7 @@ export default function DebtPayoffHub({
               Momen saat cicilan berjalan selesai dan nominal angsurannya kembali menjadi arus kas bebas di dompet Anda.
             </p>
           </div>
-          <Badge className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 text-xs">
+          <Badge className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20 text-xs">
             {milestones.length} Milestone Terjadwal
           </Badge>
         </div>
@@ -721,14 +721,14 @@ export default function DebtPayoffHub({
                     <span className="text-xs font-bold text-slate-900 dark:text-white">
                       {m.monthYear}
                     </span>
-                    <Badge variant="outline" className="text-[10px] text-emerald-600 dark:text-emerald-400 border-emerald-500/30">
+                    <Badge variant="outline" className="text-[10px] text-emerald-700 dark:text-emerald-400 border-emerald-500/30">
                       Milestone #{idx + 1}
                     </Badge>
                   </div>
 
                   <div className="pt-1">
                     <span className="text-[11px] text-slate-500 dark:text-white/50 block">Arus Kas Dibebaskan:</span>
-                    <span className="text-base font-extrabold text-emerald-600 dark:text-emerald-400">
+                    <span className="text-base font-extrabold text-emerald-700 dark:text-emerald-400">
                       +{formatIdr(m.monthlyAmountLiberated)} / bln
                     </span>
                   </div>

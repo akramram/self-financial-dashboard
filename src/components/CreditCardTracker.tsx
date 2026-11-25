@@ -406,7 +406,7 @@ export default function CreditCardTracker() {
               <CheckCircle2 className="w-4 h-4 text-emerald-500" />
               <span className="text-xs text-slate-600 dark:text-white/50">Paid This Period</span>
             </div>
-            <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
+            <p className="text-xl font-bold text-emerald-700 dark:text-emerald-400">
               {formatIdr(totalCreditPayments)}
             </p>
             <p className="text-xs text-slate-500 dark:text-white/50 mt-1">
@@ -622,7 +622,7 @@ export default function CreditCardTracker() {
                         </div>
                       </div>
                       {item.isCompleted ? (
-                        <Badge variant="outline" className="text-emerald-600 dark:text-emerald-400 border-emerald-400/30 text-[10px]">
+                        <Badge variant="outline" className="text-emerald-700 dark:text-emerald-400 border-emerald-400/30 text-[10px]">
                           Completed
                         </Badge>
                       ) : !item.active ? (
@@ -805,7 +805,7 @@ export default function CreditCardTracker() {
                 {sortedPayments.map((tx) => (
                   <TableRow key={tx.id}>
                     <TableCell className="font-medium">{tx.title}</TableCell>
-                    <TableCell className="text-right font-semibold text-emerald-600 dark:text-emerald-400">
+                    <TableCell className="text-right font-semibold text-emerald-700 dark:text-emerald-400">
                       {formatIdr(tx.amount)}
                     </TableCell>
                     <TableCell className="text-slate-600 dark:text-white/50 text-sm">
@@ -850,10 +850,10 @@ export default function CreditCardTracker() {
                     <TableCell className="text-right text-red-600 dark:text-red-400">
                       {formatIdr(b.expenses)}
                     </TableCell>
-                    <TableCell className="text-right text-emerald-600 dark:text-emerald-400">
+                    <TableCell className="text-right text-emerald-700 dark:text-emerald-400">
                       {formatIdr(b.payments)}
                     </TableCell>
-                    <TableCell className={`text-right font-semibold ${b.balance > 0 ? 'text-gold-700 dark:text-gold-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
+                    <TableCell className={`text-right font-semibold ${b.balance > 0 ? 'text-gold-700 dark:text-gold-400' : 'text-emerald-700 dark:text-emerald-400'}`}>
                       {formatIdr(b.balance)}
                     </TableCell>
                     <TableCell>

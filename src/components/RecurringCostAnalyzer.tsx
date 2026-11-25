@@ -356,7 +356,7 @@ export default function RecurringCostAnalyzer() {
           </div>
           <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
             {roadmap.length > 0 ? (
-              <span className="text-emerald-600 dark:text-emerald-400 font-medium">
+              <span className="text-emerald-700 dark:text-emerald-400 font-medium">
                 +{formatIdr(roadmap[roadmap.length - 1].cumulativeFreed)}/bln bebas nanti
               </span>
             ) : (
@@ -546,7 +546,7 @@ export default function RecurringCostAnalyzer() {
 
                         <div className="text-right">
                           <span className="text-[11px] text-slate-500 block">Akumulasi Kas Bebas</span>
-                          <span className="font-bold text-emerald-600 dark:text-emerald-400 text-sm">
+                          <span className="font-bold text-emerald-700 dark:text-emerald-400 text-sm">
                             +{formatIdr(item.cumulativeFreed)}/bln
                           </span>
                         </div>
@@ -650,7 +650,7 @@ export default function RecurringCostAnalyzer() {
                 <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 block">
                   Kas Bulanan Terbebas
                 </span>
-                <div className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400">
+                <div className="text-2xl font-extrabold text-emerald-700 dark:text-emerald-400">
                   +{formatIdr(simulation.cutMonthly)}
                 </div>
                 <div className="text-[11px] text-emerald-700/80 dark:text-emerald-400/80">
@@ -707,7 +707,7 @@ export default function RecurringCostAnalyzer() {
               </div>
 
               <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                Jika penghematan <strong className="text-emerald-600 dark:text-emerald-400">{formatIdr(simulation.cutMonthly)}/bulan</strong> ini dialihkan rutin ke instrumen investasi majemuk:
+                Jika penghematan <strong className="text-emerald-700 dark:text-emerald-400">{formatIdr(simulation.cutMonthly)}/bulan</strong> ini dialihkan rutin ke instrumen investasi majemuk:
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -720,7 +720,7 @@ export default function RecurringCostAnalyzer() {
                       <span className="font-semibold text-slate-500 dark:text-slate-400">
                         Horizon {tier.years} Tahun
                       </span>
-                      <Badge variant="outline" className="text-[10px] text-emerald-600 dark:text-emerald-400 border-emerald-500/20">
+                      <Badge variant="outline" className="text-[10px] text-emerald-700 dark:text-emerald-400 border-emerald-500/20">
                         {tier.months} bulan
                       </Badge>
                     </div>
@@ -736,7 +736,7 @@ export default function RecurringCostAnalyzer() {
                           {formatIdr(tier.principal)}
                         </span>
                       </div>
-                      <div className="flex justify-between text-emerald-600 dark:text-emerald-400 font-semibold">
+                      <div className="flex justify-between text-emerald-700 dark:text-emerald-400 font-semibold">
                         <span>Hasil Bunga Majemuk:</span>
                         <span>+{formatIdr(tier.growth)}</span>
                       </div>

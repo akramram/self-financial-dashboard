@@ -54,4 +54,8 @@ describe('contrast source-scan — mint/coral/gold AA pairs', () => {
     expect(offenders(/(?<![-\w:])text-mint-500(?![\w/-])/)).toEqual([]);
     expect(offenders(/(?<![-\w:])text-gold-500(?![\w/-])/)).toEqual([]);
   });
+
+  it('no failing emerald text in light mode (600 3.8:1 → 700, dark:-400 kept)', () => {
+    expect(offenders(/text-emerald-600(?![\w/-])/)).toEqual([]);
+  });
 });

@@ -152,7 +152,7 @@ export function calculateParetoConcentration(merchants: MerchantInput[]): Pareto
   } else {
     status = 'diversified';
     statusLabel = 'Terdiversifikasi (< 50% di Top 20%)';
-    badgeBg = 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20';
+    badgeBg = 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20';
   }
 
   return {
@@ -259,7 +259,7 @@ export function detectMerchantSurges(
         deltaAmount: current.amount - baselineAvg,
         direction: 'down',
         label: 'Penurunan signifikan',
-        badgeBg: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
+        badgeBg: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20',
       });
     }
     // deltaPct di antara threshold dianggap stabil, tidak dilaporkan

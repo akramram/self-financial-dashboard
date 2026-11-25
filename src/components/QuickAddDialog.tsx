@@ -363,7 +363,7 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded, presetDate
       <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Plus className="w-5 h-5 text-emerald-600" />
+            <Plus className="w-5 h-5 text-emerald-700" />
             Quick Add Transaction
           </DialogTitle>
           <DialogDescription>

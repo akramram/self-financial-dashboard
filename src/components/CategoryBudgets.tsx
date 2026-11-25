@@ -158,7 +158,7 @@ export default function CategoryBudgets({ summaries, categories, activeMonth, on
                   ? 'text-gold-700 dark:text-gold-400'
                   : pct > 80
                     ? 'text-gold-700 dark:text-gold-400'
-                    : 'text-emerald-600 dark:text-emerald-400';
+                    : 'text-emerald-700 dark:text-emerald-400';
 
             return (
               <motion.div

@@ -357,7 +357,7 @@ export default function BudgetRecommendations() {
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <Scale className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+              <Scale className="w-5 h-5 text-emerald-700 dark:text-emerald-400" />
               <h2 className="text-base font-bold text-slate-900 dark:text-white">
                 Pilih Strategi Rekomendasi
               </h2>
@@ -427,7 +427,7 @@ export default function BudgetRecommendations() {
               onChange={(e) => setCustomBuffer(Number(e.target.value))}
               className="w-48 accent-emerald-600 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg cursor-pointer"
             />
-            <span className="font-mono font-semibold text-emerald-600 dark:text-emerald-400 min-w-[3rem]">
+            <span className="font-mono font-semibold text-emerald-700 dark:text-emerald-400 min-w-[3rem]">
               {customBuffer > 0 ? `+${customBuffer}%` : `${customBuffer}%`}
             </span>
             <span className="text-slate-500 text-[11px]">
@@ -446,7 +446,7 @@ export default function BudgetRecommendations() {
           </div>
           <div className="bg-muted/40 dark:bg-white/[0.03] p-3 rounded-lg border border-border dark:border-white/[0.05]">
             <span className="text-slate-500 dark:text-white/50 block">Total Rekomendasi Baru</span>
-            <span className="text-sm font-bold font-mono text-emerald-600 dark:text-emerald-400">
+            <span className="text-sm font-bold font-mono text-emerald-700 dark:text-emerald-400">
               {formatIdr(summary.totalRecommendedBudget)}
             </span>
           </div>
@@ -458,7 +458,7 @@ export default function BudgetRecommendations() {
                   summary.budgetDelta > 0
                     ? 'text-amber-600 dark:text-amber-400'
                     : summary.budgetDelta < 0
-                    ? 'text-emerald-600 dark:text-emerald-400'
+                    ? 'text-emerald-700 dark:text-emerald-400'
                     : 'text-slate-600 dark:text-white/70'
                 }`}
               >
@@ -488,7 +488,7 @@ export default function BudgetRecommendations() {
 
         {batchSuccessMessage && (
           <div className="mt-3 p-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-xs text-emerald-800 dark:text-emerald-200 flex items-center gap-2">
-            <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+            <Check className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0" />
             <span>{batchSuccessMessage}</span>
           </div>
         )}
@@ -516,7 +516,7 @@ export default function BudgetRecommendations() {
               : 'border-border dark:border-white/[0.06] hover:bg-muted/40'
           }`}
         >
-          <span className="text-xl font-bold text-emerald-600 dark:text-emerald-400 block">{summary.needsUpdate}</span>
+          <span className="text-xl font-bold text-emerald-700 dark:text-emerald-400 block">{summary.needsUpdate}</span>
           <span className="text-xs text-slate-500 dark:text-white/50">Perlu Update</span>
         </button>
 
@@ -718,7 +718,7 @@ export default function BudgetRecommendations() {
                             +{stat.trendPct}%
                           </span>
                         ) : stat.trend === 'falling' ? (
-                          <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+                          <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-700 dark:text-emerald-400">
                             <TrendingDown className="w-3 h-3" />
                             {stat.trendPct}%
                           </span>
@@ -761,7 +761,7 @@ export default function BudgetRecommendations() {
                         <span
                           className={
                             isChanged
-                              ? 'font-bold text-emerald-600 dark:text-emerald-400'
+                              ? 'font-bold text-emerald-700 dark:text-emerald-400'
                               : 'text-slate-500 dark:text-slate-400'
                           }
                         >
@@ -800,7 +800,7 @@ export default function BudgetRecommendations() {
                                 <RefreshCw className="w-3 h-3 animate-spin" />
                               ) : isRecentlyApplied ? (
                                 <>
-                                  <Check className="w-3 h-3 mr-1 text-emerald-600" /> Diterapkan
+                                  <Check className="w-3 h-3 mr-1 text-emerald-700" /> Diterapkan
                                 </>
                               ) : (
                                 'Terapkan'
@@ -874,7 +874,7 @@ export default function BudgetRecommendations() {
                 </div>
                 <div className="p-2.5 rounded-lg bg-muted/50 dark:bg-white/[0.04] border border-border/50 dark:border-white/[0.05]">
                   <span className="text-slate-500 dark:text-white/50 block">Persentil 80 (P80)</span>
-                  <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">
+                  <span className="font-mono font-bold text-emerald-700 dark:text-emerald-400">
                     {formatIdr(selectedStat.p80Spent)}
                   </span>
                 </div>
@@ -914,7 +914,7 @@ export default function BudgetRecommendations() {
                       const rec = computeRecommendedLimit(selectedStat, strategy, customBuffer);
                       setModalCustomLimit(String(rec));
                     }}
-                    className="text-emerald-600 dark:text-emerald-400 hover:underline text-[11px]"
+                    className="text-emerald-700 dark:text-emerald-400 hover:underline text-[11px]"
                   >
                     Gunakan Nilai Rekomendasi
                   </button>

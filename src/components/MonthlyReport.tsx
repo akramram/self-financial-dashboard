@@ -199,7 +199,7 @@ export default function MonthlyReport({
             <h3 className="text-sm font-medium text-slate-600 dark:text-white/50 print:text-gray-600 text-slate-800 dark:text-white/80">
                 Total Income
               </h3>
-            <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 print:text-emerald-700">
+            <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-400 print:text-emerald-700">
                 {formatIdr(income)}
               </p>
             </div>
@@ -226,7 +226,7 @@ export default function MonthlyReport({
             <p
                 className={`text-2xl font-bold ${
                   reportSummary.savings >= 0
-                    ? 'text-emerald-600 dark:text-emerald-400 print:text-emerald-700'
+                    ? 'text-emerald-700 dark:text-emerald-400 print:text-emerald-700'
                     : 'text-red-600 dark:text-red-400 print:text-red-700'
                 }`}
               >
@@ -240,7 +240,7 @@ export default function MonthlyReport({
             <p
                 className={`text-2xl font-bold ${
                   reportSummary.savings_rate_pct >= 20
-                    ? 'text-emerald-600 dark:text-emerald-400 print:text-emerald-700'
+                    ? 'text-emerald-700 dark:text-emerald-400 print:text-emerald-700'
                     : reportSummary.savings_rate_pct >= 0
                     ? 'text-gold-700 dark:text-gold-400 print:text-gold-700'
                     : 'text-red-600 dark:text-red-400 print:text-red-700'
@@ -284,7 +284,7 @@ export default function MonthlyReport({
                         <p
                           className={`text-lg font-semibold flex items-center gap-1 ${
                             incomeChange >= 0
-                              ? 'text-emerald-600 dark:text-emerald-400 print:text-emerald-700'
+                              ? 'text-emerald-700 dark:text-emerald-400 print:text-emerald-700'
                               : 'text-red-600 dark:text-red-400 print:text-red-700'
                           }`}
                         >
@@ -303,7 +303,7 @@ export default function MonthlyReport({
                         <p
                           className={`text-lg font-semibold flex items-center gap-1 ${
                             spendChange <= 0
-                              ? 'text-emerald-600 dark:text-emerald-400 print:text-emerald-700'
+                              ? 'text-emerald-700 dark:text-emerald-400 print:text-emerald-700'
                               : 'text-red-600 dark:text-red-400 print:text-red-700'
                           }`}
                         >
@@ -323,7 +323,7 @@ export default function MonthlyReport({
                         <p
                           className={`text-lg font-semibold ${
                             savingsChange >= 0
-                              ? 'text-emerald-600 dark:text-emerald-400 print:text-emerald-700'
+                              ? 'text-emerald-700 dark:text-emerald-400 print:text-emerald-700'
                               : 'text-red-600 dark:text-red-400 print:text-red-700'
                           }`}
                         >
@@ -338,7 +338,7 @@ export default function MonthlyReport({
                         <p
                           className={`text-lg font-semibold flex items-center gap-1 ${
                             nwChange >= 0
-                              ? 'text-emerald-600 dark:text-emerald-400 print:text-emerald-700'
+                              ? 'text-emerald-700 dark:text-emerald-400 print:text-emerald-700'
                               : 'text-red-600 dark:text-red-400 print:text-red-700'
                           }`}
                         >
@@ -419,7 +419,7 @@ export default function MonthlyReport({
                               ) : (
                                 <Badge
                                   variant="outline"
-                                  className="text-xs text-emerald-600 border-emerald-300"
+                                  className="text-xs text-emerald-700 border-emerald-300"
                                 >
                                   {Math.round((cat.amount / cat.limit) * 100)}%
                                 </Badge>
@@ -461,7 +461,7 @@ export default function MonthlyReport({
                       <p
                         className={`text-lg font-semibold flex items-center gap-1 ${
                           reportNetworth.month_over_month_change >= 0
-                            ? 'text-emerald-600 dark:text-emerald-400 print:text-emerald-700'
+                            ? 'text-emerald-700 dark:text-emerald-400 print:text-emerald-700'
                             : 'text-red-600 dark:text-red-400 print:text-red-700'
                         }`}
                       >
