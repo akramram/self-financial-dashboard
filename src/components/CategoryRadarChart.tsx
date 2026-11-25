@@ -112,9 +112,10 @@ export default function CategoryRadarChart({
           display: true,
           backdropColor: 'transparent',
           font: { size: 11 },
-          callback: (value: number) => {
-            if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
-            if (value >= 1_000) return `${(value / 1_000).toFixed(0)}K`;
+          callback: (value: number | string) => {
+            const v = Number(value);
+            if (v >= 1_000_000) return `${(v / 1_000_000).toFixed(1)}M`;
+            if (v >= 1_000) return `${(v / 1_000).toFixed(0)}K`;
             return String(value);
           },
         },
