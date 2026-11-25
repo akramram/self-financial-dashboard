@@ -138,6 +138,6 @@ describe('TransactionTable — a11y/contrast regression', () => {
     expect(html).not.toMatch(/bg-red-500\/10 text-red-400/);
     expect(html).not.toMatch(/text-emerald-400 hover:text-emerald-300/);
     // Desktop type badge got its light-mode shade
-    expect(html).toContain('text-mint-600 dark:text-mint-400');
+    expect(html).toContain('text-mint-700 dark:text-mint-400');
   });
 });
