@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import { parseJsonBody, jsonError } from '../../lib/http';
 import { db, getRecurringTransactions, insertTransaction, upsertMonthlyIncome, getMonthlyIncome, ensurePeriod, getPeriodByMonth, contributeToGoal } from '../../lib/db';
+import { createBackup } from '../../lib/backup';
 
 // Resolve a recurring item's day-of-month (created_at, 1-28) to a created_time ISO string
 // inside the given period ("September 2026" = Aug 21 → Sep 20). Days >= 21 belong to the
@@ -16,8 +17,9 @@ function recurringCreatedTime(created_at: string | null | undefined, month: stri
 
 async function kickoffIntoPeriod(opts: {
   period_id: number; month: string; salary: number; dateStr: string; skipExistingTitles: boolean;
+  backupError?: string | null;
 }): Promise<Response> {
-  const { period_id, month, salary, dateStr, skipExistingTitles } = opts;
+  const { period_id, month, salary, dateStr, skipExistingTitles, backupError } = opts;
   upsertMonthlyIncome({ period_id, date: dateStr, income: salary, other_income: 0 });
 
   const allRecurring = getRecurringTransactions().filter((r: any) => r.active === 1);
@@ -82,6 +84,7 @@ async function kickoffIntoPeriod(opts: {
     goalContributions,
     ccPaymentAmount,
     ccPaymentNote: ccPaymentAmount > 0 ? 'Added CC Payment from previous period' : null,
+    backupError: backupError || null,
   }), { status: 201, headers: { 'Content-Type': 'application/json' } });
 }
 
@@ -135,6 +138,15 @@ export const POST: APIRoute = async ({ request }) => {
     });
   }
 
+  // Safety-net snapshot BEFORE any kickoff write (income upsert, recurring preload, CC payment).
+  // Non-blocking: a failed backup must not stop kickoff, but the reason travels to the client.
+  let backupError: string | null = null;
+  try {
+    await createBackup({ reason: 'kickoff' });
+  } catch (e) {
+    backupError = e instanceof Error ? e.message : 'backup failed';
+  }
+
   // Ensure period exists
   const period_id = ensurePeriod(month);
 
@@ -158,8 +170,8 @@ export const POST: APIRoute = async ({ request }) => {
     // Period has manual transactions but was never kicked off (e.g. user logged a tx
     // into the active period before running kickoff). Kick off INTO this period:
     // add income + recurring items not already present by title. Never skip the month.
-    return await kickoffIntoPeriod({ period_id, month, salary, dateStr, skipExistingTitles: true });
+    return await kickoffIntoPeriod({ period_id, month, salary, dateStr, skipExistingTitles: true, backupError });
   }
 
-  return await kickoffIntoPeriod({ period_id, month, salary, dateStr, skipExistingTitles: false });
+  return await kickoffIntoPeriod({ period_id, month, salary, dateStr, skipExistingTitles: false, backupError });
 };

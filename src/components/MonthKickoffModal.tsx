@@ -35,9 +35,10 @@ export default function MonthKickoffModal({ open, onOpenChange, nextMonth, recur
     try {
       const res = await kickoffMonth(nextMonth, salaryNum);
       if (res.success) {
+        const backupWarning = (res as { backupError?: string | null }).backupError;
         setResult({
           success: true,
-          message: `${nextMonth} started! Salary: ${formatIdr(res.salary)}. ${res.preloaded} recurring transaction${res.preloaded !== 1 ? 's' : ''} preloaded.`,
+          message: `${nextMonth} started! Salary: ${formatIdr(res.salary)}. ${res.preloaded} recurring transaction${res.preloaded !== 1 ? 's' : ''} preloaded.${backupWarning ? ` (Pre-kickoff backup failed: ${backupWarning})` : ''}`,
         });
       } else {
         // Surface the server's reason (e.g. month already exists) instead of a generic line.
