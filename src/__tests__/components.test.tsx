@@ -105,6 +105,23 @@ function makeCategory(name: string, limit: number) {
   return { id: 1, name, color: '#ef4444', monthly_limit: limit, created_at: '2026-01-01' };
 }
 
+const makeTxRow = (over: Partial<Transaction> = {}): Transaction => ({
+  id: 1,
+  period_id: 1,
+  month: 'July 2026',
+  date: '2026-07-08',
+  title: 'Steak',
+  category: 'Food',
+  amount: 600000,
+  currency: 'IDR',
+  type: 'cash',
+  payment_method: 'cash',
+  done: true,
+  created_time: '2026-07-08T09:00:00Z',
+  ...over,
+});
+
+
 // Mock fetch for anomaly API
 const mockFetch = vi.fn();
 const originalFetch = globalThis.fetch;
@@ -425,7 +442,7 @@ describe('AlertsPanel', () => {
   it('renders over-budget alert when category exceeds limit', async () => {
     mockFetch.mockResolvedValue({ json: () => Promise.resolve([]) });
     const txs = [
-      { id: 1, period_id: 1, title: 'Grab Food', category: 'Food', amount: 500000, type: 'cash', done: 1 },
+      makeTxRow({ title: 'Grab Food', amount: 500000, done: 1 }),
     ];
     render(
       <AlertsPanel
@@ -445,7 +462,7 @@ describe('AlertsPanel', () => {
   it('renders approaching alert when category at 80%+ of limit', async () => {
     mockFetch.mockResolvedValue({ json: () => Promise.resolve([]) });
     const txs = [
-      { id: 1, period_id: 1, title: 'Lunch', category: 'Food', amount: 400000, type: 'cash', done: 1 },
+      makeTxRow({ title: 'Lunch', amount: 400000, done: 1 }),
     ];
     render(
       <AlertsPanel
@@ -494,7 +511,7 @@ describe('AlertsPanel', () => {
   it('shows "X over" badge for high severity alerts', async () => {
     mockFetch.mockResolvedValue({ json: () => Promise.resolve([]) });
     const txs = [
-      { id: 1, period_id: 1, title: 'Steak', category: 'Food', amount: 600000, type: 'cash', done: 1 },
+      makeTxRow({ amount: 600000, done: 1 }),
     ];
     render(
       <AlertsPanel
@@ -513,7 +530,7 @@ describe('AlertsPanel', () => {
   it('shows "X approaching" badge for medium severity alerts', async () => {
     mockFetch.mockResolvedValue({ json: () => Promise.resolve([]) });
     const txs = [
-      { id: 1, period_id: 1, title: 'Lunch', category: 'Food', amount: 400000, type: 'cash', done: 1 },
+      makeTxRow({ title: 'Lunch', amount: 400000, done: 1 }),
     ];
     render(
       <AlertsPanel
@@ -532,7 +549,7 @@ describe('AlertsPanel', () => {
   it('card border is red when critical (high severity) alerts exist', async () => {
     mockFetch.mockResolvedValue({ json: () => Promise.resolve([]) });
     const txs = [
-      { id: 1, period_id: 1, title: 'Steak', category: 'Food', amount: 600000, type: 'cash', done: 1 },
+      makeTxRow({ amount: 600000, done: 1 }),
     ];
     render(
       <AlertsPanel
@@ -552,7 +569,7 @@ describe('AlertsPanel', () => {
   it('dismiss button removes budget alert from view', async () => {
     mockFetch.mockResolvedValue({ json: () => Promise.resolve([]) });
     const txs = [
-      { id: 1, period_id: 1, title: 'Steak', category: 'Food', amount: 600000, type: 'cash', done: 1 },
+      makeTxRow({ amount: 600000, done: 1 }),
     ];
     render(
       <AlertsPanel
@@ -576,8 +593,8 @@ describe('AlertsPanel', () => {
   it('broadcasts alerts-count event with live alert total for sidebar bells', async () => {
     mockFetch.mockResolvedValue({ json: () => Promise.resolve([]) });
     const txs = [
-      { id: 1, period_id: 1, title: 'Steak', category: 'Food', amount: 600000, type: 'cash', done: 1 },
-      { id: 2, period_id: 1, title: 'Coffee', category: 'Drink', amount: 450000, type: 'cash', done: 1 },
+      makeTxRow({ amount: 600000, done: 1 }),
+      makeTxRow({ title: 'Coffee', category: 'Drink', amount: 450000, done: 1 }),
     ];
     const events: number[] = [];
     const listener = (e: Event) => events.push((e as CustomEvent<number>).detail);
@@ -600,7 +617,7 @@ describe('AlertsPanel', () => {
   it('rebroadcasts lower count after dismissal', async () => {
     mockFetch.mockResolvedValue({ json: () => Promise.resolve([]) });
     const txs = [
-      { id: 1, period_id: 1, title: 'Steak', category: 'Food', amount: 600000, type: 'cash', done: 1 },
+      makeTxRow({ amount: 600000, done: 1 }),
     ];
     const events: number[] = [];
     const listener = (e: Event) => events.push((e as CustomEvent<number>).detail);
