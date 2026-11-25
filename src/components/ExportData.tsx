@@ -55,7 +55,7 @@ export default function ExportData() {
     {
       id: 'db',
       title: 'Full Backup (SQLite .db)',
-      description: 'Live database snapshot with full schema and data — restorable as-is.',
+      description: 'Live database snapshot with full schema and data. Restorable as-is.',
       format: 'db',
       filenamePrefix: `financial-${dateSuffix}.db`,
       url: '/api/backup/db',
@@ -193,7 +193,7 @@ export default function ExportData() {
             Loading snapshots...
           </p>
         ) : snapshots.length === 0 ? (
-          <p className="text-xs text-muted-foreground">No snapshots yet — download a .db backup above to create the first one.</p>
+          <p className="text-xs text-muted-foreground">No snapshots yet. Download a .db backup above to create the first one.</p>
         ) : (
           <ul className="divide-y divide-border/60 dark:divide-white/[0.06] rounded-lg border border-border/80 dark:border-white/[0.06] overflow-hidden">
             {snapshots.map((b) => (
