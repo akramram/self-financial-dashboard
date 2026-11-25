@@ -1,0 +1,113 @@
+- generic [active] [ref=f2e1]:
+  - complementary [ref=f2e3]:
+    - generic [ref=f2e4]:
+      - link "FD" [ref=f2e5] [cursor=pointer]:
+        - /url: /
+      - generic [ref=f2e7]: FinDash
+      - button "Close menu" [ref=f2e8] [cursor=pointer]
+    - navigation [ref=f2e12]:
+      - link "Dashboard" [ref=f2e13] [cursor=pointer]:
+        - /url: /
+      - link "Transactions" [ref=f2e20] [cursor=pointer]:
+        - /url: /transactions
+      - link "Analytics" [ref=f2e25] [cursor=pointer]:
+        - /url: /analytics
+      - link "Planning" [ref=f2e30] [cursor=pointer]:
+        - /url: /goals
+      - link "Settings" [ref=f2e36] [cursor=pointer]:
+        - /url: /settings
+      - link "Budget" [ref=f2e42] [cursor=pointer]:
+        - /url: /budget
+      - link "Budget Pace" [ref=f2e47] [cursor=pointer]:
+        - /url: /budget-pace
+      - link "Savings" [ref=f2e51] [cursor=pointer]:
+        - /url: /savings-rate
+      - link "Calendar" [ref=f2e56] [cursor=pointer]:
+        - /url: /calendar
+      - link "Runway" [ref=f2e60] [cursor=pointer]:
+        - /url: /runway
+      - link "Credit" [ref=f2e64] [cursor=pointer]:
+        - /url: /credit-card
+      - paragraph [ref=f2e68]: Analytics
+      - link "Streaks" [ref=f2e69] [cursor=pointer]:
+        - /url: /streaks
+      - link "Achievements" [ref=f2e73] [cursor=pointer]:
+        - /url: /achievements
+      - link "Health Score" [ref=f2e81] [cursor=pointer]:
+        - /url: /health
+      - link "Spending Mix" [ref=f2e85] [cursor=pointer]:
+        - /url: /spending-mix
+      - link "Rhythm" [ref=f2e91] [cursor=pointer]:
+        - /url: /spending-rhythm
+      - link "Spending DNA" [ref=f2e95] [cursor=pointer]:
+        - /url: /dna
+      - link "Category Matrix" [ref=f2e99] [cursor=pointer]:
+        - /url: /matrix
+      - link "Merchants" [ref=f2e103] [cursor=pointer]:
+        - /url: /merchants
+      - paragraph [ref=f2e108]: Planning
+      - link "FIRE" [ref=f2e109] [cursor=pointer]:
+        - /url: /fire
+      - link "What-If" [ref=f2e113] [cursor=pointer]:
+        - /url: /what-if
+      - link "Forecast" [ref=f2e117] [cursor=pointer]:
+        - /url: /forecast
+      - link "Portfolio" [ref=f2e122] [cursor=pointer]:
+        - /url: /portfolio
+      - link "Net Worth" [ref=f2e127] [cursor=pointer]:
+        - /url: /networth
+      - paragraph [ref=f2e132]: Reports
+      - link "Weekly" [ref=f2e133] [cursor=pointer]:
+        - /url: /weekly
+      - link "Monthly" [ref=f2e137] [cursor=pointer]:
+        - /url: /report
+      - link "Yearly" [ref=f2e142] [cursor=pointer]:
+        - /url: /yearly
+      - link "Compare" [ref=f2e146] [cursor=pointer]:
+        - /url: /compare
+      - link "Cashflow" [ref=f2e153] [cursor=pointer]:
+        - /url: /cashflow
+      - link "Recurring" [ref=f2e157] [cursor=pointer]:
+        - /url: /recurring
+      - link "Recurring Audit" [ref=f2e164] [cursor=pointer]:
+        - /url: /recurring-audit
+      - link "Tips" [ref=f2e169] [cursor=pointer]:
+        - /url: /recommendations
+    - button "Alerts, 28 active" [ref=f2e178] [cursor=pointer]:
+      - generic [ref=f2e182]: 28 alerts
+      - generic [ref=f2e183]: "28"
+  - generic [ref=f2e184]:
+    - button "Open menu" [ref=f2e185] [cursor=pointer]
+    - button "Search pages and actions" [ref=f2e188] [cursor=pointer]:
+      - generic [ref=f2e191]: Search…
+    - generic [ref=f2e192]:
+      - link "Settings" [ref=f2e193] [cursor=pointer]:
+        - /url: /settings
+      - button "Toggle theme" [ref=f2e197] [cursor=pointer]: 🌙
+  - main [ref=f2e200]:
+    - generic [ref=f2e202]:
+      - generic [ref=f2e203]:
+        - generic [ref=f2e204]: 💰
+        - heading "Financial Dashboard" [level=1] [ref=f2e205]
+        - paragraph [ref=f2e206]: Sign in to continue
+      - generic [ref=f2e207]:
+        - generic [ref=f2e208]:
+          - generic [ref=f2e209]: Username
+          - textbox "Username" [ref=f2e210]
+        - generic [ref=f2e211]:
+          - generic [ref=f2e212]: Password
+          - textbox "Password" [ref=f2e213]
+        - button "Sign in" [ref=f2e214] [cursor=pointer]
+      - paragraph [ref=f2e215]: Financial Dashboard · Secure login
+  - navigation [ref=f2e217]:
+    - link "Home" [ref=f2e218] [cursor=pointer]:
+      - /url: /
+    - link "Txns" [ref=f2e225] [cursor=pointer]:
+      - /url: /transactions
+    - button "Quick add transaction" [ref=f2e230] [cursor=pointer]
+    - link "Analytics" [ref=f2e232] [cursor=pointer]:
+      - /url: /analytics
+    - link "Planning" [ref=f2e237] [cursor=pointer]:
+      - /url: /goals
+  - generic:
+    - region "Notifications alt+T"

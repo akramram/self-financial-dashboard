@@ -1,0 +1,684 @@
+- generic:
+  - generic:
+    - complementary:
+      - generic:
+        - link:
+          - /url: /
+          - generic: FD
+        - generic: FinDash
+        - button
+      - navigation:
+        - link:
+          - /url: /
+          - generic: Dashboard
+        - link:
+          - /url: /transactions
+          - generic: Transactions
+        - link:
+          - /url: /analytics
+          - generic: Analytics
+        - link:
+          - /url: /goals
+          - generic: Planning
+        - link:
+          - /url: /settings
+          - generic: Settings
+        - link:
+          - /url: /budget
+          - generic: Budget
+        - link:
+          - /url: /budget-pace
+          - generic: Budget Pace
+        - link:
+          - /url: /savings-rate
+          - generic: Savings
+        - link:
+          - /url: /calendar
+          - generic: Calendar
+        - link:
+          - /url: /runway
+          - generic: Runway
+        - link:
+          - /url: /credit-card
+          - generic: Credit
+        - paragraph: Analytics
+        - link:
+          - /url: /streaks
+          - generic: Streaks
+        - link:
+          - /url: /achievements
+          - generic: Achievements
+        - link:
+          - /url: /health
+          - generic: Health Score
+        - link:
+          - /url: /spending-mix
+          - generic: Spending Mix
+        - link:
+          - /url: /spending-rhythm
+          - generic: Rhythm
+        - link:
+          - /url: /dna
+          - generic: Spending DNA
+        - link:
+          - /url: /matrix
+          - generic: Category Matrix
+        - link:
+          - /url: /merchants
+          - generic: Merchants
+        - paragraph: Planning
+        - link:
+          - /url: /fire
+          - generic: FIRE
+        - link:
+          - /url: /what-if
+          - generic: What-If
+        - link:
+          - /url: /forecast
+          - generic: Forecast
+        - link:
+          - /url: /portfolio
+          - generic: Portfolio
+        - link:
+          - /url: /networth
+          - generic: Net Worth
+        - paragraph: Reports
+        - link:
+          - /url: /weekly
+          - generic: Weekly
+        - link:
+          - /url: /report
+          - generic: Monthly
+        - link:
+          - /url: /yearly
+          - generic: Yearly
+        - link:
+          - /url: /compare
+          - generic: Compare
+        - link:
+          - /url: /cashflow
+          - generic: Cashflow
+        - link:
+          - /url: /recurring
+          - generic: Recurring
+        - link:
+          - /url: /recurring-audit
+          - generic: Recurring Audit
+        - link:
+          - /url: /recommendations
+          - generic: Tips
+      - generic:
+        - button:
+          - generic: 31 alerts
+          - generic: "31"
+  - generic:
+    - button
+    - button:
+      - generic: Search…
+    - generic:
+      - link:
+        - /url: /settings
+      - button: 🌙
+      - generic: ⚡ Admin
+      - button: ⏻
+  - generic:
+    - main:
+      - generic:
+        - heading [level=1]: Settings
+        - generic:
+          - generic:
+            - generic: Data Export
+            - generic:
+              - generic:
+                - button: Export JSON (All)
+                - button: Export Transactions CSV
+                - button: Export Networth CSV
+                - button: Export Summary CSV
+        - generic:
+          - generic:
+            - heading [level=3]: Import Data
+            - generic:
+              - text: File (JSON or CSV)
+              - button
+        - generic:
+          - generic:
+            - heading [level=3]: Monthly Income
+            - generic:
+              - generic:
+                - text: Month
+                - generic:
+                  - combobox
+                  - spinbutton: "2026"
+              - generic:
+                - text: Income
+                - spinbutton
+              - generic:
+                - text: Other Income
+                - spinbutton
+              - button: Add / Update
+            - generic:
+              - generic:
+                - generic:
+                  - paragraph: September 2023
+                  - paragraph: Income IDR 10.900.000 · Other IDR 0
+                - generic:
+                  - generic: IDR 10.900.000
+                  - generic:
+                    - button: Edit
+                    - button: Delete
+              - generic:
+                - generic:
+                  - paragraph: October 2023
+                  - paragraph: Income IDR 9.100.000 · Other IDR 0
+                - generic:
+                  - generic: IDR 9.100.000
+                  - generic:
+                    - button: Edit
+                    - button: Delete
+              - generic:
+                - generic:
+                  - paragraph: November 2023
+                  - paragraph: Income IDR 8.900.000 · Other IDR 0
+                - generic:
+                  - generic: IDR 8.900.000
+                  - generic:
+                    - button: Edit
+                    - button: Delete
+              - generic:
+                - generic:
+                  - paragraph: December 2023
+                  - paragraph: Income IDR 8.900.000 · Other IDR 0
+                - generic:
+                  - generic: IDR 8.900.000
+                  - generic:
+                    - button: Edit
+                    - button: Delete
+              - generic:
+                - generic:
+                  - paragraph: January 2024
+                  - paragraph: Income IDR 25.400.000 · Other IDR 0
+                - generic:
+                  - generic: IDR 25.400.000
+                  - generic:
+                    - button: Edit
+                    - button: Delete
+              - generic:
+                - generic:
+                  - paragraph: February 2024
+                  - paragraph: Income IDR 8.950.000 · Other IDR 0
+                - generic:
+                  - generic: IDR 8.950.000
+                  - generic:
+                    - button: Edit
+                    - button: Delete
+              - generic:
+                - generic:
+                  - paragraph: March 2024
+                  - paragraph: Income IDR 9.400.000 · Other IDR 0
+                - generic:
+                  - generic: IDR 9.400.000
+                  - generic:
+                    - button: Edit
+                    - button: Delete
+              - generic:
+                - generic:
+                  - paragraph: April 2024
+                  - paragraph: Income IDR 29.433.333 · Other IDR 0
+                - generic:
+                  - generic: IDR 29.433.333
+                  - generic:
+                    - button: Edit
+                    - button: Delete
+              - generic:
+                - generic:
+                  - paragraph: May 2024
+                  - paragraph: Income IDR 17.000.000 · Other IDR 0
+                - generic:
+                  - generic: IDR 17.000.000
+                  - generic:
+                    - button: Edit
+                    - button: Delete
+              - generic:
+                - generic:
+                  - paragraph: June 2024
+                  - paragraph: Income IDR 17.000.000 · Other IDR 0
+                - generic:
+                  - generic: IDR 17.000.000
+                  - generic:
+                    - button: Edit
+                    - button: Delete
+              - generic:
+                - generic:
+                  - paragraph: July 2024
+                  - paragraph: Income IDR 17.001.000 · Other IDR 0
+                - generic:
+                  - generic: IDR 17.001.000
+                  - generic:
+                    - button: Edit
+                    - button: Delete
+              - generic:
+                - generic:
+                  - paragraph: August 2024
+                  - paragraph: Income IDR 17.000.000 · Other IDR 0
+                - generic:
+                  - generic: IDR 17.000.000
+                  - generic:
+                    - button: Edit
+                    - button: Delete
+              - generic:
+                - generic:
+                  - paragraph: September 2024
+                  - paragraph: Income IDR 17.000.000 · Other IDR 0
+                - generic:
+                  - generic: IDR 17.000.000
+                  - generic:
+                    - button: Edit
+                    - button: Delete
+              - generic:
+                - generic:
+                  - paragraph: October 2024
+                  - paragraph: Income IDR 10.000.000 · Other IDR 0
+                - generic:
+                  - generic: IDR 10.000.000
+                  - generic:
+                    - button: Edit
+                    - button: Delete
+              - generic:
+                - generic:
+                  - paragraph: November 2024
+                  - paragraph: Income IDR 10.000.000 · Other IDR 0
+                - generic:
+                  - generic: IDR 10.000.000
+                  - generic:
+                    - button: Edit
+                    - button: Delete
+              - generic:
+                - generic:
+                  - paragraph: December 2024
+                  - paragraph: Income IDR 10.000.000 · Other IDR 0
+                - generic:
+                  - generic: IDR 10.000.000
+                  - generic:
+                    - button: Edit
+                    - button: Delete
+              - generic:
+                - generic:
+                  - paragraph: January 2025
+                  - paragraph: Income IDR 10.000.000 · Other IDR 0
+                - generic:
+                  - generic: IDR 10.000.000
+                  - generic:
+                    - button: Edit
+                    - button: Delete
+              - generic:
+                - generic:
+                  - paragraph: February 2025
+                  - paragraph: Income IDR 18.500.000 · Other IDR 0
+                - generic:
+                  - generic: IDR 18.500.000
+                  - generic:
+                    - button: Edit
+                    - button: Delete
+              - generic:
+                - generic:
+                  - paragraph: March 2025
+                  - paragraph: Income IDR 15.000.000 · Other IDR 0
+                - generic:
+                  - generic: IDR 15.000.000
+                  - generic:
+                    - button: Edit
+                    - button: Delete
+              - generic:
+                - generic:
+                  - paragraph: April 2025
+                  - paragraph: Income IDR 18.000.000 · Other IDR 0
+                - generic:
+                  - generic: IDR 18.000.000
+                  - generic:
+                    - button: Edit
+                    - button: Delete
+              - generic:
+                - generic:
+                  - paragraph: May 2025
+                  - paragraph: Income IDR 10.000.000 · Other IDR 0
+                - generic:
+                  - generic: IDR 10.000.000
+                  - generic:
+                    - button: Edit
+                    - button: Delete
+              - generic:
+                - generic:
+                  - paragraph: June 2025
+                  - paragraph: Income IDR 10.000.000 · Other IDR 0
+                - generic:
+                  - generic: IDR 10.000.000
+                  - generic:
+                    - button: Edit
+                    - button: Delete
+              - generic:
+                - generic:
+                  - paragraph: July 2025
+                  - paragraph: Income IDR 10.000.000 · Other IDR 0
+                - generic:
+                  - generic: IDR 10.000.000
+                  - generic:
+                    - button: Edit
+                    - button: Delete
+              - generic:
+                - generic:
+                  - paragraph: August 2025
+                  - paragraph: Income IDR 18.514.000 · Other IDR 0
+                - generic:
+                  - generic: IDR 18.514.000
+                  - generic:
+                    - button: Edit
+                    - button: Delete
+              - generic:
+                - generic:
+                  - paragraph: September 2025
+                  - paragraph: Income IDR 18.500.000 · Other IDR 0
+                - generic:
+                  - generic: IDR 18.500.000
+                  - generic:
+                    - button: Edit
+                    - button: Delete
+              - generic:
+                - generic:
+                  - paragraph: October 2025
+                  - paragraph: Income IDR 18.500.000 · Other IDR 0
+                - generic:
+                  - generic: IDR 18.500.000
+                  - generic:
+                    - button: Edit
+                    - button: Delete
+              - generic:
+                - generic:
+                  - paragraph: November 2025
+                  - paragraph: Income IDR 18.500.000 · Other IDR 0
+                - generic:
+                  - generic: IDR 18.500.000
+                  - generic:
+                    - button: Edit
+                    - button: Delete
+              - generic:
+                - generic:
+                  - paragraph: December 2025
+                  - paragraph: Income IDR 23.950.000 · Other IDR 0
+                - generic:
+                  - generic: IDR 23.950.000
+                  - generic:
+                    - button: Edit
+                    - button: Delete
+              - generic:
+                - generic:
+                  - paragraph: January 2026
+                  - paragraph: Income IDR 18.500.000 · Other IDR 0
+                - generic:
+                  - generic: IDR 18.500.000
+                  - generic:
+                    - button: Edit
+                    - button: Delete
+              - generic:
+                - generic:
+                  - paragraph: February 2026
+                  - paragraph: Income IDR 10.000.000 · Other IDR 0
+                - generic:
+                  - generic: IDR 10.000.000
+                  - generic:
+                    - button: Edit
+                    - button: Delete
+              - generic:
+                - generic:
+                  - paragraph: March 2026
+                  - paragraph: Income IDR 28.500.000 · Other IDR 0
+                - generic:
+                  - generic: IDR 28.500.000
+                  - generic:
+                    - button: Edit
+                    - button: Delete
+              - generic:
+                - generic:
+                  - paragraph: April 2026
+                  - paragraph: Income IDR 20.500.000 · Other IDR 0
+                - generic:
+                  - generic: IDR 20.500.000
+                  - generic:
+                    - button: Edit
+                    - button: Delete
+              - generic:
+                - generic:
+                  - paragraph: May 2026
+                  - paragraph: Income IDR 18.500.000 · Other IDR 0
+                - generic:
+                  - generic: IDR 18.500.000
+                  - generic:
+                    - button: Edit
+                    - button: Delete
+              - generic:
+                - generic:
+                  - paragraph: June 2026
+                  - paragraph: Income IDR 18.000.000 · Other IDR 800.000
+                - generic:
+                  - generic: IDR 18.800.000
+                  - generic:
+                    - button: Edit
+                    - button: Delete
+              - generic:
+                - generic:
+                  - paragraph: July 2026
+                  - paragraph: Income IDR 18.000.000 · Other IDR 0
+                - generic:
+                  - generic: IDR 18.000.000
+                  - generic:
+                    - button: Edit
+                    - button: Delete
+              - generic:
+                - generic:
+                  - paragraph: August 2026
+                  - paragraph: Income IDR 18.000.000 · Other IDR 0
+                - generic:
+                  - generic: IDR 18.000.000
+                  - generic:
+                    - button: Edit
+                    - button: Delete
+              - generic:
+                - generic:
+                  - paragraph: September 2026
+                  - paragraph: Income IDR 23.000.000 · Other IDR 0
+                - generic:
+                  - generic: IDR 23.000.000
+                  - generic:
+                    - button: Edit
+                    - button: Delete
+              - generic:
+                - generic:
+                  - paragraph: October 2026
+                  - paragraph: Income IDR 23.000.000 · Other IDR 0
+                - generic:
+                  - generic: IDR 23.000.000
+                  - generic:
+                    - button: Edit
+                    - button: Delete
+        - generic:
+          - generic:
+            - heading [level=3]: Categories
+            - button: + Add Category
+            - generic:
+              - generic:
+                - generic:
+                  - generic:
+                    - paragraph: Belanja
+                    - paragraph: IDR 3.000.000
+                - generic:
+                  - button: Edit
+                  - button: Delete
+              - generic:
+                - generic:
+                  - generic:
+                    - paragraph: Belanja Pribadi
+                    - paragraph: IDR 1.000.000
+                - generic:
+                  - button: Edit
+                  - button: Delete
+              - generic:
+                - generic:
+                  - generic:
+                    - paragraph: Cash Pribadi
+                    - paragraph: IDR 500.000
+                - generic:
+                  - button: Edit
+                  - button: Delete
+              - generic:
+                - generic:
+                  - generic:
+                    - paragraph: Cash Rumah Bulanan
+                    - paragraph: IDR 500.000
+                - generic:
+                  - button: Edit
+                  - button: Delete
+              - generic:
+                - generic:
+                  - generic:
+                    - paragraph: Credit Card
+                    - paragraph: No limit
+                - generic:
+                  - button: Edit
+                  - button: Delete
+              - generic:
+                - generic:
+                  - generic:
+                    - paragraph: Family
+                    - paragraph: IDR 1.700.000
+                - generic:
+                  - button: Edit
+                  - button: Delete
+              - generic:
+                - generic:
+                  - generic:
+                    - paragraph: Hiburan
+                    - paragraph: No limit
+                - generic:
+                  - button: Edit
+                  - button: Delete
+              - generic:
+                - generic:
+                  - generic:
+                    - paragraph: Invest
+                    - paragraph: IDR 2.000.000
+                - generic:
+                  - button: Edit
+                  - button: Delete
+              - generic:
+                - generic:
+                  - generic:
+                    - paragraph: Istri
+                    - paragraph: IDR 3.200.000
+                - generic:
+                  - button: Edit
+                  - button: Delete
+              - generic:
+                - generic:
+                  - generic:
+                    - paragraph: Langganan
+                    - paragraph: No limit
+                - generic:
+                  - button: Edit
+                  - button: Delete
+              - generic:
+                - generic:
+                  - generic:
+                    - paragraph: Makanan
+                    - paragraph: No limit
+                - generic:
+                  - button: Edit
+                  - button: Delete
+              - generic:
+                - generic:
+                  - generic:
+                    - paragraph: Peliharaan
+                    - paragraph: No limit
+                - generic:
+                  - button: Edit
+                  - button: Delete
+              - generic:
+                - generic:
+                  - generic:
+                    - paragraph: Qurban
+                    - paragraph: No limit
+                - generic:
+                  - button: Edit
+                  - button: Delete
+              - generic:
+                - generic:
+                  - generic:
+                    - paragraph: Rumah Bulanan
+                    - paragraph: No limit
+                - generic:
+                  - button: Edit
+                  - button: Delete
+              - generic:
+                - generic:
+                  - generic:
+                    - paragraph: Tagihan
+                    - paragraph: IDR 3.500.000
+                - generic:
+                  - button: Edit
+                  - button: Delete
+              - generic:
+                - generic:
+                  - generic:
+                    - paragraph: Test
+                    - paragraph: No limit
+                - generic:
+                  - button: Edit
+                  - button: Delete
+              - generic:
+                - generic:
+                  - generic:
+                    - paragraph: Transportasi
+                    - paragraph: No limit
+                - generic:
+                  - button: Edit
+                  - button: Delete
+              - generic:
+                - generic:
+                  - generic:
+                    - paragraph: Zakat
+                    - paragraph: No limit
+                - generic:
+                  - button: Edit
+                  - button: Delete
+  - generic:
+    - navigation:
+      - link:
+        - /url: /
+        - generic: Home
+      - link:
+        - /url: /transactions
+        - generic: Txns
+      - button
+      - link:
+        - /url: /analytics
+        - generic: Analytics
+      - link:
+        - /url: /goals
+        - generic: Planning
+  - generic:
+    - region "Notifications alt+T"
+  - generic [ref=f63e776]:
+    - button [ref=f63e797]:
+      - generic: Menu
+    - button [ref=f63e798]:
+      - generic: Inspect
+    - button [ref=f63e799]:
+      - generic: Audit
+    - button [ref=f63e803]:
+      - generic: Settings
+  - dialog [ref=f63e805]:
+    - generic [ref=f63e806]:
+      - heading "Delete Income Entry" [level=2] [ref=f63e807]
+      - paragraph [ref=f63e808]: Delete income entry for September 2023?
+    - generic [ref=f63e809]:
+      - button "Cancel" [active] [ref=f63e810] [cursor=pointer]
+      - button "Delete" [ref=f63e811] [cursor=pointer]
+    - button "Close" [ref=f63e812] [cursor=pointer]

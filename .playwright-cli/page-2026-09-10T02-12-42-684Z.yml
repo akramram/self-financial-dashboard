@@ -1,0 +1,283 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - link [ref=e5] [cursor=pointer]:
+      - /url: https://cekresi.com/
+      - img "Cek Resi" [ref=e6]
+    - generic [ref=e7]:
+      - list [ref=e8]:
+        - listitem [ref=e9]:
+          - button "Cek Resi" [ref=e10] [cursor=pointer]
+        - listitem [ref=e12]:
+          - button "Cek Ongkir" [ref=e13] [cursor=pointer]
+        - listitem [ref=e15]:
+          - link "Tanya Paket" [ref=e16] [cursor=pointer]:
+            - /url: https://tanyapaket.cekresi.com
+      - list [ref=e17]:
+        - listitem [ref=e18]:
+          - button "Panduan" [ref=e19] [cursor=pointer]
+  - generic [ref=e23]:
+    - generic [ref=e26]:
+      - heading "Cek Resi All-in-One" [level=1] [ref=e27]
+      - heading "60+ Kurir Pengiriman" [level=2] [ref=e28]
+      - insertion:
+        - iframe [ref=e30]:
+          
+      - heading "Lacak Semua Paket Kiriman Cepat dan Akurat" [level=3] [ref=e31]: Lacak Semua Paket KirimanCepat dan Akurat
+      - paragraph [ref=e32]:
+        - strong [ref=e33]: Masukkan Nomor Pelacakan
+        - emphasis [ref=e34]: (Auto-detect Semua Resi/AWB. Pastikan Nomornya Sudah Benar)
+    - generic [ref=e35]:
+      - generic [ref=e36]:
+        - textbox "Nomor Resi Pengiriman" [ref=e38]
+        - generic [ref=e40]:
+          - button "CEKRESI" [ref=e41] [cursor=pointer]
+          - button "History" [ref=e42] [cursor=pointer]
+      - generic [ref=e46]:
+        - paragraph [ref=e47]:
+          - emphasis [ref=e48]:
+            - link "Cekresi Top 10" [ref=e49] [cursor=pointer]:
+              - /url: https://cekresi.com/top/
+            - text: "|"
+            - link "Gratis Ongkir (Aff)" [ref=e50] [cursor=pointer]:
+              - /url: https://invl.io/clj14sz
+          - link "Kirim Paket Cepat" [ref=e51] [cursor=pointer]:
+            - generic [ref=e52]: Kirim
+            - text: Paket Cepat
+        - insertion [ref=e56]:
+          - generic [ref=e59]:
+            - heading "Berikut ini topik terkait artikel yang mungkin menarik bagi Anda" [level=2] [ref=e61]: Temukan lebih banyak
+            - link "Widget cek resi" [ref=e62] [cursor=pointer]
+            - link "Baca Buku Ekonomi" [ref=e67] [cursor=pointer]
+            - link "Daftar jasa pengiriman" [ref=e72] [cursor=pointer]
+        - generic [ref=e77]:
+          - paragraph [ref=e78]: Resi belum bisa dilacak? Pastikan jasa kirim yang dipilih sudah sesuai. Atau teman-teman bisa mengunjungi forum Tanya Paket.
+          - paragraph [ref=e79]:
+            - button "Tanya Sekarang!" [ref=e80] [cursor=pointer]
+        - paragraph [ref=e81]:
+          - text: "::"
+          - strong [ref=e82]: Promo Terbaru
+          - text: "::"
+          - link "Belanja Online Gratis Ongkir (aff)" [ref=e83] [cursor=pointer]:
+            - /url: https://invl.io/clj14sz
+        - generic [ref=e84]: F A Q
+        - separator [ref=e85]
+        - tablist [ref=e86]:
+          - generic [ref=e87]:
+            - tab "Bagaimana cara melacak paket saya?" [ref=e90]
+            - tab "Kenapa paket saya tidak bisa dilacak?" [ref=e98]
+            - tab "Apa tanda paket saya dikirim hari ini?" [ref=e106]
+            - tab "Kenapa paket saya tidak bergerak?" [ref=e114]
+            - tab "Bisakah saya minta whatsapp CS kurir?" [ref=e122]
+  - generic:
+    - insertion:
+      - iframe [ref=e138]:
+        
+  - generic [ref=e139]:
+    - generic [ref=e140]:
+      - generic [ref=e142]:
+        - insertion [ref=e143]:
+          - generic [ref=e146]:
+            - heading "Berikut ini topik terkait artikel yang mungkin menarik bagi Anda" [level=2] [ref=e148]: Temukan lebih banyak
+            - link "Cek ongkir JNE" [ref=e149] [cursor=pointer]
+            - link "Cek" [ref=e154] [cursor=pointer]
+            - link "Kirim Kargo Ekspres" [ref=e159] [cursor=pointer]
+        - generic [ref=e164]:
+          - generic [ref=e165]: FORUM
+          - separator [ref=e166]
+          - generic [ref=e167]:
+            - generic [ref=e168]:
+              - img "user" [ref=e169]
+              - time [ref=e171]: 6 minutes ago
+              - heading [level=6] [ref=e172]:
+                - link "resi tidak bisa dilacak" [ref=e173] [cursor=pointer]:
+                  - /url: https://tanyapaket.cekresi.com/question/resi-tidak-bisa-dilacak-33/
+            - generic [ref=e174]:
+              - img "user" [ref=e175]
+              - time [ref=e177]: 1 day ago
+              - heading [level=6] [ref=e178]:
+                - link "Paket ga gerak" [ref=e179] [cursor=pointer]:
+                  - /url: https://tanyapaket.cekresi.com/question/paket-ga-gerak-5/
+            - generic [ref=e180]:
+              - img "user" [ref=e181]
+              - time [ref=e183]: 1 day ago
+              - heading [level=6] [ref=e184]:
+                - link "543730043069026" [ref=e185] [cursor=pointer]:
+                  - /url: https://tanyapaket.cekresi.com/question/543730043069026/
+            - generic [ref=e186]:
+              - img "user" [ref=e187]
+              - time [ref=e189]: 1 day ago
+              - heading [level=6] [ref=e190]:
+                - link "Resi belum bisa dilacak" [ref=e191] [cursor=pointer]:
+                  - /url: https://tanyapaket.cekresi.com/question/resi-belum-bisa-dilacak-4/
+            - generic [ref=e192]:
+              - img "user" [ref=e193]
+              - time [ref=e195]: 2 days ago
+              - heading [level=6] [ref=e196]:
+                - link "resi paket tidak bisa dilacak" [ref=e197] [cursor=pointer]:
+                  - /url: https://tanyapaket.cekresi.com/question/resi-paket-tidak-bisa-dilacak/
+            - generic [ref=e198]:
+              - img "user" [ref=e199]
+              - time [ref=e201]: 2 days ago
+              - heading [level=6] [ref=e202]:
+                - link "Paket SPXID067826628858 tidak bergerak dari Tangerang ke Balikpapan" [ref=e203] [cursor=pointer]:
+                  - /url: https://tanyapaket.cekresi.com/question/paket-spxid067826628858-tidak-bergerak-dari-tangerang-ke-balikpapan/
+            - generic [ref=e204]:
+              - img "user" [ref=e205]
+              - time [ref=e207]: 2 days ago
+              - heading [level=6] [ref=e208]:
+                - link "paket tidak bergerak" [ref=e209] [cursor=pointer]:
+                  - /url: https://tanyapaket.cekresi.com/question/paket-tidak-bergerak-360/
+            - generic [ref=e210]:
+              - img "user" [ref=e211]
+              - time [ref=e213]: 2 days ago
+              - heading [level=6] [ref=e214]:
+                - link "kapan terima paket" [ref=e215] [cursor=pointer]:
+                  - /url: https://tanyapaket.cekresi.com/question/kapan-terima-paket/
+      - generic [ref=e217]:
+        - generic [ref=e219]:
+          - img "cek resi paket" [ref=e221]
+          - generic [ref=e222]:
+            - heading [level=3] [ref=e223]:
+              - paragraph [ref=e224]:
+                - text: 5 Kemudahan Cekresi.com
+                - link "Kirim Paket Cepat" [ref=e225] [cursor=pointer]:
+                  - generic [ref=e226]: Kirim
+                  - text: Paket Cepat
+            - list [ref=e230]:
+              - listitem [ref=e231]:
+                - generic [ref=e232]: "1"
+                - text: Deteksi Nomor Resi Otomatis
+              - listitem [ref=e233]:
+                - generic [ref=e234]: "2"
+                - text: Bagikan status via E-mail
+              - listitem [ref=e235]:
+                - generic [ref=e236]: "3"
+                - text: Bagikan via Short URL
+              - listitem [ref=e237]:
+                - generic [ref=e238]: "4"
+                - text: Bagikan status resi ke Social Media
+              - listitem [ref=e239]:
+                - generic [ref=e240]: "5"
+                - text: Simpan History Resi
+        - 'heading "Situs tracking resi no #1 di Indonesia" [level=3] [ref=e242]'
+        - insertion [ref=e244]:
+          - generic [ref=e247]:
+            - heading "Berikut ini topik terkait artikel yang mungkin menarik bagi Anda" [level=2] [ref=e249]: Temukan lebih banyak
+            - link "Layanan Pos Indonesia" [ref=e250] [cursor=pointer]
+            - link "Layanan pengiriman paket" [ref=e255] [cursor=pointer]
+            - link "Layanan pengiriman JNE" [ref=e260] [cursor=pointer]
+        - paragraph [ref=e265]:
+          - text: Layanan (tools) kami memudahkan lacak paket dan
+          - link "cek" [ref=e266] [cursor=pointer]:
+            - /url: "#"
+          - text: resi
+          - link "pengiriman" [ref=e269] [cursor=pointer]:
+            - /url: "#"
+          - text: sudah sampai mana. Mengenali dan mengecek otomatis (
+          - emphasis [ref=e272]: auto detect
+          - text: ) resi 60+ kurir.
+        - heading "Lacak paket semua ekspedisi" [level=3] [ref=e273]
+        - paragraph [ref=e274]:
+          - link "Cek" [ref=e275] [cursor=pointer]:
+            - /url: "#"
+          - text: resi JNE, J&T, SPX, J&T Cargo, Lion Parcel, SiCepat Ekspres, TIKI, Pos Indonesia (PosAja!), Wahana, Indah Cargo, Ninja Xpress, ID Express dan puluhan jasa kirim lainnya.
+          - link "Cek ongkir JNE" [ref=e278] [cursor=pointer]:
+            - generic [ref=e279]: Cek
+            - text: ongkir JNE
+        - heading "Lacak resi mudah cepat akurat" [level=3] [ref=e283]
+        - paragraph [ref=e284]:
+          - text: Keunggulan
+          - emphasis [ref=e285]: Cekresi
+          - text: yaitu cek paket lengkap, cepat, akurat. Status pengiriman bisa dibagikan ke media sosial Faceebok, Twitter, dan Instagram, atau via aplikasi pesan Whatsapp dan Telegram.
+        - heading [level=3] [ref=e286]:
+          - text: Cek paket dari
+          - emphasis [ref=e287]: e-commerce
+          - text: favorit
+        - paragraph [ref=e288]:
+          - text: Mengecek semua paket yang dikirim dari toko/penjual
+          - emphasis [ref=e289]
+          - text: di Shopee, Tokopedia, Lazada, Blibli, Bukalapak, Zalora, Tiktok Shop, dan lainnya.
+        - heading "Cek kiriman barang dari luar negeri" [level=3] [ref=e290]
+        - paragraph [ref=e291]:
+          - emphasis [ref=e292]: Cekresi
+          - text: membantu kamu lacak semua paket dari luar negeri yang dikirim dengan EMS, DHL, FedEx, dan kurir global lainnya.
+        - heading "Cek pesanan cash on delivery (COD)" [level=3] [ref=e293]
+        - paragraph [ref=e294]: Beli barang bayarnya di rumah? Cek semua pesanan yang dibayar secara tunai kepada kurir setelah barang diterima.
+      - paragraph [ref=e296]:
+        - img "Fun IQ Booster" [ref=e297]
+        - strong [ref=e298]: "Challenge hari ini:"
+        - text: Seberapa sering kamu bilang 'aku sudah tahu' padahal sebenarnya masih penasaran di dalam?
+        - link "Siapa Takut???" [ref=e299] [cursor=pointer]:
+          - /url: https://cekresi.com/iqbooster/
+    - insertion [ref=e301]
+  - generic [ref=e303]:
+    - generic [ref=e309]:
+      - link [ref=e310] [cursor=pointer]:
+        - /url: https://www.facebook.com/cekresicom/
+        - img "facebook" [ref=e311]
+      - link [ref=e312] [cursor=pointer]:
+        - /url: https://twitter.com/cekresicom
+        - img "twitter" [ref=e313]
+      - link [ref=e314] [cursor=pointer]:
+        - /url: https://www.instagram.com/cekresicom/
+        - img "instagram" [ref=e315]
+    - contentinfo [ref=e316]:
+      - generic [ref=e318]:
+        - paragraph [ref=e321]: Situs dan layanan ini tidak berafiliasi dengan ekspedisi manapun. Nama, logo, dan merek lain adalah hak milik dari masing-masing pemiliknya. Kami tidak bertanggungjawab atas penyalahgunaan, kerusakan, keterlambatan, kerugian materi dan non materi yang mungkin timbul akibat penggunaan layanan ini.
+        - generic [ref=e323]:
+          - generic [ref=e324]:
+            - generic [ref=e325]:
+              - img "Cek Resi" [ref=e326]
+              - paragraph [ref=e327]: Bantu kamu lacak semua paket.
+            - generic [ref=e328]:
+              - heading "Cekresi.com" [level=5] [ref=e329]
+              - list [ref=e330]:
+                - listitem [ref=e331]:
+                  - link "About" [ref=e332] [cursor=pointer]:
+                    - /url: https://cekresi.com/tentang-kami/
+                - listitem [ref=e333]:
+                  - link "Contact" [ref=e334] [cursor=pointer]:
+                    - /url: https://cekresi.com/contact.php
+                - listitem [ref=e335]:
+                  - link "Term" [ref=e336] [cursor=pointer]:
+                    - /url: https://cekresi.com/term-and-conditions.php
+                - listitem [ref=e337]:
+                  - link "Privacy Policy" [ref=e338] [cursor=pointer]:
+                    - /url: https://cekresi.com/privacy-policy.php
+            - generic [ref=e339]:
+              - heading "Products" [level=5] [ref=e340]
+              - list [ref=e341]:
+                - listitem [ref=e342]:
+                  - link "Cek Resi" [ref=e343] [cursor=pointer]:
+                    - /url: https://cekresi.com/
+                - listitem [ref=e344]:
+                  - link "Cek Ongkir" [ref=e345] [cursor=pointer]:
+                    - /url: https://ongkir.cekresi.com/
+                - listitem [ref=e346]:
+                  - link "Forum" [ref=e347] [cursor=pointer]:
+                    - /url: https://tanyapaket.cekresi.com/
+                - listitem [ref=e348]:
+                  - link "Harga Emas" [ref=e349] [cursor=pointer]:
+                    - /url: https://cekresi.com/emas/
+                - listitem [ref=e350]:
+                  - link "API" [ref=e351] [cursor=pointer]:
+                    - /url: https://cekresi.com/api.php
+            - generic [ref=e352]:
+              - heading "Free Tools" [level=5] [ref=e353]
+              - list [ref=e354]:
+                - listitem [ref=e355]:
+                  - link "Widget" [ref=e356] [cursor=pointer]:
+                    - /url: https://cekresi.com/widget-cek-resi.php
+                - listitem [ref=e357]:
+                  - link "QR Generator" [ref=e358] [cursor=pointer]:
+                    - /url: https://cekresi.com/barcode/
+                - listitem [ref=e359]:
+                  - link "Scan Barcode" [ref=e360] [cursor=pointer]:
+                    - /url: https://cekresi.com/scan/
+                - listitem [ref=e361]:
+                  - link "Send Whatsapp" [ref=e362] [cursor=pointer]:
+                    - /url: https://cekresi.com/wa/
+                - listitem [ref=e363]:
+                  - link "Hitung Volumetrik" [ref=e364] [cursor=pointer]:
+                    - /url: https://cekresi.com/volume/
+          - generic [ref=e365]: Cekresi.com © 2026

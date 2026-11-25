@@ -1,0 +1,620 @@
+- generic [active] [ref=f34e1]:
+  - complementary [ref=f34e3]:
+    - generic [ref=f34e4]:
+      - link "FD" [ref=f34e5] [cursor=pointer]:
+        - /url: /
+      - generic [ref=f34e7]: FinDash
+      - button "Close menu" [ref=f34e8] [cursor=pointer]
+    - navigation [ref=f34e12]:
+      - link "Dashboard" [ref=f34e13] [cursor=pointer]:
+        - /url: /
+      - link "Transactions" [ref=f34e20] [cursor=pointer]:
+        - /url: /transactions
+      - link "Analytics" [ref=f34e25] [cursor=pointer]:
+        - /url: /analytics
+      - link "Planning" [ref=f34e30] [cursor=pointer]:
+        - /url: /goals
+      - link "Settings" [ref=f34e36] [cursor=pointer]:
+        - /url: /settings
+      - link "Budget" [ref=f34e43] [cursor=pointer]:
+        - /url: /budget
+      - link "Budget Pace" [ref=f34e48] [cursor=pointer]:
+        - /url: /budget-pace
+      - link "Savings" [ref=f34e52] [cursor=pointer]:
+        - /url: /savings-rate
+      - link "Calendar" [ref=f34e57] [cursor=pointer]:
+        - /url: /calendar
+      - link "Runway" [ref=f34e61] [cursor=pointer]:
+        - /url: /runway
+      - link "Credit" [ref=f34e65] [cursor=pointer]:
+        - /url: /credit-card
+      - paragraph [ref=f34e69]: Analytics
+      - link "Streaks" [ref=f34e70] [cursor=pointer]:
+        - /url: /streaks
+      - link "Achievements" [ref=f34e74] [cursor=pointer]:
+        - /url: /achievements
+      - link "Health Score" [ref=f34e82] [cursor=pointer]:
+        - /url: /health
+      - link "Spending Mix" [ref=f34e86] [cursor=pointer]:
+        - /url: /spending-mix
+      - link "Rhythm" [ref=f34e92] [cursor=pointer]:
+        - /url: /spending-rhythm
+      - link "Spending DNA" [ref=f34e96] [cursor=pointer]:
+        - /url: /dna
+      - link "Category Matrix" [ref=f34e100] [cursor=pointer]:
+        - /url: /matrix
+      - link "Merchants" [ref=f34e104] [cursor=pointer]:
+        - /url: /merchants
+      - paragraph [ref=f34e109]: Planning
+      - link "FIRE" [ref=f34e110] [cursor=pointer]:
+        - /url: /fire
+      - link "What-If" [ref=f34e114] [cursor=pointer]:
+        - /url: /what-if
+      - link "Forecast" [ref=f34e118] [cursor=pointer]:
+        - /url: /forecast
+      - link "Portfolio" [ref=f34e123] [cursor=pointer]:
+        - /url: /portfolio
+      - link "Net Worth" [ref=f34e128] [cursor=pointer]:
+        - /url: /networth
+      - paragraph [ref=f34e133]: Reports
+      - link "Weekly" [ref=f34e134] [cursor=pointer]:
+        - /url: /weekly
+      - link "Monthly" [ref=f34e138] [cursor=pointer]:
+        - /url: /report
+      - link "Yearly" [ref=f34e143] [cursor=pointer]:
+        - /url: /yearly
+      - link "Compare" [ref=f34e147] [cursor=pointer]:
+        - /url: /compare
+      - link "Cashflow" [ref=f34e154] [cursor=pointer]:
+        - /url: /cashflow
+      - link "Recurring" [ref=f34e158] [cursor=pointer]:
+        - /url: /recurring
+      - link "Recurring Audit" [ref=f34e165] [cursor=pointer]:
+        - /url: /recurring-audit
+      - link "Tips" [ref=f34e170] [cursor=pointer]:
+        - /url: /recommendations
+    - button "Alerts, 31 active" [ref=f34e179] [cursor=pointer]:
+      - generic [ref=f34e183]: 31 alerts
+      - generic [ref=f34e184]: "31"
+  - generic [ref=f34e185]:
+    - button "Open menu" [ref=f34e186] [cursor=pointer]
+    - button "Search pages and actions" [ref=f34e189] [cursor=pointer]:
+      - generic [ref=f34e192]: Search…
+    - generic [ref=f34e193]:
+      - link "Settings" [ref=f34e194] [cursor=pointer]:
+        - /url: /settings
+      - button "Toggle theme" [ref=f34e198] [cursor=pointer]: 🌙
+      - generic [ref=f34e199]: ⚡ Admin
+      - button "Logout" [ref=f34e200] [cursor=pointer]: ⏻
+  - main [ref=f34e203]:
+    - generic [ref=f34e204]:
+      - heading "Settings" [level=1] [ref=f34e205]
+      - generic [ref=f34e207]:
+        - generic [ref=f34e208]: Data Export
+        - generic [ref=f34e214]:
+          - button "Export JSON (All)" [ref=f34e215] [cursor=pointer]
+          - button "Export Transactions CSV" [ref=f34e216] [cursor=pointer]
+          - button "Export Networth CSV" [ref=f34e217] [cursor=pointer]
+          - button "Export Summary CSV" [ref=f34e218] [cursor=pointer]
+      - generic [ref=f34e220]:
+        - heading "Import Data" [level=3] [ref=f34e221]
+        - generic [ref=f34e222]:
+          - text: File (JSON or CSV)
+          - button "File (JSON or CSV)" [ref=f34e223]
+      - generic [ref=f34e225]:
+        - heading "Monthly Income" [level=3] [ref=f34e226]
+        - generic [ref=f34e227]:
+          - generic [ref=f34e228]:
+            - text: Month
+            - generic [ref=f34e229]:
+              - combobox [ref=f34e230]:
+                - option "January" [selected]
+                - option "February"
+                - option "March"
+                - option "April"
+                - option "May"
+                - option "June"
+                - option "July"
+                - option "August"
+                - option "September"
+                - option "October"
+                - option "November"
+                - option "December"
+              - spinbutton [ref=f34e231]: "2026"
+          - generic [ref=f34e232]:
+            - text: Income
+            - spinbutton "0" [ref=f34e233]
+          - generic [ref=f34e234]:
+            - text: Other Income
+            - spinbutton "0" [ref=f34e235]
+          - button "Add / Update" [ref=f34e236] [cursor=pointer]
+        - generic [ref=f34e237]:
+          - generic [ref=f34e238]:
+            - generic [ref=f34e239]:
+              - paragraph [ref=f34e240]: September 2023
+              - paragraph [ref=f34e241]: Income IDR 10.900.000 · Other IDR 0
+            - generic [ref=f34e242]:
+              - generic [ref=f34e243]: IDR 10.900.000
+              - generic [ref=f34e244]:
+                - button "Edit" [ref=f34e245] [cursor=pointer]
+                - button "Delete" [ref=f34e246] [cursor=pointer]
+          - generic [ref=f34e247]:
+            - generic [ref=f34e248]:
+              - paragraph [ref=f34e249]: October 2023
+              - paragraph [ref=f34e250]: Income IDR 9.100.000 · Other IDR 0
+            - generic [ref=f34e251]:
+              - generic [ref=f34e252]: IDR 9.100.000
+              - generic [ref=f34e253]:
+                - button "Edit" [ref=f34e254] [cursor=pointer]
+                - button "Delete" [ref=f34e255] [cursor=pointer]
+          - generic [ref=f34e256]:
+            - generic [ref=f34e257]:
+              - paragraph [ref=f34e258]: November 2023
+              - paragraph [ref=f34e259]: Income IDR 8.900.000 · Other IDR 0
+            - generic [ref=f34e260]:
+              - generic [ref=f34e261]: IDR 8.900.000
+              - generic [ref=f34e262]:
+                - button "Edit" [ref=f34e263] [cursor=pointer]
+                - button "Delete" [ref=f34e264] [cursor=pointer]
+          - generic [ref=f34e265]:
+            - generic [ref=f34e266]:
+              - paragraph [ref=f34e267]: December 2023
+              - paragraph [ref=f34e268]: Income IDR 8.900.000 · Other IDR 0
+            - generic [ref=f34e269]:
+              - generic [ref=f34e270]: IDR 8.900.000
+              - generic [ref=f34e271]:
+                - button "Edit" [ref=f34e272] [cursor=pointer]
+                - button "Delete" [ref=f34e273] [cursor=pointer]
+          - generic [ref=f34e274]:
+            - generic [ref=f34e275]:
+              - paragraph [ref=f34e276]: January 2024
+              - paragraph [ref=f34e277]: Income IDR 25.400.000 · Other IDR 0
+            - generic [ref=f34e278]:
+              - generic [ref=f34e279]: IDR 25.400.000
+              - generic [ref=f34e280]:
+                - button "Edit" [ref=f34e281] [cursor=pointer]
+                - button "Delete" [ref=f34e282] [cursor=pointer]
+          - generic [ref=f34e283]:
+            - generic [ref=f34e284]:
+              - paragraph [ref=f34e285]: February 2024
+              - paragraph [ref=f34e286]: Income IDR 8.950.000 · Other IDR 0
+            - generic [ref=f34e287]:
+              - generic [ref=f34e288]: IDR 8.950.000
+              - generic [ref=f34e289]:
+                - button "Edit" [ref=f34e290] [cursor=pointer]
+                - button "Delete" [ref=f34e291] [cursor=pointer]
+          - generic [ref=f34e292]:
+            - generic [ref=f34e293]:
+              - paragraph [ref=f34e294]: March 2024
+              - paragraph [ref=f34e295]: Income IDR 9.400.000 · Other IDR 0
+            - generic [ref=f34e296]:
+              - generic [ref=f34e297]: IDR 9.400.000
+              - generic [ref=f34e298]:
+                - button "Edit" [ref=f34e299] [cursor=pointer]
+                - button "Delete" [ref=f34e300] [cursor=pointer]
+          - generic [ref=f34e301]:
+            - generic [ref=f34e302]:
+              - paragraph [ref=f34e303]: April 2024
+              - paragraph [ref=f34e304]: Income IDR 29.433.333 · Other IDR 0
+            - generic [ref=f34e305]:
+              - generic [ref=f34e306]: IDR 29.433.333
+              - generic [ref=f34e307]:
+                - button "Edit" [ref=f34e308] [cursor=pointer]
+                - button "Delete" [ref=f34e309] [cursor=pointer]
+          - generic [ref=f34e310]:
+            - generic [ref=f34e311]:
+              - paragraph [ref=f34e312]: May 2024
+              - paragraph [ref=f34e313]: Income IDR 17.000.000 · Other IDR 0
+            - generic [ref=f34e314]:
+              - generic [ref=f34e315]: IDR 17.000.000
+              - generic [ref=f34e316]:
+                - button "Edit" [ref=f34e317] [cursor=pointer]
+                - button "Delete" [ref=f34e318] [cursor=pointer]
+          - generic [ref=f34e319]:
+            - generic [ref=f34e320]:
+              - paragraph [ref=f34e321]: June 2024
+              - paragraph [ref=f34e322]: Income IDR 17.000.000 · Other IDR 0
+            - generic [ref=f34e323]:
+              - generic [ref=f34e324]: IDR 17.000.000
+              - generic [ref=f34e325]:
+                - button "Edit" [ref=f34e326] [cursor=pointer]
+                - button "Delete" [ref=f34e327] [cursor=pointer]
+          - generic [ref=f34e328]:
+            - generic [ref=f34e329]:
+              - paragraph [ref=f34e330]: July 2024
+              - paragraph [ref=f34e331]: Income IDR 17.001.000 · Other IDR 0
+            - generic [ref=f34e332]:
+              - generic [ref=f34e333]: IDR 17.001.000
+              - generic [ref=f34e334]:
+                - button "Edit" [ref=f34e335] [cursor=pointer]
+                - button "Delete" [ref=f34e336] [cursor=pointer]
+          - generic [ref=f34e337]:
+            - generic [ref=f34e338]:
+              - paragraph [ref=f34e339]: August 2024
+              - paragraph [ref=f34e340]: Income IDR 17.000.000 · Other IDR 0
+            - generic [ref=f34e341]:
+              - generic [ref=f34e342]: IDR 17.000.000
+              - generic [ref=f34e343]:
+                - button "Edit" [ref=f34e344] [cursor=pointer]
+                - button "Delete" [ref=f34e345] [cursor=pointer]
+          - generic [ref=f34e346]:
+            - generic [ref=f34e347]:
+              - paragraph [ref=f34e348]: September 2024
+              - paragraph [ref=f34e349]: Income IDR 17.000.000 · Other IDR 0
+            - generic [ref=f34e350]:
+              - generic [ref=f34e351]: IDR 17.000.000
+              - generic [ref=f34e352]:
+                - button "Edit" [ref=f34e353] [cursor=pointer]
+                - button "Delete" [ref=f34e354] [cursor=pointer]
+          - generic [ref=f34e355]:
+            - generic [ref=f34e356]:
+              - paragraph [ref=f34e357]: October 2024
+              - paragraph [ref=f34e358]: Income IDR 10.000.000 · Other IDR 0
+            - generic [ref=f34e359]:
+              - generic [ref=f34e360]: IDR 10.000.000
+              - generic [ref=f34e361]:
+                - button "Edit" [ref=f34e362] [cursor=pointer]
+                - button "Delete" [ref=f34e363] [cursor=pointer]
+          - generic [ref=f34e364]:
+            - generic [ref=f34e365]:
+              - paragraph [ref=f34e366]: November 2024
+              - paragraph [ref=f34e367]: Income IDR 10.000.000 · Other IDR 0
+            - generic [ref=f34e368]:
+              - generic [ref=f34e369]: IDR 10.000.000
+              - generic [ref=f34e370]:
+                - button "Edit" [ref=f34e371] [cursor=pointer]
+                - button "Delete" [ref=f34e372] [cursor=pointer]
+          - generic [ref=f34e373]:
+            - generic [ref=f34e374]:
+              - paragraph [ref=f34e375]: December 2024
+              - paragraph [ref=f34e376]: Income IDR 10.000.000 · Other IDR 0
+            - generic [ref=f34e377]:
+              - generic [ref=f34e378]: IDR 10.000.000
+              - generic [ref=f34e379]:
+                - button "Edit" [ref=f34e380] [cursor=pointer]
+                - button "Delete" [ref=f34e381] [cursor=pointer]
+          - generic [ref=f34e382]:
+            - generic [ref=f34e383]:
+              - paragraph [ref=f34e384]: January 2025
+              - paragraph [ref=f34e385]: Income IDR 10.000.000 · Other IDR 0
+            - generic [ref=f34e386]:
+              - generic [ref=f34e387]: IDR 10.000.000
+              - generic [ref=f34e388]:
+                - button "Edit" [ref=f34e389] [cursor=pointer]
+                - button "Delete" [ref=f34e390] [cursor=pointer]
+          - generic [ref=f34e391]:
+            - generic [ref=f34e392]:
+              - paragraph [ref=f34e393]: February 2025
+              - paragraph [ref=f34e394]: Income IDR 18.500.000 · Other IDR 0
+            - generic [ref=f34e395]:
+              - generic [ref=f34e396]: IDR 18.500.000
+              - generic [ref=f34e397]:
+                - button "Edit" [ref=f34e398] [cursor=pointer]
+                - button "Delete" [ref=f34e399] [cursor=pointer]
+          - generic [ref=f34e400]:
+            - generic [ref=f34e401]:
+              - paragraph [ref=f34e402]: March 2025
+              - paragraph [ref=f34e403]: Income IDR 15.000.000 · Other IDR 0
+            - generic [ref=f34e404]:
+              - generic [ref=f34e405]: IDR 15.000.000
+              - generic [ref=f34e406]:
+                - button "Edit" [ref=f34e407] [cursor=pointer]
+                - button "Delete" [ref=f34e408] [cursor=pointer]
+          - generic [ref=f34e409]:
+            - generic [ref=f34e410]:
+              - paragraph [ref=f34e411]: April 2025
+              - paragraph [ref=f34e412]: Income IDR 18.000.000 · Other IDR 0
+            - generic [ref=f34e413]:
+              - generic [ref=f34e414]: IDR 18.000.000
+              - generic [ref=f34e415]:
+                - button "Edit" [ref=f34e416] [cursor=pointer]
+                - button "Delete" [ref=f34e417] [cursor=pointer]
+          - generic [ref=f34e418]:
+            - generic [ref=f34e419]:
+              - paragraph [ref=f34e420]: May 2025
+              - paragraph [ref=f34e421]: Income IDR 10.000.000 · Other IDR 0
+            - generic [ref=f34e422]:
+              - generic [ref=f34e423]: IDR 10.000.000
+              - generic [ref=f34e424]:
+                - button "Edit" [ref=f34e425] [cursor=pointer]
+                - button "Delete" [ref=f34e426] [cursor=pointer]
+          - generic [ref=f34e427]:
+            - generic [ref=f34e428]:
+              - paragraph [ref=f34e429]: June 2025
+              - paragraph [ref=f34e430]: Income IDR 10.000.000 · Other IDR 0
+            - generic [ref=f34e431]:
+              - generic [ref=f34e432]: IDR 10.000.000
+              - generic [ref=f34e433]:
+                - button "Edit" [ref=f34e434] [cursor=pointer]
+                - button "Delete" [ref=f34e435] [cursor=pointer]
+          - generic [ref=f34e436]:
+            - generic [ref=f34e437]:
+              - paragraph [ref=f34e438]: July 2025
+              - paragraph [ref=f34e439]: Income IDR 10.000.000 · Other IDR 0
+            - generic [ref=f34e440]:
+              - generic [ref=f34e441]: IDR 10.000.000
+              - generic [ref=f34e442]:
+                - button "Edit" [ref=f34e443] [cursor=pointer]
+                - button "Delete" [ref=f34e444] [cursor=pointer]
+          - generic [ref=f34e445]:
+            - generic [ref=f34e446]:
+              - paragraph [ref=f34e447]: August 2025
+              - paragraph [ref=f34e448]: Income IDR 18.514.000 · Other IDR 0
+            - generic [ref=f34e449]:
+              - generic [ref=f34e450]: IDR 18.514.000
+              - generic [ref=f34e451]:
+                - button "Edit" [ref=f34e452] [cursor=pointer]
+                - button "Delete" [ref=f34e453] [cursor=pointer]
+          - generic [ref=f34e454]:
+            - generic [ref=f34e455]:
+              - paragraph [ref=f34e456]: September 2025
+              - paragraph [ref=f34e457]: Income IDR 18.500.000 · Other IDR 0
+            - generic [ref=f34e458]:
+              - generic [ref=f34e459]: IDR 18.500.000
+              - generic [ref=f34e460]:
+                - button "Edit" [ref=f34e461] [cursor=pointer]
+                - button "Delete" [ref=f34e462] [cursor=pointer]
+          - generic [ref=f34e463]:
+            - generic [ref=f34e464]:
+              - paragraph [ref=f34e465]: October 2025
+              - paragraph [ref=f34e466]: Income IDR 18.500.000 · Other IDR 0
+            - generic [ref=f34e467]:
+              - generic [ref=f34e468]: IDR 18.500.000
+              - generic [ref=f34e469]:
+                - button "Edit" [ref=f34e470] [cursor=pointer]
+                - button "Delete" [ref=f34e471] [cursor=pointer]
+          - generic [ref=f34e472]:
+            - generic [ref=f34e473]:
+              - paragraph [ref=f34e474]: November 2025
+              - paragraph [ref=f34e475]: Income IDR 18.500.000 · Other IDR 0
+            - generic [ref=f34e476]:
+              - generic [ref=f34e477]: IDR 18.500.000
+              - generic [ref=f34e478]:
+                - button "Edit" [ref=f34e479] [cursor=pointer]
+                - button "Delete" [ref=f34e480] [cursor=pointer]
+          - generic [ref=f34e481]:
+            - generic [ref=f34e482]:
+              - paragraph [ref=f34e483]: December 2025
+              - paragraph [ref=f34e484]: Income IDR 23.950.000 · Other IDR 0
+            - generic [ref=f34e485]:
+              - generic [ref=f34e486]: IDR 23.950.000
+              - generic [ref=f34e487]:
+                - button "Edit" [ref=f34e488] [cursor=pointer]
+                - button "Delete" [ref=f34e489] [cursor=pointer]
+          - generic [ref=f34e490]:
+            - generic [ref=f34e491]:
+              - paragraph [ref=f34e492]: January 2026
+              - paragraph [ref=f34e493]: Income IDR 18.500.000 · Other IDR 0
+            - generic [ref=f34e494]:
+              - generic [ref=f34e495]: IDR 18.500.000
+              - generic [ref=f34e496]:
+                - button "Edit" [ref=f34e497] [cursor=pointer]
+                - button "Delete" [ref=f34e498] [cursor=pointer]
+          - generic [ref=f34e499]:
+            - generic [ref=f34e500]:
+              - paragraph [ref=f34e501]: February 2026
+              - paragraph [ref=f34e502]: Income IDR 10.000.000 · Other IDR 0
+            - generic [ref=f34e503]:
+              - generic [ref=f34e504]: IDR 10.000.000
+              - generic [ref=f34e505]:
+                - button "Edit" [ref=f34e506] [cursor=pointer]
+                - button "Delete" [ref=f34e507] [cursor=pointer]
+          - generic [ref=f34e508]:
+            - generic [ref=f34e509]:
+              - paragraph [ref=f34e510]: March 2026
+              - paragraph [ref=f34e511]: Income IDR 28.500.000 · Other IDR 0
+            - generic [ref=f34e512]:
+              - generic [ref=f34e513]: IDR 28.500.000
+              - generic [ref=f34e514]:
+                - button "Edit" [ref=f34e515] [cursor=pointer]
+                - button "Delete" [ref=f34e516] [cursor=pointer]
+          - generic [ref=f34e517]:
+            - generic [ref=f34e518]:
+              - paragraph [ref=f34e519]: April 2026
+              - paragraph [ref=f34e520]: Income IDR 20.500.000 · Other IDR 0
+            - generic [ref=f34e521]:
+              - generic [ref=f34e522]: IDR 20.500.000
+              - generic [ref=f34e523]:
+                - button "Edit" [ref=f34e524] [cursor=pointer]
+                - button "Delete" [ref=f34e525] [cursor=pointer]
+          - generic [ref=f34e526]:
+            - generic [ref=f34e527]:
+              - paragraph [ref=f34e528]: May 2026
+              - paragraph [ref=f34e529]: Income IDR 18.500.000 · Other IDR 0
+            - generic [ref=f34e530]:
+              - generic [ref=f34e531]: IDR 18.500.000
+              - generic [ref=f34e532]:
+                - button "Edit" [ref=f34e533] [cursor=pointer]
+                - button "Delete" [ref=f34e534] [cursor=pointer]
+          - generic [ref=f34e535]:
+            - generic [ref=f34e536]:
+              - paragraph [ref=f34e537]: June 2026
+              - paragraph [ref=f34e538]: Income IDR 18.000.000 · Other IDR 800.000
+            - generic [ref=f34e539]:
+              - generic [ref=f34e540]: IDR 18.800.000
+              - generic [ref=f34e541]:
+                - button "Edit" [ref=f34e542] [cursor=pointer]
+                - button "Delete" [ref=f34e543] [cursor=pointer]
+          - generic [ref=f34e544]:
+            - generic [ref=f34e545]:
+              - paragraph [ref=f34e546]: July 2026
+              - paragraph [ref=f34e547]: Income IDR 18.000.000 · Other IDR 0
+            - generic [ref=f34e548]:
+              - generic [ref=f34e549]: IDR 18.000.000
+              - generic [ref=f34e550]:
+                - button "Edit" [ref=f34e551] [cursor=pointer]
+                - button "Delete" [ref=f34e552] [cursor=pointer]
+          - generic [ref=f34e553]:
+            - generic [ref=f34e554]:
+              - paragraph [ref=f34e555]: August 2026
+              - paragraph [ref=f34e556]: Income IDR 18.000.000 · Other IDR 0
+            - generic [ref=f34e557]:
+              - generic [ref=f34e558]: IDR 18.000.000
+              - generic [ref=f34e559]:
+                - button "Edit" [ref=f34e560] [cursor=pointer]
+                - button "Delete" [ref=f34e561] [cursor=pointer]
+          - generic [ref=f34e562]:
+            - generic [ref=f34e563]:
+              - paragraph [ref=f34e564]: September 2026
+              - paragraph [ref=f34e565]: Income IDR 23.000.000 · Other IDR 0
+            - generic [ref=f34e566]:
+              - generic [ref=f34e567]: IDR 23.000.000
+              - generic [ref=f34e568]:
+                - button "Edit" [ref=f34e569] [cursor=pointer]
+                - button "Delete" [ref=f34e570] [cursor=pointer]
+          - generic [ref=f34e571]:
+            - generic [ref=f34e572]:
+              - paragraph [ref=f34e573]: October 2026
+              - paragraph [ref=f34e574]: Income IDR 23.000.000 · Other IDR 0
+            - generic [ref=f34e575]:
+              - generic [ref=f34e576]: IDR 23.000.000
+              - generic [ref=f34e577]:
+                - button "Edit" [ref=f34e578] [cursor=pointer]
+                - button "Delete" [ref=f34e579] [cursor=pointer]
+      - generic [ref=f34e581]:
+        - heading "Categories" [level=3] [ref=f34e582]
+        - button "+ Add Category" [ref=f34e583] [cursor=pointer]
+        - generic [ref=f34e584]:
+          - generic [ref=f34e585]:
+            - generic [ref=f34e588]:
+              - paragraph [ref=f34e589]: Belanja
+              - paragraph [ref=f34e590]: IDR 3.000.000
+            - generic [ref=f34e591]:
+              - button "Edit" [ref=f34e592] [cursor=pointer]
+              - button "Delete" [ref=f34e593] [cursor=pointer]
+          - generic [ref=f34e594]:
+            - generic [ref=f34e597]:
+              - paragraph [ref=f34e598]: Belanja Pribadi
+              - paragraph [ref=f34e599]: IDR 1.000.000
+            - generic [ref=f34e600]:
+              - button "Edit" [ref=f34e601] [cursor=pointer]
+              - button "Delete" [ref=f34e602] [cursor=pointer]
+          - generic [ref=f34e603]:
+            - generic [ref=f34e606]:
+              - paragraph [ref=f34e607]: Cash Pribadi
+              - paragraph [ref=f34e608]: IDR 500.000
+            - generic [ref=f34e609]:
+              - button "Edit" [ref=f34e610] [cursor=pointer]
+              - button "Delete" [ref=f34e611] [cursor=pointer]
+          - generic [ref=f34e612]:
+            - generic [ref=f34e615]:
+              - paragraph [ref=f34e616]: Cash Rumah Bulanan
+              - paragraph [ref=f34e617]: IDR 500.000
+            - generic [ref=f34e618]:
+              - button "Edit" [ref=f34e619] [cursor=pointer]
+              - button "Delete" [ref=f34e620] [cursor=pointer]
+          - generic [ref=f34e621]:
+            - generic [ref=f34e624]:
+              - paragraph [ref=f34e625]: Credit Card
+              - paragraph [ref=f34e626]: No limit
+            - generic [ref=f34e627]:
+              - button "Edit" [ref=f34e628] [cursor=pointer]
+              - button "Delete" [ref=f34e629] [cursor=pointer]
+          - generic [ref=f34e630]:
+            - generic [ref=f34e633]:
+              - paragraph [ref=f34e634]: Family
+              - paragraph [ref=f34e635]: IDR 1.700.000
+            - generic [ref=f34e636]:
+              - button "Edit" [ref=f34e637] [cursor=pointer]
+              - button "Delete" [ref=f34e638] [cursor=pointer]
+          - generic [ref=f34e639]:
+            - generic [ref=f34e642]:
+              - paragraph [ref=f34e643]: Hiburan
+              - paragraph [ref=f34e644]: No limit
+            - generic [ref=f34e645]:
+              - button "Edit" [ref=f34e646] [cursor=pointer]
+              - button "Delete" [ref=f34e647] [cursor=pointer]
+          - generic [ref=f34e648]:
+            - generic [ref=f34e651]:
+              - paragraph [ref=f34e652]: Invest
+              - paragraph [ref=f34e653]: IDR 2.000.000
+            - generic [ref=f34e654]:
+              - button "Edit" [ref=f34e655] [cursor=pointer]
+              - button "Delete" [ref=f34e656] [cursor=pointer]
+          - generic [ref=f34e657]:
+            - generic [ref=f34e660]:
+              - paragraph [ref=f34e661]: Istri
+              - paragraph [ref=f34e662]: IDR 3.200.000
+            - generic [ref=f34e663]:
+              - button "Edit" [ref=f34e664] [cursor=pointer]
+              - button "Delete" [ref=f34e665] [cursor=pointer]
+          - generic [ref=f34e666]:
+            - generic [ref=f34e669]:
+              - paragraph [ref=f34e670]: Langganan
+              - paragraph [ref=f34e671]: No limit
+            - generic [ref=f34e672]:
+              - button "Edit" [ref=f34e673] [cursor=pointer]
+              - button "Delete" [ref=f34e674] [cursor=pointer]
+          - generic [ref=f34e675]:
+            - generic [ref=f34e678]:
+              - paragraph [ref=f34e679]: Makanan
+              - paragraph [ref=f34e680]: No limit
+            - generic [ref=f34e681]:
+              - button "Edit" [ref=f34e682] [cursor=pointer]
+              - button "Delete" [ref=f34e683] [cursor=pointer]
+          - generic [ref=f34e684]:
+            - generic [ref=f34e687]:
+              - paragraph [ref=f34e688]: Peliharaan
+              - paragraph [ref=f34e689]: No limit
+            - generic [ref=f34e690]:
+              - button "Edit" [ref=f34e691] [cursor=pointer]
+              - button "Delete" [ref=f34e692] [cursor=pointer]
+          - generic [ref=f34e693]:
+            - generic [ref=f34e696]:
+              - paragraph [ref=f34e697]: Qurban
+              - paragraph [ref=f34e698]: No limit
+            - generic [ref=f34e699]:
+              - button "Edit" [ref=f34e700] [cursor=pointer]
+              - button "Delete" [ref=f34e701] [cursor=pointer]
+          - generic [ref=f34e702]:
+            - generic [ref=f34e705]:
+              - paragraph [ref=f34e706]: Rumah Bulanan
+              - paragraph [ref=f34e707]: No limit
+            - generic [ref=f34e708]:
+              - button "Edit" [ref=f34e709] [cursor=pointer]
+              - button "Delete" [ref=f34e710] [cursor=pointer]
+          - generic [ref=f34e711]:
+            - generic [ref=f34e714]:
+              - paragraph [ref=f34e715]: Tagihan
+              - paragraph [ref=f34e716]: IDR 3.500.000
+            - generic [ref=f34e717]:
+              - button "Edit" [ref=f34e718] [cursor=pointer]
+              - button "Delete" [ref=f34e719] [cursor=pointer]
+          - generic [ref=f34e720]:
+            - generic [ref=f34e723]:
+              - paragraph [ref=f34e724]: Test
+              - paragraph [ref=f34e725]: No limit
+            - generic [ref=f34e726]:
+              - button "Edit" [ref=f34e727] [cursor=pointer]
+              - button "Delete" [ref=f34e728] [cursor=pointer]
+          - generic [ref=f34e729]:
+            - generic [ref=f34e732]:
+              - paragraph [ref=f34e733]: Transportasi
+              - paragraph [ref=f34e734]: No limit
+            - generic [ref=f34e735]:
+              - button "Edit" [ref=f34e736] [cursor=pointer]
+              - button "Delete" [ref=f34e737] [cursor=pointer]
+          - generic [ref=f34e738]:
+            - generic [ref=f34e741]:
+              - paragraph [ref=f34e742]: Zakat
+              - paragraph [ref=f34e743]: No limit
+            - generic [ref=f34e744]:
+              - button "Edit" [ref=f34e745] [cursor=pointer]
+              - button "Delete" [ref=f34e746] [cursor=pointer]
+  - navigation [ref=f34e748]:
+    - link "Home" [ref=f34e749] [cursor=pointer]:
+      - /url: /
+    - link "Txns" [ref=f34e756] [cursor=pointer]:
+      - /url: /transactions
+    - button "Quick add transaction" [ref=f34e761] [cursor=pointer]
+    - link "Analytics" [ref=f34e763] [cursor=pointer]:
+      - /url: /analytics
+    - link "Planning" [ref=f34e768] [cursor=pointer]:
+      - /url: /goals
+  - generic:
+    - region "Notifications alt+T"
+  - generic [ref=f34e776]:
+    - button [ref=f34e777]
+    - button [ref=f34e783]
+    - button [ref=f34e787]
+    - button [ref=f34e792]

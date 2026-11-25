@@ -1,0 +1,400 @@
+- generic [active] [ref=f47e1]:
+  - complementary [ref=f47e3]:
+    - generic [ref=f47e4]:
+      - link "FD" [ref=f47e5] [cursor=pointer]:
+        - /url: /
+      - generic [ref=f47e7]: FinDash
+      - button "Toggle sidebar" [ref=f47e8] [cursor=pointer]
+    - navigation [ref=f47e12]:
+      - link "Dashboard" [ref=f47e13] [cursor=pointer]:
+        - /url: /
+      - link "Transactions" [ref=f47e20] [cursor=pointer]:
+        - /url: /transactions
+      - link "Analytics" [ref=f47e25] [cursor=pointer]:
+        - /url: /analytics
+      - link "Planning" [ref=f47e30] [cursor=pointer]:
+        - /url: /goals
+      - link "Settings" [ref=f47e36] [cursor=pointer]:
+        - /url: /settings
+      - link "Budget" [ref=f47e42] [cursor=pointer]:
+        - /url: /budget
+      - link "Budget Pace" [ref=f47e48] [cursor=pointer]:
+        - /url: /budget-pace
+      - link "Savings" [ref=f47e52] [cursor=pointer]:
+        - /url: /savings-rate
+      - link "Calendar" [ref=f47e57] [cursor=pointer]:
+        - /url: /calendar
+      - link "Runway" [ref=f47e61] [cursor=pointer]:
+        - /url: /runway
+      - link "Credit" [ref=f47e65] [cursor=pointer]:
+        - /url: /credit-card
+      - paragraph [ref=f47e69]: Analytics
+      - link "Streaks" [ref=f47e70] [cursor=pointer]:
+        - /url: /streaks
+      - link "Achievements" [ref=f47e74] [cursor=pointer]:
+        - /url: /achievements
+      - link "Health Score" [ref=f47e82] [cursor=pointer]:
+        - /url: /health
+      - link "Spending Mix" [ref=f47e86] [cursor=pointer]:
+        - /url: /spending-mix
+      - link "Rhythm" [ref=f47e92] [cursor=pointer]:
+        - /url: /spending-rhythm
+      - link "Spending DNA" [ref=f47e96] [cursor=pointer]:
+        - /url: /dna
+      - link "Category Matrix" [ref=f47e100] [cursor=pointer]:
+        - /url: /matrix
+      - link "Merchants" [ref=f47e104] [cursor=pointer]:
+        - /url: /merchants
+      - paragraph [ref=f47e109]: Planning
+      - link "FIRE" [ref=f47e110] [cursor=pointer]:
+        - /url: /fire
+      - link "What-If" [ref=f47e114] [cursor=pointer]:
+        - /url: /what-if
+      - link "Forecast" [ref=f47e118] [cursor=pointer]:
+        - /url: /forecast
+      - link "Portfolio" [ref=f47e123] [cursor=pointer]:
+        - /url: /portfolio
+      - link "Net Worth" [ref=f47e128] [cursor=pointer]:
+        - /url: /networth
+      - paragraph [ref=f47e133]: Reports
+      - link "Weekly" [ref=f47e134] [cursor=pointer]:
+        - /url: /weekly
+      - link "Monthly" [ref=f47e138] [cursor=pointer]:
+        - /url: /report
+      - link "Yearly" [ref=f47e143] [cursor=pointer]:
+        - /url: /yearly
+      - link "Compare" [ref=f47e147] [cursor=pointer]:
+        - /url: /compare
+      - link "Cashflow" [ref=f47e154] [cursor=pointer]:
+        - /url: /cashflow
+      - link "Recurring" [ref=f47e158] [cursor=pointer]:
+        - /url: /recurring
+      - link "Recurring Audit" [ref=f47e165] [cursor=pointer]:
+        - /url: /recurring-audit
+      - link "Tips" [ref=f47e170] [cursor=pointer]:
+        - /url: /recommendations
+    - generic [ref=f47e178]:
+      - button "Alerts, 31 active" [ref=f47e179] [cursor=pointer]:
+        - generic [ref=f47e183]: "31"
+        - generic [ref=f47e184]: 31 alerts
+      - generic [ref=f47e185]: 31 alerts
+  - generic [ref=f47e187]:
+    - button "Search pages and actions" [ref=f47e188] [cursor=pointer]:
+      - generic [ref=f47e191]: Search
+      - generic [ref=f47e192]: ⌘K
+    - button "Toggle theme" [ref=f47e193] [cursor=pointer]: 🌙
+    - generic [ref=f47e194]: ⚡ Admin
+    - button "Logout" [ref=f47e195] [cursor=pointer]: ⏻
+    - link "+ Add" [ref=f47e196] [cursor=pointer]:
+      - /url: /add
+  - generic [ref=f47e197]:
+    - main [ref=f47e198]:
+      - generic [ref=f47e199]:
+        - heading "Budget Report" [level=1] [ref=f47e200]
+        - paragraph [ref=f47e201]: Track category budgets and spending against limits
+      - generic [ref=f47e203]:
+        - generic [ref=f47e204]:
+          - generic [ref=f47e205]: "Period:"
+          - combobox [ref=f47e206] [cursor=pointer]:
+            - generic: All Months
+        - generic [ref=f47e209]:
+          - generic [ref=f47e216]:
+            - paragraph [ref=f47e217]: Total Budget
+            - paragraph [ref=f47e218]: IDR 382.500.000
+          - generic [ref=f47e225]:
+            - paragraph [ref=f47e226]: Total Spent
+            - paragraph [ref=f47e227]: IDR 766.052.732
+          - generic [ref=f47e234]:
+            - paragraph [ref=f47e235]: Remaining
+            - paragraph [ref=f47e236]: IDR -383.552.732
+          - generic [ref=f47e242]:
+            - paragraph [ref=f47e243]: Alerts
+            - generic [ref=f47e244]:
+              - generic [ref=f47e245]: 3 Over
+              - generic [ref=f47e246]: 1 Near
+        - heading "Budget vs Actual" [level=3] [ref=f47e248]
+        - generic [ref=f47e251]:
+          - heading "Category Breakdown" [level=3] [ref=f47e252]
+          - table [ref=f47e255]:
+            - rowgroup [ref=f47e256]:
+              - row [ref=f47e257]:
+                - columnheader [ref=f47e258]:
+                  - button "Category" [ref=f47e259] [cursor=pointer]
+                - columnheader [ref=f47e263]:
+                  - button "Budget" [ref=f47e264] [cursor=pointer]
+                - columnheader [ref=f47e268]:
+                  - button "Spent" [ref=f47e269] [cursor=pointer]
+                - columnheader [ref=f47e273]:
+                  - button "Remaining" [ref=f47e274] [cursor=pointer]
+                - columnheader [ref=f47e278]:
+                  - button "Used" [ref=f47e279] [cursor=pointer]
+                - columnheader "Status" [ref=f47e283]
+            - rowgroup [ref=f47e284]:
+              - row [ref=f47e285] [cursor=pointer]:
+                - cell "Belanja Pribadi" [ref=f47e286]
+                - cell "IDR 10.000.000" [ref=f47e290]
+                - cell "IDR 12.256.681" [ref=f47e291]
+                - cell "IDR -2.256.681" [ref=f47e292]
+                - cell "123%" [ref=f47e293]
+                - cell "Over" [ref=f47e298]
+              - row [ref=f47e300] [cursor=pointer]:
+                - cell "Istri" [ref=f47e301]
+                - cell "IDR 70.400.000" [ref=f47e305]
+                - cell "IDR 76.858.981" [ref=f47e306]
+                - cell "IDR -6.458.981" [ref=f47e307]
+                - cell "109%" [ref=f47e308]
+                - cell "Over" [ref=f47e313]
+              - row [ref=f47e315] [cursor=pointer]:
+                - cell "Marriage" [ref=f47e316]
+                - cell "-" [ref=f47e320]
+                - cell "IDR 12.000.000" [ref=f47e321]
+                - cell "-" [ref=f47e322]
+                - cell "No limit" [ref=f47e323]
+                - cell "On Track" [ref=f47e324]
+              - row [ref=f47e326] [cursor=pointer]:
+                - cell "Qurban" [ref=f47e327]
+                - cell "-" [ref=f47e331]
+                - cell "IDR 4.100.000" [ref=f47e332]
+                - cell "-" [ref=f47e333]
+                - cell "No limit" [ref=f47e334]
+                - cell "On Track" [ref=f47e335]
+              - row [ref=f47e337] [cursor=pointer]:
+                - cell "Credit Card" [ref=f47e338]
+                - cell "-" [ref=f47e342]
+                - cell "IDR 307.459.591" [ref=f47e343]
+                - cell "-" [ref=f47e344]
+                - cell "No limit" [ref=f47e345]
+                - cell "On Track" [ref=f47e346]
+              - row [ref=f47e348] [cursor=pointer]:
+                - cell "Internet" [ref=f47e349]
+                - cell "-" [ref=f47e353]
+                - cell "IDR 11.537.475" [ref=f47e354]
+                - cell "-" [ref=f47e355]
+                - cell "No limit" [ref=f47e356]
+                - cell "On Track" [ref=f47e357]
+              - row [ref=f47e359] [cursor=pointer]:
+                - cell "Zakat" [ref=f47e360]
+                - cell "-" [ref=f47e364]
+                - cell "IDR 9.457.500" [ref=f47e365]
+                - cell "-" [ref=f47e366]
+                - cell "No limit" [ref=f47e367]
+                - cell "On Track" [ref=f47e368]
+              - row [ref=f47e370] [cursor=pointer]:
+                - cell "Peliharaan" [ref=f47e371]
+                - cell "-" [ref=f47e375]
+                - cell "IDR 17.206.289" [ref=f47e376]
+                - cell "-" [ref=f47e377]
+                - cell "No limit" [ref=f47e378]
+                - cell "On Track" [ref=f47e379]
+              - row [ref=f47e381] [cursor=pointer]:
+                - cell "Bensin" [ref=f47e382]
+                - cell "-" [ref=f47e386]
+                - cell "IDR 4.840.000" [ref=f47e387]
+                - cell "-" [ref=f47e388]
+                - cell "No limit" [ref=f47e389]
+                - cell "On Track" [ref=f47e390]
+              - row [ref=f47e392] [cursor=pointer]:
+                - cell "Utang" [ref=f47e393]
+                - cell "-" [ref=f47e397]
+                - cell "IDR 2.000.000" [ref=f47e398]
+                - cell "-" [ref=f47e399]
+                - cell "No limit" [ref=f47e400]
+                - cell "On Track" [ref=f47e401]
+              - row [ref=f47e403] [cursor=pointer]:
+                - cell "Parkir" [ref=f47e404]
+                - cell "-" [ref=f47e408]
+                - cell "IDR 2.651.500" [ref=f47e409]
+                - cell "-" [ref=f47e410]
+                - cell "No limit" [ref=f47e411]
+                - cell "On Track" [ref=f47e412]
+              - row [ref=f47e414] [cursor=pointer]:
+                - cell "Others" [ref=f47e415]
+                - cell "-" [ref=f47e419]
+                - cell "IDR 60.511.790" [ref=f47e420]
+                - cell "-" [ref=f47e421]
+                - cell "No limit" [ref=f47e422]
+                - cell "On Track" [ref=f47e423]
+              - row [ref=f47e425] [cursor=pointer]:
+                - cell "Neccessities" [ref=f47e426]
+                - cell "-" [ref=f47e430]
+                - cell "IDR 1.400.000" [ref=f47e431]
+                - cell "-" [ref=f47e432]
+                - cell "No limit" [ref=f47e433]
+                - cell "On Track" [ref=f47e434]
+              - row [ref=f47e436] [cursor=pointer]:
+                - cell "Rumah Bulanan" [ref=f47e437]
+                - cell "-" [ref=f47e441]
+                - cell "IDR 3.500.000" [ref=f47e442]
+                - cell "-" [ref=f47e443]
+                - cell "No limit" [ref=f47e444]
+                - cell "On Track" [ref=f47e445]
+              - row [ref=f47e447] [cursor=pointer]:
+                - cell "DP Indomobil Tyranno" [ref=f47e448]
+                - cell "-" [ref=f47e452]
+                - cell "IDR 12.000.000" [ref=f47e453]
+                - cell "-" [ref=f47e454]
+                - cell "No limit" [ref=f47e455]
+                - cell "On Track" [ref=f47e456]
+              - row [ref=f47e458] [cursor=pointer]:
+                - cell "Biaya" [ref=f47e459]
+                - cell "-" [ref=f47e463]
+                - cell "IDR 60.000" [ref=f47e464]
+                - cell "-" [ref=f47e465]
+                - cell "No limit" [ref=f47e466]
+                - cell "On Track" [ref=f47e467]
+              - row [ref=f47e469] [cursor=pointer]:
+                - cell "Obat" [ref=f47e470]
+                - cell "-" [ref=f47e474]
+                - cell "IDR 475.796" [ref=f47e475]
+                - cell "-" [ref=f47e476]
+                - cell "No limit" [ref=f47e477]
+                - cell "On Track" [ref=f47e478]
+              - row [ref=f47e480] [cursor=pointer]:
+                - cell "Makanan" [ref=f47e481]
+                - cell "-" [ref=f47e485]
+                - cell "IDR 11.931.436" [ref=f47e486]
+                - cell "-" [ref=f47e487]
+                - cell "No limit" [ref=f47e488]
+                - cell "On Track" [ref=f47e489]
+              - row [ref=f47e491] [cursor=pointer]:
+                - cell "Berobat" [ref=f47e492]
+                - cell "-" [ref=f47e496]
+                - cell "IDR 175.000" [ref=f47e497]
+                - cell "-" [ref=f47e498]
+                - cell "No limit" [ref=f47e499]
+                - cell "On Track" [ref=f47e500]
+              - row [ref=f47e502] [cursor=pointer]:
+                - cell "Hiburan" [ref=f47e503]
+                - cell "-" [ref=f47e507]
+                - cell "IDR 2.125.279" [ref=f47e508]
+                - cell "-" [ref=f47e509]
+                - cell "No limit" [ref=f47e510]
+                - cell "On Track" [ref=f47e511]
+              - row [ref=f47e513] [cursor=pointer]:
+                - cell "Dokter" [ref=f47e514]
+                - cell "-" [ref=f47e518]
+                - cell "IDR 275.000" [ref=f47e519]
+                - cell "-" [ref=f47e520]
+                - cell "No limit" [ref=f47e521]
+                - cell "On Track" [ref=f47e522]
+              - row [ref=f47e524] [cursor=pointer]:
+                - cell "Shopee" [ref=f47e525]
+                - cell "-" [ref=f47e529]
+                - cell "IDR 585.793" [ref=f47e530]
+                - cell "-" [ref=f47e531]
+                - cell "No limit" [ref=f47e532]
+                - cell "On Track" [ref=f47e533]
+              - row [ref=f47e535] [cursor=pointer]:
+                - cell "Tokopedia" [ref=f47e536]
+                - cell "-" [ref=f47e540]
+                - cell "IDR 115.700" [ref=f47e541]
+                - cell "-" [ref=f47e542]
+                - cell "No limit" [ref=f47e543]
+                - cell "On Track" [ref=f47e544]
+              - row [ref=f47e546] [cursor=pointer]:
+                - cell "Grab" [ref=f47e547]
+                - cell "-" [ref=f47e551]
+                - cell "IDR 15.000" [ref=f47e552]
+                - cell "-" [ref=f47e553]
+                - cell "No limit" [ref=f47e554]
+                - cell "On Track" [ref=f47e555]
+              - row [ref=f47e557] [cursor=pointer]:
+                - cell "Transportasi" [ref=f47e558]
+                - cell "-" [ref=f47e562]
+                - cell "IDR 209.500" [ref=f47e563]
+                - cell "-" [ref=f47e564]
+                - cell "No limit" [ref=f47e565]
+                - cell "On Track" [ref=f47e566]
+              - row [ref=f47e568] [cursor=pointer]:
+                - cell "Transport" [ref=f47e569]
+                - cell "-" [ref=f47e573]
+                - cell "IDR 163.700" [ref=f47e574]
+                - cell "-" [ref=f47e575]
+                - cell "No limit" [ref=f47e576]
+                - cell "On Track" [ref=f47e577]
+              - row [ref=f47e579] [cursor=pointer]:
+                - cell "Groceries" [ref=f47e580]
+                - cell "-" [ref=f47e584]
+                - cell "IDR 190.100" [ref=f47e585]
+                - cell "-" [ref=f47e586]
+                - cell "No limit" [ref=f47e587]
+                - cell "On Track" [ref=f47e588]
+              - row [ref=f47e590] [cursor=pointer]:
+                - cell "Food" [ref=f47e591]
+                - cell "-" [ref=f47e595]
+                - cell "IDR 279.650" [ref=f47e596]
+                - cell "-" [ref=f47e597]
+                - cell "No limit" [ref=f47e598]
+                - cell "On Track" [ref=f47e599]
+              - row [ref=f47e601] [cursor=pointer]:
+                - cell "Utilities" [ref=f47e602]
+                - cell "-" [ref=f47e606]
+                - cell "IDR 35.000" [ref=f47e607]
+                - cell "-" [ref=f47e608]
+                - cell "No limit" [ref=f47e609]
+                - cell "On Track" [ref=f47e610]
+              - row [ref=f47e612] [cursor=pointer]:
+                - cell "Service" [ref=f47e613]
+                - cell "-" [ref=f47e617]
+                - cell "IDR 170.000" [ref=f47e618]
+                - cell "-" [ref=f47e619]
+                - cell "No limit" [ref=f47e620]
+                - cell "On Track" [ref=f47e621]
+              - row [ref=f47e623] [cursor=pointer]:
+                - cell "Shopping" [ref=f47e624]
+                - cell "-" [ref=f47e628]
+                - cell "IDR 29.000" [ref=f47e629]
+                - cell "-" [ref=f47e630]
+                - cell "No limit" [ref=f47e631]
+                - cell "On Track" [ref=f47e632]
+              - row [ref=f47e634] [cursor=pointer]:
+                - cell "Family" [ref=f47e635]
+                - cell "IDR 64.600.000" [ref=f47e639]
+                - cell "IDR 64.671.946" [ref=f47e640]
+                - cell "IDR -71.946" [ref=f47e641]
+                - cell "100%" [ref=f47e642]
+                - cell "Over" [ref=f47e647]
+              - row [ref=f47e649] [cursor=pointer]:
+                - cell "Cash Rumah Bulanan" [ref=f47e650]
+                - cell "IDR 3.500.000" [ref=f47e654]
+                - cell "IDR 3.500.000" [ref=f47e655]
+                - cell "IDR 0" [ref=f47e656]
+                - cell "100%" [ref=f47e657]
+                - cell "Near Limit" [ref=f47e662]
+              - row [ref=f47e664] [cursor=pointer]:
+                - cell "Invest" [ref=f47e665]
+                - cell "IDR 76.000.000" [ref=f47e669]
+                - cell "IDR 56.167.443" [ref=f47e670]
+                - cell "IDR 19.832.557" [ref=f47e671]
+                - cell "74%" [ref=f47e672]
+                - cell "On Track" [ref=f47e677]
+              - row [ref=f47e679] [cursor=pointer]:
+                - cell "Belanja" [ref=f47e680]
+                - cell "IDR 24.000.000" [ref=f47e684]
+                - cell "IDR 16.864.084" [ref=f47e685]
+                - cell "IDR 7.135.916" [ref=f47e686]
+                - cell "70%" [ref=f47e687]
+                - cell "On Track" [ref=f47e692]
+              - row [ref=f47e694] [cursor=pointer]:
+                - cell "Cash Pribadi" [ref=f47e695]
+                - cell "IDR 1.000.000" [ref=f47e699]
+                - cell "IDR 600.000" [ref=f47e700]
+                - cell "IDR 400.000" [ref=f47e701]
+                - cell "60%" [ref=f47e702]
+                - cell "On Track" [ref=f47e707]
+              - row [ref=f47e709] [cursor=pointer]:
+                - cell "Tagihan" [ref=f47e710]
+                - cell "IDR 133.000.000" [ref=f47e714]
+                - cell "IDR 69.633.498" [ref=f47e715]
+                - cell "IDR 63.366.502" [ref=f47e716]
+                - cell "52%" [ref=f47e717]
+                - cell "On Track" [ref=f47e722]
+    - contentinfo [ref=f47e724]: Financial Dashboard · Built with Astro & React
+  - generic:
+    - button "Quick add transaction (Shift+N)" [ref=f47e725] [cursor=pointer]
+    - region "Notifications alt+T"
+  - generic [ref=f47e729]:
+    - button [ref=f47e730]
+    - button [ref=f47e736]
+    - button [ref=f47e740]
+    - button [ref=f47e745]
