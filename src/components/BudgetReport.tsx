@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
+import EmptyState from './ui/empty-state';
 import {
   Table,
   TableBody,
@@ -865,9 +866,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
           {dialogLoading ? (
             <LoadingState label="Loading transactions..." />
           ) : categoryTransactions.length === 0 ? (
-            <div className="py-8 text-center text-sm text-slate-500 dark:text-white/50">
-              No transactions found for this category.
-            </div>
+            <EmptyState icon={Receipt} message="No transactions found for this category." className="py-8" />
           ) : (
             <div className="rounded-xl border border-slate-200 dark:border-white/[0.08] overflow-hidden">
               <Table>

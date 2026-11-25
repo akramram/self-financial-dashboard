@@ -17,7 +17,8 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { TrendingUp, TrendingDown, Minus, Grid3x3, Info } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, Grid3x3, Info, Inbox } from 'lucide-react';
+import EmptyState from './ui/empty-state';
 import { formatIdr } from '../lib/utils';
 
 // ─── Types ─────────────────────────────────────────────────────────────────
@@ -504,7 +505,7 @@ export default function CategoryMatrix({}: Props) {
           {drillLoading ? (
             <LoadingState label="Loading transactions..." />
           ) : drillTxs.length === 0 ? (
-            <div className="text-center py-8 text-sm text-slate-600 dark:text-white/60">No transactions found.</div>
+            <EmptyState icon={Inbox} message="No transactions found." className="py-8" />
           ) : (
             <div className="max-h-[50vh] overflow-y-auto">
               <Table>
