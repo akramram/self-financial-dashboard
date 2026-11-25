@@ -86,10 +86,10 @@ describe('BudgetReport Hub & Status Filtering', () => {
     render(<BudgetReport summaries={mockSummaries} categories={mockCategories} />);
 
     // Category names
-    expect(screen.getByText('Food')).toBeInTheDocument();
-    expect(screen.getByText('Shopping')).toBeInTheDocument();
-    expect(screen.getByText('Transport')).toBeInTheDocument();
-    expect(screen.getByText('Entertainment')).toBeInTheDocument();
+    expect(screen.getAllByText('Food').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Shopping').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Transport').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Entertainment').length).toBeGreaterThan(0);
 
     // Badges (may also appear in filter buttons)
     expect(screen.getAllByText('On Track').length).toBeGreaterThanOrEqual(1);
@@ -105,7 +105,7 @@ describe('BudgetReport Hub & Status Filtering', () => {
     const overBtn = screen.getByRole('button', { name: /Over Budget/i });
     fireEvent.click(overBtn);
 
-    expect(screen.getByText('Shopping')).toBeInTheDocument();
+    expect(screen.getAllByText('Shopping').length).toBeGreaterThan(0);
     expect(screen.queryByText('Food')).not.toBeInTheDocument();
     expect(screen.queryByText('Transport')).not.toBeInTheDocument();
     expect(screen.queryByText('Entertainment')).not.toBeInTheDocument();
@@ -114,24 +114,24 @@ describe('BudgetReport Hub & Status Filtering', () => {
     const nearBtn = screen.getByRole('button', { name: /Near Limit/i });
     fireEvent.click(nearBtn);
 
-    expect(screen.getByText('Transport')).toBeInTheDocument();
+    expect(screen.getAllByText('Transport').length).toBeGreaterThan(0);
     expect(screen.queryByText('Shopping')).not.toBeInTheDocument();
 
     // Click 'No Limit' tab
     const unbudgetedBtn = screen.getByRole('button', { name: /No Limit/i });
     fireEvent.click(unbudgetedBtn);
 
-    expect(screen.getByText('Entertainment')).toBeInTheDocument();
+    expect(screen.getAllByText('Entertainment').length).toBeGreaterThan(0);
     expect(screen.queryByText('Food')).not.toBeInTheDocument();
 
     // Click 'All' tab to restore
     const allBtn = screen.getByRole('button', { name: /^All/i });
     fireEvent.click(allBtn);
 
-    expect(screen.getByText('Food')).toBeInTheDocument();
-    expect(screen.getByText('Shopping')).toBeInTheDocument();
-    expect(screen.getByText('Transport')).toBeInTheDocument();
-    expect(screen.getByText('Entertainment')).toBeInTheDocument();
+    expect(screen.getAllByText('Food').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Shopping').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Transport').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Entertainment').length).toBeGreaterThan(0);
   });
 
   it('filters table dynamically using search query and shows reset button on empty results', () => {
@@ -140,20 +140,20 @@ describe('BudgetReport Hub & Status Filtering', () => {
     const searchInput = screen.getByPlaceholderText('Search category...');
     fireEvent.change(searchInput, { target: { value: 'trans' } });
 
-    expect(screen.getByText('Transport')).toBeInTheDocument();
+    expect(screen.getAllByText('Transport').length).toBeGreaterThan(0);
     expect(screen.queryByText('Food')).not.toBeInTheDocument();
     expect(screen.queryByText('Shopping')).not.toBeInTheDocument();
 
     // Search for non-existing category
     fireEvent.change(searchInput, { target: { value: 'xyz123' } });
-    expect(screen.getByText('No categories found matching your filter')).toBeInTheDocument();
+    expect(screen.getAllByText('No categories found matching your filter').length).toBe(2); // desktop table + mobile card list
 
     // Click Reset Filters button
     const resetBtn = screen.getByRole('button', { name: /Reset Filters/i });
     fireEvent.click(resetBtn);
 
-    expect(screen.getByText('Food')).toBeInTheDocument();
-    expect(screen.getByText('Shopping')).toBeInTheDocument();
+    expect(screen.getAllByText('Food').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Shopping').length).toBeGreaterThan(0);
   });
 
   it('opens category drill-down dialog when clicking row', async () => {
@@ -178,8 +178,8 @@ describe('BudgetReport Hub & Status Filtering', () => {
 
     render(<BudgetReport summaries={mockSummaries} categories={mockCategories} />);
 
-    // Click the Food row
-    const foodCell = screen.getByText('Food');
+    // Click the Food row (mobile card list instance — same handler)
+    const foodCell = screen.getAllByText('Food')[0];
     fireEvent.click(foodCell);
 
     await waitFor(() => {

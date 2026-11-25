@@ -610,8 +610,8 @@ export default function BudgetReport({ summaries, categories }: Props) {
           </button>
         </div>
 
-        {/* Category Budget Table */}
-        <div className="rounded-xl border border-slate-200 dark:border-white/[0.08] overflow-hidden">
+        {/* Category Budget Table (desktop) */}
+        <div className="hidden md:block rounded-xl border border-slate-200 dark:border-white/[0.08] overflow-hidden">
           <Table>
             <TableHeader>
               <TableRow className="border-b border-slate-200 dark:border-white/[0.08] bg-slate-50/50 dark:bg-white/[0.02]">
@@ -643,7 +643,9 @@ export default function BudgetReport({ summaries, categories }: Props) {
                 return (
                   <TableRow
                     key={row.name}
-                    className="cursor-pointer hover:bg-slate-100/70 dark:hover:bg-white/[0.06] transition"
+                    className="cursor-pointer hover:bg-slate-100/70 dark:hover:bg-white/[0.06] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-emerald-500/50 transition"
+                    tabIndex={0}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openCategoryDialog(row.name); } }}
                     onClick={() => openCategoryDialog(row.name)}
                   >
                     <TableCell>
@@ -667,7 +669,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
                           ? 'text-slate-500 dark:text-white/60'
                           : row.remaining < 0
                           ? 'text-red-600 dark:text-red-400'
-                          : 'text-emerald-600 dark:text-emerald-400'
+                          : 'text-emerald-700 dark:text-emerald-400'
                       }`}
                     >
                       {hasLimit ? formatIdr(row.remaining) : '-'}
@@ -760,6 +762,88 @@ export default function BudgetReport({ summaries, categories }: Props) {
               )}
             </TableBody>
           </Table>
+        </div>
+
+        {/* Mobile card list (<md) — 44px tap rows, mirrors TransactionTable/NetworthTable pattern */}
+        <div className="md:hidden rounded-xl border border-slate-200 dark:border-white/[0.08] overflow-hidden divide-y divide-slate-200 dark:divide-white/[0.05]">
+          {sortedStats.length === 0 ? (
+            <div className="px-4 py-10 text-center">
+              <SlidersHorizontal className="w-8 h-8 text-slate-400 mx-auto opacity-40" aria-hidden="true" />
+              <p className="mt-2 text-sm font-medium text-slate-700 dark:text-white/70">
+                No categories found matching your filter
+              </p>
+            </div>
+          ) : (
+            sortedStats.map((row) => {
+              const hasLimit = row.limit > 0;
+              const isOver = row.status === 'over';
+              const isNear = row.status === 'near';
+              const isTrack = row.status === 'track';
+              return (
+                <div
+                  key={row.name}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => openCategoryDialog(row.name)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openCategoryDialog(row.name); } }}
+                  className="flex items-center justify-between gap-3 px-4 py-3 cursor-pointer active:bg-slate-100 dark:active:bg-white/[0.05] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-emerald-500/50 transition-colors"
+                >
+                  <div className="min-w-0">
+                    <p className="flex items-center gap-2 text-sm font-medium text-slate-900 dark:text-white truncate">
+                      <span
+                        className="inline-block w-3 h-3 rounded-full shrink-0"
+                        style={{ backgroundColor: row.color || '#94a3b8' }}
+                        aria-hidden="true"
+                      />
+                      {row.name}
+                    </p>
+                    <p className="mt-0.5 text-xs text-slate-500 dark:text-white/50 tabular-nums truncate">
+                      {formatIdr(row.spent)}{hasLimit ? ` / ${formatIdr(row.limit)}` : ' · No limit'}
+                    </p>
+                  </div>
+                  <div className="shrink-0 text-right">
+                    {hasLimit ? (
+                      <>
+                        <p className={`text-sm font-semibold tabular-nums ${
+                          row.remaining < 0
+                            ? 'text-red-600 dark:text-red-400'
+                            : 'text-emerald-700 dark:text-emerald-400'
+                        }`}>
+                          {formatIdr(row.remaining)}
+                        </p>
+                        <div className="mt-1 flex items-center justify-end gap-1.5">
+                          <span className={`text-xs font-semibold tabular-nums ${
+                            isOver
+                              ? 'text-red-600 dark:text-red-400'
+                              : isNear
+                              ? 'text-gold-700 dark:text-gold-400'
+                              : 'text-slate-600 dark:text-slate-300'
+                          }`}>
+                            {row.pct.toFixed(0)}%
+                          </span>
+                          <div className="w-12 bg-slate-200 dark:bg-slate-700 rounded-full h-1.5 overflow-hidden">
+                            <div
+                              className={`h-1.5 rounded-full transition-all ${
+                                isOver ? 'bg-red-500' : isNear ? 'bg-gold-500' : 'bg-emerald-500'
+                              }`}
+                              style={{ width: `${Math.min(100, row.pct)}%` }}
+                            />
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <Badge
+                        variant="outline"
+                        className="text-[11px] text-slate-500 dark:text-white/50 border-slate-300 dark:border-white/20"
+                      >
+                        No Limit
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              );
+            })
+          )}
         </div>
       </div>
 
