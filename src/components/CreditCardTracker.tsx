@@ -393,7 +393,7 @@ export default function CreditCardTracker() {
             <p className="text-xl font-bold text-gold-600 dark:text-gold-400">
               {formatIdr(outstandingBalance)}
             </p>
-            <p className="text-xs text-slate-500 dark:text-white/40 mt-1">
+            <p className="text-xs text-slate-500 dark:text-white/50 mt-1">
               {formatNumber(creditExpenses.length)} transactions + {formatNumber(unpaidCreditExpenses.length)} pending
             </p>
           
@@ -409,7 +409,7 @@ export default function CreditCardTracker() {
             <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
               {formatIdr(totalCreditPayments)}
             </p>
-            <p className="text-xs text-slate-500 dark:text-white/40 mt-1">
+            <p className="text-xs text-slate-500 dark:text-white/50 mt-1">
               {formatNumber(creditPayments.length)} payment{creditPayments.length !== 1 ? 's' : ''}
             </p>
           
@@ -455,7 +455,7 @@ export default function CreditCardTracker() {
                 style={{ width: `${Math.min(100, paymentRatio)}%` }}
               />
             </div>
-            <p className="text-xs text-slate-500 dark:text-white/40 mt-1">
+            <p className="text-xs text-slate-500 dark:text-white/50 mt-1">
               of {formatIdr(outstandingBalance)} charged
             </p>
           
@@ -531,7 +531,7 @@ export default function CreditCardTracker() {
                         </Badge>
                       </div>
                       <div className="flex items-center gap-3 text-right">
-                        <span className="text-xs text-slate-500 dark:text-white/40">
+                        <span className="text-xs text-slate-500 dark:text-white/50">
                           {paidPct.toFixed(0)}% paid
                         </span>
                         <span className="text-sm font-semibold">{formatIdr(data.total)}</span>
@@ -587,10 +587,10 @@ export default function CreditCardTracker() {
         </div>
 
         {installmentSummary.items.length === 0 ? (
-          <div className="text-center py-6 text-slate-500 dark:text-white/40 border border-dashed border-slate-200 dark:border-white/10 rounded-lg">
+          <div className="text-center py-6 text-slate-500 dark:text-white/50 border border-dashed border-slate-200 dark:border-white/10 rounded-lg">
             <CalendarClock className="w-7 h-7 mx-auto mb-2 text-slate-400 dark:text-white/30" />
             <p className="text-sm font-medium text-slate-700 dark:text-white/70">No active installments detected</p>
-            <p className="text-xs text-slate-500 dark:text-white/40 mt-0.5">
+            <p className="text-xs text-slate-500 dark:text-white/50 mt-0.5">
               Click &quot;Installment&quot; on any unpaid credit expense below to convert charges into installments.
             </p>
           </div>
@@ -626,7 +626,7 @@ export default function CreditCardTracker() {
                           Completed
                         </Badge>
                       ) : !item.active ? (
-                        <Badge variant="outline" className="text-slate-500 dark:text-white/40 text-[10px]">
+                        <Badge variant="outline" className="text-slate-500 dark:text-white/50 text-[10px]">
                           Paused
                         </Badge>
                       ) : (
@@ -637,10 +637,10 @@ export default function CreditCardTracker() {
                     </div>
 
                     <div className="pt-1">
-                      <span className="text-xs text-slate-500 dark:text-white/40">Monthly Installment</span>
+                      <span className="text-xs text-slate-500 dark:text-white/50">Monthly Installment</span>
                       <p className="text-base font-bold text-slate-900 dark:text-white">
                         {formatIdr(item.monthlyAmount)}
-                        <span className="text-xs font-normal text-slate-500 dark:text-white/40 ml-1">/ mo</span>
+                        <span className="text-xs font-normal text-slate-500 dark:text-white/50 ml-1">/ mo</span>
                       </p>
                     </div>
 
@@ -663,13 +663,13 @@ export default function CreditCardTracker() {
                         Remaining: <span className="font-semibold text-slate-900 dark:text-white">{item.remainingTenor} months</span>
                       </p>
                     ) : (
-                      <p className="text-xs text-slate-500 dark:text-white/40 pt-1">
+                      <p className="text-xs text-slate-500 dark:text-white/50 pt-1">
                         Ongoing installment
                       </p>
                     )}
                   </div>
 
-                  <div className="mt-3 pt-2.5 border-t border-slate-200/60 dark:border-white/[0.06] flex items-center justify-between text-xs text-slate-500 dark:text-white/40">
+                  <div className="mt-3 pt-2.5 border-t border-slate-200/60 dark:border-white/[0.06] flex items-center justify-between text-xs text-slate-500 dark:text-white/50">
                     <span>
                       {item.endPeriodMonth ? `Ends: ${item.endPeriodMonth}` : `Day ${item.billingDay} each month`}
                     </span>
@@ -708,7 +708,7 @@ export default function CreditCardTracker() {
         
         
           {sortedUnpaid.length === 0 ? (
-            <div className="text-center py-8 text-slate-500 dark:text-white/40">
+            <div className="text-center py-8 text-slate-500 dark:text-white/50">
               <CheckCircle2 className="w-8 h-8 mx-auto mb-2 text-emerald-400" />
               <p className="text-sm">All credit expenses are paid! 🎉</p>
             </div>
@@ -788,8 +788,8 @@ export default function CreditCardTracker() {
         
         
           {sortedPayments.length === 0 ? (
-            <div className="text-center py-8 text-slate-500 dark:text-white/40">
-              <Wallet className="w-8 h-8 mx-auto mb-2 text-slate-500 dark:text-white/40" />
+            <div className="text-center py-8 text-slate-500 dark:text-white/50">
+              <Wallet className="w-8 h-8 mx-auto mb-2 text-slate-500 dark:text-white/50" />
               <p className="text-sm">No credit card payments recorded yet</p>
             </div>
           ) : (
@@ -862,7 +862,7 @@ export default function CreditCardTracker() {
                       ) : trend < 0 ? (
                         <TrendingUp className="w-4 h-4 text-emerald-500 inline rotate-180" />
                       ) : (
-                        <span className="text-slate-500 dark:text-white/40">-</span>
+                        <span className="text-slate-500 dark:text-white/50">-</span>
                       )}
                     </TableCell>
                   </TableRow>

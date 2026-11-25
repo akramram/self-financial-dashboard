@@ -468,7 +468,7 @@ export default function AlertsPanel({
                       </Badge>
                     )}
                   </div>
-                  <div className="flex items-center gap-2 mt-1 text-xs text-slate-500 dark:text-slate-500 tabular-nums">
+                  <div className="flex items-center gap-2 mt-1 text-xs text-slate-500 dark:text-slate-400 tabular-nums">
                     {alert.amount != null && (
                       <>
                         <span>{formatIdr(alert.amount)}</span>
@@ -481,7 +481,7 @@ export default function AlertsPanel({
                       </>
                     )}
                   </div>
-                  <p className="text-xs text-slate-500 dark:text-slate-500 mt-0.5">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                     {alert.detail}
                   </p>
                 </div>

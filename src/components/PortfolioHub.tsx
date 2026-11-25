@@ -684,7 +684,7 @@ export default function PortfolioHub({ data }: Props) {
                       className={`text-[11px] font-medium ${
                         item.inflowAllocation > 0
                           ? 'text-emerald-600 dark:text-emerald-400'
-                          : 'text-slate-500 dark:text-white/40'
+                          : 'text-slate-500 dark:text-white/50'
                       }`}
                     >
                       {item.inflowAllocation > 0 ? '+ Prioritas Tambah' : 'Pertahankan (Cukup)'}
@@ -903,7 +903,7 @@ export default function PortfolioHub({ data }: Props) {
                 <p className="text-xl font-bold text-slate-900 dark:text-white">
                   {formatIdr(bbriStats.price)}
                 </p>
-                <span className="text-[11px] text-slate-500 dark:text-white/40">
+                <span className="text-[11px] text-slate-500 dark:text-white/50">
                   Valuasi 32 Lot: {formatIdr(bbriStats.currentVal)}
                 </span>
               </div>

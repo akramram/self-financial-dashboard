@@ -268,7 +268,7 @@ export default function SpendingMixHub() {
   if (!data || data.periods.length === 0 || !currentPeriod) {
     return (
       <div className="flex flex-col items-center justify-center h-64 text-center p-6 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-200 dark:border-slate-800">
-        <Layers className="w-12 h-12 text-slate-400 dark:text-slate-500 mb-3" />
+        <Layers className="w-12 h-12 text-slate-400 dark:text-slate-400 mb-3" />
         <h3 className="text-lg font-semibold text-slate-800 dark:text-white">Belum Ada Data Pengeluaran</h3>
         <p className="text-slate-500 dark:text-slate-400 text-sm max-w-md mt-1">
           Catat transaksi dan atur template berulang untuk melihat analisa struktur biaya dan ketangkasan finansial Anda.

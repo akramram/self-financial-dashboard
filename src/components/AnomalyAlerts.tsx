@@ -137,7 +137,7 @@ export default function AnomalyAlerts({ month }: Props) {
             {severityFilter && (
               <button
                 onClick={() => setSeverityFilter(null)}
-                className="text-[11px] px-1.5 py-0 text-slate-500 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-200 underline"
+                className="text-[11px] px-1.5 py-0 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 underline"
               >
                 clear
               </button>
@@ -175,12 +175,12 @@ export default function AnomalyAlerts({ month }: Props) {
                   {REASON_LABELS[anomaly.reason]}
                 </Badge>
               </div>
-              <div className="flex items-center gap-2 mt-1 text-xs text-slate-500 dark:text-slate-500">
+              <div className="flex items-center gap-2 mt-1 text-xs text-slate-500 dark:text-slate-400">
                 <span>{formatIdr(anomaly.amount)}</span>
                 <span>·</span>
                 <span>{anomaly.category}</span>
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-500 mt-0.5">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                 {anomaly.detail}
               </p>
             </div>

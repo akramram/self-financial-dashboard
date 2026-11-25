@@ -60,7 +60,7 @@ export default function ShareCapture({ shareTitle, shareText }: Props) {
         <Share2 className="w-7 h-7 text-mint-500" />
       </div>
       <h1 className="text-xl font-bold text-slate-900 dark:text-white">Quick Capture</h1>
-      <p className="text-sm text-slate-500 dark:text-white/40 max-w-sm">
+      <p className="text-sm text-slate-500 dark:text-white/50 max-w-sm">
         {ready
           ? preset.title
             ? `Menambahkan "${preset.title}"${preset.amount ? ` · ${preset.amount}` : ''} ke transaksi.`

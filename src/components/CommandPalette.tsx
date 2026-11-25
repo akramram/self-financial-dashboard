@@ -389,7 +389,7 @@ export default function CommandPalette() {
 
     return (
       <div className="pb-2">
-        <div className="px-2 py-1.5 text-xs font-semibold text-slate-500 dark:text-slate-500 uppercase tracking-wider">
+        <div className="px-2 py-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
           Recent
         </div>
         {filteredItems.recent.map((item, idx) => {
@@ -411,7 +411,7 @@ export default function CommandPalette() {
               <div className="min-w-0 flex-1">
                 <div className="text-sm font-medium truncate">{item.label}</div>
                 {item.description && (
-                  <div className="text-xs text-slate-500 dark:text-slate-500 truncate">{item.description}</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400 truncate">{item.description}</div>
                 )}
               </div>
             </div>
@@ -458,7 +458,7 @@ export default function CommandPalette() {
             {txLoading && (
               <span className="w-4 h-4 border-2 border-mint-500/40 border-t-mint-500 rounded-full animate-spin shrink-0" />
             )}
-            <kbd className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-[11px] font-mono text-slate-500 dark:text-slate-500">
+            <kbd className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-[11px] font-mono text-slate-500 dark:text-slate-400">
               ESC
             </kbd>
           </div>
@@ -468,7 +468,7 @@ export default function CommandPalette() {
             {/* Transactions Group (live search) */}
             {query.trim().length >= 3 && (txCount > 0 || txLoading) && (
               <div className="pb-2">
-                <div className="px-2 py-1.5 text-xs font-semibold text-slate-500 dark:text-slate-500 uppercase tracking-wider">
+                <div className="px-2 py-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   Transactions
                 </div>
                 {txResults.map((tx, idx) => {
@@ -493,7 +493,7 @@ export default function CommandPalette() {
                       })()}
                       <div className="min-w-0 flex-1">
                         <div className="text-sm font-medium truncate">{tx.title}</div>
-                        <div className="text-xs text-slate-500 dark:text-slate-500 truncate">
+                        <div className="text-xs text-slate-500 dark:text-slate-400 truncate">
                           {tx.category || 'Uncategorized'}
                         </div>
                       </div>
@@ -504,7 +504,7 @@ export default function CommandPalette() {
                   );
                 })}
                 {txCount === 0 && txLoading && (
-                  <div className="px-3 py-2 text-xs text-slate-500 dark:text-slate-500">Searching transactions…</div>
+                  <div className="px-3 py-2 text-xs text-slate-500 dark:text-slate-400">Searching transactions…</div>
                 )}
               </div>
             )}
@@ -515,7 +515,7 @@ export default function CommandPalette() {
             {pages.length > 0 && (
               <div>
                 {query.trim().length > 0 && (
-                  <div className="px-2 py-1.5 text-xs font-semibold text-slate-500 dark:text-slate-500 uppercase tracking-wider">
+                  <div className="px-2 py-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                     Pages
                   </div>
                 )}
@@ -544,7 +544,7 @@ export default function CommandPalette() {
                             : result.label}
                         </div>
                         {result.description && (
-                          <div className="text-xs text-slate-500 dark:text-slate-500 truncate">
+                          <div className="text-xs text-slate-500 dark:text-slate-400 truncate">
                             {query.trim().length > 0 && result.description
                               ? (() => {
                                   // Try to highlight description too
@@ -558,7 +558,7 @@ export default function CommandPalette() {
                         )}
                       </div>
                       {result.shortcut && (
-                        <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.5 rounded-md border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-[11px] font-mono text-slate-500 dark:text-slate-500">
+                        <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.5 rounded-md border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-[11px] font-mono text-slate-500 dark:text-slate-400">
                           {result.shortcut}
                         </kbd>
                       )}
@@ -571,7 +571,7 @@ export default function CommandPalette() {
             {/* Actions Group */}
             {actions.length > 0 && (
               <div>
-                <div className="px-2 py-1.5 text-xs font-semibold text-slate-500 dark:text-slate-500 uppercase tracking-wider">
+                <div className="px-2 py-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   Actions
                 </div>
                 {actions.map((entry, idx) => {
@@ -600,11 +600,11 @@ export default function CommandPalette() {
                             : result.label}
                         </div>
                         {result.description && (
-                          <div className="text-xs text-slate-500 dark:text-slate-500 truncate">{result.description}</div>
+                          <div className="text-xs text-slate-500 dark:text-slate-400 truncate">{result.description}</div>
                         )}
                       </div>
                       {result.shortcut && (
-                        <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.5 rounded-md border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-[11px] font-mono text-slate-500 dark:text-slate-500">
+                        <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.5 rounded-md border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-[11px] font-mono text-slate-500 dark:text-slate-400">
                           {result.shortcut}
                         </kbd>
                       )}
@@ -617,17 +617,17 @@ export default function CommandPalette() {
             {/* No results */}
             {flatItems.length === 0 && filteredItems.recent.length === 0 && txResults.length === 0 && !txLoading && (
               <div className="py-12 text-center">
-                <p className="text-sm text-slate-500 dark:text-slate-500">
+                <p className="text-sm text-slate-500 dark:text-slate-400">
                   No results for "<span className="font-medium text-slate-700 dark:text-slate-200">{query}</span>"
                 </p>
-                <p className="text-xs text-slate-500 dark:text-slate-500 mt-1">Try a different search term</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Try a different search term</p>
               </div>
             )}
           </div>
 
           {/* Footer */}
           <div className="flex items-center justify-between px-4 py-2.5 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
-            <div className="flex items-center gap-3 text-[11px] text-slate-500 dark:text-slate-500">
+            <div className="flex items-center gap-3 text-[11px] text-slate-500 dark:text-slate-400">
               <span className="flex items-center gap-1">
                 <kbd className="px-1 py-0.5 rounded border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 font-mono">↑↓</kbd>
                 navigate
@@ -641,7 +641,7 @@ export default function CommandPalette() {
                 close
               </span>
             </div>
-            <div className="flex items-center gap-1 text-[11px] text-slate-500 dark:text-slate-500">
+            <div className="flex items-center gap-1 text-[11px] text-slate-500 dark:text-slate-400">
               <span>Open with</span>
               <kbd className="px-1 py-0.5 rounded border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 font-mono">
                 {navigator.platform.includes('Mac') ? '⌘' : 'Ctrl+'}K

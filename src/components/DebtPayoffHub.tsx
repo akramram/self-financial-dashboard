@@ -283,7 +283,7 @@ export default function DebtPayoffHub({
           <div className="flex items-center gap-2 bg-slate-100/80 dark:bg-white/[0.04] p-2.5 rounded-xl border border-slate-200/80 dark:border-white/[0.08]">
             <ShieldCheck className="w-5 h-5 text-emerald-500 shrink-0" />
             <div className="text-xs">
-              <span className="text-slate-500 dark:text-white/40 block">Total Liabilitas Saldo & Cicilan</span>
+              <span className="text-slate-500 dark:text-white/50 block">Total Liabilitas Saldo & Cicilan</span>
               <span className="text-sm font-bold text-slate-900 dark:text-white">
                 {formatIdr(totalOutstandingBalance)}
               </span>
@@ -307,7 +307,7 @@ export default function DebtPayoffHub({
 
           {/* Limit Preset Chips */}
           <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-xs text-slate-500 dark:text-white/40 mr-1">Limit Kartu:</span>
+            <span className="text-xs text-slate-500 dark:text-white/50 mr-1">Limit Kartu:</span>
             {presetLimits.map((lim) => (
               <button
                 key={lim}
@@ -373,7 +373,7 @@ export default function DebtPayoffHub({
                 <span className="text-2xl font-extrabold text-slate-900 dark:text-white">
                   {healthMetrics.utilizationRate}%
                 </span>
-                <span className="text-xs text-slate-500 dark:text-white/40">terpakai dari limit</span>
+                <span className="text-xs text-slate-500 dark:text-white/50">terpakai dari limit</span>
               </div>
               <div className="w-full bg-slate-200 dark:bg-white/[0.08] rounded-full h-2 overflow-hidden mt-1">
                 <div
@@ -382,7 +382,7 @@ export default function DebtPayoffHub({
                 />
               </div>
             </div>
-            <div className="mt-3 pt-2 border-t border-slate-200/60 dark:border-white/[0.06] flex items-center justify-between text-[11px] text-slate-500 dark:text-white/40">
+            <div className="mt-3 pt-2 border-t border-slate-200/60 dark:border-white/[0.06] flex items-center justify-between text-[11px] text-slate-500 dark:text-white/50">
               <span>Saldo: {formatIdr(healthMetrics.totalBalance)}</span>
               <span>Limit: {formatIdr(healthMetrics.totalLimit)}</span>
             </div>
@@ -401,14 +401,14 @@ export default function DebtPayoffHub({
                 <span className="text-2xl font-extrabold text-slate-900 dark:text-white">
                   {healthMetrics.dtiRatio}%
                 </span>
-                <span className="text-xs text-slate-500 dark:text-white/40">dari pemasukan bulanan</span>
+                <span className="text-xs text-slate-500 dark:text-white/50">dari pemasukan bulanan</span>
               </div>
               <p className="text-xs text-slate-600 dark:text-white/60 leading-relaxed">
                 Kewajiban bulanan saat ini adalah{' '}
                 <strong className="text-slate-800 dark:text-white">{formatIdr(healthMetrics.monthlyObligation)}</strong> per siklus.
               </p>
             </div>
-            <div className="mt-3 pt-2 border-t border-slate-200/60 dark:border-white/[0.06] flex items-center justify-between text-[11px] text-slate-500 dark:text-white/40">
+            <div className="mt-3 pt-2 border-t border-slate-200/60 dark:border-white/[0.06] flex items-center justify-between text-[11px] text-slate-500 dark:text-white/50">
               <span>{healthMetrics.activeInstallmentsCount} Cicilan Aktif</span>
               <span>{healthMetrics.unpaidExpensesCount} Tagihan Pending</span>
             </div>
@@ -480,7 +480,7 @@ export default function DebtPayoffHub({
               <span className="text-xs font-semibold text-slate-800 dark:text-white block">
                 Alokasi Pembayaran Ekstra Per Bulan
               </span>
-              <span className="text-[11px] text-slate-500 dark:text-white/40">
+              <span className="text-[11px] text-slate-500 dark:text-white/50">
                 Uang lebih yang dialokasikan di atas cicilan minimum untuk mempercepat pelunasan
               </span>
             </div>
@@ -504,7 +504,7 @@ export default function DebtPayoffHub({
 
           {/* Quick preset buttons */}
           <div className="flex flex-wrap items-center gap-1.5 pt-1">
-            <span className="text-xs text-slate-500 dark:text-white/40 mr-1">Preset Cepat:</span>
+            <span className="text-xs text-slate-500 dark:text-white/50 mr-1">Preset Cepat:</span>
             {presetExtraPayments.map((preset) => (
               <button
                 key={preset}
@@ -526,7 +526,7 @@ export default function DebtPayoffHub({
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {/* KPI 1: Target Payoff Date */}
           <div className="rounded-xl border border-slate-200/80 dark:border-white/[0.08] bg-slate-50/50 dark:bg-white/[0.02] p-3.5">
-            <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-white/40 mb-1">
+            <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-white/50 mb-1">
               <CalendarCheck className="w-3.5 h-3.5 text-indigo-500" />
               Target Bebas Utang
             </div>
@@ -540,7 +540,7 @@ export default function DebtPayoffHub({
 
           {/* KPI 2: Months Saved */}
           <div className="rounded-xl border border-slate-200/80 dark:border-white/[0.08] bg-slate-50/50 dark:bg-white/[0.02] p-3.5">
-            <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-white/40 mb-1">
+            <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-white/50 mb-1">
               <Zap className="w-3.5 h-3.5 text-amber-500" />
               Waktu Dihemat
             </div>
@@ -556,7 +556,7 @@ export default function DebtPayoffHub({
 
           {/* KPI 3: Interest / Admin Saved */}
           <div className="rounded-xl border border-slate-200/80 dark:border-white/[0.08] bg-slate-50/50 dark:bg-white/[0.02] p-3.5">
-            <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-white/40 mb-1">
+            <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-white/50 mb-1">
               <TrendingDown className="w-3.5 h-3.5 text-emerald-500" />
               Estimasi Penghematan
             </div>
@@ -572,7 +572,7 @@ export default function DebtPayoffHub({
 
           {/* KPI 4: Total Monthly Budget */}
           <div className="rounded-xl border border-slate-200/80 dark:border-white/[0.08] bg-slate-50/50 dark:bg-white/[0.02] p-3.5">
-            <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-white/40 mb-1">
+            <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-white/50 mb-1">
               <Wallet className="w-3.5 h-3.5 text-blue-500" />
               Alokasi Bulanan Total
             </div>
@@ -590,7 +590,7 @@ export default function DebtPayoffHub({
           <div className="text-center py-8 border border-dashed border-slate-200 dark:border-white/10 rounded-xl space-y-2">
             <CheckCircle2 className="w-8 h-8 mx-auto text-emerald-500" />
             <h4 className="text-sm font-semibold text-slate-800 dark:text-white">Tidak Ada Utang atau Cicilan Aktif</h4>
-            <p className="text-xs text-slate-500 dark:text-white/40 max-w-md mx-auto">
+            <p className="text-xs text-slate-500 dark:text-white/50 max-w-md mx-auto">
               Semua cicilan dan tagihan kartu kredit Anda saat ini berada dalam kondisi lunas. Pemanfaatan kredit Anda berada pada titik 0%.
             </p>
           </div>
@@ -622,7 +622,7 @@ export default function DebtPayoffHub({
                         <p className="font-semibold text-slate-900 dark:text-white truncate">
                           {item.title}
                         </p>
-                        <span className="text-[11px] text-slate-500 dark:text-white/40">
+                        <span className="text-[11px] text-slate-500 dark:text-white/50">
                           Saldo Awal: {formatIdr(item.startingBalance)}
                         </span>
                       </div>
@@ -632,7 +632,7 @@ export default function DebtPayoffHub({
                       <Badge className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 text-[10px]">
                         Lunas: {item.payoffDate}
                       </Badge>
-                      <span className="text-[10px] text-slate-500 dark:text-white/40 block mt-0.5">
+                      <span className="text-[10px] text-slate-500 dark:text-white/50 block mt-0.5">
                         Bulan ke-{item.payoffMonthIndex}
                       </span>
                     </div>
@@ -670,7 +670,7 @@ export default function DebtPayoffHub({
                           style={{ width: `${Math.max(0, Math.min(100, pct))}%` }}
                         />
                       </div>
-                      <div className="flex justify-between text-[10px] text-slate-500 dark:text-white/40">
+                      <div className="flex justify-between text-[10px] text-slate-500 dark:text-white/50">
                         <span>{step.debtItemsRemaining} item sisa</span>
                         <span>{pct}% dari saldo awal</span>
                       </div>
@@ -678,7 +678,7 @@ export default function DebtPayoffHub({
                   );
                 })}
                 {simulation.monthlySchedule.length > 8 && (
-                  <p className="text-center text-[11px] text-slate-500 dark:text-white/40 pt-1">
+                  <p className="text-center text-[11px] text-slate-500 dark:text-white/50 pt-1">
                     +{simulation.monthlySchedule.length - 8} bulan jadwal lanjutan hingga selesai sepenuhnya.
                   </p>
                 )}
@@ -706,7 +706,7 @@ export default function DebtPayoffHub({
         </div>
 
         {milestones.length === 0 ? (
-          <div className="text-center py-6 border border-dashed border-slate-200 dark:border-white/10 rounded-xl text-xs text-slate-500 dark:text-white/40">
+          <div className="text-center py-6 border border-dashed border-slate-200 dark:border-white/10 rounded-xl text-xs text-slate-500 dark:text-white/50">
             Belum ada cicilan dengan tanggal jatuh tempo akhir (endDate) yang terdata.
           </div>
         ) : (
@@ -727,14 +727,14 @@ export default function DebtPayoffHub({
                   </div>
 
                   <div className="pt-1">
-                    <span className="text-[11px] text-slate-500 dark:text-white/40 block">Arus Kas Dibebaskan:</span>
+                    <span className="text-[11px] text-slate-500 dark:text-white/50 block">Arus Kas Dibebaskan:</span>
                     <span className="text-base font-extrabold text-emerald-600 dark:text-emerald-400">
                       +{formatIdr(m.monthlyAmountLiberated)} / bln
                     </span>
                   </div>
 
                   <div className="space-y-1 pt-1">
-                    <span className="text-[10px] text-slate-500 dark:text-white/40 uppercase tracking-wider font-semibold">
+                    <span className="text-[10px] text-slate-500 dark:text-white/50 uppercase tracking-wider font-semibold">
                       Cicilan Yang Tuntas:
                     </span>
                     {m.completedItems.map((it, i) => (
@@ -745,7 +745,7 @@ export default function DebtPayoffHub({
                   </div>
                 </div>
 
-                <div className="mt-3 pt-2.5 border-t border-slate-200/60 dark:border-white/[0.06] flex items-center justify-between text-[11px] text-slate-500 dark:text-white/40">
+                <div className="mt-3 pt-2.5 border-t border-slate-200/60 dark:border-white/[0.06] flex items-center justify-between text-[11px] text-slate-500 dark:text-white/50">
                   <span>Sisa Angsuran Bulanan:</span>
                   <span className="font-semibold text-slate-800 dark:text-white">
                     {formatIdr(m.remainingMonthlyObligation)}

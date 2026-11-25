@@ -361,7 +361,7 @@ export default function WeeklyTracker() {
       <div className="text-center py-16 glass-card">
         <CalendarDays className="w-12 h-12 mx-auto mb-4 text-slate-400 dark:text-white/40" />
         <p className="text-slate-700 dark:text-white/70 font-medium">Belum ada data pengeluaran mingguan untuk periode ini.</p>
-        <p className="text-sm text-slate-500 dark:text-white/40 mt-1">Tambahkan transaksi pada periode ini untuk melihat kalkulasi mingguan.</p>
+        <p className="text-sm text-slate-500 dark:text-white/50 mt-1">Tambahkan transaksi pada periode ini untuk melihat kalkulasi mingguan.</p>
       </div>
     );
   }
@@ -462,7 +462,7 @@ export default function WeeklyTracker() {
         <div className="glass-card p-4">
           <p className="text-xs text-slate-500 dark:text-white/50 font-medium">Total Pemasukan</p>
           <p className="text-lg font-bold text-slate-900 dark:text-white">{formatIdr(weeklyData.income)}</p>
-          <p className="text-xs text-slate-500 dark:text-white/40 mt-1">{weeklyData.weeks.length} minggu dalam siklus</p>
+          <p className="text-xs text-slate-500 dark:text-white/50 mt-1">{weeklyData.weeks.length} minggu dalam siklus</p>
         </div>
 
         <div className="glass-card p-4">
@@ -480,7 +480,7 @@ export default function WeeklyTracker() {
         <div className="glass-card p-4">
           <p className="text-xs text-slate-500 dark:text-white/50 font-medium">Plafon Mingguan Rata-rata</p>
           <p className="text-lg font-bold text-slate-900 dark:text-white">{formatIdr(weeklyData.weeklyBudget)}</p>
-          <p className="text-xs text-slate-500 dark:text-white/40 mt-1">Per 7 hari kalender</p>
+          <p className="text-xs text-slate-500 dark:text-white/50 mt-1">Per 7 hari kalender</p>
         </div>
 
         <div className="glass-card p-4">
@@ -502,7 +502,7 @@ export default function WeeklyTracker() {
               {disciplineScore?.tier ?? 'Normal'}
             </Badge>
           </div>
-          <p className="text-xs text-slate-500 dark:text-white/40 mt-1">
+          <p className="text-xs text-slate-500 dark:text-white/50 mt-1">
             {disciplineScore?.weeksUnderBudgetCount} minggu aman, {disciplineScore?.weeksOverBudgetCount} melebihi
           </p>
         </div>
@@ -724,7 +724,7 @@ export default function WeeklyTracker() {
                   const diffPct = prev.avgDaily > 0 ? ((diff / prev.avgDaily) * 100).toFixed(0) : '0';
                   return (
                     <div key={w.weekNum} className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-white/5">
-                      <p className="text-xs text-slate-500 dark:text-white/40">M{prev.weekNum} ke M{w.weekNum}</p>
+                      <p className="text-xs text-slate-500 dark:text-white/50">M{prev.weekNum} ke M{w.weekNum}</p>
                       <div className="flex items-center gap-1.5 mt-1 font-semibold text-xs">
                         {diff >= 0 ? (
                           <span className="text-rose-600 dark:text-rose-400">+{formatIdr(diff)} (+{diffPct}%)</span>
@@ -817,7 +817,7 @@ export default function WeeklyTracker() {
                   {formatIdr(safeDailyAllowance.safeDailyRemaining)}
                   <span className="text-xs text-slate-500 font-normal"> / hari</span>
                 </p>
-                <p className="text-xs text-slate-500 dark:text-white/40 mt-1">
+                <p className="text-xs text-slate-500 dark:text-white/50 mt-1">
                   Untuk {safeDailyAllowance.daysRemaining} hari tersisa
                 </p>
               </div>
@@ -827,7 +827,7 @@ export default function WeeklyTracker() {
                 <p className="text-xl font-bold text-slate-900 dark:text-white mt-1">
                   {formatIdr(safeDailyAllowance.remainingSpendingCapacity)}
                 </p>
-                <p className="text-xs text-slate-500 dark:text-white/40 mt-1">
+                <p className="text-xs text-slate-500 dark:text-white/50 mt-1">
                   Dari plafon max {formatIdr(safeDailyAllowance.maxAllowableSpend)}
                 </p>
               </div>
@@ -853,7 +853,7 @@ export default function WeeklyTracker() {
                     {safeDailyAllowance.status === 'exhausted' && 'Plafon Habis'}
                   </Badge>
                 </div>
-                <p className="text-xs text-slate-500 dark:text-white/40 mt-1">
+                <p className="text-xs text-slate-500 dark:text-white/50 mt-1">
                   Rasio: {safeDailyAllowance.paceAdjustmentRatio}x terhadap rata-rata awal
                 </p>
               </div>
@@ -1078,7 +1078,7 @@ export default function WeeklyTracker() {
                 </TableBody>
               </Table>
             </div>
-            <p className="text-[11px] text-slate-500 dark:text-white/40 mt-2 text-right">
+            <p className="text-[11px] text-slate-500 dark:text-white/50 mt-2 text-right">
               Menampilkan {currentInspectorTransactions.length} transaksi
             </p>
           </div>

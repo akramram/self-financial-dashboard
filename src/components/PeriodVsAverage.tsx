@@ -105,10 +105,10 @@ export default function PeriodVsAverage({
     return (
       <div className="glass-card p-5">
         <h3 className="flex items-center gap-2 text-base font-semibold text-slate-800 dark:text-white/80 mb-3">
-          <BarChart3 className="h-4 w-4 text-slate-500 dark:text-white/40" />
+          <BarChart3 className="h-4 w-4 text-slate-500 dark:text-white/50" />
           Period vs Average
         </h3>
-        <p className="text-sm text-slate-500 dark:text-white/40">
+        <p className="text-sm text-slate-500 dark:text-white/50">
           Need at least 2 periods of data to compare.
         </p>
       </div>
@@ -120,10 +120,10 @@ export default function PeriodVsAverage({
   return (
     <div className="glass-card p-5">
       <h3 className="flex items-center gap-2 text-base font-semibold text-slate-800 dark:text-white/80 mb-1">
-        <BarChart3 className="h-4 w-4 text-slate-500 dark:text-white/40" />
+        <BarChart3 className="h-4 w-4 text-slate-500 dark:text-white/50" />
         {currentSummary?.month ?? 'Current'} vs {lookbackPeriods}-Period Average
       </h3>
-      <p className="text-xs text-slate-500 dark:text-white/40 mb-4">
+      <p className="text-xs text-slate-500 dark:text-white/50 mb-4">
         Comparing against {variances[0]?.count ?? 0} historical period
         {variances[0]?.count !== 1 ? 's' : ''}
         {' · '}
@@ -176,7 +176,7 @@ export default function PeriodVsAverage({
                     </Badge>
                   )}
                 </div>
-                <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-white/40 flex-shrink-0 ml-2">
+                <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-white/50 flex-shrink-0 ml-2">
                   <span>{formatIdr(v.current)}</span>
                   <span className="text-[11px]">vs</span>
                   <span>{formatIdr(v.average)}</span>
@@ -212,7 +212,7 @@ export default function PeriodVsAverage({
                 </span>
               </div>
               {v.count < lookbackPeriods && v.current > 0 && (
-                <p className="text-[11px] text-slate-500 dark:text-white/40 ml-5">
+                <p className="text-[11px] text-slate-500 dark:text-white/50 ml-5">
                   New category, only {v.count} historical period{v.count !== 1 ? 's' : ''} for comparison
                 </p>
               )}
@@ -222,7 +222,7 @@ export default function PeriodVsAverage({
       </div>
 
       {variances.length === 0 && (
-        <p className="text-sm text-slate-500 dark:text-white/40 text-center py-4">
+        <p className="text-sm text-slate-500 dark:text-white/50 text-center py-4">
           No category data to compare.
         </p>
       )}

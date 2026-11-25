@@ -94,7 +94,7 @@ interface DeltaProps {
 function DeltaBadge({ current, previous, isPct, inverse }: DeltaProps) {
   if (previous === 0 && current === 0) {
     return (
-      <span className="text-xs text-slate-500 dark:text-white/40 flex items-center gap-1 font-medium">
+      <span className="text-xs text-slate-500 dark:text-white/50 flex items-center gap-1 font-medium">
         <Minus className="w-3 h-3" /> 0%
       </span>
     );
@@ -125,7 +125,7 @@ function DeltaBadge({ current, previous, isPct, inverse }: DeltaProps) {
 
 function DeltaValue({ current, previous, isPct, inverse }: DeltaProps) {
   if (previous === 0 && current === 0) {
-    return <span className="text-xs text-slate-500 dark:text-white/40">-</span>;
+    return <span className="text-xs text-slate-500 dark:text-white/50">-</span>;
   }
   if (previous === 0) {
     return <span className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold">Baru</span>;

@@ -175,7 +175,7 @@ export default function TransactionFormFields({ ctrl, variant, formId }: Transac
             </button>
           )}
           {suggestionLoading && (
-            <span className="inline-flex items-center gap-1 text-[11px] text-slate-500 dark:text-white/40">
+            <span className="inline-flex items-center gap-1 text-[11px] text-slate-500 dark:text-white/50">
               <Loader2 className="w-3 h-3 animate-spin" />
               Matching…
             </span>

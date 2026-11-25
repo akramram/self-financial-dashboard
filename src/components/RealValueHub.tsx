@@ -114,7 +114,7 @@ export default function RealValueHub() {
   if (loading && rows === null) {
     return (
       <div className="glass-card rounded-2xl p-8 text-center" data-testid="rv-loading">
-        <RefreshCw className="w-6 h-6 mx-auto animate-spin text-slate-500 dark:text-white/40" aria-hidden="true" />
+        <RefreshCw className="w-6 h-6 mx-auto animate-spin text-slate-500 dark:text-white/50" aria-hidden="true" />
         <p className="mt-2 text-sm text-slate-600 dark:text-white/50">Menghitung daya beli historis...</p>
       </div>
     );

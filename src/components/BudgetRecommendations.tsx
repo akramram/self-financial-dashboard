@@ -341,7 +341,7 @@ export default function BudgetRecommendations() {
   if (stats.length === 0) {
     return (
       <div className="glass-card p-8 text-center">
-        <BarChart3 className="w-10 h-10 text-slate-400 dark:text-slate-500 mx-auto mb-3" />
+        <BarChart3 className="w-10 h-10 text-slate-400 dark:text-slate-400 mx-auto mb-3" />
         <h3 className="text-base font-semibold text-slate-800 dark:text-white/80">Belum Ada Data Transaksi</h3>
         <p className="text-sm text-slate-500 dark:text-white/50 mt-1 max-w-md mx-auto">
           Tambahkan transaksi pengeluaran terlebih dahulu agar sistem dapat menghitung pola pengeluaran dan memberikan rekomendasi limit anggaran.

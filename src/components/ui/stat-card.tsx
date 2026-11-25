@@ -63,7 +63,7 @@ export default function StatCard({
             <span style={{ color }} className="shrink-0">
               {icon}
             </span>
-            <p className="text-xs font-medium text-slate-500 dark:text-white/40">{label}</p>
+            <p className="text-xs font-medium text-slate-500 dark:text-white/50">{label}</p>
           </div>
 
           {/* Value */}

@@ -178,7 +178,7 @@ export default function KseiCard({ data }: Props) {
     >
       <div className="flex items-start justify-between mb-2">
         <div className="flex items-center gap-1.5">
-          <p className="text-xs font-medium text-slate-500 dark:text-white/40">KSEI · AKSes</p>
+          <p className="text-xs font-medium text-slate-500 dark:text-white/50">KSEI · AKSes</p>
           {staleDays != null && (
             <span
               data-testid="ksei-stale"
@@ -199,7 +199,7 @@ export default function KseiCard({ data }: Props) {
             </button>
           )}
         </div>
-        <span className="text-[11px] font-semibold px-1.5 py-0.5 rounded-full bg-slate-200/70 dark:bg-white/[0.06] text-slate-500 dark:text-white/50">
+        <span className="text-[11px] font-semibold px-1.5 py-0.5 rounded-full bg-slate-200/70 dark:bg-white/[0.06] text-slate-600 dark:text-white/50">
           EOD
         </span>
       </div>
@@ -216,7 +216,7 @@ export default function KseiCard({ data }: Props) {
             rows={3}
             autoComplete="off"
             spellCheck={false}
-            className="w-full text-[11px] font-mono rounded-lg bg-white dark:bg-white/[0.06] border border-slate-300 dark:border-white/10 px-2 py-1.5 text-slate-700 dark:text-white/80 placeholder:text-slate-500 dark:placeholder:text-white/30 focus:outline-none focus:border-emerald-500/60 resize-y"
+            className="w-full text-[11px] font-mono rounded-lg bg-white dark:bg-white/[0.06] border border-slate-300 dark:border-white/10 px-2 py-1.5 text-slate-700 dark:text-white/80 placeholder:text-slate-500 dark:placeholder:text-white/50 focus:outline-none focus:border-emerald-500/60 resize-y"
           />
           <div className="flex items-center gap-1.5 mt-1.5">
             <button
@@ -275,7 +275,7 @@ export default function KseiCard({ data }: Props) {
               {fmtIdr(total)}
             </span>
           </div>
-          <p className="text-[11px] text-slate-500 dark:text-white/40 mb-3">
+          <p className="text-[11px] text-slate-500 dark:text-white/50 mb-3">
             Total asset · posisi {fmtDate(portfolio.snapshot_date)}
           </p>
 
@@ -297,7 +297,7 @@ export default function KseiCard({ data }: Props) {
                       <span className="text-slate-600 dark:text-white/60">{label}</span>
                       <span className="font-medium text-slate-700 dark:text-white/80">
                         {fmtIdr(s.amount)}
-                        <span className="text-slate-500 dark:text-white/40">
+                        <span className="text-slate-500 dark:text-white/50">
                           {' '}
                           · {percentText}%
                         </span>

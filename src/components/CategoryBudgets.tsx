@@ -193,7 +193,7 @@ export default function CategoryBudgets({ summaries, categories, activeMonth, on
                             ? 'text-emerald-500 dark:text-emerald-400'
                             : trend.direction === 'up'
                               ? 'text-red-500 dark:text-red-400'
-                              : 'text-slate-500 dark:text-slate-500'
+                              : 'text-slate-500 dark:text-slate-400'
                         }`}
                         title={
                           trend.direction === 'flat'
@@ -220,7 +220,7 @@ export default function CategoryBudgets({ summaries, categories, activeMonth, on
                       </span>
                     )}
                     {trend?.direction === 'new' && (
-                      <span className="text-[11px] text-slate-500 dark:text-slate-500" title="Kategori baru periode ini">
+                      <span className="text-[11px] text-slate-500 dark:text-slate-400" title="Kategori baru periode ini">
                         Baru
                       </span>
                     )}
@@ -228,7 +228,7 @@ export default function CategoryBudgets({ summaries, categories, activeMonth, on
                       {hasLimit ? (
                       <span className="flex items-center gap-1.5">
                         {formatIdr(amount)}
-                        <span className="text-slate-500 dark:text-slate-500 font-normal">
+                        <span className="text-slate-500 dark:text-slate-400 font-normal">
                           / {formatIdr(limit)}
                         </span>
                       </span>
@@ -273,7 +273,7 @@ export default function CategoryBudgets({ summaries, categories, activeMonth, on
           <Button
             variant="ghost"
             size="sm"
-            className="w-full mt-3 text-xs text-slate-500 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-200"
+            className="w-full mt-3 text-xs text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
             onClick={() => setShowAll(!showAll)}
           >
             {showAll

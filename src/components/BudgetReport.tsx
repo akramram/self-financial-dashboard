@@ -331,7 +331,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
           </Select>
         </div>
 
-        <div className="text-xs text-slate-500 dark:text-white/40">
+        <div className="text-xs text-slate-500 dark:text-white/50">
           Showing {sortedStats.length} of {categoryStats.length} categories
         </div>
       </div>
@@ -344,7 +344,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
               <Wallet className="w-5 h-5 text-slate-500 dark:text-white/60" />
             </div>
             <div>
-              <p className="text-xs text-slate-500 dark:text-white/40">Total Budget</p>
+              <p className="text-xs text-slate-500 dark:text-white/50">Total Budget</p>
               <p className="text-lg font-semibold text-slate-900 dark:text-white">{formatIdr(totalBudget)}</p>
             </div>
           </div>
@@ -356,7 +356,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
               <TrendingDown className="w-5 h-5 text-red-500 dark:text-red-400" />
             </div>
             <div>
-              <p className="text-xs text-slate-500 dark:text-white/40">Total Spent</p>
+              <p className="text-xs text-slate-500 dark:text-white/50">Total Spent</p>
               <p className="text-lg font-semibold text-slate-900 dark:text-white">{formatIdr(totalSpent)}</p>
             </div>
           </div>
@@ -370,7 +370,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
               />
             </div>
             <div>
-              <p className="text-xs text-slate-500 dark:text-white/40">Remaining</p>
+              <p className="text-xs text-slate-500 dark:text-white/50">Remaining</p>
               <p
                 className={`text-lg font-semibold ${
                   totalRemaining >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'
@@ -392,7 +392,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
               <AlertTriangle className="w-5 h-5 text-gold-500 dark:text-gold-400" />
             </div>
             <div>
-              <p className="text-xs text-slate-500 dark:text-white/40">Alerts</p>
+              <p className="text-xs text-slate-500 dark:text-white/50">Alerts</p>
               <div className="flex gap-2 mt-0.5">
                 {overspentCount > 0 && (
                   <Badge variant="destructive" className="text-[11px] px-1.5 py-0">
@@ -721,7 +721,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
                       ) : (
                         <Badge
                           variant="outline"
-                          className="text-[11px] text-slate-500 dark:text-white/40 border-slate-300 dark:border-white/20"
+                          className="text-[11px] text-slate-500 dark:text-white/50 border-slate-300 dark:border-white/20"
                         >
                           No Limit
                         </Badge>
@@ -739,7 +739,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
                       <p className="text-sm font-medium text-slate-700 dark:text-white/70">
                         No categories found matching your filter
                       </p>
-                      <p className="text-xs text-slate-500 dark:text-white/40">
+                      <p className="text-xs text-slate-500 dark:text-white/50">
                         Try clearing your search term or switching to another status filter.
                       </p>
                       <div className="pt-2">

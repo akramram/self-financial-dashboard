@@ -483,7 +483,7 @@ export default function RecurringManager() {
                   value={addForm.end_date}
                   onChange={(e) => setAddForm((p) => ({ ...p, end_date: e.target.value }))}
                 />
-                <p className="text-xs text-slate-500 dark:text-white/40">Stop auto-adding after this month (e.g., last installment)</p>
+                <p className="text-xs text-slate-500 dark:text-white/50">Stop auto-adding after this month (e.g., last installment)</p>
               </div>
               <div className="space-y-1.5">
                 <Label>Tgl Transaksi</Label>
@@ -494,7 +494,7 @@ export default function RecurringManager() {
                   value={addForm.created_at}
                   onChange={(e) => setAddForm((p) => ({ ...p, created_at: e.target.value }))}
                 />
-                <p className="text-xs text-slate-500 dark:text-white/40">Tanggal transaksi muncul tiap bulan (1-28, default: hari ini)</p>
+                <p className="text-xs text-slate-500 dark:text-white/50">Tanggal transaksi muncul tiap bulan (1-28, default: hari ini)</p>
               </div>
               <div className="space-y-1.5">
                 <Label>Link ke Goal (opsional)</Label>
@@ -509,7 +509,7 @@ export default function RecurringManager() {
                     ))}
                   </SelectContent>
                 </Select>
-                <p className="text-xs text-slate-500 dark:text-white/40">Transfer terjadwal yang sudah dibayar otomatis menambah progres goal tiap period</p>
+                <p className="text-xs text-slate-500 dark:text-white/50">Transfer terjadwal yang sudah dibayar otomatis menambah progres goal tiap period</p>
               </div>
             </div>
             <div className="flex justify-end">
@@ -698,7 +698,7 @@ export default function RecurringManager() {
                           <span className="text-slate-600 dark:text-white/60">Credit Pay</span>
                         )}
                       </TableCell>
-                      <TableCell className="text-xs text-slate-500 dark:text-white/40">
+                      <TableCell className="text-xs text-slate-500 dark:text-white/50">
                         {item.end_date ? (
                           <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-white/70 border border-slate-200 dark:border-white/10">
                             <Calendar className="w-3 h-3 text-slate-400 dark:text-white/40" />
@@ -706,10 +706,10 @@ export default function RecurringManager() {
                           </span>
                         ) : '-'}
                       </TableCell>
-                      <TableCell className="text-xs text-slate-500 dark:text-white/40">
+                      <TableCell className="text-xs text-slate-500 dark:text-white/50">
                         {item.created_at || '-'}
                       </TableCell>
-                      <TableCell className="text-xs text-slate-500 dark:text-white/40">
+                      <TableCell className="text-xs text-slate-500 dark:text-white/50">
                         {item.goal_name ? (
                           <span className="inline-flex items-center gap-1 text-gold-600 dark:text-gold-400">
                             <Target className="w-3 h-3" />
@@ -721,7 +721,7 @@ export default function RecurringManager() {
                         {item.done ? (
                           <span className="text-xs text-emerald-600 font-medium">Paid</span>
                         ) : (
-                          <span className="text-xs text-slate-500 dark:text-white/40">-</span>
+                          <span className="text-xs text-slate-500 dark:text-white/50">-</span>
                         )}
                       </TableCell>
                       <TableCell>
@@ -876,7 +876,7 @@ export default function RecurringManager() {
                           </span>
                         )}
                       </div>
-                      <p className="mt-1 text-xs text-slate-500 dark:text-white/40 truncate">
+                      <p className="mt-1 text-xs text-slate-500 dark:text-white/50 truncate">
                         {item.category} · {typeLabel}{item.end_date ? ` · until ${item.end_date}` : ''}{item.done ? ' · Paid' : ''}
                       </p>
                     </div>

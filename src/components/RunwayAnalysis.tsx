@@ -448,7 +448,7 @@ export default function RunwayAnalysis({ periodId, compact = false }: Props) {
               <div className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
                 {formatIdr(data.liquid_assets)}
               </div>
-              <div className="text-[11px] text-slate-500 dark:text-white/40 mt-0.5">
+              <div className="text-[11px] text-slate-500 dark:text-white/50 mt-0.5">
                 {data.total_assets > 0
                   ? `${Math.round((data.liquid_assets / data.total_assets) * 100)}% dari total kekayaan`
                   : '100%'}
@@ -463,7 +463,7 @@ export default function RunwayAnalysis({ periodId, compact = false }: Props) {
               <div className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
                 {formatIdr(data.total_assets)}
               </div>
-              <div className="text-[11px] text-slate-500 dark:text-white/40 mt-0.5">
+              <div className="text-[11px] text-slate-500 dark:text-white/50 mt-0.5">
                 Aset investasi dan tabungan
               </div>
             </div>
@@ -476,7 +476,7 @@ export default function RunwayAnalysis({ periodId, compact = false }: Props) {
               <div className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
                 {formatIdr(data.monthly_expense)}
               </div>
-              <div className="text-[11px] text-slate-500 dark:text-white/40 mt-0.5">
+              <div className="text-[11px] text-slate-500 dark:text-white/50 mt-0.5">
                 Rata-rata pengeluaran 3 periode
               </div>
             </div>
@@ -489,7 +489,7 @@ export default function RunwayAnalysis({ periodId, compact = false }: Props) {
               <div className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
                 {data.fixed_coverage_months.toFixed(1)} bulan
               </div>
-              <div className="text-[11px] text-slate-500 dark:text-white/40 mt-0.5">
+              <div className="text-[11px] text-slate-500 dark:text-white/50 mt-0.5">
                 Biaya rutin: {formatIdr(data.monthly_fixed)}/bln
               </div>
             </div>
@@ -503,7 +503,7 @@ export default function RunwayAnalysis({ periodId, compact = false }: Props) {
               <span className="text-xs font-medium text-slate-700 dark:text-white/70">
                 Komposisi Likuiditas Portofolio
               </span>
-              <span className="text-[11px] text-slate-500 dark:text-white/40">
+              <span className="text-[11px] text-slate-500 dark:text-white/50">
                 Aset Likuid {formatIdr(data.liquid_assets)} / Total {formatIdr(data.total_assets)}
               </span>
             </div>
@@ -551,7 +551,7 @@ export default function RunwayAnalysis({ periodId, compact = false }: Props) {
                     }`}
                   >
                     <div className="text-xs font-semibold">Gaya Hidup Normal</div>
-                    <div className="text-[11px] text-slate-500 dark:text-white/40 mt-0.5">Pengeluaran standar</div>
+                    <div className="text-[11px] text-slate-500 dark:text-white/50 mt-0.5">Pengeluaran standar</div>
                   </button>
 
                   <button
@@ -564,7 +564,7 @@ export default function RunwayAnalysis({ periodId, compact = false }: Props) {
                     }`}
                   >
                     <div className="text-xs font-semibold">Mode Hemat Pokok</div>
-                    <div className="text-[11px] text-slate-500 dark:text-white/40 mt-0.5">Hanya biaya wajib</div>
+                    <div className="text-[11px] text-slate-500 dark:text-white/50 mt-0.5">Hanya biaya wajib</div>
                   </button>
 
                   <button
@@ -577,7 +577,7 @@ export default function RunwayAnalysis({ periodId, compact = false }: Props) {
                     }`}
                   >
                     <div className="text-xs font-semibold">Pengurangan 25%</div>
-                    <div className="text-[11px] text-slate-500 dark:text-white/40 mt-0.5">Penghematan moderat</div>
+                    <div className="text-[11px] text-slate-500 dark:text-white/50 mt-0.5">Penghematan moderat</div>
                   </button>
 
                   <button
@@ -590,7 +590,7 @@ export default function RunwayAnalysis({ periodId, compact = false }: Props) {
                     }`}
                   >
                     <div className="text-xs font-semibold">Syok Darurat</div>
-                    <div className="text-[11px] text-slate-500 dark:text-white/40 mt-0.5">Biaya mendadak 15 jt</div>
+                    <div className="text-[11px] text-slate-500 dark:text-white/50 mt-0.5">Biaya mendadak 15 jt</div>
                   </button>
                 </div>
               </div>
@@ -618,7 +618,7 @@ export default function RunwayAnalysis({ periodId, compact = false }: Props) {
                     }}
                     className="w-full accent-mint-500 h-2 bg-slate-200 dark:bg-white/10 rounded-lg cursor-pointer"
                   />
-                  <div className="flex justify-between text-[11px] text-slate-500 dark:text-white/40">
+                  <div className="flex justify-between text-[11px] text-slate-500 dark:text-white/50">
                     <span>Biaya Pokok: {formatIdr(monthlyFixed)}</span>
                     <span>Baseline: {formatIdr(baselineExpense)}</span>
                   </div>
@@ -645,7 +645,7 @@ export default function RunwayAnalysis({ periodId, compact = false }: Props) {
                     }}
                     className="w-full accent-coral-500 h-2 bg-slate-200 dark:bg-white/10 rounded-lg cursor-pointer"
                   />
-                  <div className="flex justify-between text-[11px] text-slate-500 dark:text-white/40">
+                  <div className="flex justify-between text-[11px] text-slate-500 dark:text-white/50">
                     <span>Rp 0 (Tanpa Syok)</span>
                     <span>Maksimal Rp 50.000.000</span>
                   </div>
@@ -703,7 +703,7 @@ export default function RunwayAnalysis({ periodId, compact = false }: Props) {
                         </>
                       )}
                     </div>
-                    <span className="text-[11px] text-slate-500 dark:text-white/40 block">
+                    <span className="text-[11px] text-slate-500 dark:text-white/50 block">
                       Status: {STATUS_CONFIG[activeScenario.status].label}
                     </span>
                   </div>
@@ -768,7 +768,7 @@ export default function RunwayAnalysis({ periodId, compact = false }: Props) {
 
                       <div className="space-y-1.5 mb-3">
                         <div className="flex justify-between text-xs">
-                          <span className="text-slate-500 dark:text-white/40">Kebutuhan Target:</span>
+                          <span className="text-slate-500 dark:text-white/50">Kebutuhan Target:</span>
                           <span className="font-semibold text-slate-800 dark:text-white/90">
                             {formatIdr(tier.targetAmount)}
                           </span>
@@ -782,7 +782,7 @@ export default function RunwayAnalysis({ periodId, compact = false }: Props) {
 
                       <div className="pt-2 border-t border-slate-200 dark:border-white/[0.06] text-xs space-y-1">
                         <div className="flex justify-between">
-                          <span className="text-slate-500 dark:text-white/40">Kekurangan:</span>
+                          <span className="text-slate-500 dark:text-white/50">Kekurangan:</span>
                           <span className="font-medium text-slate-700 dark:text-white/70">
                             {tier.shortfall > 0 ? formatIdr(tier.shortfall) : 'Rp 0'}
                           </span>
@@ -808,7 +808,7 @@ export default function RunwayAnalysis({ periodId, compact = false }: Props) {
                       <div className="text-xs font-semibold text-slate-900 dark:text-white">
                         Kalkulator Proyeksi Menabung Dana Darurat
                       </div>
-                      <div className="text-[11px] text-slate-500 dark:text-white/40">
+                      <div className="text-[11px] text-slate-500 dark:text-white/50">
                         Sesuaikan alokasi tabungan bulanan untuk melihat kecepatan pencapaian target
                       </div>
                     </div>
@@ -865,18 +865,18 @@ export default function RunwayAnalysis({ periodId, compact = false }: Props) {
                             {group.title}
                           </span>
                         </div>
-                        <p className="text-[11px] text-slate-500 dark:text-white/40 mt-1">
+                        <p className="text-[11px] text-slate-500 dark:text-white/50 mt-1">
                           {group.timeframe}
                         </p>
                       </div>
 
                       <div className="text-right">
-                        <div className="text-xs text-slate-500 dark:text-white/40">Kas Likuid Bersih</div>
+                        <div className="text-xs text-slate-500 dark:text-white/50">Kas Likuid Bersih</div>
                         <div className="text-sm font-bold text-slate-900 dark:text-white">
                           {formatIdr(group.totalLiquid)}
                         </div>
                         {group.liquidityDiscount > 0 && (
-                          <div className="text-[11px] text-slate-500 dark:text-white/40">
+                          <div className="text-[11px] text-slate-500 dark:text-white/50">
                             Diskon likuiditas: {formatIdr(group.liquidityDiscount)}
                           </div>
                         )}
@@ -894,7 +894,7 @@ export default function RunwayAnalysis({ periodId, compact = false }: Props) {
                               <span className="font-semibold text-slate-800 dark:text-white/90 block">
                                 {a.name}
                               </span>
-                              <span className="text-[11px] text-slate-500 dark:text-white/40">
+                              <span className="text-[11px] text-slate-500 dark:text-white/50">
                                 Nominal: {formatIdr(a.value)}
                               </span>
                             </div>
@@ -902,7 +902,7 @@ export default function RunwayAnalysis({ periodId, compact = false }: Props) {
                               <span className="font-bold text-mint-600 dark:text-mint-400 block">
                                 {formatIdr(a.liquidValue)}
                               </span>
-                              <span className="text-[10px] text-slate-500 dark:text-white/40">
+                              <span className="text-[10px] text-slate-500 dark:text-white/50">
                                 {Math.round(a.liquidityPct * 100)}% likuid
                               </span>
                             </div>
@@ -910,7 +910,7 @@ export default function RunwayAnalysis({ periodId, compact = false }: Props) {
                         ))}
                       </div>
                     ) : (
-                      <p className="text-xs text-slate-500 dark:text-white/40 italic pt-1">
+                      <p className="text-xs text-slate-500 dark:text-white/50 italic pt-1">
                         Tidak ada aset di tingkatan likuiditas ini.
                       </p>
                     )}
@@ -945,7 +945,7 @@ export default function RunwayAnalysis({ periodId, compact = false }: Props) {
                       <span className="text-xs font-semibold text-slate-800 dark:text-white/90 block">
                         Lintasan Runway ({data.history.length} Periode Terakhir)
                       </span>
-                      <span className="text-[11px] text-slate-500 dark:text-white/40">
+                      <span className="text-[11px] text-slate-500 dark:text-white/50">
                         Fluktuasi jumlah bulan cadangan hidup
                       </span>
                     </div>
@@ -958,7 +958,7 @@ export default function RunwayAnalysis({ periodId, compact = false }: Props) {
                         key={i}
                         className="p-2 rounded-lg bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-white/[0.04] text-center"
                       >
-                        <div className="text-[11px] text-slate-500 dark:text-white/40 truncate">{h.month}</div>
+                        <div className="text-[11px] text-slate-500 dark:text-white/50 truncate">{h.month}</div>
                         <div className="text-sm font-bold text-slate-900 dark:text-white mt-0.5">
                           {h.runway_months.toFixed(1)} bln
                         </div>

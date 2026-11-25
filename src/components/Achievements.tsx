@@ -691,7 +691,7 @@ export default function Achievements({ initialData }: Props) {
 
             {/* Category & Tier filters */}
             <div className="pt-2 border-t border-slate-200 dark:border-white/[0.06] flex flex-wrap items-center gap-2">
-              <span className="text-xs text-slate-500 dark:text-white/40 mr-1 flex items-center gap-1">
+              <span className="text-xs text-slate-500 dark:text-white/50 mr-1 flex items-center gap-1">
                 <SlidersHorizontal className="w-3 h-3" />
                 <span>Kategori:</span>
               </span>
@@ -725,7 +725,7 @@ export default function Achievements({ initialData }: Props) {
               ))}
 
               <div className="ml-auto flex items-center gap-1 text-xs">
-                <span className="text-slate-500 dark:text-white/40 mr-1">Tier:</span>
+                <span className="text-slate-500 dark:text-white/50 mr-1">Tier:</span>
                 {(['all', 'bronze', 'silver', 'gold', 'platinum'] as const).map((t) => (
                   <button
                     key={t}
@@ -734,7 +734,7 @@ export default function Achievements({ initialData }: Props) {
                     className={`px-2 py-0.5 rounded text-[11px] font-semibold uppercase transition ${
                       tierFilter === t
                         ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900'
-                        : 'bg-slate-100 dark:bg-white/[0.04] text-slate-500 dark:text-white/50 hover:bg-slate-200 dark:hover:bg-white/[0.08]'
+                        : 'bg-slate-100 dark:bg-white/[0.04] text-slate-600 dark:text-white/50 hover:bg-slate-200 dark:hover:bg-white/[0.08]'
                     }`}
                   >
                     {t}
@@ -825,7 +825,7 @@ export default function Achievements({ initialData }: Props) {
                                 {tier.label}
                               </span>
 
-                              <span className="text-[11px] font-bold text-slate-500 dark:text-white/40">
+                              <span className="text-[11px] font-bold text-slate-500 dark:text-white/50">
                                 +{TIER_XP[badge.tier]} XP
                               </span>
                             </div>
@@ -866,7 +866,7 @@ export default function Achievements({ initialData }: Props) {
                                   {badge.value ?? 'Tercapai'}
                                 </span>
                                 {badge.unlockedDate && (
-                                  <span className="text-[10px] text-slate-500 dark:text-white/40 shrink-0">
+                                  <span className="text-[10px] text-slate-500 dark:text-white/50 shrink-0">
                                     {formatUnlockDate(badge.unlockedDate)}
                                   </span>
                                 )}
@@ -889,7 +889,7 @@ export default function Achievements({ initialData }: Props) {
                                 </div>
                               </div>
                             ) : (
-                              <div className="pt-2 border-t border-slate-200/60 dark:border-white/[0.05] text-[11px] text-slate-500 dark:text-white/40 italic flex items-center gap-1">
+                              <div className="pt-2 border-t border-slate-200/60 dark:border-white/[0.05] text-[11px] text-slate-500 dark:text-white/50 italic flex items-center gap-1">
                                 <Lock className="w-3 h-3" />
                                 <span>Belum terbuka</span>
                               </div>
@@ -1091,7 +1091,7 @@ export default function Achievements({ initialData }: Props) {
                       <div className="text-xs font-bold text-slate-800 dark:text-white/90">
                         {rank.minXp} XP
                       </div>
-                      <div className="text-[10px] text-slate-500 dark:text-white/40">
+                      <div className="text-[10px] text-slate-500 dark:text-white/50">
                         {isUnlocked ? 'Tercapai' : `Kurang ${rank.minXp - xpStats.currentXp} XP`}
                       </div>
                     </div>
