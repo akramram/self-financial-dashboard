@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import LoadingState from './ui/loading-state';
 import type { RecurringTransaction } from '../lib/data';
 import { fetchRecurringTransactions, createRecurringTransaction, updateRecurringTransactionApi, deleteRecurringTransactionApi } from '../lib/api';
 import { formatIdr } from '../lib/utils';
@@ -538,7 +539,7 @@ export default function RecurringManager() {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={10} className="text-center text-muted-foreground py-6">Loading...</TableCell>
+                  <TableCell colSpan={10} className="py-6"><LoadingState label="Loading..." className="py-0" /></TableCell>
                 </TableRow>
               ) : filteredItems.length === 0 ? (
                 <TableRow>
@@ -745,7 +746,7 @@ export default function RecurringManager() {
         {/* Mobile card list (<md) - mirrors TransactionTable mobile pattern (PR #259) */}
         <div className="md:hidden rounded-xl border divide-y border-slate-200 dark:border-white/[0.06]">
           {loading ? (
-            <div className="px-4 py-6 text-center text-sm text-muted-foreground">Loading...</div>
+            <LoadingState label="Loading..." className="px-4 py-6" />
           ) : filteredItems.length === 0 ? (
             <div className="px-4 py-6 text-center text-sm text-muted-foreground">
               {recurring.length === 0 ? (

@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import LoadingState from './ui/loading-state';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -238,7 +239,7 @@ export default function CategoryMatrix({}: Props) {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-slate-500">Loading spending matrix...</div>
+        <LoadingState label="Loading spending matrix..." className="py-4" />
       </div>
     );
   }
@@ -501,9 +502,9 @@ export default function CategoryMatrix({}: Props) {
           </DialogHeader>
 
           {drillLoading ? (
-            <div className="text-center py-8 text-slate-500">Loading transactions...</div>
+            <LoadingState label="Loading transactions..." />
           ) : drillTxs.length === 0 ? (
-            <div className="text-center py-8 text-slate-500">No transactions found.</div>
+            <div className="text-center py-8 text-sm text-slate-600 dark:text-white/60">No transactions found.</div>
           ) : (
             <div className="max-h-[50vh] overflow-y-auto">
               <Table>

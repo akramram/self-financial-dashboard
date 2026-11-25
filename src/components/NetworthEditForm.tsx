@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import LoadingState from './ui/loading-state';
 import { fetchNetworth, updateNetworthApi } from '../lib/api';
 import { formatIdr } from '../lib/utils';
 import MilestoneCelebration, { type CrossedMilestone } from './MilestoneCelebration';
@@ -83,7 +84,7 @@ export default function NetworthEditForm() {
   const total = Object.values(breakdown).reduce((s, v) => s + v, 0);
 
   if (!loaded) {
-    return <p className="text-slate-500 text-sm">Loading...</p>;
+    return <LoadingState label="Loading..." className="py-4" />;
   }
 
   return (

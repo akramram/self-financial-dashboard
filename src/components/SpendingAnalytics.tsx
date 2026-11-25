@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import LoadingState from './ui/loading-state';
 import type { MonthlySummary, Category, Transaction } from '../lib/data';
 import { formatIdr, getMonthSortKey } from '../lib/utils';
 import { fetchTransactions } from '../lib/api';
@@ -310,7 +311,7 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
   if (loading && !data) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-slate-500 dark:text-white/50">Loading analytics...</div>
+        <LoadingState label="Loading analytics..." className="py-4" />
       </div>
     );
   }
