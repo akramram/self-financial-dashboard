@@ -138,7 +138,7 @@ export default function AddNetworthForm() {
             <div className="space-y-1.5">
               <Label>Year</Label>
               <Input
-                type="number"
+                type="text" inputMode="decimal"
                 value={year}
                 onChange={(e) => setYear(Number(e.target.value))}
               />
@@ -162,7 +162,7 @@ export default function AddNetworthForm() {
                     className="flex-1 bg-muted"
                   />
                   <Input
-                    type="number"
+                    type="text" inputMode="decimal"
                     value={value}
                     onChange={(e) => handleBreakdownChange(key, e.target.value)}
                     placeholder="0"

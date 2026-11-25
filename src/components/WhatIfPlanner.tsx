@@ -1007,7 +1007,7 @@ export default function WhatIfPlanner() {
                         <div>
                           <label className="text-[11px] text-slate-600 dark:text-slate-400">Nominal (Rp)</label>
                           <Input
-                            type="number"
+                            type="text" inputMode="decimal"
                             value={evt.amount}
                             onChange={(e) => updateOneTimeEvent(evt.id, 'amount', e.target.value)}
                             className="h-9 text-xs"
@@ -1016,7 +1016,7 @@ export default function WhatIfPlanner() {
                         <div>
                           <label className="text-[11px] text-slate-600 dark:text-slate-400">Bulan ke-</label>
                           <Input
-                            type="number"
+                            type="text" inputMode="decimal"
                             min={1}
                             max={projectionMonths}
                             value={evt.monthOffset + 1}
