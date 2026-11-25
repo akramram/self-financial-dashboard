@@ -236,7 +236,7 @@ export default function CreditCardTracker() {
   const balanceChartOptions = useMemo(() => ({
     responsive: true,
     maintainAspectRatio: false,
-    animation: false,
+    animation: false as const,
     plugins: {
       legend: { display: false },
       tooltip: {
@@ -279,7 +279,7 @@ export default function CreditCardTracker() {
   const comparisonChartOptions = useMemo(() => ({
     responsive: true,
     maintainAspectRatio: false,
-    animation: false,
+    animation: false as const,
     plugins: {
       legend: {
         position: 'top' as const,

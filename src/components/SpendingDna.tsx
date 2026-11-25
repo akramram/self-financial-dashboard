@@ -170,7 +170,7 @@ export default function SpendingDna() {
     () => ({
       responsive: true,
       maintainAspectRatio: false,
-      animation: false,
+      animation: false as const,
       scales: {
         r: {
           beginAtZero: true,
@@ -236,7 +236,7 @@ export default function SpendingDna() {
     () => ({
       responsive: true,
       maintainAspectRatio: false,
-      animation: false,
+      animation: false as const,
       scales: {
         y: {
           ticks: {
@@ -291,7 +291,7 @@ export default function SpendingDna() {
     () => ({
       responsive: true,
       maintainAspectRatio: false,
-      animation: false,
+      animation: false as const,
       scales: {
         y: {
           stacked: true,
