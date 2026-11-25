@@ -98,7 +98,7 @@ describe('SinkingFundsHub Component', () => {
 
     // Input should reflect 5000000
     const sliderInput = screen.getByLabelText(/Nominal Surplus/i);
-    expect(sliderInput).toHaveValue(5000000);
+    expect(sliderInput).toHaveValue('5000000');
   });
 
   it('opens quick deposit modal when clicking Setor Tabungan', async () => {
