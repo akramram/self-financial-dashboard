@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import LoadingState from './ui/loading-state';
 import type { MonthlySummary, Category, Transaction } from '../lib/data';
 import { formatIdr } from '../lib/utils';
 import { fetchTransactions } from '../lib/api';
@@ -862,7 +863,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
           </DialogHeader>
 
           {dialogLoading ? (
-            <div className="py-8 text-center text-sm text-slate-500 dark:text-white/50">Loading transactions...</div>
+            <LoadingState label="Loading transactions..." />
           ) : categoryTransactions.length === 0 ? (
             <div className="py-8 text-center text-sm text-slate-500 dark:text-white/50">
               No transactions found for this category.

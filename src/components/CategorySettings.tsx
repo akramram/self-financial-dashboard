@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import LoadingState from './ui/loading-state';
 import type { Category } from '../lib/data';
 import { fetchCategories, createCategory, updateCategoryApi, deleteCategoryApi } from '../lib/api';
 import { formatIdr } from '../lib/utils';
@@ -337,7 +338,7 @@ export default function CategorySettings() {
       {/* Mobile Card List View */}
       <div className="md:hidden rounded-xl border border-border/80 dark:border-white/[0.06] divide-y divide-border/80 dark:divide-white/[0.06] overflow-hidden">
         {loading ? (
-          <div className="px-4 py-8 text-center text-sm text-muted-foreground">Loading...</div>
+          <LoadingState label="Loading..." className="px-4 py-8" />
         ) : categories.length === 0 ? (
           <div className="px-4 py-8 text-center text-sm text-muted-foreground">
             No categories yet. Add one above.
