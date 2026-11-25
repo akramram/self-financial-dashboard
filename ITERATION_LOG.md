@@ -1,5 +1,15 @@
 # Iteration Log
 
+## 2026-11-25 — Marathon: `tsc --noEmit` 25 → 0 error (3 PR)
+
+### Hasil
+Seri perbaikan tipe menyentuh test fixture, deklarasi global, dan opsi Chart.js. **Tidak ada perubahan perilaku runtime.**
+
+- **PR #398 — fixture test (12 error):** 8 fixture transaksi parsial di `components.test.tsx` kini memakai helper `makeTxRow` (Transaction lengkap: month/date/currency/payment_method/created_time); helper lokal `makeTx` (period 38) milik UpcomingBills tidak disentuh. `db.test.ts`: nilai `spent` dari `Map<unknown, unknown>` di-coerce `Number()`, asersi `largestItem` pakai optional chaining. Suite 154/154 hijau di kedua file.
+- **PR #399 — tipe global (7 error):** `App.Locals { user?: User }` dideklarasikan di `env.d.ts` (interface `Locals` mati di middleware dihapus); `IconType` CommandPalette → `LucideIcon` asli lucide-react (3 error `strokeWidth` hilang tanpa melemahkan tipe); `createNetworth` menerima `Omit<NetworthRecord,'period_id'> & { period_id?: number }` sesuai perilaku server (derivasi dari `month`), form add networth tidak lagi error tipe; legacy `networthJson` di-cast via unknown. Suite **825/825 hijau**.
+- **PR #400 — opsi Chart.js (6 error):** `animation: false` → `animation: false as const` di SpendingDna (radar + 2 bar) dan CreditCardTracker (line + bar) — literal `false` ter-widen ke `boolean` sedangkan Chart.js hanya menerima `false | object`. `CategoryRadarChart`: ticks callback kini menerima `string | number` sesuai signature `radarLinear` (nilai di-`Number()` untuk format M/K).
+- **Verifikasi akhir:** `npx tsc --noEmit` = **0 error** (awal marathon: 25). Suite **825/825 hijau** (89 files), `npm run build` Complete, deploy PM2 OK (`HTTP 200`).
+
 ## 2026-11-23 — Fitur: Hapus data networth dari UI (selama ini hanya bisa via DB langsung)
 
 ### Hasil
