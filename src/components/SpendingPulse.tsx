@@ -127,7 +127,7 @@ export default function SpendingPulse({ summaries, activeMonth, transactions }: 
 
   const statusConfig = {
     'under': {
-      color: 'text-emerald-600 dark:text-emerald-400',
+      color: 'text-emerald-700 dark:text-emerald-400',
       bg: 'bg-emerald-50 dark:bg-emerald-900/20',
       border: 'border-emerald-200 dark:border-emerald-800',
       bar: 'bg-emerald-500',
@@ -257,7 +257,7 @@ export default function SpendingPulse({ summaries, activeMonth, transactions }: 
           {/* Projected total */}
           <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
             <span>Projected period total:</span>
-            <span className={`font-semibold ${pulse.projectedTotal > pulse.income ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
+            <span className={`font-semibold ${pulse.projectedTotal > pulse.income ? 'text-red-600 dark:text-red-400' : 'text-emerald-700 dark:text-emerald-400'}`}>
               {formatIdr(pulse.projectedTotal)}
             </span>
             <span>vs</span>
@@ -351,7 +351,7 @@ export default function SpendingPulse({ summaries, activeMonth, transactions }: 
           </div>
           <span className={`w-10 text-right font-medium ${
             (pulse.actualSpend / pulse.income) * 100 < 50
-              ? 'text-emerald-600 dark:text-emerald-400'
+              ? 'text-emerald-700 dark:text-emerald-400'
               : (pulse.actualSpend / pulse.income) * 100 <= 80
                 ? 'text-gold-700 dark:text-gold-400'
                 : 'text-red-600 dark:text-red-400'

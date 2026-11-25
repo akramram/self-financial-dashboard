@@ -393,7 +393,7 @@ export default function GoalsTracker({ networth }: Props) {
 
         <div className="glass-card p-5">
           <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400">
+              <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400">
                 <TrendingUp className="w-5 h-5" />
               </div>
               <div>
@@ -513,7 +513,7 @@ export default function GoalsTracker({ networth }: Props) {
                     <div className="flex items-center gap-1 shrink-0">
                       <button
                         onClick={() => setContributeTo(goal)}
-                        className="p-1.5 rounded-md hover:bg-slate-200/60 dark:bg-white/[0.08] text-emerald-600 dark:text-emerald-400 transition"
+                        className="p-1.5 rounded-md hover:bg-slate-200/60 dark:bg-white/[0.08] text-emerald-700 dark:text-emerald-400 transition"
                         title="Add contribution"
                       >
                         <Plus className="w-4 h-4" />
@@ -627,12 +627,12 @@ export default function GoalsTracker({ networth }: Props) {
                 />
                 <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400">
+                      <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400">
                         {ICON_MAP[goal.icon] || ICON_MAP.target}
                       </div>
                       <div>
                         <h3 className="font-semibold line-through">{goal.name}</h3>
-                        <p className="text-xs text-emerald-600 dark:text-emerald-400">
+                        <p className="text-xs text-emerald-700 dark:text-emerald-400">
                           {formatIdr(goal.target_amount)} achieved
                         </p>
                       </div>
@@ -678,7 +678,7 @@ export default function GoalsTracker({ networth }: Props) {
               </div>
               <div>
                 <p className="text-xs text-muted-foreground mb-1">Surplus / Deficit</p>
-                <p className={`text-lg font-bold ${latestNetworth.total >= totalTarget ? 'text-emerald-600 dark:text-emerald-400' : 'text-gold-700 dark:text-gold-400'}`}>
+                <p className={`text-lg font-bold ${latestNetworth.total >= totalTarget ? 'text-emerald-700 dark:text-emerald-400' : 'text-gold-700 dark:text-gold-400'}`}>
                   {latestNetworth.total >= totalTarget ? '+' : ''}{formatIdr(latestNetworth.total - totalTarget)}
                 </p>
               </div>
@@ -904,7 +904,7 @@ export default function GoalsTracker({ networth }: Props) {
                 </div>
                 <div className="flex justify-between mb-1">
                   <span className="text-muted-foreground">Contribution</span>
-                  <span className="text-emerald-600 dark:text-emerald-400">+{formatIdr(Number(contributeAmount))}</span>
+                  <span className="text-emerald-700 dark:text-emerald-400">+{formatIdr(Number(contributeAmount))}</span>
                 </div>
                 <div className="flex justify-between font-semibold pt-1 border-t border-slate-200 dark:border-white/[0.06]">
                   <span>New Total</span>

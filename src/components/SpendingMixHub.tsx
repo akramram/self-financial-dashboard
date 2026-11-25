@@ -347,7 +347,7 @@ export default function SpendingMixHub() {
               <Zap className="w-4 h-4 text-emerald-500" />
             </div>
             <div className="mt-3">
-              <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+              <div className="text-2xl font-bold text-emerald-700 dark:text-emerald-400">
                 {formatIdr(currentPeriod.discretionary)}
               </div>
               <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">
@@ -427,7 +427,7 @@ export default function SpendingMixHub() {
           onClick={() => setActiveTab('overview')}
           className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-t-lg transition-colors border-b-2 -mb-px whitespace-nowrap ${
             activeTab === 'overview'
-              ? 'border-emerald-500 text-emerald-600 dark:text-emerald-400 bg-slate-50/50 dark:bg-slate-900/40'
+              ? 'border-emerald-500 text-emerald-700 dark:text-emerald-400 bg-slate-50/50 dark:bg-slate-900/40'
               : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
           }`}
         >
@@ -438,7 +438,7 @@ export default function SpendingMixHub() {
           onClick={() => setActiveTab('simulation')}
           className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-t-lg transition-colors border-b-2 -mb-px whitespace-nowrap ${
             activeTab === 'simulation'
-              ? 'border-emerald-500 text-emerald-600 dark:text-emerald-400 bg-slate-50/50 dark:bg-slate-900/40'
+              ? 'border-emerald-500 text-emerald-700 dark:text-emerald-400 bg-slate-50/50 dark:bg-slate-900/40'
               : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
           }`}
         >
@@ -449,7 +449,7 @@ export default function SpendingMixHub() {
           onClick={() => setActiveTab('elasticity')}
           className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-t-lg transition-colors border-b-2 -mb-px whitespace-nowrap ${
             activeTab === 'elasticity'
-              ? 'border-emerald-500 text-emerald-600 dark:text-emerald-400 bg-slate-50/50 dark:bg-slate-900/40'
+              ? 'border-emerald-500 text-emerald-700 dark:text-emerald-400 bg-slate-50/50 dark:bg-slate-900/40'
               : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
           }`}
         >
@@ -460,7 +460,7 @@ export default function SpendingMixHub() {
           onClick={() => setActiveTab('audit')}
           className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-t-lg transition-colors border-b-2 -mb-px whitespace-nowrap ${
             activeTab === 'audit'
-              ? 'border-emerald-500 text-emerald-600 dark:text-emerald-400 bg-slate-50/50 dark:bg-slate-900/40'
+              ? 'border-emerald-500 text-emerald-700 dark:text-emerald-400 bg-slate-50/50 dark:bg-slate-900/40'
               : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
           }`}
         >
@@ -634,7 +634,7 @@ export default function SpendingMixHub() {
                 <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
                   Persentase Pemangkasan Belanja Variabel:
                 </span>
-                <span className="text-lg font-extrabold text-emerald-600 dark:text-emerald-400">
+                <span className="text-lg font-extrabold text-emerald-700 dark:text-emerald-400">
                   {cutSlider}%
                 </span>
               </div>
@@ -703,7 +703,7 @@ export default function SpendingMixHub() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5">
                 <span className="text-xs text-slate-500 dark:text-slate-400">Dana Bebas per Bulan</span>
-                <div className="text-xl sm:text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">
+                <div className="text-xl sm:text-2xl font-bold text-emerald-700 dark:text-emerald-400 mt-1">
                   +{formatIdr(simulation.monthlyFreed)}
                 </div>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
@@ -940,7 +940,7 @@ export default function SpendingMixHub() {
                               Tetap (Recurring)
                             </span>
                           ) : (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">
                               Fleksibel (Discretionary)
                             </span>
                           )}

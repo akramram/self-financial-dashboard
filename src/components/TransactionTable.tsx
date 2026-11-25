@@ -537,7 +537,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                   active
                     ? value === 'unpaid'
                       ? 'bg-gold-500/15 border-gold-500/40 text-gold-700 dark:text-gold-400'
-                      : 'bg-emerald-500/15 border-emerald-500/40 text-emerald-600 dark:text-emerald-400'
+                      : 'bg-emerald-500/15 border-emerald-500/40 text-emerald-700 dark:text-emerald-400'
                     : 'bg-slate-100 dark:bg-white/[0.04] border-slate-300 dark:border-white/[0.08] text-slate-600 dark:text-white/50 hover:text-slate-700 dark:hover:text-white/70'
                 }`}
               >
@@ -764,7 +764,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                 size="sm"
                 variant="ghost"
                 onClick={() => handleBulkPaid(true)}
-                className="h-8 text-xs text-emerald-700 dark:text-emerald-400 hover:text-emerald-600 dark:hover:text-emerald-300 hover:bg-emerald-500/10"
+                className="h-8 text-xs text-emerald-700 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 hover:bg-emerald-500/10"
               >
                 Mark Paid
               </Button>

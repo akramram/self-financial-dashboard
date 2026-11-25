@@ -143,7 +143,7 @@ export default function FlowMapHub() {
     <div className="space-y-4">
       {/* Period selector */}
       <div className="flex items-center gap-2 flex-wrap">
-        <Waves className="h-5 w-5 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
+        <Waves className="h-5 w-5 text-emerald-700 dark:text-emerald-400" aria-hidden="true" />
         <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100">Peta Aliran Dana</h2>
         <div className="ml-auto">
           <Select
@@ -170,7 +170,7 @@ export default function FlowMapHub() {
 
       {/* KPI cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3" data-testid="flow-kpis">
-        <KpiCard icon={<TrendingUp className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />} label="Pemasukan" value={formatIdr(insights.income)} />
+        <KpiCard icon={<TrendingUp className="h-4 w-4 text-emerald-700 dark:text-emerald-400" />} label="Pemasukan" value={formatIdr(insights.income)} />
         <KpiCard icon={<TrendingDown className="h-4 w-4 text-rose-600 dark:text-rose-400" />} label="Total Keluar" value={formatIdr(insights.totalOut)} />
         <KpiCard
           icon={<PiggyBank className="h-4 w-4 text-blue-600 dark:text-blue-400" />}

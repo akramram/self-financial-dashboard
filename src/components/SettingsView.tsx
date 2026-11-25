@@ -90,7 +90,7 @@ export default function SettingsView() {
 
         {/* Quick status pills */}
         <div className="flex items-center gap-2 flex-wrap">
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-medium">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-xs font-medium">
             <CheckCircle2 className="w-3.5 h-3.5" />
             <span>SQLite Active</span>
           </div>
@@ -187,7 +187,7 @@ export default function SettingsView() {
                     Embedded SQLite database located at <code className="font-mono text-[11px] px-1 py-0.5 rounded bg-muted">data/financial.db</code>. WAL mode enabled.
                   </p>
                   <div className="pt-1">
-                    <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+                    <span className="text-[11px] font-medium text-emerald-700 dark:text-emerald-400">
                       Zero cloud telemetry
                     </span>
                   </div>

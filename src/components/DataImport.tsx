@@ -833,7 +833,7 @@ export default function DataImport() {
             ) : result && (
               <div className="grid grid-cols-3 gap-4 text-center">
                 <div className="bg-emerald-50 dark:bg-emerald-950/30 rounded-xl p-4 border border-emerald-200 dark:border-emerald-800">
-                  <p className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">{result.imported}</p>
+                  <p className="text-3xl font-bold text-emerald-700 dark:text-emerald-400">{result.imported}</p>
                   <p className="text-xs text-slate-500 mt-1">Imported</p>
                 </div>
                 <div className="bg-gold-500/5 dark:bg-gold-700/10 rounded-xl p-4 border border-gold-400/20 dark:border-gold-700/40">

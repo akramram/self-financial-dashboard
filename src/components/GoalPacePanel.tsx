@@ -67,13 +67,13 @@ function etaChip(g: GoalPace): { text: string; cls: string } {
   const etaLabel = g.etaDate ? formatEtaDate(g.etaDate) : '';
   switch (g.etaStatus) {
     case 'done':
-      return { text: 'Tercapai', cls: 'text-emerald-600 dark:text-emerald-400' };
+      return { text: 'Tercapai', cls: 'text-emerald-700 dark:text-emerald-400' };
     case 'no_plan':
       return { text: 'Tanpa auto-setoran', cls: 'text-slate-600 dark:text-white/60' };
     case 'on_time':
       return {
         text: `ETA ${etaLabel} (tepat waktu)`,
-        cls: 'text-emerald-600 dark:text-emerald-400',
+        cls: 'text-emerald-700 dark:text-emerald-400',
       };
     case 'slightly_late':
       return {
@@ -167,7 +167,7 @@ export default function GoalPacePanel({ analysis, capacityLoading, today }: Prop
 
         <div className="glass-card p-4">
           <div className="flex items-center gap-2 mb-1.5">
-            <Flag className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+            <Flag className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
             <p className="text-xs text-muted-foreground">Milestone Terdekat</p>
           </div>
           {analysis.nearestMilestone ? (
@@ -309,7 +309,7 @@ export default function GoalPacePanel({ analysis, capacityLoading, today }: Prop
                       ? `ETA ${Math.max(1, Math.ceil(r.newEtaMonths))} bln`
                       : 'tetap tanpa plan'}
                     {r.monthsSaved !== null && r.monthsSaved >= 1 && (
-                      <span className="text-emerald-600 dark:text-emerald-400 font-medium">
+                      <span className="text-emerald-700 dark:text-emerald-400 font-medium">
                         {' '}(-{Math.round(r.monthsSaved)} bln)
                       </span>
                     )}

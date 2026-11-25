@@ -690,7 +690,7 @@ export default function RunwayAnalysis({ periodId, compact = false }: Props) {
                       {activeScenario.deltaMonths >= 0 ? (
                         <>
                           <ArrowUpRight className="w-4 h-4 text-emerald-500" />
-                          <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+                          <span className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">
                             +{activeScenario.deltaMonths.toFixed(1)} bln
                           </span>
                         </>

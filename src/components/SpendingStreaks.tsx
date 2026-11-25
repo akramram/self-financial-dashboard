@@ -222,7 +222,7 @@ export default function SpendingStreaks() {
             </p>
             <CalendarDays className="w-5 h-5 text-emerald-500" />
           </div>
-          <p className="text-4xl font-bold mt-3 text-emerald-600 dark:text-emerald-400">
+          <p className="text-4xl font-bold mt-3 text-emerald-700 dark:text-emerald-400">
             {data.noSpendLast30}
             <span className="text-lg font-medium ml-1">/ {Math.min(30, data.totalDaysTracked)}</span>
           </p>
@@ -318,7 +318,7 @@ export default function SpendingStreaks() {
                   <div className="flex items-center justify-between text-xs mb-1">
                     <span className="font-medium text-slate-600 dark:text-white/60">{d.label}</span>
                     <span className="text-slate-500 dark:text-white/50">
-                      {d.spendDays} spend · <span className="text-emerald-600 dark:text-emerald-400">{d.noSpendDays} no-spend</span>
+                      {d.spendDays} spend · <span className="text-emerald-700 dark:text-emerald-400">{d.noSpendDays} no-spend</span>
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -342,7 +342,7 @@ export default function SpendingStreaks() {
                 <span className="font-semibold text-red-500">⚠ {heaviestWeekday.label}s</span> are your heaviest
                 spending days (avg {formatIdr(heaviestWeekday.avgPerSpendDay)}).
                 {bestWeekday && bestWeekday.label !== heaviestWeekday.label && (
-                  <> You're most disciplined on <span className="font-semibold text-emerald-600 dark:text-emerald-400">{bestWeekday.label}s</span>.</>
+                  <> You're most disciplined on <span className="font-semibold text-emerald-700 dark:text-emerald-400">{bestWeekday.label}s</span>.</>
                 )}
               </p>
             </div>

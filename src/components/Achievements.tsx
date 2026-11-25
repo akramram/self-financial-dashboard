@@ -466,7 +466,7 @@ export default function Achievements({ initialData }: Props) {
               {xpStats.nextRank ? (
                 <span>Kurang {xpStats.xpToNext} XP ke Lv.{xpStats.nextRank.level}</span>
               ) : (
-                <span className="text-emerald-600 dark:text-emerald-400 font-semibold">Maksimal</span>
+                <span className="text-emerald-700 dark:text-emerald-400 font-semibold">Maksimal</span>
               )}
             </div>
           </div>
@@ -845,7 +845,7 @@ export default function Achievements({ initialData }: Props) {
                               </div>
 
                               {badge.unlocked && (
-                                <span className="p-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                                <span className="p-1 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">
                                   <CheckCircle2 className="w-3.5 h-3.5" />
                                 </span>
                               )}

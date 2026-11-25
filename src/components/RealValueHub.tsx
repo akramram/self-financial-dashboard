@@ -155,7 +155,7 @@ export default function RealValueHub() {
       <div className="glass-card rounded-2xl p-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <CircleDollarSign className="w-5 h-5 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
+            <CircleDollarSign className="w-5 h-5 text-emerald-700 dark:text-emerald-400" aria-hidden="true" />
             <p className="font-semibold text-slate-900 dark:text-white">Asumsi Inflasi Tahunan</p>
             <span className="text-lg font-bold tabular-nums text-emerald-700 dark:text-emerald-300">{ratePct.toFixed(1)}%</span>
           </div>

@@ -114,7 +114,7 @@ export default function MilestoneCelebration({ milestones, next, total, onClose 
             ))}
           </div>
 
-          <p className="mt-4 text-[11px] font-semibold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
+          <p className="mt-4 text-[11px] font-semibold uppercase tracking-widest text-emerald-700 dark:text-emerald-400">
             Milestone Reached
           </p>
           <h3 className="mt-1 text-xl font-bold text-slate-900 dark:text-white">

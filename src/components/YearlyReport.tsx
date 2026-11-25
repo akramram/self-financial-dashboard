@@ -56,12 +56,12 @@ function DeltaBadge({ current, previous }: { current: number; previous: number }
     return <span className="text-xs text-muted-foreground flex items-center gap-1"><Minus className="w-3 h-3" /> 0%</span>;
   }
   if (previous === 0) {
-    return <span className="text-xs text-emerald-600 dark:text-emerald-400 flex items-center gap-1"><ArrowUpRight className="w-3 h-3" /> New</span>;
+    return <span className="text-xs text-emerald-700 dark:text-emerald-400 flex items-center gap-1"><ArrowUpRight className="w-3 h-3" /> New</span>;
   }
   const change = current - previous;
   const pct = (change / Math.abs(previous)) * 100;
   const isPositive = change > 0;
-  const colorClass = isPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400';
+  const colorClass = isPositive ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-600 dark:text-red-400';
   const Icon = isPositive ? ArrowUpRight : ArrowDownRight;
   return (
     <span className={`text-xs flex items-center gap-1 font-medium ${colorClass}`}>
@@ -260,7 +260,7 @@ export default function YearlyReport({ summaries, categories }: Props) {
             <div className="glass-card p-5">
               <div className="flex items-center gap-3">
                   <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/30">
-                    <Wallet className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                    <Wallet className="w-5 h-5 text-emerald-700 dark:text-emerald-400" />
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Total Income</p>
@@ -284,11 +284,11 @@ export default function YearlyReport({ summaries, categories }: Props) {
             <div className="glass-card p-5">
               <div className="flex items-center gap-3">
                   <div className={`p-2 rounded-lg ${totals.savings >= 0 ? 'bg-emerald-100 dark:bg-emerald-900/30' : 'bg-red-100 dark:bg-red-900/30'}`}>
-                    <PiggyBank className={`w-5 h-5 ${totals.savings >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`} />
+                    <PiggyBank className={`w-5 h-5 ${totals.savings >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`} />
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Total Savings</p>
-                    <p className={`text-lg font-semibold ${totals.savings >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
+                    <p className={`text-lg font-semibold ${totals.savings >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
                       {formatIdr(totals.savings)}
                     </p>
                     <DeltaBadge current={totals.savings} previous={prevTotals.savings} />
@@ -359,7 +359,7 @@ export default function YearlyReport({ summaries, categories }: Props) {
                           <span className="text-xs font-semibold text-slate-500 dark:text-white/50 w-4">#{i + 1}</span>
                           <span className="text-sm font-medium">{m.month}</span>
                         </div>
-                        <span className={`text-sm font-semibold ${m.savings >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
+                        <span className={`text-sm font-semibold ${m.savings >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
                           {formatIdr(m.savings)}
                         </span>
                       </div>
@@ -429,13 +429,13 @@ export default function YearlyReport({ summaries, categories }: Props) {
                             <TableCell className="text-right">{row.months}</TableCell>
                             <TableCell className="text-right">{formatIdr(row.income)}</TableCell>
                             <TableCell className="text-right">{formatIdr(row.spending)}</TableCell>
-                            <TableCell className={`text-right font-medium ${row.savings >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
+                            <TableCell className={`text-right font-medium ${row.savings >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
                               {formatIdr(row.savings)}
                             </TableCell>
                             <TableCell className="text-right">{row.avgSavingsRate.toFixed(1)}%</TableCell>
                             <TableCell className="text-right">
                               {prev ? (
-                                <span className={`text-xs font-medium ${isUp ? 'text-emerald-600 dark:text-emerald-400' : savingsChange < 0 ? 'text-red-600 dark:text-red-400' : 'text-muted-foreground'}`}>
+                                <span className={`text-xs font-medium ${isUp ? 'text-emerald-700 dark:text-emerald-400' : savingsChange < 0 ? 'text-red-600 dark:text-red-400' : 'text-muted-foreground'}`}>
                                   {isUp ? '+' : ''}{formatIdr(savingsChange)}
                                   {savingsPct !== null && (
                                     <span className="ml-1">({isUp ? '+' : ''}{savingsPct.toFixed(1)}%)</span>

@@ -661,7 +661,7 @@ export default function SavingsRateTracker() {
           {/* 4 Executive KPI Sub-cards */}
           <div className="grid grid-cols-2 gap-3 lg:w-[390px] shrink-0">
             <KpiMiniCard
-              icon={<Target className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />}
+              icon={<Target className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />}
               label="Rata-rata Historis"
               value={`${data.avg_rate.toFixed(1)}%`}
               sub={`Median ${data.median_rate.toFixed(1)}%`}
@@ -841,7 +841,7 @@ export default function SavingsRateTracker() {
             {/* Rate Distribution */}
             <div className="glass-card p-5 border border-slate-200/80 dark:border-slate-800">
               <div className="flex items-center gap-2 mb-1">
-                <Award className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                <Award className="w-5 h-5 text-emerald-700 dark:text-emerald-400" />
                 <h3 className="font-semibold text-slate-900 dark:text-white">
                   Distribusi Tier Historis
                 </h3>
@@ -935,7 +935,7 @@ export default function SavingsRateTracker() {
                         {m.label}
                       </span>
                       {m.achieved && (
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                        <CheckCircle2 className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
                       )}
                     </div>
                     <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">

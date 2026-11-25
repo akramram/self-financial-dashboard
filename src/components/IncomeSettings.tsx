@@ -264,7 +264,7 @@ export default function IncomeSettings() {
                     <TableCell className="text-right font-mono text-xs text-muted-foreground">
                       {row.other_income ? formatIdr(row.other_income) : '-'}
                     </TableCell>
-                    <TableCell className="text-right font-mono text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                    <TableCell className="text-right font-mono text-xs font-semibold text-emerald-700 dark:text-emerald-400">
                       {formatIdr(total)}
                     </TableCell>
                     <TableCell className="text-right">
@@ -349,7 +349,7 @@ export default function IncomeSettings() {
                   <p className="text-xs text-muted-foreground font-mono">
                     Income {formatIdr(row.income)} · Other {formatIdr(row.other_income || 0)}
                   </p>
-                  <p className="text-xs font-semibold font-mono text-emerald-600 dark:text-emerald-400">
+                  <p className="text-xs font-semibold font-mono text-emerald-700 dark:text-emerald-400">
                     {formatIdr(total)}
                   </p>
                 </div>

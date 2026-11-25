@@ -373,7 +373,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
               <p className="text-xs text-slate-500 dark:text-white/50">Remaining</p>
               <p
                 className={`text-lg font-semibold ${
-                  totalRemaining >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'
+                  totalRemaining >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'
                 }`}
               >
                 {formatIdr(totalRemaining)}
@@ -408,7 +408,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
                   </Badge>
                 )}
                 {overspentCount === 0 && nearLimitCount === 0 && (
-                  <span className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">All Good</span>
+                  <span className="text-sm text-emerald-700 dark:text-emerald-400 font-medium">All Good</span>
                 )}
               </div>
             </div>
@@ -434,7 +434,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
                     ? 'text-red-600 dark:text-red-400'
                     : overallAdherencePct >= 80
                     ? 'text-gold-700 dark:text-gold-400'
-                    : 'text-emerald-600 dark:text-emerald-400'
+                    : 'text-emerald-700 dark:text-emerald-400'
                 }`}
               >
                 {overallAdherencePct.toFixed(1)}% Used
@@ -575,7 +575,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center gap-1.5 ${
               statusFilter === 'track'
                 ? 'bg-emerald-600 text-white'
-                : 'text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10'
+                : 'text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/10'
             }`}
           >
             <span>On Track</span>

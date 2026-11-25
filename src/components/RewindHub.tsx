@@ -144,7 +144,7 @@ export default function RewindHub() {
       {/* Year selector */}
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
+          <Sparkles className="w-5 h-5 text-emerald-700 dark:text-emerald-400" aria-hidden="true" />
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">Rewind {report.year}</h2>
         </div>
         {years.length > 1 && (

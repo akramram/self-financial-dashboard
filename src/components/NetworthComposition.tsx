@@ -229,7 +229,7 @@ export default function NetworthComposition({ data }: Props) {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <p className="text-xs text-muted-foreground mb-1">Projected Annual Income</p>
-              <p className="text-xl sm:text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+              <p className="text-xl sm:text-2xl font-bold text-emerald-700 dark:text-emerald-400">
                 {formatIdr(dividendLens.projectedAnnualDividend ?? 0)}
               </p>
             </div>
@@ -289,7 +289,7 @@ export default function NetworthComposition({ data }: Props) {
                   {m.changePct != null && (
                     <div className="flex justify-between text-xs">
                       <span className="text-muted-foreground">MoM Change</span>
-                      <span className={`font-semibold ${m.change >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
+                      <span className={`font-semibold ${m.change >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
                         {m.change >= 0 ? '+' : ''}{formatIdr(m.change)} ({m.change >= 0 ? '+' : ''}{m.changePct}%)
                       </span>
                     </div>
@@ -298,7 +298,7 @@ export default function NetworthComposition({ data }: Props) {
                     <div className="mt-2 pt-2 border-t border-slate-200 dark:border-white/[0.06] space-y-1">
                       <div className="flex justify-between text-xs">
                         <span className="text-muted-foreground">TTM Yield</span>
-                        <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                        <span className="font-semibold text-emerald-700 dark:text-emerald-400">
                           {dividendLens.ttmYieldPct != null ? `${fmtPct1(dividendLens.ttmYieldPct)}%` : '-'}
                         </span>
                       </div>

@@ -197,7 +197,7 @@ export default function DataHealthHub() {
         </div>
         <div className="text-center sm:text-left space-y-1.5">
           <div className="flex items-center justify-center sm:justify-start gap-2">
-            <ShieldCheck className="w-5 h-5 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
+            <ShieldCheck className="w-5 h-5 text-emerald-700 dark:text-emerald-400" aria-hidden="true" />
             <h2 className="text-lg font-bold text-slate-900 dark:text-white">Kesehatan Data</h2>
           </div>
           <p className="text-sm text-slate-600 dark:text-white/50 max-w-md">
@@ -236,7 +236,7 @@ export default function DataHealthHub() {
         </section>
       ) : (
         <div className="glass-card rounded-2xl p-6 text-center space-y-1.5" data-testid="diagnostics-clean">
-          <CheckCircle2 className="w-8 h-8 mx-auto text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
+          <CheckCircle2 className="w-8 h-8 mx-auto text-emerald-700 dark:text-emerald-400" aria-hidden="true" />
           <p className="font-semibold text-slate-900 dark:text-white">Semua pemeriksaan lolos</p>
           <p className="text-sm text-slate-600 dark:text-white/50">
             Tidak ditemukan anomali data pada 10 pemeriksaan integritas.

@@ -341,7 +341,7 @@ export default function SinkingFundsHub() {
             <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
               Total Dana Terkumpul
             </span>
-            <div className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400">
+            <div className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400">
               <PiggyBank className="w-5 h-5" />
             </div>
           </div>
@@ -351,7 +351,7 @@ export default function SinkingFundsHub() {
           <div className="mt-2 text-xs text-muted-foreground flex items-center gap-1.5">
             <span>Target:</span>
             <span className="font-semibold text-foreground tabular-nums">{formatIdr(summary.totalTarget)}</span>
-            <span className="ml-auto font-medium text-emerald-600 dark:text-emerald-400">
+            <span className="ml-auto font-medium text-emerald-700 dark:text-emerald-400">
               {summary.overallProgressPct}%
             </span>
           </div>
@@ -397,7 +397,7 @@ export default function SinkingFundsHub() {
           <div className="text-xl font-bold tracking-tight text-foreground flex items-baseline gap-2">
             <span>{summary.activeCount} Pos Aktif</span>
             {summary.fundedCount > 0 && (
-              <span className="text-xs font-normal text-emerald-600 dark:text-emerald-400">
+              <span className="text-xs font-normal text-emerald-700 dark:text-emerald-400">
                 ({summary.fundedCount} tercapai)
               </span>
             )}
@@ -592,7 +592,7 @@ export default function SinkingFundsHub() {
                   </div>
                   <div>
                     <span className="text-[11px] text-muted-foreground block">Setoran Bulanan:</span>
-                    <span className="font-bold text-emerald-600 dark:text-emerald-400 tabular-nums text-xs mt-0.5 block">
+                    <span className="font-bold text-emerald-700 dark:text-emerald-400 tabular-nums text-xs mt-0.5 block">
                       {monthlyReq > 0 ? `${formatIdr(monthlyReq)} / bln` : 'Lunas'}
                     </span>
                   </div>
@@ -614,9 +614,9 @@ export default function SinkingFundsHub() {
                     setDepositFund(fund);
                     setDepositAmount('');
                   }}
-                  className="w-full text-xs h-8.5 gap-1.5 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 hover:text-emerald-600 hover:border-emerald-300 dark:hover:border-emerald-800 transition-colors"
+                  className="w-full text-xs h-8.5 gap-1.5 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 hover:text-emerald-700 hover:border-emerald-300 dark:hover:border-emerald-800 transition-colors"
                 >
-                  <Plus className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                  <Plus className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400" />
                   <span>Setor Tabungan</span>
                 </Button>
               </div>
@@ -701,7 +701,7 @@ export default function SinkingFundsHub() {
                 <th className="py-2.5 px-3">Prioritas</th>
                 <th className="py-2.5 px-3 text-right">Saldo Saat Ini</th>
                 <th className="py-2.5 px-3 text-right">Kebutuhan Bulanan</th>
-                <th className="py-2.5 px-3 text-right text-emerald-600 dark:text-emerald-400">
+                <th className="py-2.5 px-3 text-right text-emerald-700 dark:text-emerald-400">
                   Alokasi Masuk
                 </th>
                 <th className="py-2.5 px-3 text-right">Saldo Baru</th>
@@ -727,7 +727,7 @@ export default function SinkingFundsHub() {
                     <td className="py-2.5 px-3 text-right tabular-nums text-muted-foreground">
                       {formatIdr(item.monthlyRequired)}
                     </td>
-                    <td className="py-2.5 px-3 text-right tabular-nums font-bold text-emerald-600 dark:text-emerald-400">
+                    <td className="py-2.5 px-3 text-right tabular-nums font-bold text-emerald-700 dark:text-emerald-400">
                       +{formatIdr(item.allocatedAmount)}
                     </td>
                     <td className="py-2.5 px-3 text-right tabular-nums font-semibold text-foreground">
@@ -735,7 +735,7 @@ export default function SinkingFundsHub() {
                     </td>
                     <td className="py-2.5 px-3 text-center">
                       {item.isFullyFunded ? (
-                        <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+                        <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 dark:text-emerald-400">
                           <CheckCircle2 className="w-3.5 h-3.5" /> Lunas
                         </span>
                       ) : (
@@ -753,7 +753,7 @@ export default function SinkingFundsHub() {
                 <td className="py-3 px-3 text-foreground" colSpan={4}>
                   Total Teralokasikan
                 </td>
-                <td className="py-3 px-3 text-right tabular-nums text-emerald-600 dark:text-emerald-400">
+                <td className="py-3 px-3 text-right tabular-nums text-emerald-700 dark:text-emerald-400">
                   {formatIdr(waterfallResult.totalAllocated)}
                 </td>
                 <td className="py-3 px-3 text-right tabular-nums text-muted-foreground" colSpan={2}>
@@ -958,7 +958,7 @@ export default function SinkingFundsHub() {
           <form onSubmit={handleDepositSubmit}>
             <DialogHeader>
               <DialogTitle className="text-base font-bold flex items-center gap-2">
-                <Plus className="w-4 h-4 text-emerald-600" />
+                <Plus className="w-4 h-4 text-emerald-700" />
                 <span>Setor Tabungan: {depositFund?.name}</span>
               </DialogTitle>
               <DialogDescription className="text-xs text-muted-foreground">

@@ -187,7 +187,7 @@ function FactorIcon({ icon, score, maxScore }: { icon: string; score: number; ma
   const pct = (score / maxScore) * 100;
   const color =
     pct >= 80
-      ? 'text-emerald-600 dark:text-emerald-400'
+      ? 'text-emerald-700 dark:text-emerald-400'
       : pct >= 60
         ? 'text-amber-600 dark:text-amber-400'
         : pct >= 40
@@ -617,7 +617,7 @@ export default function HealthScore({ summaries: initialSummaries }: Props) {
             <div className="mt-3 flex items-center justify-center gap-1.5">
               {healthData.trend === 'up' ? (
                 <>
-                  <ArrowUpRight className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                  <ArrowUpRight className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
                   <span className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">
                     +{healthData.overall - healthData.prevScore} poin vs bulan lalu
                   </span>
@@ -648,7 +648,7 @@ export default function HealthScore({ summaries: initialSummaries }: Props) {
               <p className="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-white/50">
                 Pilar Terkuat
               </p>
-              <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+              <ShieldCheck className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
             </div>
             <div className="mt-2">
               <p className="text-lg font-bold text-slate-900 dark:text-white">
@@ -682,7 +682,7 @@ export default function HealthScore({ summaries: initialSummaries }: Props) {
               <p className="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-white/50">
                 Ruang Kenaikan Skor
               </p>
-              <TrendingUp className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+              <TrendingUp className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
             </div>
             <div className="mt-2">
               <p className="text-2xl font-bold text-slate-900 dark:text-white tabular-nums">
@@ -723,7 +723,7 @@ export default function HealthScore({ summaries: initialSummaries }: Props) {
             <div className="glass-card p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <Crosshair className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                  <Crosshair className="h-5 w-5 text-emerald-700 dark:text-emerald-400" />
                   <h2 className="text-base font-semibold text-slate-900 dark:text-white">
                     Radar Keseimbangan 5 Pilar
                   </h2>
@@ -744,7 +744,7 @@ export default function HealthScore({ summaries: initialSummaries }: Props) {
             <div className="glass-card p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <Trophy className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                  <Trophy className="h-5 w-5 text-emerald-700 dark:text-emerald-400" />
                   <h2 className="text-base font-semibold text-slate-900 dark:text-white">
                     Tren Skor Antar Periode
                   </h2>
@@ -769,7 +769,7 @@ export default function HealthScore({ summaries: initialSummaries }: Props) {
           <div>
             <div className="flex items-center justify-between flex-wrap gap-2 mb-4">
               <div className="flex items-center gap-2">
-                <Activity className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                <Activity className="h-5 w-5 text-emerald-700 dark:text-emerald-400" />
                 <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
                   Rincian 5 Pilar Skor
                 </h2>
@@ -794,7 +794,7 @@ export default function HealthScore({ summaries: initialSummaries }: Props) {
             <div className="glass-card p-6">
               <div className="flex items-center justify-between flex-wrap gap-2 mb-4">
                 <div className="flex items-center gap-2">
-                  <Lightbulb className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                  <Lightbulb className="h-5 w-5 text-emerald-700 dark:text-emerald-400" />
                   <h2 className="text-base font-semibold text-slate-900 dark:text-white">
                     Rencana Aksi Prioritas (Urut Potensi Poin Tertinggi)
                   </h2>

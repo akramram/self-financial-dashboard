@@ -355,7 +355,7 @@ export default function WhatIfPlanner() {
   if (data.periods.length === 0) {
     return (
       <div className="glass-card p-8 text-center space-y-3">
-        <TrendingUp className="w-10 h-10 text-emerald-600 dark:text-emerald-400 mx-auto" />
+        <TrendingUp className="w-10 h-10 text-emerald-700 dark:text-emerald-400 mx-auto" />
         <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
           Belum ada data siklus gaji
         </h2>
@@ -569,7 +569,7 @@ export default function WhatIfPlanner() {
                     : 'border-slate-200 dark:border-white/10 bg-white/70 dark:bg-white/[0.03] text-slate-800 dark:text-slate-200 hover:border-emerald-400'
                 }`}
               >
-                <Sparkles className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                <Sparkles className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400 shrink-0" />
                 <span className="text-xs font-semibold">{preset.label}</span>
               </button>
             );
@@ -593,7 +593,7 @@ export default function WhatIfPlanner() {
             </p>
             <p className="text-xs mt-1 text-slate-600 dark:text-slate-400 flex items-center gap-1">
               {projection.networthDifference >= 0 ? (
-                <ArrowUpRight className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                <ArrowUpRight className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400" />
               ) : (
                 <ArrowDownRight className="w-3.5 h-3.5 text-red-600 dark:text-red-400" />
               )}
@@ -769,7 +769,7 @@ export default function WhatIfPlanner() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="glass-card p-5 space-y-4">
               <div className="flex items-center gap-2">
-                <Target className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                <Target className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
                 <h2 className="text-base font-semibold text-slate-900 dark:text-white">
                   Akselerasi Milestone Net Worth
                 </h2>

@@ -531,10 +531,10 @@ export default function SpendingCalendar({ transactions, periods, categories }: 
             <span>No-Spend Days</span>
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
           </div>
-          <div className="text-lg md:text-xl font-bold text-emerald-600 dark:text-emerald-400">
+          <div className="text-lg md:text-xl font-bold text-emerald-700 dark:text-emerald-400">
             {metrics.noSpendDays} <span className="text-xs font-normal text-slate-500 dark:text-white/50">days</span>
           </div>
-          <div className="text-[11px] text-emerald-600 dark:text-emerald-400/80 mt-1 font-medium">
+          <div className="text-[11px] text-emerald-700 dark:text-emerald-400/80 mt-1 font-medium">
             {metrics.noSpendRate}% zero-spend rate
           </div>
         </div>

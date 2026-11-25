@@ -349,7 +349,7 @@ export default function Forecast() {
       {/* Top Bar: Selector & Period Progress */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md shadow-xs">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400">
+          <div className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400">
             <Sparkles className="w-5 h-5" />
           </div>
           <div>
@@ -386,7 +386,7 @@ export default function Forecast() {
         <div className="p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Realisasi Belanja</span>
-            <span className="p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400">
+            <span className="p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400">
               <Wallet className="w-4 h-4" />
             </span>
           </div>
@@ -469,7 +469,7 @@ export default function Forecast() {
           <div className="mt-3">
             <div className={`text-2xl font-bold tracking-tight ${
               (f.eomSavings?.projectedSavings || 0) >= 0
-                ? 'text-emerald-600 dark:text-emerald-400'
+                ? 'text-emerald-700 dark:text-emerald-400'
                 : 'text-rose-600 dark:text-rose-400'
             }`}>
               {f.eomSavings ? formatIdr(f.eomSavings.projectedSavings) : formatIdr(0)}
@@ -502,7 +502,7 @@ export default function Forecast() {
                 ) : alert.type === 'warning' ? (
                   <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400" />
                 ) : (
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                  <CheckCircle2 className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
                 )}
               </div>
               <div className="text-xs sm:text-sm font-medium leading-relaxed">{alert.message}</div>
@@ -518,7 +518,7 @@ export default function Forecast() {
           onClick={() => setActiveTab('trajectory')}
           className={`pb-3 px-3 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap flex items-center gap-2 ${
             activeTab === 'trajectory'
-              ? 'border-emerald-500 text-emerald-600 dark:text-emerald-400 font-semibold'
+              ? 'border-emerald-500 text-emerald-700 dark:text-emerald-400 font-semibold'
               : 'border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
           }`}
         >
@@ -530,7 +530,7 @@ export default function Forecast() {
           onClick={() => setActiveTab('allowance')}
           className={`pb-3 px-3 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap flex items-center gap-2 ${
             activeTab === 'allowance'
-              ? 'border-emerald-500 text-emerald-600 dark:text-emerald-400 font-semibold'
+              ? 'border-emerald-500 text-emerald-700 dark:text-emerald-400 font-semibold'
               : 'border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
           }`}
         >
@@ -542,7 +542,7 @@ export default function Forecast() {
           onClick={() => setActiveTab('whatif')}
           className={`pb-3 px-3 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap flex items-center gap-2 ${
             activeTab === 'whatif'
-              ? 'border-emerald-500 text-emerald-600 dark:text-emerald-400 font-semibold'
+              ? 'border-emerald-500 text-emerald-700 dark:text-emerald-400 font-semibold'
               : 'border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
           }`}
         >
@@ -554,7 +554,7 @@ export default function Forecast() {
           onClick={() => setActiveTab('burn')}
           className={`pb-3 px-3 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap flex items-center gap-2 ${
             activeTab === 'burn'
-              ? 'border-emerald-500 text-emerald-600 dark:text-emerald-400 font-semibold'
+              ? 'border-emerald-500 text-emerald-700 dark:text-emerald-400 font-semibold'
               : 'border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
           }`}
         >
@@ -566,7 +566,7 @@ export default function Forecast() {
           onClick={() => setActiveTab('credit-history')}
           className={`pb-3 px-3 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap flex items-center gap-2 ${
             activeTab === 'credit-history'
-              ? 'border-emerald-500 text-emerald-600 dark:text-emerald-400 font-semibold'
+              ? 'border-emerald-500 text-emerald-700 dark:text-emerald-400 font-semibold'
               : 'border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
           }`}
         >
@@ -777,7 +777,7 @@ export default function Forecast() {
                     </div>
                     <div className="flex justify-between border-t pt-1.5 border-slate-100 dark:border-slate-800">
                       <span className="text-slate-500">Ruang Gerak:</span>
-                      <span className={`font-bold ${dynamicAllowance.diffVsCurrentDaily >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
+                      <span className={`font-bold ${dynamicAllowance.diffVsCurrentDaily >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
                         {dynamicAllowance.diffVsCurrentDaily >= 0 ? '+' : ''}{formatIdr(dynamicAllowance.diffVsCurrentDaily)}/hari
                       </span>
                     </div>
@@ -926,7 +926,7 @@ export default function Forecast() {
                     </div>
                     <div className={`text-xs mt-1 font-medium ${
                       courseCorrection.totalDelta <= 0
-                        ? 'text-emerald-600 dark:text-emerald-400'
+                        ? 'text-emerald-700 dark:text-emerald-400'
                         : 'text-rose-600 dark:text-rose-400'
                     }`}>
                       {courseCorrection.totalDelta <= 0 ? 'Hemat ' : 'Naik +'}
@@ -938,7 +938,7 @@ export default function Forecast() {
                     <div className="text-[11px] text-slate-500">Proyeksi Tabungan & Investasi EOM</div>
                     <div className={`text-xl font-bold mt-1 ${
                       courseCorrection.adjustedSavings >= 0
-                        ? 'text-emerald-600 dark:text-emerald-400'
+                        ? 'text-emerald-700 dark:text-emerald-400'
                         : 'text-rose-600 dark:text-rose-400'
                     }`}>
                       {formatIdr(courseCorrection.adjustedSavings)}
@@ -1046,7 +1046,7 @@ export default function Forecast() {
                           ? 'text-rose-600 dark:text-rose-400'
                           : cat.daysToExhaust !== null && cat.daysToExhaust <= f.daysRemaining
                           ? 'text-orange-600 dark:text-orange-400'
-                          : 'text-emerald-600 dark:text-emerald-400'
+                          : 'text-emerald-700 dark:text-emerald-400'
                       }`}>
                         {cat.isAlreadyExhausted
                           ? 'Sudah Melebihi Batas'
@@ -1110,13 +1110,13 @@ export default function Forecast() {
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500">Pelunasan Kartu:</span>
-                <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                <span className="font-semibold text-emerald-700 dark:text-emerald-400">
                   {formatIdr(f.creditStatus.creditPayments)}
                 </span>
               </div>
               <div className="flex justify-between font-bold text-sm pt-1 border-t border-slate-100 dark:border-slate-800">
                 <span>Saldo Terutang:</span>
-                <span className={f.creditStatus.outstanding > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}>
+                <span className={f.creditStatus.outstanding > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-700 dark:text-emerald-400'}>
                   {formatIdr(f.creditStatus.outstanding)}
                 </span>
               </div>
@@ -1157,7 +1157,7 @@ export default function Forecast() {
               </div>
               <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/40">
                 <span className="text-slate-500 block text-[11px]">Kecepatan vs Historis:</span>
-                <span className={`font-bold ${f.velocityVsHistory > 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
+                <span className={`font-bold ${f.velocityVsHistory > 0 ? 'text-rose-600' : 'text-emerald-700'}`}>
                   {f.velocityVsHistory > 0 ? '+' : ''}{Math.round(f.velocityVsHistory)}%
                 </span>
               </div>

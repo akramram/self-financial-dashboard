@@ -101,7 +101,7 @@ function DeltaBadge({ current, previous, isPct, inverse }: DeltaProps) {
   }
   if (previous === 0) {
     return (
-      <span className="text-xs text-emerald-600 dark:text-emerald-400 flex items-center gap-1 font-medium">
+      <span className="text-xs text-emerald-700 dark:text-emerald-400 flex items-center gap-1 font-medium">
         <ArrowUpRight className="w-3 h-3" /> Baru
       </span>
     );
@@ -111,7 +111,7 @@ function DeltaBadge({ current, previous, isPct, inverse }: DeltaProps) {
   const isPositive = change > 0;
   const isGood = inverse ? !isPositive : isPositive;
   const colorClass = isGood
-    ? 'text-emerald-600 dark:text-emerald-400'
+    ? 'text-emerald-700 dark:text-emerald-400'
     : 'text-rose-600 dark:text-rose-400';
   const Icon = isPositive ? ArrowUpRight : ArrowDownRight;
 
@@ -128,13 +128,13 @@ function DeltaValue({ current, previous, isPct, inverse }: DeltaProps) {
     return <span className="text-xs text-slate-500 dark:text-white/50">-</span>;
   }
   if (previous === 0) {
-    return <span className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold">Baru</span>;
+    return <span className="text-xs text-emerald-700 dark:text-emerald-400 font-semibold">Baru</span>;
   }
   const change = current - previous;
   const isPositive = change > 0;
   const isGood = inverse ? !isPositive : isPositive;
   const colorClass = isGood
-    ? 'text-emerald-600 dark:text-emerald-400'
+    ? 'text-emerald-700 dark:text-emerald-400'
     : 'text-rose-600 dark:text-rose-400';
   const prefix = change > 0 ? '+' : '';
 
@@ -563,7 +563,7 @@ export default function MonthComparison({ categories: initialCategories }: Props
       {insights && insights.length > 0 && (
         <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.04] dark:bg-emerald-500/[0.06] p-5">
           <div className="flex items-center gap-2 mb-3">
-            <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+            <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-700 dark:text-emerald-400">
               <Sparkles className="w-4 h-4" />
             </div>
             <h2 className="text-sm font-semibold text-slate-900 dark:text-white">
@@ -811,7 +811,7 @@ export default function MonthComparison({ categories: initialCategories }: Props
 
         {/* Pemicu Penghematan (Top Reductions) */}
         <div className="glass-card p-5 space-y-3">
-          <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
+          <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
             <TrendingDown className="w-4 h-4" />
             <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
               Pemicu Efisiensi Biaya (Top Penghematan)
@@ -1088,7 +1088,7 @@ export default function MonthComparison({ categories: initialCategories }: Props
                           isUp || isNew
                             ? 'text-rose-600 dark:text-rose-400'
                             : isDown
-                            ? 'text-emerald-600 dark:text-emerald-400'
+                            ? 'text-emerald-700 dark:text-emerald-400'
                             : 'text-muted-foreground'
                         }
                       >
@@ -1097,14 +1097,14 @@ export default function MonthComparison({ categories: initialCategories }: Props
                     </TableCell>
                     <TableCell className="text-right">
                       {isNew ? (
-                        <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">Baru</span>
+                        <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">Baru</span>
                       ) : row.leftAmount > 0 ? (
                         <span
                           className={`text-xs font-semibold ${
                             isUp
                               ? 'text-rose-600 dark:text-rose-400'
                               : isDown
-                              ? 'text-emerald-600 dark:text-emerald-400'
+                              ? 'text-emerald-700 dark:text-emerald-400'
                               : 'text-muted-foreground'
                           }`}
                         >

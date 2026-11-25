@@ -544,7 +544,7 @@ export default function FireCalculator() {
               Pilih skenario kebebasan finansial untuk membandingkan target modal dan proyeksi waktu pencapaian.
             </p>
           </div>
-          <Badge variant="outline" className="text-xs font-semibold px-2.5 py-1 shrink-0 self-start sm:self-auto border-emerald-500/30 text-emerald-600 dark:text-emerald-400">
+          <Badge variant="outline" className="text-xs font-semibold px-2.5 py-1 shrink-0 self-start sm:self-auto border-emerald-500/30 text-emerald-700 dark:text-emerald-400">
             Aktif: {tierConfig.name}
           </Badge>
         </div>
@@ -604,7 +604,7 @@ export default function FireCalculator() {
             <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
               Target {tierConfig.name}
             </span>
-            <span className="p-2 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+            <span className="p-2 rounded-lg bg-emerald-500/10 text-emerald-700 dark:text-emerald-400">
               <Target className="w-4 h-4" />
             </span>
           </div>
@@ -632,7 +632,7 @@ export default function FireCalculator() {
           <div className="space-y-1">
             <div className="flex justify-between text-xs">
               <span className="text-slate-500 dark:text-slate-400">Progres Bebas Finansial</span>
-              <span className="font-semibold text-emerald-600 dark:text-emerald-400">{progressPct.toFixed(1)}%</span>
+              <span className="font-semibold text-emerald-700 dark:text-emerald-400">{progressPct.toFixed(1)}%</span>
             </div>
             <Progress value={progressPct} className="h-2" />
           </div>
@@ -650,7 +650,7 @@ export default function FireCalculator() {
           </div>
           <div className="text-2xl font-bold text-slate-900 dark:text-white mb-1">
             {isFiReached ? (
-              <span className="text-emerald-600 dark:text-emerald-400">Tercapai! 🎉</span>
+              <span className="text-emerald-700 dark:text-emerald-400">Tercapai! 🎉</span>
             ) : yearsToFi !== null ? (
               `${yearsToFi} Tahun`
             ) : (
@@ -677,7 +677,7 @@ export default function FireCalculator() {
           </div>
           <div className="flex items-center gap-1.5 text-xs">
             <span className="text-slate-500 dark:text-slate-400">Tingkat Tabungan:</span>
-            <Badge variant="outline" className="text-[11px] font-semibold text-emerald-600 border-emerald-500/30">
+            <Badge variant="outline" className="text-[11px] font-semibold text-emerald-700 border-emerald-500/30">
               {simulatedSavingsRate.toFixed(1)}%
             </Badge>
           </div>
@@ -699,7 +699,7 @@ export default function FireCalculator() {
           <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
             <span>Status:</span>
             {isCoastFiReached ? (
-              <span className="font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+              <span className="font-semibold text-emerald-700 dark:text-emerald-400 flex items-center gap-1">
                 <CheckCircle2 className="w-3.5 h-3.5" /> Coast FI Tercapai
               </span>
             ) : (
@@ -829,7 +829,7 @@ export default function FireCalculator() {
           <div className="space-y-1.5">
             <div className="flex justify-between items-center text-xs">
               <Label className="text-slate-700 dark:text-slate-300">Tingkat Penarikan (SWR)</Label>
-              <span className="font-bold text-emerald-600 dark:text-emerald-400">{wr.toFixed(1)}%</span>
+              <span className="font-bold text-emerald-700 dark:text-emerald-400">{wr.toFixed(1)}%</span>
             </div>
             <input
               type="range"
@@ -898,7 +898,7 @@ export default function FireCalculator() {
           <div className="space-y-1.5">
             <div className="flex justify-between items-center text-xs">
               <Label className="text-slate-700 dark:text-slate-300">Simulasi Pengeluaran Bulanan</Label>
-              <span className={`font-bold ${expenseAdjustPct < 0 ? 'text-emerald-600' : expenseAdjustPct > 0 ? 'text-rose-600' : 'text-slate-600 dark:text-slate-300'}`}>
+              <span className={`font-bold ${expenseAdjustPct < 0 ? 'text-emerald-700' : expenseAdjustPct > 0 ? 'text-rose-600' : 'text-slate-600 dark:text-slate-300'}`}>
                 {expenseAdjustPct > 0 ? `+${expenseAdjustPct}%` : `${expenseAdjustPct}%`} ({formatIdr(adjustedMonthlyExpenses)})
               </span>
             </div>
@@ -1164,7 +1164,7 @@ export default function FireCalculator() {
                   <TableCell className="text-right text-blue-600 dark:text-blue-400">
                     {formatIdr(row.contributions)}
                   </TableCell>
-                  <TableCell className="text-right text-emerald-600 dark:text-emerald-400">
+                  <TableCell className="text-right text-emerald-700 dark:text-emerald-400">
                     {formatIdr(row.returns)}
                   </TableCell>
                   <TableCell className="text-right font-semibold">
@@ -1196,7 +1196,7 @@ export default function FireCalculator() {
       {/* 7. Actionable Strategies */}
       <div className="glass-card p-5 border-emerald-500/30 bg-emerald-500/5 dark:bg-emerald-950/15" data-testid="fire-insights-panel">
         <div className="flex items-start gap-3">
-          <div className="p-2 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 shrink-0">
+          <div className="p-2 rounded-xl bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 shrink-0">
             <Flame className="w-5 h-5" />
           </div>
           <div className="space-y-2">

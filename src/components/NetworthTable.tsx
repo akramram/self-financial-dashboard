@@ -21,7 +21,7 @@ interface Props {
 }
 
 function changeClass(n: number): string {
-  return n >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400';
+  return n >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-600 dark:text-red-400';
 }
 
 /**
