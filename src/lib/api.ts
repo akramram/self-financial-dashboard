@@ -113,7 +113,7 @@ export interface NetworthSaveResult {
   nextMilestone?: { target: number; label: string; tier: string; icon: string } | null;
 }
 
-export async function createNetworth(record: NetworthRecord): Promise<NetworthSaveResult> {
+export async function createNetworth(record: Omit<NetworthRecord, "period_id"> & { period_id?: number }): Promise<NetworthSaveResult> {
   const res = await fetch('/api/networth', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

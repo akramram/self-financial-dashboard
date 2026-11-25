@@ -99,5 +99,5 @@ export interface PortfolioSummary {
 }
 
 export const initialTransactions: Transaction[] = transactionsJson as Transaction[];
-export const initialNetworth: NetworthRecord[] = networthJson as NetworthRecord[];
+export const initialNetworth: NetworthRecord[] = networthJson as unknown as NetworthRecord[];
 export const initialMonthlySummary: MonthlySummary[] = monthlySummaryJson as unknown as MonthlySummary[];

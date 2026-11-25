@@ -1,10 +1,6 @@
 import { defineMiddleware } from 'astro:middleware';
 import { validateSession, cleanExpiredSessions, type User } from './lib/auth';
 
-export interface Locals {
-  user?: User;
-}
-
 // Public paths that don't require auth
 const PUBLIC_PATHS = ['/login', '/api/auth/login', '/api/auth/me', '/api/auth/logout'];
 const PUBLIC_PREFIXES = ['/sw.js', '/manifest.json', '/favicon.svg', '/icons/', '/_astro/', '/data/', '/prototype-'];
