@@ -241,7 +241,7 @@ export default function NetworthProjection({ data }: Props) {
                     onClick={() => setProjectionMonths(m)}
                     className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
                       projectionMonths === m
-                        ? 'bg-gold-900/40 text-gold-300 ring-1 ring-gold-700'
+                        ? 'bg-gold-500/20 text-gold-300 ring-1 ring-gold-700'
                         : 'bg-slate-100 dark:bg-white/[0.05] text-slate-600 dark:text-white/50 hover:bg-slate-200/60 dark:bg-white/[0.08]'
                     }`}
                   >

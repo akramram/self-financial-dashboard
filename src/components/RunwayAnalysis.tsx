@@ -87,8 +87,8 @@ const STATUS_CONFIG: Record<
   caution: {
     label: 'Perlu Perhatian',
     color: '#f59e0b',
-    bgColor: 'bg-gold-500/10 dark:bg-gold-950/30',
-    borderColor: 'border-gold-500/30 dark:border-gold-800/40',
+    bgColor: 'bg-gold-500/10 dark:bg-gold-500/15',
+    borderColor: 'border-gold-500/30 dark:border-gold-700/40',
     textColor: 'text-gold-700 dark:text-gold-400',
     gaugeColor: '#f59e0b',
     icon: <AlertTriangle className="w-5 h-5 text-gold-600" />,
@@ -105,8 +105,8 @@ const STATUS_CONFIG: Record<
   strong: {
     label: 'Sangat Tangguh',
     color: '#06b6d4',
-    bgColor: 'bg-mint-500/10 dark:bg-mint-950/30',
-    borderColor: 'border-mint-500/30 dark:border-mint-800/40',
+    bgColor: 'bg-mint-500/10 dark:bg-mint-500/10',
+    borderColor: 'border-mint-500/30 dark:border-mint-700/40',
     textColor: 'text-mint-700 dark:text-mint-400',
     gaugeColor: '#06b6d4',
     icon: <ShieldCheck className="w-5 h-5 text-mint-600" />,
@@ -653,7 +653,7 @@ export default function RunwayAnalysis({ periodId, compact = false }: Props) {
               </div>
 
               {/* Hasil Komparasi Skenario */}
-              <div className="p-4 rounded-xl border border-mint-500/30 bg-mint-500/5 dark:bg-mint-950/20">
+              <div className="p-4 rounded-xl border border-mint-500/30 bg-mint-500/5 dark:bg-mint-500/10">
                 <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 items-center">
                   <div>
                     <span className="text-xs text-slate-600 dark:text-white/50 block">Skenario Aktif</span>

@@ -592,7 +592,7 @@ export default function MonthlyReport({
                       ? 'bg-red-100 text-red-700 border-red-300 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800'
                       : a.severity === 'medium'
                       ? 'bg-gold-500/10 text-gold-700 border-gold-400/30 dark:bg-gold-700/20 dark:text-gold-300 dark:border-gold-700/40'
-                      : 'bg-mint-500/10 text-mint-700 border-mint-400/30 dark:bg-mint-700/20 dark:text-mint-300 dark:border-mint-700/40';
+                      : 'bg-mint-500/10 text-mint-700 border-mint-400/30 dark:bg-mint-700/20 dark:text-mint-400 dark:border-mint-700/40';
                   return (
                     <div
                       key={a.id}
@@ -612,7 +612,7 @@ export default function MonthlyReport({
                                 ? 'border-red-300 text-red-700 dark:border-red-800 dark:text-red-300'
                                 : a.severity === 'medium'
                                 ? 'border-gold-400/30 text-gold-700 dark:border-gold-700/40 dark:text-gold-300'
-                                : 'border-mint-400/30 text-mint-700 dark:border-mint-700/40 dark:text-mint-300'
+                                : 'border-mint-400/30 text-mint-700 dark:border-mint-700/40 dark:text-mint-400'
                             }`}
                           >
                             {a.severity}

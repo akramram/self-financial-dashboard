@@ -256,7 +256,7 @@ export default function SpendingRhythm() {
           <div className="flex items-center gap-2 text-xs text-mint-700 dark:text-mint-400 mb-1">
             <Zap className="w-3.5 h-3.5" /> Peak Day
           </div>
-          <p className="text-2xl font-bold text-mint-700 dark:text-mint-300">{data.peakDay?.label ?? '-'}</p>
+          <p className="text-2xl font-bold text-mint-700 dark:text-mint-400">{data.peakDay?.label ?? '-'}</p>
           <p className="text-xs text-mint-500/70 mt-0.5">{data.peakDay ? `${formatIdr(data.peakDay.avgPerDay)}/day avg` : 'no data'}</p>
         </div>
 
@@ -360,7 +360,7 @@ export default function SpendingRhythm() {
                   <span className="text-slate-500">Share of spend</span>
                   <span className="font-medium text-mint-700 dark:text-mint-400">{wv.weekdayPctSpend}%</span>
                 </div>
-                <div className="h-2 rounded-full bg-mint-100 dark:bg-mint-900/40 overflow-hidden">
+                <div className="h-2 rounded-full bg-mint-500/15 dark:bg-mint-500/20 overflow-hidden">
                   <div className="h-full bg-mint-500 rounded-full" style={{ width: `${wv.weekdayPctSpend}%` }}></div>
                 </div>
               </div>
@@ -388,7 +388,7 @@ export default function SpendingRhythm() {
                   <span className="text-slate-500">Share of spend</span>
                   <span className="font-medium text-coral-600 dark:text-coral-400">{wv.weekendPctSpend}%</span>
                 </div>
-                <div className="h-2 rounded-full bg-coral-100 dark:bg-coral-900/40 overflow-hidden">
+                <div className="h-2 rounded-full bg-coral-500/15 dark:bg-coral-500/20 overflow-hidden">
                   <div className="h-full bg-coral-500 rounded-full" style={{ width: `${wv.weekendPctSpend}%` }}></div>
                 </div>
               </div>
@@ -410,7 +410,7 @@ export default function SpendingRhythm() {
               className={`rounded-lg border p-4 ${
                 bucket.label === 'Late Night' ? 'border-slate-300 dark:border-navy-300 dark:border-navy-700 bg-slate-100 dark:bg-navy-500/5 dark:bg-navy-500/10'
                 : bucket.label === 'Morning' ? 'border-gold-400/30 bg-gold-500/5 dark:bg-gold-500/10'
-                : bucket.label === 'Afternoon' ? 'border-coral-400/20 dark:border-coral-700/40 bg-coral-500/5 dark:bg-coral-700/10/30'
+                : bucket.label === 'Afternoon' ? 'border-coral-400/20 dark:border-coral-700/40 bg-coral-500/5 dark:bg-coral-700/10'
                 : 'border-gold-400/30 bg-gold-500/5 dark:bg-gold-500/10'
               }`}
             >

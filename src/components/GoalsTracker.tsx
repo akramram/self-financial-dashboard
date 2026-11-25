@@ -381,7 +381,7 @@ export default function GoalsTracker({ networth }: Props) {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="glass-card p-5">
           <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-mint-100 dark:bg-mint-900/30 text-mint-700 dark:text-mint-400">
+              <div className="p-2 rounded-lg bg-mint-500/15 dark:bg-mint-500/15 text-mint-700 dark:text-mint-400">
                 <Target className="w-5 h-5" />
               </div>
               <div>
@@ -781,7 +781,7 @@ export default function GoalsTracker({ networth }: Props) {
                     onClick={() => handleFormChange('icon', icon)}
                     className={`p-2 rounded-lg border transition ${
                       form.icon === icon
-                        ? 'border-mint-500 bg-mint-50 dark:bg-mint-900/30 ring-1 ring-mint-500'
+                        ? 'border-mint-500 bg-mint-500/10 dark:bg-mint-500/15 ring-1 ring-mint-500'
                         : 'border-slate-200 dark:border-white/[0.06] hover:bg-slate-50 dark:hover:bg-slate-800'
                     }`}
                     title={icon}
