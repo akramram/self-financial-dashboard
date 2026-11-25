@@ -7,7 +7,7 @@
  * AA-contrast "clear" action + empty state in dark AND light mode.
  */
 import { describe, it, expect, vi } from 'vitest';
-import { render } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import React from 'react';
 import '@testing-library/jest-dom/vitest';
 
@@ -96,6 +96,24 @@ describe('TransactionTable — a11y/contrast regression', () => {
     // Mobile card list empty state too
     const mobileEmpty = container.querySelector('.md\\:hidden > div');
     expect(mobileEmpty?.className).toContain('dark:text-white/60');
+  });
+
+  it('filter inputs have accessible names and result regions announce changes', () => {
+    window.history.replaceState(null, '', '/');
+    const { getByLabelText, getByRole, container } = render(
+      <TransactionTable transactions={[makeTx(1)]} showMonth periods={periods} />
+    );
+    expect(getByLabelText('Search transactions')).toBeInTheDocument();
+
+    // Open advanced panel: date + amount inputs must be labeled
+    fireEvent.click(getByRole('button', { name: /Advanced Filters/i }));
+    expect(getByLabelText('Filter date from')).toBeInTheDocument();
+    expect(getByLabelText('Filter date to')).toBeInTheDocument();
+    expect(getByLabelText('Filter minimum amount (Rupiah)')).toBeInTheDocument();
+    expect(getByLabelText('Filter maximum amount (Rupiah)')).toBeInTheDocument();
+
+    // Summary bar + pagination are live regions
+    expect(container.querySelectorAll('[aria-live="polite"]').length).toBeGreaterThanOrEqual(2);
   });
 
   it('paid/unpaid chips and row toggles keep light-mode-safe color pairs', () => {

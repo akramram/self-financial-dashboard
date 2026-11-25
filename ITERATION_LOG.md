@@ -3176,3 +3176,12 @@ Audit KUR-59/FIN-015+016: foundation shadcn + migrasi tabel & form ternyata suda
 - `tsc --noEmit`: 32 → **25** error (sisa: tipe opsi Chart.js, mock test, `Locals.user`, ikon CommandPalette `strokeWidth`, fixture data.ts).
 - **Testing:** suite **821/821 hijau** (88 files), build Complete. Tidak ada perubahan runtime.
 - **Git workflow:** Branch `chore/innovation-transaction-done-type` → PR.
+
+## 2026-11-25 — Marathon R2: a11y/contrast TransactionTable + sweep teks kecil dark mode
+
+### Hasil
+- **a11y/contrast TransactionTable (PR #404):** tombol hapus filter di badge advanced (ikon-only 10px) kini bernama (`aria-label` "Remove … filter"), ikon 12px + area tap berpadding; "Clear all filters" light mode `text-emerald-400` (~1.9:1) → `text-emerald-700 dark:text-emerald-400`; empty state `dark:text-white/25` (fail AA) → `/60`; toggle Paid/Unpaid + bar aksi massal + badge tipe dapat pasangan shade light (`-600/dark:-400`); class invalid `bg-mint-500/30/10` → `bg-mint-500/10` (bg tipe Cash tidak pernah benar-benar teraplikasi).
+- **Sweep kontras teks kecil (PR #406):** 18 titik teks helper 11px/sm dengan `dark:text-white/25–35` (≈2–3.4:1 di atas navy) dinaikkan ke `/60` (≈5.9:1) di 14 komponen. Ikon dekoratif & bullet Achievements tetap (aturan grafis 3:1), watermark `/10–/15` dipertahankan.
+- **Nama aksesibel input filter (PR #407):** input search + tanggal/amount panel advanced diberi `aria-label` (sebelumnya hanya placeholder, screen reader buta); bar ringkasan & pagination jadi `aria-live="polite"`; chip Paid/Unpaid dapat `type="button"`.
+- **Testing:** test regresi baru `txtable-a11y.test.tsx` (6 test) + `tiny-text-contrast.test.ts` (scan sumber menolak shade 20–35 pada baris teks). Suite hijau penuh, build Complete.
+- **Git workflow:** branch `fix/innovation-txtable-a11y`, `fix/innovation-tiny-text-contrast`, `fix/innovation-txtable-form-labels` → PR.

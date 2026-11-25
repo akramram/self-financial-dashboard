@@ -366,6 +366,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 dark:text-white/40 pointer-events-none" />
             <Input
+              aria-label="Search transactions"
               placeholder="Search title, category, notes..."
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
@@ -529,6 +530,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
             return (
               <button
                 key={value}
+                type="button"
                 onClick={() => { setFilterPaid(active ? 'all' : value); setPage(1); }}
                 aria-pressed={active}
                 className={`h-7 px-2.5 rounded-full text-[11px] font-medium inline-flex items-center gap-1.5 transition-colors border ${
@@ -614,6 +616,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                     <div className="flex items-center gap-2">
                       <Input
                         type="date"
+                        aria-label="Filter date from"
                         value={dateFrom}
                         onChange={(e) => { setDateFrom(e.target.value); setPage(1); }}
                         className="flex-1 bg-slate-100 dark:bg-white/[0.04] border-slate-300 dark:border-white/[0.08] text-slate-700 dark:text-white/70 text-xs h-8"
@@ -621,6 +624,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                       <span className="text-slate-500 dark:text-white/40 text-xs">→</span>
                       <Input
                         type="date"
+                        aria-label="Filter date to"
                         value={dateTo}
                         onChange={(e) => { setDateTo(e.target.value); setPage(1); }}
                         className="flex-1 bg-slate-100 dark:bg-white/[0.04] border-slate-300 dark:border-white/[0.08] text-slate-700 dark:text-white/70 text-xs h-8"
@@ -638,6 +642,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                         <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 dark:text-white/40 text-xs">Rp</span>
                         <Input
                           type="number"
+                          aria-label="Filter minimum amount (Rupiah)"
                           placeholder="Min"
                           value={amountMin}
                           onChange={(e) => { setAmountMin(e.target.value); setPage(1); }}
@@ -649,6 +654,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                         <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 dark:text-white/40 text-xs">Rp</span>
                         <Input
                           type="number"
+                          aria-label="Filter maximum amount (Rupiah)"
                           placeholder="Max"
                           value={amountMax}
                           onChange={(e) => { setAmountMax(e.target.value); setPage(1); }}
@@ -694,7 +700,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
       </div>
 
       {/* ─── Summary Bar ────────────────────────────────────────── */}
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mb-4">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mb-4" aria-live="polite">
         <p className="text-xs text-slate-500 dark:text-white/40">
           <span className="text-slate-600 dark:text-white/60 font-semibold">{filtered.length.toLocaleString()}</span> transaction{filtered.length !== 1 ? 's' : ''}
           {filtered.length !== transactions.length && (
@@ -1010,7 +1016,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
       </div>
 
       {/* ─── Pagination ─────────────────────────────────────────── */}
-      <div className="flex items-center justify-between mt-4">
+      <div className="flex items-center justify-between mt-4" aria-live="polite">
         <p className="text-xs text-slate-500 dark:text-white/40">
           {filtered.length > 0
             ? `Showing ${(safePage - 1) * rowsPerPage + 1}–${Math.min(safePage * rowsPerPage, filtered.length)} of ${filtered.length}`
