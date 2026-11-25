@@ -46,7 +46,7 @@ describe('NetworthTable — a11y regression', () => {
       const cls = el.closest('a, button')?.className ?? el.className;
       expect(cls).toContain('text-mint-700');
       expect(cls).toContain('dark:text-mint-400');
-      expect(cls).not.toMatch(/(^|\s)text-mint-500(\s|$)/);
+      expect(cls).not.toMatch(/(^|\s)text-mint-600(\s|$)/);
     }
   });
 

@@ -155,9 +155,9 @@ export default function CategoryBudgets({ summaries, categories, activeMonth, on
               : isOver
                 ? 'text-red-600 dark:text-red-400'
                 : overPace
-                  ? 'text-gold-600 dark:text-gold-400'
+                  ? 'text-gold-700 dark:text-gold-400'
                   : pct > 80
-                    ? 'text-gold-600 dark:text-gold-400'
+                    ? 'text-gold-700 dark:text-gold-400'
                     : 'text-emerald-600 dark:text-emerald-400';
 
             return (
@@ -260,7 +260,7 @@ export default function CategoryBudgets({ summaries, categories, activeMonth, on
                     {formatIdr(amount - limit)} over limit{pc && projectedOver ? ` · projected ${formatIdr(pc.projected_total)}` : ''}
                   </p>
                 ) : pc && projectedOver ? (
-                  <p className="text-[11px] text-gold-600 dark:text-gold-400 mt-0.5 ml-[18px]">
+                  <p className="text-[11px] text-gold-700 dark:text-gold-400 mt-0.5 ml-[18px]">
                     On pace to exceed: projected {formatIdr(pc.projected_total)}
                   </p>
                 ) : null}

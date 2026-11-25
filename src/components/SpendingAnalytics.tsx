@@ -320,7 +320,7 @@ export default function SpendingAnalytics({ summaries, categories }: Props) {
       <div className="flex items-center justify-center h-64">
         <div className="text-center space-y-2">
             <p className="text-slate-500 dark:text-white/50">Belum ada pengeluaran di periode ini, jadi analisis kategori belum tersedia.</p>
-            <a href="/add" className="inline-flex items-center gap-1.5 text-sm font-medium text-mint-600 dark:text-mint-400 hover:underline">Catat transaksi</a>
+            <a href="/add" className="inline-flex items-center gap-1.5 text-sm font-medium text-mint-700 dark:text-mint-400 hover:underline">Catat transaksi</a>
           </div>
       </div>
     );

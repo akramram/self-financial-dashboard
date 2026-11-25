@@ -79,7 +79,7 @@ export default function GoalsSnapshot() {
     <div>
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-base font-semibold text-slate-800 dark:text-white/80">Goals</h3>
-        <a href="/goals" className="flex items-center gap-0.5 text-xs text-mint-500 hover:text-mint-400 no-underline">
+        <a href="/goals" className="flex items-center gap-0.5 text-xs text-mint-600 hover:text-mint-400 no-underline">
           All goals <ChevronRight className="w-3 h-3" />
         </a>
       </div>
@@ -94,7 +94,7 @@ export default function GoalsSnapshot() {
             <Target className="w-5 h-5 text-slate-500 dark:text-white/50" strokeWidth={1.8} />
           </div>
           <p className="text-xs text-slate-500 dark:text-white/50">No active goals yet</p>
-          <a href="/goals" className="text-xs text-mint-500 hover:text-mint-400 no-underline">Set one up →</a>
+          <a href="/goals" className="text-xs text-mint-700 hover:text-mint-600 no-underline">Set one up →</a>
         </div>
       ) : (
         <ul className="space-y-2.5">

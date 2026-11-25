@@ -154,7 +154,7 @@ export default function FintechSidebar({ balance, alerts: initialAlerts = 0 }: P
       }
     >
       {React.createElement(item.icon, {
-        className: `w-5 h-5 shrink-0 ${isActive(item.path) ? 'text-mint-500' : ''}`,
+        className: `w-5 h-5 shrink-0 ${isActive(item.path) ? 'text-mint-600' : ''}`,
         strokeWidth: 1.8,
       })}
       {!collapsed && <span className="text-sm font-medium">{item.label}</span>}
@@ -248,7 +248,7 @@ export default function FintechSidebar({ balance, alerts: initialAlerts = 0 }: P
             data-drawer={drawerOpen ? 'open' : 'closed'}
           >
             <Bell
-              className={`w-5 h-5 ${bell.badge.kind !== 'none' ? 'text-mint-500' : 'text-slate-500 dark:text-white/50'}`}
+              className={`w-5 h-5 ${bell.badge.kind !== 'none' ? 'text-mint-600' : 'text-slate-500 dark:text-white/50'}`}
               strokeWidth={1.8}
             />
             {bell.badge.kind === 'count' && (

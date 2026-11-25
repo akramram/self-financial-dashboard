@@ -170,7 +170,7 @@ export default function TransactionDetailSheet({
             onClick={() => onToggleDone(transaction)}
             className={`w-full flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-colors ${
               transaction.done
-                ? 'bg-mint-500/10 text-mint-600 dark:text-mint-400 hover:bg-mint-500/15'
+                ? 'bg-mint-500/10 text-mint-700 dark:text-mint-400 hover:bg-mint-500/15'
                 : 'bg-slate-200/60 dark:bg-white/[0.05] text-slate-600 dark:text-white/60 hover:bg-slate-300/60 dark:hover:bg-white/[0.08]'
             }`}
           >
@@ -204,7 +204,7 @@ export default function TransactionDetailSheet({
           <Button
             variant="outline"
             onClick={() => onRepeat(transaction)}
-            className="h-11 bg-slate-100 dark:bg-white/[0.05] border-slate-300 dark:border-white/[0.1] text-mint-600 dark:text-mint-400 hover:bg-mint-500/10"
+            className="h-11 bg-slate-100 dark:bg-white/[0.05] border-slate-300 dark:border-white/[0.1] text-mint-700 dark:text-mint-400 hover:bg-mint-500/10"
           >
             <RotateCcw className="w-4 h-4 mr-1.5" /> Repeat
           </Button>

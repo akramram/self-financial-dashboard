@@ -97,7 +97,7 @@ export default function GoalTrajectory() {
     return (
       <div className="glass-card p-5">
         <h3 className="text-base font-semibold flex items-center gap-2 text-slate-800 dark:text-white/80">
-            <Target className="w-4 h-4 text-mint-500" />
+            <Target className="w-4 h-4 text-mint-600" />
             Proyeksi Trajectory Goal
           </h3>
           <p className="text-xs text-slate-600 dark:text-white/50">
@@ -112,7 +112,7 @@ export default function GoalTrajectory() {
   return (
     <div className="glass-card p-5">
       <h3 className="text-base font-semibold flex items-center gap-2 text-slate-800 dark:text-white/80">
-          <Target className="w-4 h-4 text-mint-500" />
+          <Target className="w-4 h-4 text-mint-600" />
           Proyeksi Trajectory Goal
         </h3>
         <p className="text-xs text-slate-600 dark:text-white/50">
@@ -131,7 +131,7 @@ export default function GoalTrajectory() {
             </Badge>
           )}
           {summary.atRisk > 0 && (
-            <Badge variant="outline" className="text-gold-600 dark:text-gold-400 border-gold-400/30 dark:border-gold-700">
+            <Badge variant="outline" className="text-gold-700 dark:text-gold-400 border-gold-400/30 dark:border-gold-700">
               <AlertTriangle className="w-3 h-3 mr-1" /> {summary.atRisk} Berisiko
             </Badge>
           )}
@@ -154,7 +154,7 @@ export default function GoalTrajectory() {
         {data.has_sufficient_data && (
           <div className="rounded-md border border-slate-200 dark:border-white/[0.06] px-3 py-2 flex items-center justify-between gap-3">
             <div className="flex items-center gap-2 min-w-0">
-              <Gauge className="w-4 h-4 text-mint-500 shrink-0" />
+              <Gauge className="w-4 h-4 text-mint-600 shrink-0" />
               <div className="text-xs text-muted-foreground truncate">
                 Rata-rata tabungan
               </div>
@@ -299,7 +299,7 @@ function GoalTrajectoryRowCard({ goal, hasData }: { goal: GoalTrajectoryRow; has
               : goal.status === 'ahead' || goal.status === 'on_track'
                 ? 'text-emerald-600 dark:text-emerald-400'
                 : goal.status === 'at_risk' || goal.status === 'behind'
-                  ? 'text-gold-600 dark:text-gold-400'
+                  ? 'text-gold-700 dark:text-gold-400'
                   : ''
           }
         />
@@ -314,7 +314,7 @@ function GoalTrajectoryRowCard({ goal, hasData }: { goal: GoalTrajectoryRow; has
           value={hasData ? paceLabel : '-'}
           valueClassName={
             hasData && paceRatio !== null && paceRatio < 1
-              ? 'text-gold-600 dark:text-gold-400'
+              ? 'text-gold-700 dark:text-gold-400'
               : hasData && paceRatio !== null && paceRatio >= 1
                 ? 'text-emerald-600 dark:text-emerald-400'
                 : ''

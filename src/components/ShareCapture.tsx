@@ -57,7 +57,7 @@ export default function ShareCapture({ shareTitle, shareText }: Props) {
   return (
     <div className="flex flex-col items-center justify-center min-h-[50vh] text-center gap-3">
       <div className="w-14 h-14 rounded-2xl bg-mint-500/10 flex items-center justify-center">
-        <Share2 className="w-7 h-7 text-mint-500" />
+        <Share2 className="w-7 h-7 text-mint-600" />
       </div>
       <h1 className="text-xl font-bold text-slate-900 dark:text-white">Quick Capture</h1>
       <p className="text-sm text-slate-500 dark:text-white/50 max-w-sm">
@@ -67,7 +67,7 @@ export default function ShareCapture({ shareTitle, shareText }: Props) {
             : 'Tidak ada teks — menambahkan transaksi kosong.'
           : 'Menyiapkan…'}
       </p>
-      {!ready && <Loader2 className="w-5 h-5 animate-spin text-mint-500" />}
+      {!ready && <Loader2 className="w-5 h-5 animate-spin text-mint-600" />}
       <QuickAddDialog
         open={ready}
         onOpenChange={(o) => {

@@ -403,7 +403,7 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
                 : 'text-slate-500 dark:text-white/60 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
-            <Layers className="w-4 h-4 text-mint-500" />
+            <Layers className="w-4 h-4 text-mint-600" />
             Waterfall View
           </button>
           <button
@@ -449,7 +449,7 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
                 <p>Belum ada transaksi di bulan ini, jadi aliran kas belum bisa digambar.</p>
                 <a
                   href="/add"
-                  className="inline-flex items-center gap-1.5 text-sm font-medium text-mint-600 dark:text-mint-400 hover:underline min-h-[44px]"
+                  className="inline-flex items-center gap-1.5 text-sm font-medium text-mint-700 dark:text-mint-400 hover:underline min-h-[44px]"
                 >
                   Tambah transaksi pertama
                 </a>
@@ -540,7 +540,7 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
                   <div>
                     <h3 className="text-base font-semibold flex items-center gap-2 text-slate-800 dark:text-white/90">
-                      <Scale className="w-4 h-4 text-mint-500" />
+                      <Scale className="w-4 h-4 text-mint-600" />
                       50/30/20 Cash Allocation Rule
                     </h3>
                     <p className="text-xs text-muted-foreground mt-0.5">
@@ -646,7 +646,7 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
 
                 {/* Recommendation insight */}
                 <div className="mt-3.5 p-3 rounded-lg bg-mint-500/10 border border-mint-500/20 text-xs text-slate-700 dark:text-mint-200 flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-mint-500 shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-mint-600 shrink-0" />
                   <span>{allocation.recommendation}</span>
                 </div>
               </div>
@@ -788,7 +788,7 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
                         savingsRate < 0
                           ? 'text-red-600 dark:text-red-400'
                           : savingsRate < 20
-                          ? 'text-gold-600 dark:text-gold-400'
+                          ? 'text-gold-700 dark:text-gold-400'
                           : 'text-emerald-600 dark:text-emerald-400'
                       }`}
                     >
@@ -822,7 +822,7 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
                   <div className="flex justify-between text-[11px] text-muted-foreground">
                     <span>0%</span>
                     <span className="text-red-500">Risky</span>
-                    <span className="text-gold-500">Caution</span>
+                    <span className="text-gold-600">Caution</span>
                     <span className="text-emerald-500">20% target</span>
                     <span>100%</span>
                   </div>
@@ -833,7 +833,7 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
                     </p>
                   )}
                   {savingsRate >= 0 && savingsRate < 20 && (
-                    <p className="text-xs text-gold-600 dark:text-gold-400 mt-2">
+                    <p className="text-xs text-gold-700 dark:text-gold-400 mt-2">
                       💡 Rasio tabungan di bawah anjuran 20%. Pertimbangkan pengurangan pos belanja sekunder.
                     </p>
                   )}
@@ -863,7 +863,7 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
             <div className="glass-card p-5">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-gold-100 dark:bg-gold-900/30">
-                  <Flame className="w-5 h-5 text-gold-600 dark:text-gold-400" />
+                  <Flame className="w-5 h-5 text-gold-700 dark:text-gold-400" />
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Surplus Streak</p>
@@ -923,14 +923,14 @@ export default function CashFlowWaterfall({ summaries, categories }: Props) {
             <div className="glass-card p-5">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-mint-100 dark:bg-mint-900/30">
-                  <PiggyBank className="w-5 h-5 text-mint-600 dark:text-mint-400" />
+                  <PiggyBank className="w-5 h-5 text-mint-700 dark:text-mint-400" />
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Total Net Accumulated</p>
                   <p
                     className={`text-lg font-bold ${
                       metrics.totalNetAccumulated >= 0
-                        ? 'text-mint-600 dark:text-mint-400'
+                        ? 'text-mint-700 dark:text-mint-400'
                         : 'text-red-600 dark:text-red-400'
                     }`}
                   >

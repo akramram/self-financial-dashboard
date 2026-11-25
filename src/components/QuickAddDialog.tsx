@@ -367,7 +367,7 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded, presetDate
             Quick Add Transaction
           </DialogTitle>
           <DialogDescription>
-            <>Adding to <span className="font-medium text-mint-600 dark:text-mint-400">{defaultMonth} {defaultYear}</span>{txDate && txDate !== todayLocal() && <> · dated <span className="font-medium text-gold-600 dark:text-gold-400">{selectedDateLabel}</span></>}. Press Enter in the amount field to submit.</>
+            <>Adding to <span className="font-medium text-mint-700 dark:text-mint-400">{defaultMonth} {defaultYear}</span>{txDate && txDate !== todayLocal() && <> · dated <span className="font-medium text-gold-700 dark:text-gold-400">{selectedDateLabel}</span></>}. Press Enter in the amount field to submit.</>
           </DialogDescription>
         </DialogHeader>
 
@@ -390,9 +390,9 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded, presetDate
                   <span className="truncate max-w-[120px]">{tx.title}</span>
                   <span className="text-slate-500 dark:text-white/50 text-[11px]">{formatIdr(tx.amount)}</span>
                   {repeatLoading === tx.id.toString() ? (
-                    <Loader2 className="w-3 h-3 animate-spin text-mint-500" />
+                    <Loader2 className="w-3 h-3 animate-spin text-mint-600" />
                   ) : (
-                    <Plus className="w-3 h-3 opacity-0 group-hover:opacity-100 text-mint-500 transition-opacity" />
+                    <Plus className="w-3 h-3 opacity-0 group-hover:opacity-100 text-mint-600 transition-opacity" />
                   )}
                 </button>
               ))}
@@ -407,7 +407,7 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded, presetDate
             <div className="flex items-center justify-between">
               <Label htmlFor="qa-title">Title <span className="text-red-500">*</span></Label>
               {titleMatched && (
-                <span className="text-[11px] text-mint-600 dark:text-mint-400 flex items-center gap-1">
+                <span className="text-[11px] text-mint-700 dark:text-mint-400 flex items-center gap-1">
                   <History className="w-3 h-3" />
                   Auto-filled from history
                 </span>
@@ -437,7 +437,7 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded, presetDate
               <Label htmlFor="qa-amount">
                 Amount <span className="text-red-500">*</span>
                 {isAmountValid && amount.trim() !== String(parsedAmount) && (
-                  <span className="ml-2 text-[11px] font-normal text-mint-600 dark:text-mint-400">→ {previewAmount}</span>
+                  <span className="ml-2 text-[11px] font-normal text-mint-700 dark:text-mint-400">→ {previewAmount}</span>
                 )}
               </Label>
               <Input
@@ -480,7 +480,7 @@ export default function QuickAddDialog({ open, onOpenChange, onAdded, presetDate
                     setCategory('');
                     setCategoryUserTouched(true);
                   }}
-                  className="inline-flex items-center gap-1 text-[11px] font-medium text-mint-500 dark:text-mint-400 hover:text-mint-600 dark:hover:text-mint-300 transition"
+                  className="inline-flex items-center gap-1 text-[11px] font-medium text-mint-700 dark:text-mint-400 hover:text-mint-600 dark:hover:text-mint-300 transition"
                   title="Suggested based on your history: click to clear"
                 >
                   <History className="w-3 h-3" />

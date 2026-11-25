@@ -176,7 +176,7 @@ export default function UpcomingBills({ recurring, transactions, activePeriodId,
               >
                 <div className="flex items-center gap-2.5 min-w-0">
                   <span className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${b.type === 'cash' ? 'bg-mint-500/10' : 'bg-gold-500/10'}`}>
-                    {b.type === 'cash' ? <Wallet className="w-3.5 h-3.5 text-mint-500" strokeWidth={1.8} /> : <CreditCard className="w-3.5 h-3.5 text-gold-400" strokeWidth={1.8} />}
+                    {b.type === 'cash' ? <Wallet className="w-3.5 h-3.5 text-mint-600" strokeWidth={1.8} /> : <CreditCard className="w-3.5 h-3.5 text-gold-400" strokeWidth={1.8} />}
                   </span>
                   <div className="min-w-0">
                     <p className={`text-sm font-medium truncate ${b.paid ? 'text-slate-500 dark:text-white/60 line-through' : 'text-slate-800 dark:text-white/80'}`}>
@@ -194,9 +194,9 @@ export default function UpcomingBills({ recurring, transactions, activePeriodId,
                   <span className="text-sm font-semibold text-slate-800 dark:text-white/80 tabular-nums">{formatIdr(b.amount)}</span>
                   {b.paid ? (
                     toggleable ? (
-                      <CheckCircle2 className="w-4 h-4 text-mint-500" strokeWidth={1.8} />
+                      <CheckCircle2 className="w-4 h-4 text-mint-600" strokeWidth={1.8} />
                     ) : (
-                      <CheckCircle2 className="w-4 h-4 text-mint-500" strokeWidth={1.8} />
+                      <CheckCircle2 className="w-4 h-4 text-mint-600" strokeWidth={1.8} />
                     )
                   ) : overdue ? (
                     <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-coral-500/15 text-coral-400">OVERDUE</span>
@@ -216,7 +216,7 @@ export default function UpcomingBills({ recurring, transactions, activePeriodId,
       </ul>
 
       <p className="mt-2 text-[11px] text-slate-500 dark:text-white/60">Tap a bill to mark it paid / unpaid</p>
-      <a href="/recurring" className="block mt-1.5 text-xs text-mint-500 hover:text-mint-400 no-underline">Manage recurring →</a>
+      <a href="/recurring" className="block mt-1.5 text-xs text-mint-700 hover:text-mint-600 no-underline">Manage recurring →</a>
     </div>
   );
 }

@@ -95,7 +95,7 @@ export default function SettingsView() {
             <span>SQLite Active</span>
           </div>
           <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted dark:bg-white/[0.05] text-muted-foreground text-xs font-medium">
-            <ShieldCheck className="w-3.5 h-3.5 text-mint-500" />
+            <ShieldCheck className="w-3.5 h-3.5 text-mint-600" />
             <span>Local Storage</span>
           </div>
         </div>
@@ -130,7 +130,7 @@ export default function SettingsView() {
                 />
               )}
               <span className="relative z-10 flex items-center gap-2">
-                <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-mint-600 dark:text-mint-400' : ''}`} />
+                <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-mint-700 dark:text-mint-400' : ''}`} />
                 <span>{tab.label}</span>
               </span>
             </button>
@@ -167,7 +167,7 @@ export default function SettingsView() {
           <section id="system" aria-label="System Preferences">
             <div className="glass-card p-5 sm:p-6 space-y-5">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-mint-500/10 text-mint-600 dark:text-mint-400 flex items-center justify-center shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-mint-500/10 text-mint-700 dark:text-mint-400 flex items-center justify-center shrink-0">
                   <SlidersHorizontal className="w-5 h-5" />
                 </div>
                 <div>
@@ -180,7 +180,7 @@ export default function SettingsView() {
                 {/* Database Info Card */}
                 <div className="p-4 rounded-xl border border-border/80 dark:border-white/[0.06] bg-surface space-y-2">
                   <div className="flex items-center gap-2 text-xs font-semibold text-slate-900 dark:text-white">
-                    <HardDrive className="w-4 h-4 text-mint-600 dark:text-mint-400" />
+                    <HardDrive className="w-4 h-4 text-mint-700 dark:text-mint-400" />
                     Storage Engine
                   </div>
                   <p className="text-xs text-muted-foreground leading-relaxed">
@@ -197,7 +197,7 @@ export default function SettingsView() {
                 <div className="p-4 rounded-xl border border-border/80 dark:border-white/[0.06] bg-surface space-y-2 flex flex-col justify-between">
                   <div className="space-y-1.5">
                     <div className="flex items-center gap-2 text-xs font-semibold text-slate-900 dark:text-white">
-                      <Bell className="w-4 h-4 text-mint-600 dark:text-mint-400" />
+                      <Bell className="w-4 h-4 text-mint-700 dark:text-mint-400" />
                       Alert Preferences
                     </div>
                     <p className="text-xs text-muted-foreground leading-relaxed">
@@ -218,7 +218,7 @@ export default function SettingsView() {
                 <div className="p-4 rounded-xl border border-border/80 dark:border-white/[0.06] bg-surface space-y-2 flex flex-col justify-between">
                   <div className="space-y-1.5">
                     <div className="flex items-center gap-2 text-xs font-semibold text-slate-900 dark:text-white">
-                      <Command className="w-4 h-4 text-mint-600 dark:text-mint-400" />
+                      <Command className="w-4 h-4 text-mint-700 dark:text-mint-400" />
                       Quick Search
                     </div>
                     <p className="text-xs text-muted-foreground leading-relaxed">

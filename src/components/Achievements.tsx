@@ -416,7 +416,7 @@ export default function Achievements({ initialData }: Props) {
 
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold uppercase tracking-wider text-mint-600 dark:text-mint-400">
+                <span className="text-xs font-semibold uppercase tracking-wider text-mint-700 dark:text-mint-400">
                   Tingkat Prestasi Finansial
                 </span>
                 <Badge
@@ -497,7 +497,7 @@ export default function Achievements({ initialData }: Props) {
                   : 'text-slate-600 dark:text-white/60 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
-              <Clock className="w-3.5 h-3.5 text-mint-500" />
+              <Clock className="w-3.5 h-3.5 text-mint-600" />
               <span>Linimasa Milestone ({unlockedTimeline.length})</span>
             </button>
 
@@ -543,7 +543,7 @@ export default function Achievements({ initialData }: Props) {
               </div>
 
               <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-mint-600 dark:text-mint-400">
+                <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-mint-700 dark:text-mint-400">
                   <Target className="w-3.5 h-3.5" />
                   <span>Target Terdekat Berikutnya</span>
                   <Badge variant="outline" className="text-[10px] font-bold py-0 h-4 border-mint-500/30">
@@ -582,7 +582,7 @@ export default function Achievements({ initialData }: Props) {
               </div>
             </div>
 
-            <div className="flex items-center gap-1.5 text-xs font-medium text-mint-600 dark:text-mint-400 shrink-0">
+            <div className="flex items-center gap-1.5 text-xs font-medium text-mint-700 dark:text-mint-400 shrink-0">
               <span className="hidden sm:inline">Lihat Detail</span>
               <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-mint-500 group-hover:translate-x-0.5 transition-all" />
             </div>
@@ -911,7 +911,7 @@ export default function Achievements({ initialData }: Props) {
         <div className="glass-card p-5 sm:p-6 border border-slate-200 dark:border-white/[0.08] rounded-xl space-y-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <Clock className="w-5 h-5 text-mint-500" />
+              <Clock className="w-5 h-5 text-mint-600" />
               <div>
                 <h3 className="text-base font-bold text-slate-900 dark:text-white">
                   Linimasa Kronologis Pencapaian
@@ -935,7 +935,7 @@ export default function Achievements({ initialData }: Props) {
                 <div key={badge.id} className="relative group">
                   {/* Timeline Node */}
                   <div className="absolute -left-6 sm:-left-8 top-1 w-5 h-5 sm:w-7 sm:h-7 rounded-full bg-white dark:bg-slate-900 border-2 border-mint-500 flex items-center justify-center text-xs shadow-sm">
-                    <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-mint-500" />
+                    <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-mint-600" />
                   </div>
 
                   {/* Card Content */}
@@ -1117,7 +1117,7 @@ export default function Achievements({ initialData }: Props) {
                   Tier {TIER_STYLES[selectedBadge.tier].label}
                 </span>
 
-                <div className="flex items-center gap-1 text-xs font-bold text-mint-600 dark:text-mint-400">
+                <div className="flex items-center gap-1 text-xs font-bold text-mint-700 dark:text-mint-400">
                   <Sparkles className="w-3.5 h-3.5" />
                   <span>+{TIER_XP[selectedBadge.tier]} XP Reward</span>
                 </div>

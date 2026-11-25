@@ -351,7 +351,7 @@ export default function PortfolioHub({ data }: Props) {
         {/* Total Portfolio Value */}
         <div className="glass-card p-5">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-mint-500/10 text-mint-600 dark:text-mint-400">
+            <div className="p-2 rounded-lg bg-mint-500/10 text-mint-700 dark:text-mint-400">
               <Briefcase className="w-5 h-5" />
             </div>
             <div>
@@ -363,7 +363,7 @@ export default function PortfolioHub({ data }: Props) {
                 <p
                   className={`text-xs mt-0.5 font-medium ${
                     latestNetworth.month_over_month_pct >= 0
-                      ? 'text-mint-600 dark:text-mint-400'
+                      ? 'text-mint-700 dark:text-mint-400'
                       : 'text-coral-500'
                   }`}
                 >
@@ -382,7 +382,7 @@ export default function PortfolioHub({ data }: Props) {
               className={`p-2 rounded-lg ${
                 rebalanceData.isBalanced
                   ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-                  : 'bg-gold-500/10 text-gold-600 dark:text-gold-400'
+                  : 'bg-gold-500/10 text-gold-700 dark:text-gold-400'
               }`}
             >
               <Scale className="w-5 h-5" />
@@ -451,7 +451,7 @@ export default function PortfolioHub({ data }: Props) {
                 : 'text-slate-500 dark:text-white/60 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
-            <Scale className="w-4 h-4 text-mint-500" />
+            <Scale className="w-4 h-4 text-mint-600" />
             Alokasi & Rebalancing
           </button>
           <button
@@ -488,9 +488,9 @@ export default function PortfolioHub({ data }: Props) {
                 size="sm"
                 onClick={handleAddBbriPreset}
                 disabled={saving}
-                className="text-xs min-h-[44px] border-mint-500/30 text-mint-600 dark:text-mint-400 hover:bg-mint-500/10"
+                className="text-xs min-h-[44px] border-mint-500/30 text-mint-700 dark:text-mint-400 hover:bg-mint-500/10"
               >
-                <Sparkles className="w-3.5 h-3.5 mr-1 text-mint-500" />
+                <Sparkles className="w-3.5 h-3.5 mr-1 text-mint-600" />
                 Tambah BBRI (32 Lot)
               </Button>
             )}
@@ -514,7 +514,7 @@ export default function PortfolioHub({ data }: Props) {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
                 <h2 className="text-base font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-                  <Calculator className="w-4 h-4 text-mint-500" />
+                  <Calculator className="w-4 h-4 text-mint-600" />
                   Target Alokasi Aset
                 </h2>
                 <p className="text-xs text-slate-500 dark:text-white/60">
@@ -592,7 +592,7 @@ export default function PortfolioHub({ data }: Props) {
                       </span>
 
                       {item.status === 'overweight' && (
-                        <Badge variant="outline" className="text-[11px] border-gold-500/30 text-gold-600 dark:text-gold-400 bg-gold-500/10">
+                        <Badge variant="outline" className="text-[11px] border-gold-500/30 text-gold-700 dark:text-gold-400 bg-gold-500/10">
                           Overweight (+{item.driftPct}%)
                         </Badge>
                       )}
@@ -698,7 +698,7 @@ export default function PortfolioHub({ data }: Props) {
           {/* Action List Summary */}
           <div className="glass-card p-5 space-y-3">
             <h3 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-mint-500" />
+              <CheckCircle2 className="w-4 h-4 text-mint-600" />
               Catatan Evaluasi Portofolio
             </h3>
             <div className="space-y-2">
@@ -708,7 +708,7 @@ export default function PortfolioHub({ data }: Props) {
                   className="flex items-start gap-2.5 p-3 rounded-lg border border-slate-200 dark:border-white/[0.06] bg-slate-50/50 dark:bg-white/[0.02]"
                 >
                   {act.action === 'buy' && <TrendingUp className="w-4 h-4 text-sky-500 mt-0.5 shrink-0" />}
-                  {act.action === 'sell' && <AlertCircle className="w-4 h-4 text-gold-500 mt-0.5 shrink-0" />}
+                  {act.action === 'sell' && <AlertCircle className="w-4 h-4 text-gold-600 mt-0.5 shrink-0" />}
                   {act.action === 'hold' && <CheckCircle2 className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />}
                   <p className="text-xs text-slate-700 dark:text-white/80 leading-relaxed">
                     <strong className="font-semibold text-slate-900 dark:text-white">{act.key}:</strong>{' '}
@@ -887,7 +887,7 @@ export default function PortfolioHub({ data }: Props) {
           <div className="glass-card p-6 space-y-4">
             <div className="flex items-start justify-between flex-wrap gap-3">
               <div>
-                <span className="text-xs uppercase tracking-wider font-semibold text-mint-600 dark:text-mint-400">
+                <span className="text-xs uppercase tracking-wider font-semibold text-mint-700 dark:text-mint-400">
                   Saham Dividen Unggulan
                 </span>
                 <h2 className="text-xl font-bold text-slate-900 dark:text-white mt-1">
@@ -937,7 +937,7 @@ export default function PortfolioHub({ data }: Props) {
 
               <div className="p-4 rounded-xl border border-slate-200 dark:border-white/[0.06] bg-slate-50/50 dark:bg-white/[0.02]">
                 <span className="text-xs text-slate-500 dark:text-white/60">Setara Pendapatan Pasif</span>
-                <p className="text-lg font-bold text-mint-600 dark:text-mint-400 mt-1">
+                <p className="text-lg font-bold text-mint-700 dark:text-mint-400 mt-1">
                   {formatIdr(bbriStats.monthlyEquivalent)} / bln
                 </p>
                 <span className="text-[11px] text-slate-500 dark:text-white/50">Rata-rata bulanan</span>
@@ -949,7 +949,7 @@ export default function PortfolioHub({ data }: Props) {
           {bbriQuote?.dividends && bbriQuote.dividends.length > 0 && (
             <div className="glass-card p-5 space-y-3">
               <h3 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-mint-500" />
+                <Calendar className="w-4 h-4 text-mint-600" />
                 Riwayat Pembayaran Dividen BBRI (12 Bulan Terakhir)
               </h3>
               <div className="overflow-x-auto">

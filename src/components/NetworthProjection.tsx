@@ -217,7 +217,7 @@ export default function NetworthProjection({ data }: Props) {
       <div className="glass-card p-5">
 
           <h3 className="text-base font-semibold flex items-center gap-2 text-slate-800 dark:text-white/80">
-            <TrendingUp className="w-4 h-4 text-gold-500" />
+            <TrendingUp className="w-4 h-4 text-gold-600" />
             Projection Settings
           </h3>
 
@@ -378,7 +378,7 @@ export default function NetworthProjection({ data }: Props) {
       <div className="glass-card p-5">
 
           <h3 className="text-base font-semibold flex items-center gap-2 text-slate-800 dark:text-white/80">
-            <TrendingUp className="w-4 h-4 text-gold-500" />
+            <TrendingUp className="w-4 h-4 text-gold-600" />
             Net Worth Projection
           </h3>
           <p className="text-xs text-slate-600 dark:text-white/50">

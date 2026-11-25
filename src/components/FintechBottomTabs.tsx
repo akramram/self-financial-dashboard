@@ -68,11 +68,11 @@ function TabButton({ tab, active }: { tab: typeof TABS[0]; active: boolean }) {
       className="flex flex-col items-center justify-center gap-0.5 py-1 px-2 min-h-[44px] rounded-xl transition-colors relative no-underline flex-1"
     >
       {React.createElement(tab.icon, {
-        className: `w-5 h-5 ${active ? 'text-mint-500' : 'text-slate-500 dark:text-white/50'}`,
+        className: `w-5 h-5 ${active ? 'text-mint-600' : 'text-slate-500 dark:text-white/50'}`,
         strokeWidth: 1.8,
       })}
       <span
-        className={`text-[11px] font-medium ${active ? 'text-mint-500' : 'text-slate-500 dark:text-white/50'}`}
+        className={`text-[11px] font-medium ${active ? 'text-mint-600' : 'text-slate-500 dark:text-white/50'}`}
       >
         {tab.label}
       </span>

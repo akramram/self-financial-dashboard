@@ -132,7 +132,7 @@ export default function MonthlyReport({
       <div className="text-center py-20">
         <p className="text-slate-600 dark:text-white/50 text-lg">
           Belum ada transaksi di periode ini, jadi laporan belum bisa dibuat.{' '}
-            <a href="/add" className="text-mint-600 dark:text-mint-400 font-medium hover:underline">Catat transaksi pertama</a> untuk melihat laporan bulanan.
+            <a href="/add" className="text-mint-700 dark:text-mint-400 font-medium hover:underline">Catat transaksi pertama</a> untuk melihat laporan bulanan.
         </p>
         <p className="text-slate-500 dark:text-white/50 text-sm mt-2">
           Add transactions and net worth data first.
@@ -242,7 +242,7 @@ export default function MonthlyReport({
                   reportSummary.savings_rate_pct >= 20
                     ? 'text-emerald-600 dark:text-emerald-400 print:text-emerald-700'
                     : reportSummary.savings_rate_pct >= 0
-                    ? 'text-gold-600 dark:text-gold-400 print:text-gold-700'
+                    ? 'text-gold-700 dark:text-gold-400 print:text-gold-700'
                     : 'text-red-600 dark:text-red-400 print:text-red-700'
                 }`}
               >
@@ -582,7 +582,7 @@ export default function MonthlyReport({
         {anomalies.length > 0 && (
           <div className="glass-card p-5 print:border print:border-gray-300 print:shadow-none">
             <h3 className="text-base font-semibold flex items-center gap-2 text-slate-800 dark:text-white/80">
-                <AlertTriangle className="w-4 h-4 text-gold-500" />
+                <AlertTriangle className="w-4 h-4 text-gold-600" />
                 Spending Anomalies
               </h3>
             <div className="space-y-3">
@@ -592,7 +592,7 @@ export default function MonthlyReport({
                       ? 'bg-red-100 text-red-700 border-red-300 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800'
                       : a.severity === 'medium'
                       ? 'bg-gold-500/10 text-gold-700 border-gold-400/30 dark:bg-gold-700/20 dark:text-gold-300 dark:border-gold-700/40'
-                      : 'bg-mint-500/10 text-mint-600 border-mint-400/30 dark:bg-mint-700/20 dark:text-mint-300 dark:border-mint-700/40';
+                      : 'bg-mint-500/10 text-mint-700 border-mint-400/30 dark:bg-mint-700/20 dark:text-mint-300 dark:border-mint-700/40';
                   return (
                     <div
                       key={a.id}
@@ -612,7 +612,7 @@ export default function MonthlyReport({
                                 ? 'border-red-300 text-red-700 dark:border-red-800 dark:text-red-300'
                                 : a.severity === 'medium'
                                 ? 'border-gold-400/30 text-gold-700 dark:border-gold-700/40 dark:text-gold-300'
-                                : 'border-mint-400/30 text-mint-600 dark:border-mint-700/40 dark:text-mint-300'
+                                : 'border-mint-400/30 text-mint-700 dark:border-mint-700/40 dark:text-mint-300'
                             }`}
                           >
                             {a.severity}

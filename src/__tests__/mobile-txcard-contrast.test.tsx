@@ -59,7 +59,7 @@ describe('TransactionTable — mobile card type color + focus ring', () => {
     expect(cls).toContain('text-mint-700');
     expect(cls).toContain('text-coral-600');
     expect(cls).toContain('text-gold-700');
-    expect(cls).not.toMatch(/text-mint-500(?![\w-])/);
+    expect(cls).not.toMatch(/text-mint-600(?![\w-])/);
     expect(cls).not.toMatch(/text-coral-500(?![\w-])/);
     expect(cls).not.toMatch(/text-gold-600(?![\w-])/);
   });

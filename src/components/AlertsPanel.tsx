@@ -76,8 +76,8 @@ const SEVERITY_BAR: Record<Severity, string> = {
 /** Uppercase 10px/700 text chip (label channel). */
 const SEVERITY_CHIP: Record<Severity, string> = {
   high: 'bg-coral-500/10 text-coral-600 dark:text-coral-400',
-  medium: 'bg-gold-500/10 text-gold-600 dark:text-gold-400',
-  low: 'bg-mint-500/10 text-mint-600 dark:text-mint-400',
+  medium: 'bg-gold-500/10 text-gold-700 dark:text-gold-400',
+  low: 'bg-mint-500/10 text-mint-700 dark:text-mint-400',
 };
 
 /** Card border + tinted background. */
@@ -90,15 +90,15 @@ const SEVERITY_CARD: Record<Severity, string> = {
 /** Type icon inherits the severity color (spec §2). */
 const SEVERITY_ICON: Record<Severity, string> = {
   high: 'text-coral-500',
-  medium: 'text-gold-500',
-  low: 'text-mint-500',
+  medium: 'text-gold-700',
+  low: 'text-mint-700',
 };
 
 /** Muted outline badge naming the alert type (card variant only). */
 const SEVERITY_BADGE_CLASS: Record<Severity, string> = {
   high: 'text-coral-600 border-coral-400/50 dark:text-coral-400 dark:border-coral-700/50',
-  medium: 'text-gold-600 border-gold-400/60 dark:text-gold-400 dark:border-gold-700/50',
-  low: 'text-mint-600 border-mint-400/60 dark:text-mint-400 dark:border-mint-700/50',
+  medium: 'text-gold-700 border-gold-400/60 dark:text-gold-400 dark:border-gold-700/50',
+  low: 'text-mint-700 border-mint-400/60 dark:text-mint-400 dark:border-mint-700/50',
 };
 
 const ANOMALY_REASON_LABELS: Record<Anomaly['reason'], string> = {
@@ -392,7 +392,7 @@ export default function AlertsPanel({
       {showHeader && (
         <div className="flex items-center justify-between">
           <h3 className="text-base font-semibold flex items-center gap-2 text-slate-800 dark:text-white/80">
-            <AlertTriangle className="w-4 h-4 text-gold-500" />
+            <AlertTriangle className="w-4 h-4 text-gold-600" />
             Alerts
             {/* KUR-245 G1 AC-2: severity digest always visible — the whole
                 breakdown shows even when only INFO exists (badge hides it). */}
@@ -405,7 +405,7 @@ export default function AlertsPanel({
               {mediumCount > 0 && (
                 <Badge
                   variant="outline"
-                  className="text-[11px] px-1.5 py-0 border-gold-400 text-gold-600 dark:text-gold-400"
+                  className="text-[11px] px-1.5 py-0 border-gold-400 text-gold-700 dark:text-gold-400"
                 >
                   {mediumCount} approaching
                 </Badge>
@@ -413,7 +413,7 @@ export default function AlertsPanel({
               {lowCount > 0 && (
                 <Badge
                   variant="outline"
-                  className="text-[11px] px-1.5 py-0 border-mint-400 text-mint-500 dark:text-mint-400"
+                  className="text-[11px] px-1.5 py-0 border-mint-400 text-mint-700 dark:text-mint-400"
                 >
                   {lowCount} info
                 </Badge>

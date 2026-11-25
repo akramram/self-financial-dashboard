@@ -215,7 +215,7 @@ export default function DebtPayoffHub({
       case 'moderate':
         return {
           label: 'Moderat (30-50%)',
-          colorClass: 'bg-gold-500/10 text-gold-600 dark:text-gold-400 border-gold-500/30',
+          colorClass: 'bg-gold-500/10 text-gold-700 dark:text-gold-400 border-gold-500/30',
           barClass: 'bg-amber-500',
         };
       case 'high':
@@ -245,7 +245,7 @@ export default function DebtPayoffHub({
       case 'moderate':
         return {
           label: 'Moderat (21-36%)',
-          colorClass: 'bg-gold-500/10 text-gold-600 dark:text-gold-400 border-gold-500/30',
+          colorClass: 'bg-gold-500/10 text-gold-700 dark:text-gold-400 border-gold-500/30',
         };
       case 'caution':
       default:

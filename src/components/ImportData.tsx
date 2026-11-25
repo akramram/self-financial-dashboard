@@ -191,7 +191,7 @@ export default function ImportData() {
   return (
     <div className="glass-card p-5 sm:p-6 space-y-5">
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-xl bg-mint-500/10 text-mint-600 dark:text-mint-400 flex items-center justify-center shrink-0">
+        <div className="w-10 h-10 rounded-xl bg-mint-500/10 text-mint-700 dark:text-mint-400 flex items-center justify-center shrink-0">
           <Upload className="w-5 h-5" />
         </div>
         <div>
@@ -234,7 +234,7 @@ export default function ImportData() {
         <div className="space-y-4">
           <div className="flex items-center justify-between p-3.5 rounded-xl border border-border/80 dark:border-white/[0.06] bg-surface">
             <div className="flex items-center gap-3 min-w-0">
-              <FileText className="w-5 h-5 text-mint-600 dark:text-mint-400 shrink-0" />
+              <FileText className="w-5 h-5 text-mint-700 dark:text-mint-400 shrink-0" />
               <div className="min-w-0">
                 <p className="text-sm font-medium truncate text-slate-900 dark:text-white">{file.name}</p>
                 <p className="text-xs text-muted-foreground">{(file.size / 1024).toFixed(1)} KB · {allRows.length} rows detected</p>

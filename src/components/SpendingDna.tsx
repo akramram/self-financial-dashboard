@@ -327,7 +327,7 @@ export default function SpendingDna() {
   const loyaltyColor = (score: number) => {
     if (score >= 80) return 'text-emerald-600 dark:text-emerald-400';
     if (score >= 60) return 'text-sky-600 dark:text-sky-400';
-    if (score >= 40) return 'text-gold-600 dark:text-gold-400';
+    if (score >= 40) return 'text-gold-700 dark:text-gold-400';
     return 'text-rose-600 dark:text-rose-400';
   };
 
@@ -406,7 +406,7 @@ export default function SpendingDna() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="glass-card p-5">
           <h3 className="flex items-center gap-2 text-slate-800 dark:text-white/80">
-              <Brain className="w-5 h-5 text-gold-500" />
+              <Brain className="w-5 h-5 text-gold-600" />
               Behavioral Radar
             </h3>
           <div style={{ height: 320, maxWidth: 380, margin: '0 auto' }}>
@@ -444,7 +444,7 @@ export default function SpendingDna() {
       {/* ── Key Insights ──────────────────────────────────────────────── */}
       <div className="glass-card p-5">
         <h3 className="flex items-center gap-2 text-slate-800 dark:text-white/80">
-            <Zap className="w-5 h-5 text-gold-500" />
+            <Zap className="w-5 h-5 text-gold-600" />
             Key Insights
           </h3>
         <div className="space-y-3">
@@ -453,7 +453,7 @@ export default function SpendingDna() {
                 key={i}
                 className="flex gap-3 items-start p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50"
               >
-                <ArrowRight className="w-4 h-4 text-gold-500 mt-0.5 flex-shrink-0" />
+                <ArrowRight className="w-4 h-4 text-gold-600 mt-0.5 flex-shrink-0" />
                 <p className="text-sm text-slate-700 dark:text-slate-300">{insight}</p>
               </div>
             ))}

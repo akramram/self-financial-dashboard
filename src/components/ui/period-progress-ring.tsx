@@ -82,11 +82,11 @@ export default function PeriodProgressRing({ activeMonth, className = '' }: Peri
   const circumference = 2 * Math.PI * radius;
   const dashOffset = circumference - (info.pctElapsed / 100) * circumference;
 
-  // Colors based on status
+  // Colors based on status — text pairs must hold AA on light AND dark
   const colorMap = {
-    early: { ring: '#34d399', bg: 'rgba(52,211,153,0.12)', text: 'text-mint-500' },
-    mid: { ring: '#f59e0b', bg: 'rgba(245,158,11,0.12)', text: 'text-gold-500' },
-    late: { ring: '#ef4444', bg: 'rgba(239,68,68,0.12)', text: 'text-coral-500' },
+    early: { ring: '#34d399', bg: 'rgba(52,211,153,0.12)', text: 'text-mint-700 dark:text-mint-400' },
+    mid: { ring: '#f59e0b', bg: 'rgba(245,158,11,0.12)', text: 'text-gold-700 dark:text-gold-400' },
+    late: { ring: '#ef4444', bg: 'rgba(239,68,68,0.12)', text: 'text-coral-600 dark:text-coral-400' },
   };
   const colors = colorMap[info.status];
 
@@ -121,7 +121,7 @@ export default function PeriodProgressRing({ activeMonth, className = '' }: Peri
         </svg>
         {/* Center percentage */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className={`text-[11px] font-bold ${colors.text}`} style={{ color: colors.ring }}>
+          <span className={`text-[11px] font-bold ${colors.text}`}>
             {info.pctElapsed}%
           </span>
         </div>
