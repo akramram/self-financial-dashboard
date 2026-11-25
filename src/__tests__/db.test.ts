@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { createTestDb, seedPeriod, seedTransaction, seedCategory } from './helpers';
+import { cleanInstallmentTitle, extractTenorFromTitle, parseYYYYMM } from '../lib/installment-summary';
 
 describe('DB — Periods', () => {
   let db: any, cleanup: () => void;
@@ -413,26 +414,65 @@ describe('DB — Recurring Cost Analysis', () => {
   /** Replicate getRecurringCostAnalysis against the test DB. */
   function analyzeRecurringCosts() {
     const rows = db.prepare(`
-      SELECT id, title, category, amount, type, active, end_date
+      SELECT id, title, category, amount, type, active, end_date, created_at
       FROM recurring_transactions
       ORDER BY active DESC, amount DESC
     `).all() as any[];
 
-    const items = rows.map((r) => ({
-      id: r.id,
-      title: r.title,
-      category: r.category,
-      amount: r.amount,
-      type: r.type,
-      active: !!r.active,
-      end_date: r.end_date,
-      isTemporary: !!r.end_date,
-    }));
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = now.getMonth() + 1;
+    const d = now.getDate();
+    const pMonth = d >= 21 ? (m === 12 ? 1 : m + 1) : m;
+    const pYear = d >= 21 && m === 12 ? y + 1 : y;
+    const currentYYYYMM = `${pYear}-${String(pMonth).padStart(2, '0')}`;
+
+    const items = rows.map((r) => {
+      const isCicilan = /cicilan|installment/i.test(r.title);
+      const hasEnd = Boolean(r.end_date);
+      const tenor = extractTenorFromTitle(r.title);
+      const isInstallment = isCicilan || hasEnd || tenor !== null;
+
+      let remainingTenor: number | null = null;
+      if (tenor) {
+        remainingTenor = Math.max(1, tenor.total - tenor.current + 1);
+      } else if (r.end_date) {
+        const cur = parseYYYYMM(currentYYYYMM);
+        const end = parseYYYYMM(r.end_date);
+        const diff = cur && end ? (end.year - cur.year) * 12 + (end.month - cur.month) + 1 : 1;
+        remainingTenor = Math.max(1, diff);
+      }
+
+      const remainingLiability = isInstallment && remainingTenor !== null ? remainingTenor * r.amount : null;
+
+      return {
+        id: r.id,
+        title: r.title,
+        cleanTitle: cleanInstallmentTitle(r.title),
+        category: r.category,
+        amount: r.amount,
+        type: r.type,
+        active: !!r.active,
+        end_date: r.end_date,
+        created_at: r.created_at || '21',
+        isTemporary: !!r.end_date,
+        isInstallment,
+        totalTenor: tenor ? tenor.total : null,
+        currentTenor: tenor ? tenor.current : null,
+        remainingTenor,
+        remainingLiability,
+      };
+    });
 
     const activeItems = items.filter((i) => i.active);
     const pausedItems = items.filter((i) => !i.active);
     const monthlyTotal = activeItems.reduce((s, i) => s + i.amount, 0);
-    const annualTotal = monthlyTotal * 12;
+    const annualTotal = activeItems.reduce((s, i) => {
+      if (i.isInstallment && i.remainingTenor !== null) {
+        return s + Math.min(12, i.remainingTenor) * i.amount;
+      }
+      return s + i.amount * 12;
+    }, 0);
 
     const monthlyByCategory: Record<string, number> = {};
     for (const item of activeItems) {
@@ -452,10 +492,25 @@ describe('DB — Recurring Cost Analysis', () => {
       : null;
     const avgPerItem = activeItems.length > 0 ? monthlyTotal / activeItems.length : 0;
 
+    const activeInstallments = activeItems.filter((i) => i.isInstallment);
+    const activeSubscriptions = activeItems.filter((i) => !i.isInstallment);
+
+    const subscriptionMonthlyTotal = activeSubscriptions.reduce((s, i) => s + i.amount, 0);
+    const installmentMonthlyTotal = activeInstallments.reduce((s, i) => s + i.amount, 0);
+    const totalRemainingLiability = activeInstallments.reduce(
+      (s, i) => s + (i.remainingLiability ?? i.amount),
+      0
+    );
+    const postInstallmentRunRate = subscriptionMonthlyTotal;
+    const installmentCount = activeInstallments.length;
+    const subscriptionCount = activeSubscriptions.length;
+
     return {
       items, activeItems, pausedItems, monthlyTotal, annualTotal,
       monthlyByCategory, monthlyByType, categoryCount: Object.keys(monthlyByCategory).length,
       activeCount: activeItems.length, temporaryCount, largestItem, avgPerItem,
+      subscriptionMonthlyTotal, installmentMonthlyTotal, totalRemainingLiability,
+      postInstallmentRunRate, installmentCount, subscriptionCount,
     };
   }
 
@@ -541,6 +596,29 @@ describe('DB — Recurring Cost Analysis', () => {
     expect(result.activeItems).toHaveLength(1);
     expect(result.pausedItems).toHaveLength(2);
     expect(result.activeCount).toBe(1);
+  });
+
+  it('separates permanent subscriptions from installments and computes run rate', () => {
+    seedRecurring({ title: 'Netflix', amount: 186000, active: 1 });
+    seedRecurring({ title: 'Kontrakan', amount: 1150000, active: 1 });
+    seedRecurring({ title: 'Cicilan HP (3/12)', amount: 500000, active: 1 });
+
+    const result = analyzeRecurringCosts();
+    expect(result.subscriptionCount).toBe(2);
+    expect(result.installmentCount).toBe(1);
+    expect(result.subscriptionMonthlyTotal).toBe(1336000);
+    expect(result.installmentMonthlyTotal).toBe(500000);
+    expect(result.postInstallmentRunRate).toBe(1336000);
+    // Tenor: 3/12 -> remaining 10 months * 500k = 5,000,000
+    expect(result.totalRemainingLiability).toBe(5000000);
+
+    const hpItem = result.activeItems.find((i) => i.title.includes('Cicilan HP'));
+    expect(hpItem?.isInstallment).toBe(true);
+    expect(hpItem?.cleanTitle).toBe('HP');
+    expect(hpItem?.totalTenor).toBe(12);
+    expect(hpItem?.currentTenor).toBe(3);
+    expect(hpItem?.remainingTenor).toBe(10);
+    expect(hpItem?.remainingLiability).toBe(5000000);
   });
 });
 

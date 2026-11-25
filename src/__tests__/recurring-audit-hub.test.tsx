@@ -174,7 +174,7 @@ describe('RecurringCostAnalyzer Hub Component', () => {
     // Overview KPIs
     expect(screen.getByText('Komitmen Bulanan')).toBeInTheDocument();
     expect(screen.getByText('Rasio Beban Rutin')).toBeInTheDocument();
-    expect(screen.getByText('Cicilan Berjangka')).toBeInTheDocument();
+    expect(screen.getByText('Cicilan Berjalan')).toBeInTheDocument();
     expect(screen.getByText('Item Terbesar')).toBeInTheDocument();
 
     // Check burden badge
@@ -249,16 +249,16 @@ describe('RecurringCostAnalyzer Hub Component', () => {
       expect(screen.getByPlaceholderText(/Cari nama komitmen atau kategori/i)).toBeInTheDocument();
     });
 
-    // Check table headers
+    // Check table headers (judul item muncul di tabel desktop + kartu mobile)
     expect(screen.getByText('Nama Komitmen')).toBeInTheDocument();
-    expect(screen.getByText('Kontrakan')).toBeInTheDocument();
-    expect(screen.getByText('Uang Istri')).toBeInTheDocument();
+    expect(screen.getAllByText('Kontrakan').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Uang Istri').length).toBeGreaterThan(0);
 
     // Search query
     const searchInput = screen.getByPlaceholderText(/Cari nama komitmen atau kategori/i);
     fireEvent.change(searchInput, { target: { value: 'Inverter' } });
 
-    expect(screen.getByText('Cicilan Inverter')).toBeInTheDocument();
+    expect(screen.getAllByText('Cicilan Inverter').length).toBeGreaterThan(0);
     expect(screen.queryByText('Kontrakan')).not.toBeInTheDocument();
   });
 

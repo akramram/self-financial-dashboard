@@ -67,6 +67,27 @@ function formatEndDate(endDate: string | null): string {
   return `Hingga ${endDate}`;
 }
 
+/** Durasi komitmen: tenor berjalan (x/y), tanggal berakhir, atau permanen. */
+function formatDurationInfo(item: RecurringCostItem): { label: string; badge?: string } {
+  if (item.totalTenor && item.currentTenor) {
+    const remaining = item.remainingTenor ?? Math.max(1, item.totalTenor - item.currentTenor + 1);
+    return {
+      label: `Tenor ${item.currentTenor}/${item.totalTenor}`,
+      badge: `${remaining} bln lagi`,
+    };
+  }
+  if (item.end_date) {
+    return {
+      label: `Hingga ${item.end_date}`,
+      badge: item.remainingTenor ? `${item.remainingTenor} bln lagi` : undefined,
+    };
+  }
+  if (item.isInstallment) {
+    return { label: 'Cicilan Berjalan' };
+  }
+  return { label: 'Permanen' };
+}
+
 export default function RecurringCostAnalyzer() {
   const [data, setData] = useState<RecurringCostResult | null>(null);
   const [loading, setLoading] = useState(true);
@@ -76,6 +97,7 @@ export default function RecurringCostAnalyzer() {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
   const [annualRate, setAnnualRate] = useState<number>(7);
+  const [filterTab, setFilterTab] = useState<'all' | 'subscriptions' | 'installments'>('all');
 
   const fetchData = useCallback(() => {
     setLoading(true);
@@ -134,6 +156,27 @@ export default function RecurringCostAnalyzer() {
     return Object.entries(data.monthlyByCategory).sort(([, a], [, b]) => b - a);
   }, [data]);
 
+  // Agregat Langganan vs Cicilan (installment liability analyzer)
+  const instSplit = useMemo(() => {
+    const activeInstallments = activeItems.filter((i) => i.isInstallment);
+    const activeSubscriptions = activeItems.filter((i) => !i.isInstallment);
+    const installmentMonthlyTotal = activeInstallments.reduce((s, i) => s + i.amount, 0);
+    const subscriptionMonthlyTotal = activeSubscriptions.reduce((s, i) => s + i.amount, 0);
+    const totalRemainingLiability = activeInstallments.reduce(
+      (s, i) => s + (i.remainingLiability ?? i.amount),
+      0
+    );
+    return {
+      installmentMonthlyTotal,
+      subscriptionMonthlyTotal,
+      totalRemainingLiability,
+      postInstallmentRunRate: subscriptionMonthlyTotal,
+      installmentCount: activeInstallments.length,
+      subscriptionCount: activeSubscriptions.length,
+      reliefPct: monthlyTotal > 0 ? Math.round((installmentMonthlyTotal / monthlyTotal) * 100) : 0,
+    };
+  }, [activeItems, monthlyTotal]);
+
   const donutData = useMemo(() => {
     if (categoryEntries.length === 0) return null;
     return {
@@ -154,6 +197,12 @@ export default function RecurringCostAnalyzer() {
   const filteredTableItems = useMemo(() => {
     let list = showPaused ? items : activeItems;
 
+    if (filterTab === 'subscriptions') {
+      list = list.filter((i) => !i.isInstallment);
+    } else if (filterTab === 'installments') {
+      list = list.filter((i) => i.isInstallment);
+    }
+
     if (filterType !== 'all') {
       list = list.filter((i) => i.type === filterType);
     }
@@ -166,7 +215,7 @@ export default function RecurringCostAnalyzer() {
     }
 
     return list;
-  }, [items, activeItems, showPaused, filterType, searchQuery]);
+  }, [items, activeItems, showPaused, filterTab, filterType, searchQuery]);
 
   // Toggle cut item
   const toggleCutItem = (id: number) => {
@@ -320,6 +369,10 @@ export default function RecurringCostAnalyzer() {
               {data.activeCount} item aktif
             </span>
           </div>
+          <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center justify-between pt-1 border-t border-slate-100 dark:border-white/5">
+            <span>Langganan: {formatIdr(instSplit.subscriptionMonthlyTotal)}</span>
+            <span>Cicilan: {formatIdr(instSplit.installmentMonthlyTotal)}</span>
+          </div>
         </GlassCard>
 
         {/* Card 2: Burden Ratio */}
@@ -345,22 +398,34 @@ export default function RecurringCostAnalyzer() {
           </div>
         </GlassCard>
 
-        {/* Card 3: Temporary Commitments & Expiration */}
+        {/* Card 3: Cicilan Berjangka & Liabilitas */}
         <GlassCard className="p-4 space-y-2">
           <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-            <span>Cicilan Berjangka</span>
-            <Clock className="w-4 h-4 text-amber-500" />
+            <span>Cicilan Berjalan</span>
+            <CreditCard className="w-4 h-4 text-amber-500" />
           </div>
           <div className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
-            {data.temporaryCount} Komitmen
+            {formatIdr(instSplit.installmentMonthlyTotal)}
+            <span className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1.5">
+              /bln · {instSplit.installmentCount} cicilan
+            </span>
           </div>
-          <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
-            {roadmap.length > 0 ? (
-              <span className="text-emerald-600 dark:text-emerald-400 font-medium">
-                +{formatIdr(roadmap[roadmap.length - 1].cumulativeFreed)}/bln bebas nanti
-              </span>
+          <div className="text-[11px] text-slate-500 dark:text-slate-400 space-y-0.5">
+            {instSplit.installmentCount > 0 ? (
+              <>
+                <span className="block truncate">
+                  Sisa liabilitas:{' '}
+                  <span className="font-semibold text-rose-600 dark:text-rose-400">
+                    {formatIdr(instSplit.totalRemainingLiability)}
+                  </span>
+                </span>
+                <span className="block truncate text-emerald-600 dark:text-emerald-400 font-medium">
+                  Run-rate pasca lunas: {formatIdr(instSplit.postInstallmentRunRate)}/bln
+                  ({instSplit.reliefPct}% lebih ringan)
+                </span>
+              </>
             ) : (
-              <span>Semua komitmen bersifat permanen</span>
+              <span>Tidak ada cicilan aktif, semua komitmen permanen</span>
             )}
           </div>
         </GlassCard>
@@ -523,6 +588,14 @@ export default function RecurringCostAnalyzer() {
 
               {roadmap.length > 0 ? (
                 <div className="space-y-3">
+                  <div className="flex flex-wrap items-center gap-2 text-xs">
+                    <Badge className="bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20">
+                      Sisa liabilitas: {formatIdr(instSplit.totalRemainingLiability)}
+                    </Badge>
+                    <Badge className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20">
+                      Run-rate pasca lunas: {formatIdr(instSplit.postInstallmentRunRate)}/bln
+                    </Badge>
+                  </div>
                   <p className="text-xs text-slate-500 dark:text-slate-400">
                     Begitu cicilan atau komitmen berjangka ini tuntas, arus kas bulanan Anda akan otomatis kembali bebas:
                   </p>
@@ -823,6 +896,46 @@ export default function RecurringCostAnalyzer() {
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
+              {/* Filter Langganan vs Cicilan */}
+              <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg border border-slate-200 dark:border-white/10 text-xs">
+                <button
+                  type="button"
+                  onClick={() => setFilterTab('all')}
+                  aria-pressed={filterTab === 'all'}
+                  className={`px-2.5 py-1 rounded-md transition-colors ${
+                    filterTab === 'all'
+                      ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm font-medium'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  }`}
+                >
+                  Semua ({activeItems.length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFilterTab('subscriptions')}
+                  aria-pressed={filterTab === 'subscriptions'}
+                  className={`px-2.5 py-1 rounded-md transition-colors ${
+                    filterTab === 'subscriptions'
+                      ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm font-medium'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  }`}
+                >
+                  Langganan ({instSplit.subscriptionCount})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFilterTab('installments')}
+                  aria-pressed={filterTab === 'installments'}
+                  className={`px-2.5 py-1 rounded-md transition-colors ${
+                    filterTab === 'installments'
+                      ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm font-medium'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  }`}
+                >
+                  Cicilan ({instSplit.installmentCount})
+                </button>
+              </div>
+
               <select
                 value={filterType}
                 onChange={(e) => setFilterType(e.target.value)}
@@ -845,7 +958,7 @@ export default function RecurringCostAnalyzer() {
             </div>
           </div>
 
-          <div className="rounded-xl border border-slate-200 dark:border-white/10 overflow-hidden">
+          <div className="hidden md:block rounded-xl border border-slate-200 dark:border-white/10 overflow-hidden">
             <Table>
               <TableHeader>
                 <TableRow className="bg-slate-50/70 dark:bg-slate-900/50">
@@ -872,6 +985,11 @@ export default function RecurringCostAnalyzer() {
                     const pctOfTotal = monthlyTotal > 0 ? (item.amount / monthlyTotal) * 100 : 0;
                     const typeLabel =
                       item.type === 'cash' ? 'Cash' : item.type === 'credit_payment' ? 'CC Pay' : 'Credit';
+                    const duration = formatDurationInfo(item);
+                    const estimatedAnnual =
+                      item.isInstallment && item.remainingTenor != null
+                        ? item.amount * Math.min(12, item.remainingTenor)
+                        : item.amount * 12;
 
                     return (
                       <TableRow
@@ -893,14 +1011,21 @@ export default function RecurringCostAnalyzer() {
                           />
                         </TableCell>
                         <TableCell className="font-semibold text-slate-900 dark:text-white">
-                          <span className={isCut ? 'line-through text-slate-400' : ''}>
-                            {item.title}
+                          <span className="flex items-center gap-1.5 flex-wrap">
+                            <span className={isCut ? 'line-through text-slate-400' : ''}>
+                              {item.title}
+                            </span>
+                            {item.isInstallment && (
+                              <Badge className="bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20 text-[10px] px-1.5 py-0 h-4">
+                                Cicilan
+                              </Badge>
+                            )}
+                            {!item.active && (
+                              <Badge variant="outline" className="ml-1 text-[10px] py-0 h-4">
+                                Paused
+                              </Badge>
+                            )}
                           </span>
-                          {!item.active && (
-                            <Badge variant="outline" className="ml-2 text-[10px] py-0 h-4">
-                              Paused
-                            </Badge>
-                          )}
                         </TableCell>
                         <TableCell className="text-slate-600 dark:text-slate-400 text-xs">
                           {item.category}
@@ -911,7 +1036,12 @@ export default function RecurringCostAnalyzer() {
                           </span>
                         </TableCell>
                         <TableCell className="text-right text-slate-500 dark:text-slate-400 text-xs">
-                          {formatIdr(item.amount * 12)}
+                          {formatIdr(estimatedAnnual)}
+                          {item.isInstallment && item.remainingLiability != null && (
+                            <span className="block text-[10px] text-slate-400 dark:text-slate-500">
+                              sisa {formatIdr(item.remainingLiability)}
+                            </span>
+                          )}
                         </TableCell>
                         <TableCell>
                           <Badge variant="outline" className="text-[10px] py-0">
@@ -919,13 +1049,22 @@ export default function RecurringCostAnalyzer() {
                           </Badge>
                         </TableCell>
                         <TableCell className="text-xs">
-                          {item.isTemporary ? (
-                            <span className="text-amber-600 dark:text-amber-400 font-medium">
-                              {formatEndDate(item.end_date)}
+                          <div className="space-y-0.5">
+                            <span
+                              className={
+                                item.isInstallment
+                                  ? 'text-amber-600 dark:text-amber-400 font-medium'
+                                  : 'text-slate-500 dark:text-slate-400'
+                              }
+                            >
+                              {duration.label}
                             </span>
-                          ) : (
-                            <span className="text-slate-500 dark:text-slate-400">Permanen</span>
-                          )}
+                            {duration.badge && (
+                              <span className="block text-[10px] text-slate-500 dark:text-slate-500">
+                                {duration.badge}
+                              </span>
+                            )}
+                          </div>
                         </TableCell>
                         <TableCell className="text-right font-medium text-xs text-slate-600 dark:text-slate-400">
                           {pctOfTotal.toFixed(1)}%
@@ -936,6 +1075,85 @@ export default function RecurringCostAnalyzer() {
                 )}
               </TableBody>
             </Table>
+          </div>
+
+          {/* Kartu mobile (<md): pengganti tabel 8 kolom */}
+          <div className="md:hidden space-y-3">
+            {filteredTableItems.length === 0 ? (
+              <div className="text-center py-8 text-xs text-slate-500 dark:text-slate-400 border border-dashed border-slate-200 dark:border-white/10 rounded-xl">
+                Tidak ada item yang cocok dengan filter.
+              </div>
+            ) : (
+              filteredTableItems.map((item) => {
+                const isCut = cutItemIds.includes(item.id);
+                const pctOfTotal = monthlyTotal > 0 ? (item.amount / monthlyTotal) * 100 : 0;
+                const typeLabel =
+                  item.type === 'cash' ? 'Cash' : item.type === 'credit_payment' ? 'CC Pay' : 'Credit';
+                const duration = formatDurationInfo(item);
+
+                return (
+                  <div
+                    key={item.id}
+                    className={`rounded-xl border border-slate-200/80 dark:border-white/10 bg-slate-50/50 dark:bg-slate-900/40 p-4 space-y-2.5 ${
+                      !item.active ? 'opacity-60' : ''
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0 flex items-start gap-2">
+                        <Checkbox
+                          checked={isCut}
+                          disabled={!item.active}
+                          onCheckedChange={() => toggleCutItem(item.id)}
+                          aria-label={`Tandai ${item.title} untuk simulasi diputus`}
+                          className="data-[state=checked]:bg-rose-500 data-[state=checked]:border-rose-500 mt-0.5"
+                        />
+                        <div className="min-w-0">
+                          <p className={`text-sm font-semibold text-slate-900 dark:text-white truncate ${isCut ? 'line-through text-slate-400' : ''}`}>
+                            {item.title}
+                          </p>
+                          <span className="text-xs text-slate-600 dark:text-slate-400">
+                            {item.category}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-end gap-1 shrink-0">
+                        <span className="text-sm font-bold text-slate-900 dark:text-white tabular-nums">
+                          {formatIdr(item.amount)}
+                        </span>
+                        <span className="text-[10px] text-slate-500 dark:text-slate-500 tabular-nums">
+                          {pctOfTotal.toFixed(1)}% beban
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-slate-200/60 dark:border-white/5">
+                      <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+                        {typeLabel}
+                      </Badge>
+                      {item.isInstallment ? (
+                        <Badge className="bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20 text-[10px] px-1.5 py-0">
+                          {duration.label}
+                        </Badge>
+                      ) : (
+                        <Badge variant="secondary" className="text-[10px] px-1.5 py-0 text-slate-600 dark:text-slate-400">
+                          Permanen
+                        </Badge>
+                      )}
+                      {duration.badge && (
+                        <span className="text-[11px] text-slate-500 dark:text-slate-500">
+                          {duration.badge}
+                        </span>
+                      )}
+                      {item.isInstallment && item.remainingLiability != null && (
+                        <span className="text-[11px] font-medium text-rose-600 dark:text-rose-400 ml-auto">
+                          Sisa: {formatIdr(item.remainingLiability)}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
         </GlassCard>
       )}
