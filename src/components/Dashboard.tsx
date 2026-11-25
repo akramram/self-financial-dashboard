@@ -539,7 +539,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
                       <p className="text-xs text-slate-500 dark:text-white/50">months of emergency fund</p>
                     </div>
                   </div>
-                  <a href="/runway" className="block mt-2 text-xs text-mint-500 hover:text-mint-400 no-underline">View details →</a>
+                  <a href="/runway" className="block mt-2 text-xs text-mint-700 hover:text-mint-600 no-underline">View details →</a>
                 </div>
               ) : (
                 <div className="flex items-center gap-3">
@@ -666,7 +666,7 @@ export default function Dashboard({ transactions: txProps, networth: nwProps, su
                 <div className="py-8 text-center">
                   <Search className="w-8 h-8 mx-auto mb-2 text-slate-300 dark:text-white/50" />
                   <p className="text-sm text-slate-500 dark:text-white/50">No transactions match "{feedSearch}"</p>
-                  <button onClick={() => { setFeedSearch(''); setTxPage(1); }} className="mt-2 text-xs text-mint-500 hover:text-mint-400 transition">Clear search</button>
+                  <button onClick={() => { setFeedSearch(''); setTxPage(1); }} className="mt-2 text-xs text-mint-700 hover:text-mint-600 transition">Clear search</button>
                 </div>
               )}
             </div>

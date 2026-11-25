@@ -184,7 +184,7 @@ export default function SpendingStreaks() {
             </p>
             <Flame className={`w-5 h-5 ${data.currentStreak > 0 ? 'text-coral-500/50' : 'text-slate-500 dark:text-white/50'}`} />
           </div>
-          <p className={`text-4xl font-bold mt-3 ${data.currentStreak > 0 ? 'text-coral-500 dark:text-coral-400' : 'text-slate-500 dark:text-white/50'}`}>
+          <p className={`text-4xl font-bold mt-3 ${data.currentStreak > 0 ? 'text-coral-600 dark:text-coral-400' : 'text-slate-500 dark:text-white/50'}`}>
             {data.currentStreak}
             <span className="text-lg font-medium ml-1">day{data.currentStreak === 1 ? '' : 's'}</span>
           </p>
@@ -205,7 +205,7 @@ export default function SpendingStreaks() {
             <p className="text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-white/50">
               Longest Streak
             </p>
-            <Trophy className="w-5 h-5 text-gold-500" />
+            <Trophy className="w-5 h-5 text-gold-600" />
           </div>
           <p className="text-4xl font-bold mt-3 text-gold-400 dark:text-gold-400">
             {data.longestStreak}
@@ -257,7 +257,7 @@ export default function SpendingStreaks() {
         <div className="lg:col-span-2 glass-card p-6">
           <div className="flex items-center justify-between mb-1">
             <h2 className="text-lg font-semibold flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-gold-500" /> Last 5 Weeks
+              <Sparkles className="w-4 h-4 text-gold-600" /> Last 5 Weeks
             </h2>
           </div>
           <p className="text-xs text-slate-600 dark:text-white/50 mb-4">
@@ -354,7 +354,7 @@ export default function SpendingStreaks() {
       <div className="glass-card p-6">
         <div className="flex items-center justify-between mb-1">
           <h2 className="text-lg font-semibold flex items-center gap-2">
-            <Trophy className="w-4 h-4 text-gold-500" /> Badges
+            <Trophy className="w-4 h-4 text-gold-600" /> Badges
           </h2>
           <Badge variant="secondary">
             {data.badges.filter((b) => b.unlocked).length} / {data.badges.length} unlocked
@@ -375,7 +375,7 @@ export default function SpendingStreaks() {
             >
               <div className="flex items-start justify-between mb-2">
                 <span className={`text-3xl ${b.unlocked ? '' : 'grayscale opacity-50'}`}>{b.icon}</span>
-                {b.unlocked && <span className="text-[11px] font-bold uppercase text-gold-600 dark:text-gold-400 bg-gold-500/10 dark:bg-gold-700/20 px-1.5 py-0.5 rounded">Earned</span>}
+                {b.unlocked && <span className="text-[11px] font-bold uppercase text-gold-700 dark:text-gold-400 bg-gold-500/10 dark:bg-gold-700/20 px-1.5 py-0.5 rounded">Earned</span>}
               </div>
               <p className={`font-semibold text-sm ${b.unlocked ? 'text-slate-800 dark:text-white/80' : 'text-slate-600 dark:text-white/50'}`}>
                 {b.label}

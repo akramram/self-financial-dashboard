@@ -128,7 +128,7 @@ export default function MilestoneCelebration({ milestones, next, total, onClose 
 
           {remaining != null && remaining > 0 && next && (
             <div className="mt-4 px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800/60 text-xs text-slate-600 dark:text-slate-400 flex items-center justify-center gap-1.5">
-              <Trophy className="w-3.5 h-3.5 text-gold-500" />
+              <Trophy className="w-3.5 h-3.5 text-gold-600" />
               <span>
                 <span className="font-semibold text-slate-700 dark:text-slate-200">{formatIdr(remaining)}</span> lagi menuju {next.label} Club
               </span>

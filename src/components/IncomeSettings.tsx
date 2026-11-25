@@ -127,7 +127,7 @@ export default function IncomeSettings() {
     <div className="glass-card p-5 sm:p-6 space-y-5">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-mint-500/10 text-mint-600 dark:text-mint-400 flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-mint-500/10 text-mint-700 dark:text-mint-400 flex items-center justify-center shrink-0">
             <Wallet className="w-5 h-5" />
           </div>
           <div>
@@ -272,7 +272,7 @@ export default function IncomeSettings() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="h-7 px-2.5 text-xs text-mint-600 dark:text-mint-400 hover:text-mint-700 hover:bg-mint-500/10"
+                          className="h-7 px-2.5 text-xs text-mint-700 dark:text-mint-400 hover:text-mint-700 hover:bg-mint-500/10"
                           onClick={() => startEdit(row)}
                         >
                           Edit
@@ -356,7 +356,7 @@ export default function IncomeSettings() {
                 <div className="flex gap-1.5 shrink-0">
                   <button
                     onClick={() => startEdit(row)}
-                    className="h-8 px-3 rounded-lg text-xs font-semibold text-mint-600 dark:text-mint-400 hover:bg-mint-500/10 transition-colors"
+                    className="h-8 px-3 rounded-lg text-xs font-semibold text-mint-700 dark:text-mint-400 hover:bg-mint-500/10 transition-colors"
                   >
                     Edit
                   </button>

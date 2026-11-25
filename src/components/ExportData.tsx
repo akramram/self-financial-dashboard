@@ -116,7 +116,7 @@ export default function ExportData() {
     <div className="glass-card p-5 sm:p-6 space-y-5">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-mint-500/10 text-mint-600 dark:text-mint-400 flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-mint-500/10 text-mint-700 dark:text-mint-400 flex items-center justify-center shrink-0">
             <Download className="w-5 h-5" />
           </div>
           <div>
@@ -139,7 +139,7 @@ export default function ExportData() {
               <div className="space-y-1.5 mb-4">
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
-                    <Icon className="w-4 h-4 text-mint-600 dark:text-mint-400" />
+                    <Icon className="w-4 h-4 text-mint-700 dark:text-mint-400" />
                     <span className="font-medium text-sm text-slate-900 dark:text-white">{opt.title}</span>
                   </div>
                   <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full uppercase bg-muted dark:bg-white/[0.06] text-muted-foreground">

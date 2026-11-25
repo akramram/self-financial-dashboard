@@ -25,7 +25,7 @@ const SEVERITY_COLORS: Record<Anomaly['severity'], string> = {
 const SEVERITY_BADGE: Record<Anomaly['severity'], string> = {
   high: 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300',
   medium: 'bg-gold-500/10 text-gold-700 dark:bg-gold-700/20/40 dark:text-gold-300',
-  low: 'bg-mint-500/10 text-mint-600 dark:bg-mint-700/20 dark:text-mint-300',
+  low: 'bg-mint-500/10 text-mint-700 dark:bg-mint-700/20 dark:text-mint-300',
 };
 
 const REASON_LABELS: Record<Anomaly['reason'], string> = {
@@ -94,7 +94,7 @@ export default function AnomalyAlerts({ month }: Props) {
       
         <div className="flex items-center justify-between">
           <h3 className="text-base font-semibold flex items-center gap-2 text-slate-800 dark:text-white/80">
-            <AlertTriangle className="w-4 h-4 text-gold-500" />
+            <AlertTriangle className="w-4 h-4 text-gold-600" />
             Spending Anomalies Detected
           </h3>
           <div className="flex items-center gap-2">
@@ -128,7 +128,7 @@ export default function AnomalyAlerts({ month }: Props) {
                 className={`text-[11px] px-1.5 py-0 rounded-full font-medium transition cursor-pointer border ${
                   severityFilter === 'low'
                     ? 'bg-mint-600 text-slate-900 dark:text-white border-mint-600 ring-2 ring-mint-400/30'
-                    : 'bg-mint-500/10 text-mint-600 border-mint-400/20 hover:bg-mint-400/20 dark:bg-mint-700/20 dark:text-mint-300 dark:border-mint-700/40 dark:hover:bg-mint-700/30/60'
+                    : 'bg-mint-500/10 text-mint-700 border-mint-400/20 hover:bg-mint-400/20 dark:bg-mint-700/20 dark:text-mint-300 dark:border-mint-700/40 dark:hover:bg-mint-700/30/60'
                 }`}
               >
                 {lowCount} low

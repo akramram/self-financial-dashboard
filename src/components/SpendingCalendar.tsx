@@ -503,7 +503,7 @@ export default function SpendingCalendar({ transactions, periods, categories }: 
         <div className="glass-card p-4 flex flex-col justify-between">
           <div className="flex items-center justify-between text-xs text-slate-500 dark:text-white/50 mb-1">
             <span>Period Spend</span>
-            <DollarSign className="w-3.5 h-3.5 text-mint-500" />
+            <DollarSign className="w-3.5 h-3.5 text-mint-600" />
           </div>
           <div className="text-lg md:text-xl font-bold text-slate-900 dark:text-white truncate">
             {formatIdr(metrics.totalSpend)}
@@ -516,7 +516,7 @@ export default function SpendingCalendar({ transactions, periods, categories }: 
         <div className="glass-card p-4 flex flex-col justify-between">
           <div className="flex items-center justify-between text-xs text-slate-500 dark:text-white/50 mb-1">
             <span>Daily Average</span>
-            <TrendingUp className="w-3.5 h-3.5 text-gold-500" />
+            <TrendingUp className="w-3.5 h-3.5 text-gold-600" />
           </div>
           <div className="text-lg md:text-xl font-bold text-slate-900 dark:text-white truncate">
             {formatIdr(metrics.dailyAverage)}
@@ -547,7 +547,7 @@ export default function SpendingCalendar({ transactions, periods, categories }: 
           <div className="text-lg md:text-xl font-bold text-slate-900 dark:text-white truncate">
             {metrics.peakDayLabel}
           </div>
-          <div className="text-[11px] text-coral-500 dark:text-coral-400 mt-1 truncate font-medium">
+          <div className="text-[11px] text-coral-600 dark:text-coral-400 mt-1 truncate font-medium">
             {metrics.peakAmount > 0 ? formatIdr(metrics.peakAmount) : 'No spend'}
           </div>
         </div>
@@ -674,7 +674,7 @@ export default function SpendingCalendar({ transactions, periods, categories }: 
       <div className="glass-card p-5">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pb-4 border-b border-slate-200 dark:border-white/[0.06]">
           <h3 className="text-base font-semibold flex items-center gap-2 text-slate-900 dark:text-white">
-            <CalendarDays className="w-4 h-4 text-mint-500" />
+            <CalendarDays className="w-4 h-4 text-mint-600" />
             Spending Heatmap: {periodLabel}
             <span className="text-xs font-normal text-slate-500 dark:text-white/50">
               ({selectedMonth} cycle)
@@ -683,12 +683,12 @@ export default function SpendingCalendar({ transactions, periods, categories }: 
 
           <div className="text-xs text-slate-500 dark:text-white/50">
             {selectedCategory !== 'all' && (
-              <span className="inline-flex items-center gap-1 font-medium text-mint-600 dark:text-mint-400 mr-2">
+              <span className="inline-flex items-center gap-1 font-medium text-mint-700 dark:text-mint-400 mr-2">
                 Category: {selectedCategory}
               </span>
             )}
             {selectedType !== 'all' && (
-              <span className="inline-flex items-center gap-1 font-medium text-gold-600 dark:text-gold-400">
+              <span className="inline-flex items-center gap-1 font-medium text-gold-700 dark:text-gold-400">
                 Type: {selectedType}
               </span>
             )}
@@ -768,7 +768,7 @@ export default function SpendingCalendar({ transactions, periods, categories }: 
                 {/* Date Number */}
                 <span
                   className={`text-xs font-semibold leading-tight ${
-                    isToday ? 'text-mint-600 dark:text-mint-400' : ''
+                    isToday ? 'text-mint-700 dark:text-mint-400' : ''
                   }`}
                 >
                   {date.getDate()}
@@ -793,7 +793,7 @@ export default function SpendingCalendar({ transactions, periods, categories }: 
                   </>
                 ) : (
                   noSpendMode && (
-                    <span className="text-[8px] text-mint-600 dark:text-mint-400 font-semibold uppercase tracking-wider">
+                    <span className="text-[8px] text-mint-700 dark:text-mint-400 font-semibold uppercase tracking-wider">
                       Zero
                     </span>
                   )
@@ -807,7 +807,7 @@ export default function SpendingCalendar({ transactions, periods, categories }: 
       {/* Weekday Rhythm Breakdown Bar */}
       <div className="glass-card p-5">
         <h4 className="text-sm font-semibold text-slate-800 dark:text-white/90 mb-3 flex items-center gap-2">
-          <Calendar className="w-4 h-4 text-gold-500" />
+          <Calendar className="w-4 h-4 text-gold-600" />
           Day-of-Week Spending Rhythm
           <span className="text-xs font-normal text-slate-500 dark:text-white/50">
             (Distribution across days of week)
@@ -844,11 +844,11 @@ export default function SpendingCalendar({ transactions, periods, categories }: 
           <DialogHeader>
             <DialogTitle className="flex items-center justify-between gap-2 pr-4">
               <span className="flex items-center gap-2 text-base md:text-lg">
-                <CalendarDays className="w-5 h-5 text-mint-500" />
+                <CalendarDays className="w-5 h-5 text-mint-600" />
                 {selectedDateLabel}
               </span>
               {selectedDayData && (
-                <Badge variant="outline" className="text-xs font-bold text-mint-600 dark:text-mint-400 border-mint-500/30">
+                <Badge variant="outline" className="text-xs font-bold text-mint-700 dark:text-mint-400 border-mint-500/30">
                   {formatIdr(selectedDayData.total)}
                 </Badge>
               )}
@@ -874,7 +874,7 @@ export default function SpendingCalendar({ transactions, periods, categories }: 
                   >
                     <span className="font-medium">{item.category}</span>
                     <span className="text-[11px] text-slate-500 dark:text-white/50">{formatIdr(item.amount)}</span>
-                    <span className="text-[10px] text-mint-600 dark:text-mint-400 font-semibold">({item.pct}%)</span>
+                    <span className="text-[10px] text-mint-700 dark:text-mint-400 font-semibold">({item.pct}%)</span>
                   </span>
                 ))}
               </div>
@@ -882,7 +882,7 @@ export default function SpendingCalendar({ transactions, periods, categories }: 
               {/* Cash vs Credit Pill */}
               <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-white/60">
                 {selectedDayTypeBreakdown.cash > 0 && (
-                  <span className="flex items-center gap-1 text-mint-600 dark:text-mint-400">
+                  <span className="flex items-center gap-1 text-mint-700 dark:text-mint-400">
                     <Banknote className="w-3.5 h-3.5" />
                     Cash: {formatIdr(selectedDayTypeBreakdown.cash)}
                   </span>
@@ -894,7 +894,7 @@ export default function SpendingCalendar({ transactions, periods, categories }: 
                   </span>
                 )}
                 {selectedDayTypeBreakdown.payment > 0 && (
-                  <span className="flex items-center gap-1 text-gold-600 dark:text-gold-400">
+                  <span className="flex items-center gap-1 text-gold-700 dark:text-gold-400">
                     CC Payment: {formatIdr(selectedDayTypeBreakdown.payment)}
                   </span>
                 )}
@@ -926,9 +926,9 @@ export default function SpendingCalendar({ transactions, periods, categories }: 
                     .map((tx) => {
                       const typeClass =
                         tx.type === 'cash'
-                          ? 'text-mint-600 dark:text-mint-400'
+                          ? 'text-mint-700 dark:text-mint-400'
                           : tx.type === 'credit_payment'
-                          ? 'text-gold-600 dark:text-gold-400'
+                          ? 'text-gold-700 dark:text-gold-400'
                           : 'text-coral-600 dark:text-coral-400';
                       const typeLabel =
                         tx.type === 'cash'

@@ -164,7 +164,7 @@ export default function FinancialInsights({ transactions, networth, summaries, c
     success: 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300',
     warning: 'bg-gold-500/5 dark:bg-gold-700/20 border-gold-400/20 dark:border-gold-700/40 text-gold-700 dark:text-gold-300',
     danger: 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-800 dark:text-red-300',
-    info: 'bg-mint-500/5 dark:bg-mint-700/20 border-mint-400/20 dark:border-mint-700/40 text-mint-600 dark:text-mint-300',
+    info: 'bg-mint-500/5 dark:bg-mint-700/20 border-mint-400/20 dark:border-mint-700/40 text-mint-700 dark:text-mint-300',
   };
 
   const badgeVariants = {

@@ -389,7 +389,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
         >
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-gold-500/10">
-              <AlertTriangle className="w-5 h-5 text-gold-500 dark:text-gold-400" />
+              <AlertTriangle className="w-5 h-5 text-gold-700 dark:text-gold-400" />
             </div>
             <div>
               <p className="text-xs text-slate-500 dark:text-white/50">Alerts</p>
@@ -433,7 +433,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
                   overallAdherencePct > 100
                     ? 'text-red-600 dark:text-red-400'
                     : overallAdherencePct >= 80
-                    ? 'text-gold-600 dark:text-gold-400'
+                    ? 'text-gold-700 dark:text-gold-400'
                     : 'text-emerald-600 dark:text-emerald-400'
                 }`}
               >
@@ -556,7 +556,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center gap-1.5 ${
               statusFilter === 'near'
                 ? 'bg-gold-600 text-white'
-                : 'text-gold-600 dark:text-gold-400 hover:bg-gold-500/10'
+                : 'text-gold-700 dark:text-gold-400 hover:bg-gold-500/10'
             }`}
           >
             <span>Near Limit</span>
@@ -680,7 +680,7 @@ export default function BudgetReport({ summaries, categories }: Props) {
                               isOver
                                 ? 'text-red-600 dark:text-red-400'
                                 : isNear
-                                ? 'text-gold-600 dark:text-gold-400'
+                                ? 'text-gold-700 dark:text-gold-400'
                                 : 'text-slate-600 dark:text-slate-300'
                             }`}
                           >
@@ -800,10 +800,10 @@ export default function BudgetReport({ summaries, categories }: Props) {
                     const isOverBudget = overBudgetPeriods.has(tx.period_id);
                     const typeClass =
                       tx.type === 'cash'
-                        ? 'text-mint-600 dark:text-mint-400'
+                        ? 'text-mint-700 dark:text-mint-400'
                         : tx.type === 'credit_payment'
-                        ? 'text-gold-600 dark:text-gold-400'
-                        : 'text-coral-500 dark:text-coral-400';
+                        ? 'text-gold-700 dark:text-gold-400'
+                        : 'text-coral-600 dark:text-coral-400';
                     const typeLabel =
                       tx.type === 'cash' ? 'Cash' : tx.type === 'credit_payment' ? 'Credit Pay' : 'Credit';
                     const dateObj = tx.created_time ? new Date(tx.created_time) : new Date(tx.date);

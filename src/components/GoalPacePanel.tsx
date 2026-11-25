@@ -78,7 +78,7 @@ function etaChip(g: GoalPace): { text: string; cls: string } {
     case 'slightly_late':
       return {
         text: `ETA ${etaLabel} (meleset ${Math.ceil((g.etaDeltaDays || 0) / 30.4375)} bln)`,
-        cls: 'text-gold-600 dark:text-gold-400',
+        cls: 'text-gold-700 dark:text-gold-400',
       };
     default:
       return {
@@ -131,7 +131,7 @@ export default function GoalPacePanel({ analysis, capacityLoading, today }: Prop
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <div className="glass-card p-4">
           <div className="flex items-center gap-2 mb-1.5">
-            <Gauge className="w-4 h-4 text-mint-600 dark:text-mint-400" />
+            <Gauge className="w-4 h-4 text-mint-700 dark:text-mint-400" />
             <p className="text-xs text-muted-foreground">On Track</p>
           </div>
           <p className="text-xl font-bold">
@@ -147,7 +147,7 @@ export default function GoalPacePanel({ analysis, capacityLoading, today }: Prop
 
         <div className="glass-card p-4">
           <div className="flex items-center gap-2 mb-1.5">
-            <Wallet className="w-4 h-4 text-gold-600 dark:text-gold-400" />
+            <Wallet className="w-4 h-4 text-gold-700 dark:text-gold-400" />
             <p className="text-xs text-muted-foreground">Setoran Wajib</p>
           </div>
           <p className="text-xl font-bold">{formatIdr(analysis.totalRequired)}<span className="text-sm text-muted-foreground">/bln</span></p>
@@ -325,7 +325,7 @@ export default function GoalPacePanel({ analysis, capacityLoading, today }: Prop
       {analysis.insights.length > 0 && (
         <div className="glass-card p-4" data-testid="pace-insights">
           <h3 className="text-sm font-semibold mb-2 flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-gold-600 dark:text-gold-400" />
+            <Sparkles className="w-4 h-4 text-gold-700 dark:text-gold-400" />
             Insight Portofolio
           </h3>
           <ul className="space-y-1.5">

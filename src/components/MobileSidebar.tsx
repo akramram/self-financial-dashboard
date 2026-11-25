@@ -83,7 +83,7 @@ function NavRow({ item, active, onClick }: { item: NavItem; active: boolean; onC
       }
     >
       {React.createElement(item.icon, {
-        className: `w-5 h-5 shrink-0 ${active ? 'text-mint-500' : ''}`,
+        className: `w-5 h-5 shrink-0 ${active ? 'text-mint-600' : ''}`,
         strokeWidth: 1.8,
       })}
       <span className="text-sm font-medium">{item.label}</span>
@@ -269,7 +269,7 @@ export default function MobileSidebar({ balance, alerts: initialAlerts = 0 }: Pr
             className="relative w-full flex items-center min-h-[44px] rounded-xl px-3 py-2 gap-3 transition-colors no-underline hover:bg-slate-100 dark:bg-white/5"
           >
             <Bell
-              className={`w-5 h-5 ${bell.badge.kind !== 'none' ? 'text-mint-500' : 'text-slate-500 dark:text-white/50'}`}
+              className={`w-5 h-5 ${bell.badge.kind !== 'none' ? 'text-mint-600' : 'text-slate-500 dark:text-white/50'}`}
               strokeWidth={1.8}
             />
             <span className={`text-sm ${bell.badge.kind !== 'none' ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-white/50'}`}>

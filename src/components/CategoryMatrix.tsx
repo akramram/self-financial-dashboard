@@ -270,7 +270,7 @@ export default function CategoryMatrix({}: Props) {
       {/* Info Banner */}
       <div className="glass-card p-5 border-mint-400/30 dark:border-mint-500/20 bg-mint-500/5 dark:bg-mint-500/10">
         <div className="flex items-start gap-3">
-            <Info className="w-5 h-5 text-mint-500 mt-0.5 flex-shrink-0" />
+            <Info className="w-5 h-5 text-mint-600 mt-0.5 flex-shrink-0" />
             <div className="text-sm text-slate-600 dark:text-slate-300">
               <strong className="text-slate-800 dark:text-slate-100">How to read this:</strong>{' '}
               Each cell shows spending in a category (row) for a salary period (column).{' '}
@@ -285,7 +285,7 @@ export default function CategoryMatrix({}: Props) {
       {/* Matrix Table */}
       <div className="glass-card p-5">
         <h3 className="flex items-center gap-2 text-base text-slate-800 dark:text-white/80">
-            <Grid3x3 className="w-4 h-4 text-mint-500" />
+            <Grid3x3 className="w-4 h-4 text-mint-600" />
             Category × Period Spending Matrix
           </h3>
         <div className="overflow-x-auto">

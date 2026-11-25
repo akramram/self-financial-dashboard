@@ -600,7 +600,7 @@ export default function MerchantAnalysis({
               <Store className="w-4 h-4" />
               New Merchants This Period
             </h3>
-            <p className="text-xs text-gold-600 dark:text-gold-400 text-slate-600 dark:text-white/50">
+            <p className="text-xs text-gold-700 dark:text-gold-400 text-slate-600 dark:text-white/50">
               {newMerchants.length} merchant{newMerchants.length !== 1 ? 's' : ''} appearing for the first time
             </p>
           <div className="flex flex-wrap gap-2">
@@ -611,7 +611,7 @@ export default function MerchantAnalysis({
                   className="text-xs bg-white dark:bg-slate-800 border-gold-400/30 dark:border-gold-700"
                 >
                   {m.title}
-                  <span className="ml-1.5 text-gold-600 dark:text-gold-400 font-mono">
+                  <span className="ml-1.5 text-gold-700 dark:text-gold-400 font-mono">
                     {formatIdr(m.totalPaid)}
                   </span>
                 </Badge>
@@ -737,7 +737,7 @@ export default function MerchantAnalysis({
                           </div>
                           <span className="text-[10px] text-slate-500">{m.sharePct}%</span>
                           {m.inPareto && (
-                            <span className="text-[10px] text-gold-600 dark:text-gold-400 font-medium">
+                            <span className="text-[10px] text-gold-700 dark:text-gold-400 font-medium">
                               Pareto
                             </span>
                           )}

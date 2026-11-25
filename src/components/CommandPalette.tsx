@@ -489,7 +489,7 @@ export default function CommandPalette() {
                     >
                       {(() => {
                         const TxIcon = isExpense ? ArrowUpRight : ArrowDownRight;
-                        return <TxIcon className={`w-4 h-4 shrink-0 ${isExpense ? 'text-coral-500' : 'text-mint-500'}`} strokeWidth={2} />;
+                        return <TxIcon className={`w-4 h-4 shrink-0 ${isExpense ? 'text-coral-500' : 'text-mint-600'}`} strokeWidth={2} />;
                       })()}
                       <div className="min-w-0 flex-1">
                         <div className="text-sm font-medium truncate">{tx.title}</div>
@@ -497,7 +497,7 @@ export default function CommandPalette() {
                           {tx.category || 'Uncategorized'}
                         </div>
                       </div>
-                      <span className={`text-xs font-mono shrink-0 ${isExpense ? 'text-coral-500' : 'text-mint-500'}`}>
+                      <span className={`text-xs font-mono shrink-0 ${isExpense ? 'text-coral-600' : 'text-mint-700'}`}>
                         {isExpense ? '-' : '+'}{formatIdr(tx.amount)}
                       </span>
                     </div>

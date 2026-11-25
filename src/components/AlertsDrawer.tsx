@@ -267,7 +267,7 @@ export default function AlertsDrawer() {
           <SheetHeader className="h-14 shrink-0 flex-row items-center gap-2 overflow-hidden border-b border-[hsl(var(--surface-border)/0.08)] px-4 py-0 space-y-0">
             <Bell
               className={`h-5 w-5 shrink-0 ${
-                liveCount > 0 ? 'text-mint-500' : 'text-slate-500 dark:text-white/50'
+                liveCount > 0 ? 'text-mint-700' : 'text-slate-500 dark:text-white/50'
               }`}
               strokeWidth={1.8}
             />
@@ -288,8 +288,8 @@ export default function AlertsDrawer() {
               style={{ backgroundColor: 'hsl(var(--muted))' }}
             >
               {sev.over > 0 && <><span className="text-coral-600 dark:text-coral-400">{sev.over} over</span> · </>}
-              {sev.approaching > 0 && <><span className="text-gold-600 dark:text-gold-400">{sev.approaching} nearing</span> · </>}
-              {sev.info > 0 && <span className="text-mint-600 dark:text-mint-400">{sev.info} info</span>}
+              {sev.approaching > 0 && <><span className="text-gold-700 dark:text-gold-400">{sev.approaching} nearing</span> · </>}
+              {sev.info > 0 && <span className="text-mint-700 dark:text-mint-400">{sev.info} info</span>}
               {sev.over === 0 && sev.approaching === 0 && sev.info === 0 && '0 info'}
             </span>
             {mutedCount > 0 && (
@@ -408,7 +408,7 @@ export default function AlertsDrawer() {
 
             {status === 'error' && (
               <div className="flex flex-col items-center justify-center gap-3 py-10 text-center">
-                <AlertTriangle className="h-8 w-8 text-gold-500" />
+                <AlertTriangle className="h-8 w-8 text-gold-600" />
                 <p className={`text-sm ${MUTED}`}>
                   Gagal memuat alert. Periksa koneksi lalu coba lagi.
                 </p>
@@ -437,7 +437,7 @@ export default function AlertsDrawer() {
                       data-testid="alerts-empty-state"
                     >
                       <span className="flex h-[72px] w-[72px] items-center justify-center rounded-full bg-mint-500/10">
-                        <CheckCheck className="h-10 w-10 text-mint-500 opacity-40 motion-reduce:transition-none" />
+                        <CheckCheck className="h-10 w-10 text-mint-600 opacity-40 motion-reduce:transition-none" />
                       </span>
                       <p className="text-[15px] font-semibold text-slate-800 dark:text-white/80">
                         Semua alert ditandai
@@ -471,7 +471,7 @@ export default function AlertsDrawer() {
                       data-testid="alerts-empty-state"
                     >
                       <span className="flex h-[72px] w-[72px] items-center justify-center rounded-full bg-mint-500/10">
-                        <CheckCircle2 className="h-10 w-10 text-mint-500 opacity-40 motion-reduce:transition-none" />
+                        <CheckCircle2 className="h-10 w-10 text-mint-600 opacity-40 motion-reduce:transition-none" />
                       </span>
                       <p className="text-[15px] font-semibold text-slate-800 dark:text-white/80">
                         Semua alert tertangani
@@ -488,7 +488,7 @@ export default function AlertsDrawer() {
                           type="button"
                           onClick={() => setView('prefs')}
                           data-testid="empty-open-prefs"
-                          className="inline-flex h-11 items-center text-[13px] font-medium text-mint-600 underline-offset-2 hover:underline dark:text-mint-400"
+                          className="inline-flex h-11 items-center text-[13px] font-medium text-mint-700 underline-offset-2 hover:underline dark:text-mint-400"
                         >
                           Ubah preferensi alert
                         </button>

@@ -255,7 +255,7 @@ export default function RecurringManager() {
             <span className="text-xs font-semibold text-slate-500 dark:text-white/60 uppercase tracking-wider">
               Total Bulanan Aktif
             </span>
-            <div className="w-8 h-8 rounded-lg bg-mint-500/10 dark:bg-mint-500/20 text-mint-600 dark:text-mint-400 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-mint-500/10 dark:bg-mint-500/20 text-mint-700 dark:text-mint-400 flex items-center justify-center">
               <Repeat className="w-4 h-4" />
             </div>
           </div>
@@ -263,7 +263,7 @@ export default function RecurringManager() {
             {formatIdr(stats.activeTotal)}
           </div>
           <div className="mt-2 flex items-center gap-1.5 text-xs text-slate-500 dark:text-white/50">
-            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium bg-mint-500/10 text-mint-600 dark:text-mint-400">
+            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium bg-mint-500/10 text-mint-700 dark:text-mint-400">
               <CheckCircle2 className="w-3 h-3" />
               {stats.activeCount} Aktif
             </span>
@@ -315,7 +315,7 @@ export default function RecurringManager() {
             <span className="text-xs font-semibold text-slate-500 dark:text-white/60 uppercase tracking-wider">
               Auto-Alokasi Goal
             </span>
-            <div className="w-8 h-8 rounded-lg bg-gold-500/10 dark:bg-gold-500/20 text-gold-600 dark:text-gold-400 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-gold-500/10 dark:bg-gold-500/20 text-gold-700 dark:text-gold-400 flex items-center justify-center">
               <PiggyBank className="w-4 h-4" />
             </div>
           </div>
@@ -551,7 +551,7 @@ export default function RecurringManager() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="h-8 text-xs text-mint-600 dark:text-mint-400"
+                          className="h-8 text-xs text-mint-700 dark:text-mint-400"
                           onClick={() => {
                             setSearchQuery('');
                             setTypeFilter('all');
@@ -681,7 +681,7 @@ export default function RecurringManager() {
                       <TableCell className="font-medium">
                         {item.title}
                         {item.goal_name && (
-                          <span className="ml-2 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[11px] font-medium text-gold-600 dark:text-gold-400 bg-gold-500/10 dark:bg-gold-500/15">
+                          <span className="ml-2 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[11px] font-medium text-gold-700 dark:text-gold-400 bg-gold-500/10 dark:bg-gold-500/15">
                             <Target className="w-3 h-3" />
                             {item.goal_name}
                           </span>
@@ -711,7 +711,7 @@ export default function RecurringManager() {
                       </TableCell>
                       <TableCell className="text-xs text-slate-500 dark:text-white/50">
                         {item.goal_name ? (
-                          <span className="inline-flex items-center gap-1 text-gold-600 dark:text-gold-400">
+                          <span className="inline-flex items-center gap-1 text-gold-700 dark:text-gold-400">
                             <Target className="w-3 h-3" />
                             {item.goal_name}
                           </span>
@@ -726,7 +726,7 @@ export default function RecurringManager() {
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-2">
-                          <Button variant="ghost" size="sm" className="h-7 text-xs text-mint-500 hover:text-mint-600" onClick={() => startEdit(item)}>
+                          <Button variant="ghost" size="sm" className="h-7 text-xs text-mint-700 hover:underline" onClick={() => startEdit(item)}>
                             Edit
                           </Button>
                           <Button variant="ghost" size="sm" className="h-7 text-xs text-red-500 hover:text-red-700" onClick={() => handleDelete(item.id)}>
@@ -756,7 +756,7 @@ export default function RecurringManager() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-8 text-xs text-mint-600 dark:text-mint-400"
+                    className="h-8 text-xs text-mint-700 dark:text-mint-400"
                     onClick={() => {
                       setSearchQuery('');
                       setTypeFilter('all');
@@ -870,7 +870,7 @@ export default function RecurringManager() {
                         />
                         <span className="font-medium text-sm text-slate-900 dark:text-white/90 truncate">{item.title}</span>
                         {item.goal_name && (
-                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[11px] font-medium text-gold-600 dark:text-gold-400 bg-gold-500/10">
+                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[11px] font-medium text-gold-700 dark:text-gold-400 bg-gold-500/10">
                             <Target className="w-3 h-3 shrink-0" />
                             {item.goal_name}
                           </span>
@@ -889,7 +889,7 @@ export default function RecurringManager() {
                     <div className="flex gap-2">
                       <button
                         onClick={() => startEdit(item)}
-                        className="h-8 px-3 rounded-lg text-xs font-medium text-mint-500 hover:bg-mint-500/10 transition-colors"
+                        className="h-8 px-3 rounded-lg text-xs font-medium text-mint-700 hover:bg-mint-500/10 transition-colors"
                       >
                         Edit
                       </button>

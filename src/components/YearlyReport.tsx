@@ -251,7 +251,7 @@ export default function YearlyReport({ summaries, categories }: Props) {
       {yearSummaries.length === 0 ? (
         <div className="glass-card p-5">
           Tidak ada transaksi sepanjang {selectedYear}. Pilih tahun lain di atas, atau{' '}
-            <a href="/add" className="text-mint-600 dark:text-mint-400 font-medium hover:underline">catat transaksi</a> untuk tahun ini.
+            <a href="/add" className="text-mint-700 dark:text-mint-400 font-medium hover:underline">catat transaksi</a> untuk tahun ini.
           </div>
       ) : (
         <>
@@ -298,7 +298,7 @@ export default function YearlyReport({ summaries, categories }: Props) {
             <div className="glass-card p-5">
               <div className="flex items-center gap-3">
                   <div className="p-2 rounded-lg bg-mint-500/10 dark:bg-mint-700/20">
-                    <TrendingUp className="w-5 h-5 text-mint-500 dark:text-mint-400" />
+                    <TrendingUp className="w-5 h-5 text-mint-700 dark:text-mint-400" />
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Avg Savings Rate</p>

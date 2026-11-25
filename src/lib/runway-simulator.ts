@@ -191,8 +191,8 @@ export function categorizeLiquidityLadder(breakdown: AssetBreakdown[]): Liquidit
 
   return [
     buildGroup(1, 'Tier 1: Likuid Instan (T+0)', 'Dapat ditarik seketika (Cash, Tabungan, Bank)', 'text-emerald-500 bg-emerald-500/10', tier1Assets),
-    buildGroup(2, 'Tier 2: Likuid Cepat (T+1 s/d T+2)', 'Pencairan 1-2 hari kerja (Pasar Uang / Deposito)', 'text-mint-500 bg-mint-500/10', tier2Assets),
-    buildGroup(3, 'Tier 3: Likuid Bertahap (T+2 s/d T+3)', 'Pencairan butuh eksekusi pasar (Saham IDX, Obligasi)', 'text-gold-500 bg-gold-500/10', tier3Assets),
+    buildGroup(2, 'Tier 2: Likuid Cepat (T+1 s/d T+2)', 'Pencairan 1-2 hari kerja (Pasar Uang / Deposito)', 'text-mint-600 bg-mint-500/10', tier2Assets),
+    buildGroup(3, 'Tier 3: Likuid Bertahap (T+2 s/d T+3)', 'Pencairan butuh eksekusi pasar (Saham IDX, Obligasi)', 'text-gold-600 bg-gold-500/10', tier3Assets),
     buildGroup(4, 'Tier 4: Butuh Waktu (T+3+)', 'Likuiditas rendah atau volatilitas tinggi (Saham Luar, dsb)', 'text-slate-400 bg-slate-500/10', tier4Assets),
   ];
 }

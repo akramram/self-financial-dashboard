@@ -552,7 +552,7 @@ export default function BudgetRecommendations() {
               : 'border-border dark:border-white/[0.06] hover:bg-muted/40'
           }`}
         >
-          <span className="text-xl font-bold text-coral-500 dark:text-coral-400 block">{summary.rising}</span>
+          <span className="text-xl font-bold text-coral-600 dark:text-coral-400 block">{summary.rising}</span>
           <span className="text-xs text-slate-500 dark:text-white/50 flex items-center gap-1">
             <TrendingUp className="w-3 h-3 text-coral-500" /> Tren Naik
           </span>
@@ -713,7 +713,7 @@ export default function BudgetRecommendations() {
                       {/* Tren */}
                       <TableCell className="text-center text-xs">
                         {stat.trend === 'rising' ? (
-                          <span className="inline-flex items-center gap-1 text-[11px] font-medium text-coral-500 dark:text-coral-400">
+                          <span className="inline-flex items-center gap-1 text-[11px] font-medium text-coral-600 dark:text-coral-400">
                             <TrendingUp className="w-3 h-3" />
                             +{stat.trendPct}%
                           </span>

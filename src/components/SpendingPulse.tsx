@@ -137,7 +137,7 @@ export default function SpendingPulse({ summaries, activeMonth, transactions }: 
       badge: 'Under Pace',
     },
     'on-track': {
-      color: 'text-gold-600 dark:text-gold-400',
+      color: 'text-gold-700 dark:text-gold-400',
       bg: 'bg-gold-500/5 dark:bg-gold-700/20/20',
       border: 'border-gold-400/20 dark:border-gold-700/40',
       bar: 'bg-gold-500/50',
@@ -228,17 +228,17 @@ export default function SpendingPulse({ summaries, activeMonth, transactions }: 
                   Cash vs Credit
                 </div>
                 <div className="flex items-baseline gap-2 mb-1">
-                  <span className="text-sm font-semibold text-mint-500 dark:text-mint-400">
+                  <span className="text-sm font-semibold text-mint-700 dark:text-mint-400">
                     {formatIdr(pulse.cash)}
                   </span>
                   <span className="text-slate-500 dark:text-slate-400">/</span>
-                  <span className="text-sm font-semibold text-gold-600 dark:text-gold-400">
+                  <span className="text-sm font-semibold text-gold-700 dark:text-gold-400">
                     {formatIdr(pulse.credit)}
                   </span>
                 </div>
                 <div className="flex gap-0.5 text-[11px] text-slate-500 mb-1">
-                  <span className="text-mint-500">● Cash</span>
-                  <span className="text-gold-500 ml-1">● Credit</span>
+                  <span className="text-mint-700">● Cash</span>
+                  <span className="text-gold-700 ml-1">● Credit</span>
                 </div>
                 <div className="flex-1 bg-slate-200 dark:bg-slate-700 rounded-full h-1.5 overflow-hidden flex">
                   <div
@@ -353,7 +353,7 @@ export default function SpendingPulse({ summaries, activeMonth, transactions }: 
             (pulse.actualSpend / pulse.income) * 100 < 50
               ? 'text-emerald-600 dark:text-emerald-400'
               : (pulse.actualSpend / pulse.income) * 100 <= 80
-                ? 'text-gold-600 dark:text-gold-400'
+                ? 'text-gold-700 dark:text-gold-400'
                 : 'text-red-600 dark:text-red-400'
           }`}>
             {((pulse.actualSpend / pulse.income) * 100).toFixed(0)}%

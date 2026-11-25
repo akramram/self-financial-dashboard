@@ -112,7 +112,7 @@ export default function TransactionFormFields({ ctrl, variant, formId }: Transac
           autoFocus={!compact}
         />
         {!compact && parsedAmount != null && (
-          <p data-testid="amount-preview" className="text-xs font-medium text-mint-600 dark:text-mint-400">
+          <p data-testid="amount-preview" className="text-xs font-medium text-mint-700 dark:text-mint-400">
             Rp{previewAmount}
           </p>
         )}
@@ -165,7 +165,7 @@ export default function TransactionFormFields({ ctrl, variant, formId }: Transac
                 setCategory('');
                 setCategoryUserTouched(true);
               }}
-              className="inline-flex items-center gap-1 text-[11px] font-medium text-mint-500 dark:text-mint-400 hover:text-mint-600 dark:hover:text-mint-300 transition"
+              className="inline-flex items-center gap-1 text-[11px] font-medium text-mint-700 dark:text-mint-400 hover:text-mint-600 dark:hover:text-mint-300 transition"
               title="Suggested based on your history: click to clear"
             >
               <History className="w-3 h-3" />

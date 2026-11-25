@@ -146,7 +146,7 @@ export default function BudgetAlerts({ summaries, categories, activeMonth, trans
               </Badge>
             )}
             {approachingCount > 0 && (
-              <Badge variant="outline" className="ml-1 border-gold-400 text-gold-600 dark:text-gold-400">
+              <Badge variant="outline" className="ml-1 border-gold-400 text-gold-700 dark:text-gold-400">
                 {approachingCount} approaching
               </Badge>
             )}
@@ -207,7 +207,7 @@ export default function BudgetAlerts({ summaries, categories, activeMonth, trans
                         Over budget
                       </Badge>
                     ) : (
-                      <Badge variant="outline" className="text-xs h-5 border-gold-400 text-gold-600 dark:text-gold-400">
+                      <Badge variant="outline" className="text-xs h-5 border-gold-400 text-gold-700 dark:text-gold-400">
                         Approaching limit
                       </Badge>
                     )}
