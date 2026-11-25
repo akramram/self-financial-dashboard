@@ -373,6 +373,8 @@ export default function TransactionTable({ transactions, showMonth = true, perio
             />
             {search && (
               <button
+                type="button"
+                aria-label="Clear search"
                 onClick={() => { setSearch(''); setPage(1); }}
                 className="absolute right-3 top-1/2 -translate-y-1/2 p-2 -m-2 text-slate-500 dark:text-white/40 hover:text-slate-600 dark:text-white/60"
               >
@@ -537,7 +539,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                     : 'bg-slate-100 dark:bg-white/[0.04] border-slate-300 dark:border-white/[0.08] text-slate-500 dark:text-white/40 hover:text-slate-700 dark:hover:text-white/70'
                 }`}
               >
-                <span className={`w-1.5 h-1.5 rounded-full ${value === 'unpaid' ? 'bg-gold-400' : 'bg-emerald-400'}`} />
+                <span aria-hidden="true" className={`w-1.5 h-1.5 rounded-full ${value === 'unpaid' ? 'bg-gold-400' : 'bg-emerald-400'}`} />
                 {value === 'unpaid' ? 'Unpaid' : 'Paid'}
                 {count > 0 && <span className="opacity-60">{count}</span>}
               </button>
@@ -565,27 +567,27 @@ export default function TransactionTable({ transactions, showMonth = true, perio
           {hasAdvancedFilters && !advancedOpen && (
             <div className="flex items-center gap-2 flex-wrap">
               {dateFrom && (
-                <Badge variant="outline" className="text-[11px] py-0 h-5 gap-1 border-slate-300 dark:border-white/[0.08] text-slate-600 dark:text-white/50">
+                <Badge variant="outline" className="text-[11px] py-0 h-5 gap-1 border-slate-300 dark:border-white/[0.08] text-slate-600 dark:text-white/60">
                   From: {dateFrom}
-                  <button onClick={() => setDateFrom('')}><X className="w-2.5 h-2.5" /></button>
+                  <button type="button" aria-label="Remove From date filter" onClick={() => setDateFrom('')} className="p-1 -m-1 rounded hover:text-slate-900 dark:hover:text-white"><X className="w-3 h-3" aria-hidden="true" /></button>
                 </Badge>
               )}
               {dateTo && (
-                <Badge variant="outline" className="text-[11px] py-0 h-5 gap-1 border-slate-300 dark:border-white/[0.08] text-slate-600 dark:text-white/50">
+                <Badge variant="outline" className="text-[11px] py-0 h-5 gap-1 border-slate-300 dark:border-white/[0.08] text-slate-600 dark:text-white/60">
                   To: {dateTo}
-                  <button onClick={() => setDateTo('')}><X className="w-2.5 h-2.5" /></button>
+                  <button type="button" aria-label="Remove To date filter" onClick={() => setDateTo('')} className="p-1 -m-1 rounded hover:text-slate-900 dark:hover:text-white"><X className="w-3 h-3" aria-hidden="true" /></button>
                 </Badge>
               )}
               {amountMin && (
-                <Badge variant="outline" className="text-[11px] py-0 h-5 gap-1 border-slate-300 dark:border-white/[0.08] text-slate-600 dark:text-white/50">
+                <Badge variant="outline" className="text-[11px] py-0 h-5 gap-1 border-slate-300 dark:border-white/[0.08] text-slate-600 dark:text-white/60">
                   ≥ {formatIdr(parseFloat(amountMin))}
-                  <button onClick={() => setAmountMin('')}><X className="w-2.5 h-2.5" /></button>
+                  <button type="button" aria-label="Remove min amount filter" onClick={() => setAmountMin('')} className="p-1 -m-1 rounded hover:text-slate-900 dark:hover:text-white"><X className="w-3 h-3" aria-hidden="true" /></button>
                 </Badge>
               )}
               {amountMax && (
-                <Badge variant="outline" className="text-[11px] py-0 h-5 gap-1 border-slate-300 dark:border-white/[0.08] text-slate-600 dark:text-white/50">
+                <Badge variant="outline" className="text-[11px] py-0 h-5 gap-1 border-slate-300 dark:border-white/[0.08] text-slate-600 dark:text-white/60">
                   ≤ {formatIdr(parseFloat(amountMax))}
-                  <button onClick={() => setAmountMax('')}><X className="w-2.5 h-2.5" /></button>
+                  <button type="button" aria-label="Remove max amount filter" onClick={() => setAmountMax('')} className="p-1 -m-1 rounded hover:text-slate-900 dark:hover:text-white"><X className="w-3 h-3" aria-hidden="true" /></button>
                 </Badge>
               )}
             </div>
@@ -730,7 +732,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
             className="overflow-hidden"
           >
             <div className="flex items-center gap-3 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-              <span className="text-xs font-semibold text-emerald-400">{selected.size} selected</span>
+              <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">{selected.size} selected</span>
               <Select value={bulkCategory} onValueChange={setBulkCategory}>
                 <SelectTrigger className="w-[180px] h-8 text-xs bg-slate-100 dark:bg-white/[0.04] border-slate-300 dark:border-white/[0.08] text-slate-600 dark:text-white/60">
                   <SelectValue placeholder="Change category..." />
@@ -756,7 +758,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                 size="sm"
                 variant="ghost"
                 onClick={() => handleBulkPaid(true)}
-                className="h-8 text-xs text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10"
+                className="h-8 text-xs text-emerald-700 dark:text-emerald-400 hover:text-emerald-600 dark:hover:text-emerald-300 hover:bg-emerald-500/10"
               >
                 Mark Paid
               </Button>
@@ -764,7 +766,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                 size="sm"
                 variant="ghost"
                 onClick={() => handleBulkPaid(false)}
-                className="h-8 text-xs text-gold-400 hover:text-gold-300 hover:bg-gold-500/10"
+                className="h-8 text-xs text-gold-700 dark:text-gold-400 hover:text-gold-600 dark:hover:text-gold-300 hover:bg-gold-500/10"
               >
                 Mark Unpaid
               </Button>
@@ -772,7 +774,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                 size="sm"
                 variant="ghost"
                 onClick={handleBulkDelete}
-                className="h-8 text-xs text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                className="h-8 text-xs text-red-600 dark:text-red-400 hover:text-red-500 dark:hover:text-red-300 hover:bg-red-500/10"
               >
                 Delete {selected.size}
               </Button>
@@ -810,12 +812,12 @@ export default function TransactionTable({ transactions, showMonth = true, perio
           <TableBody>
             {pageRows.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={showMonth ? 9 : 8} className="text-center py-12 text-slate-500 dark:text-white/25 text-sm">
-                  <Filter className="w-8 h-8 mx-auto mb-3 opacity-30" />
+                <TableCell colSpan={showMonth ? 9 : 8} className="text-center py-12 text-slate-500 dark:text-white/60 text-sm">
+                  <Filter aria-hidden="true" className="w-8 h-8 mx-auto mb-3 opacity-30" />
                   No transactions found
                   {activeFilterCount > 0 && (
                     <div className="mt-1">
-                      <button onClick={clearFilters} className="text-emerald-400 text-xs hover:underline">
+                      <button onClick={clearFilters} className="text-emerald-700 dark:text-emerald-400 text-xs hover:underline">
                         Clear all filters
                       </button>
                     </div>
@@ -831,13 +833,13 @@ export default function TransactionTable({ transactions, showMonth = true, perio
 
                 const typeColorClass =
                   row.type === 'cash'
-                    ? 'text-mint-400'
+                    ? 'text-mint-600 dark:text-mint-400'
                     : row.type === 'credit_payment'
-                    ? 'text-gold-400'
-                    : 'text-coral-400';
+                    ? 'text-gold-600 dark:text-gold-400'
+                    : 'text-coral-600 dark:text-coral-400';
                 const typeBgClass =
                   row.type === 'cash'
-                    ? 'bg-mint-500/30/10'
+                    ? 'bg-mint-500/10'
                     : row.type === 'credit_payment'
                     ? 'bg-gold-500/10'
                     : 'bg-coral-500/10';
@@ -874,8 +876,8 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                         }}
                         className={`h-6 text-[11px] font-semibold px-2 rounded-md transition-colors ${
                           row.done
-                            ? 'bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25'
-                            : 'bg-red-500/10 text-red-400 hover:bg-red-500/20'
+                            ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/25'
+                            : 'bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500/20'
                         }`}
                       >
                         {row.done ? 'Paid' : 'Unpaid'}
@@ -904,6 +906,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                       <div className="flex items-center justify-end gap-1">
                         <button
                           type="button"
+                          aria-label="Ubah Jadi Cicilan"
                           onClick={(e) => {
                             e.stopPropagation();
                             setInstallmentTx(row);
@@ -911,9 +914,9 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                           className="p-1 rounded text-slate-500 hover:text-blue-500 hover:bg-blue-500/10 transition-colors"
                           title="Ubah Jadi Cicilan"
                         >
-                          <CalendarClock className="w-4 h-4" />
+                          <CalendarClock aria-hidden="true" className="w-4 h-4" />
                         </button>
-                        <ChevronRight className="w-4 h-4 text-slate-500 dark:text-white/40" />
+                        <ChevronRight aria-hidden="true" className="w-4 h-4 text-slate-500 dark:text-white/40" />
                       </div>
                     </TableCell>
                   </TableRow>
@@ -927,12 +930,12 @@ export default function TransactionTable({ transactions, showMonth = true, perio
         {/* Mobile card list — no horizontal scroll, tap opens detail sheet */}
         <div className="md:hidden divide-y divide-slate-200 dark:divide-white/[0.05]">
           {pageRows.length === 0 ? (
-            <div className="py-12 text-center text-slate-500 dark:text-white/25 text-sm">
-              <Filter className="w-8 h-8 mx-auto mb-3 opacity-30" />
+            <div className="py-12 text-center text-slate-500 dark:text-white/60 text-sm">
+              <Filter aria-hidden="true" className="w-8 h-8 mx-auto mb-3 opacity-30" />
               No transactions found
               {activeFilterCount > 0 && (
                 <div className="mt-1">
-                  <button onClick={clearFilters} className="text-emerald-400 text-xs hover:underline">
+                  <button onClick={clearFilters} className="text-emerald-700 dark:text-emerald-400 text-xs hover:underline">
                     Clear all filters
                   </button>
                 </div>
@@ -976,8 +979,8 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                     aria-label={row.done ? `Mark ${row.title} unpaid` : `Mark ${row.title} paid`}
                     className={`shrink-0 min-h-[44px] min-w-[44px] inline-flex items-center justify-center text-xs font-semibold px-3 rounded-md transition-colors ${
                       row.done
-                        ? 'bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25'
-                        : 'bg-red-500/10 text-red-400 hover:bg-red-500/20'
+                        ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/25'
+                        : 'bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500/20'
                     }`}
                   >
                     {row.done ? 'Paid' : 'Unpaid'}
