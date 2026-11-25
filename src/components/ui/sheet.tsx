@@ -34,7 +34,7 @@ SheetOverlay.displayName = SheetPrimitive.Overlay.displayName
 const sheetVariants = cva(
   // KUR-117 §4: open = 300ms cubic-bezier(0.32,0.72,0,1) slide, close =
   // 250ms ease-in; prefers-reduced-motion → no animation at all.
-  "fixed z-[80] gap-4 bg-background p-6 shadow-lg motion-reduce:animate-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:duration-300 data-[state=open]:[animation-timing-function:cubic-bezier(0.32,0.72,0,1)] data-[state=closed]:duration-[250ms] data-[state=closed]:[animation-timing-function:ease-in]",
+  "fixed z-[80] gap-4 bg-background p-6 shadow-lg overscroll-contain motion-reduce:animate-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:duration-300 data-[state=open]:[animation-timing-function:cubic-bezier(0.32,0.72,0,1)] data-[state=closed]:duration-[250ms] data-[state=closed]:[animation-timing-function:ease-in]",
   {
     variants: {
       side: {

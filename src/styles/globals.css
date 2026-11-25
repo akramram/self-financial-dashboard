@@ -168,3 +168,14 @@ label,
 select {
   touch-action: manipulation;
 }
+
+/* ── Mobile: tanpa tap-highlight bawaan browser ──────────────────────────── */
+/* Reason: highlight abu-abu Android/iOS bertabrakan dengan ring fokus & gaya
+   tap kustom (active:scale); umpan balik sentuh sudah disediakan komponen. */
+button,
+a,
+[role='button'],
+label,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
