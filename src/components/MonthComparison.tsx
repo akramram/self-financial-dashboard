@@ -1063,7 +1063,9 @@ export default function MonthComparison({ categories: initialCategories }: Props
                   <TableRow
                     key={row.name}
                     onClick={() => handleOpenDrilldown(row.name)}
-                    className="cursor-pointer hover:bg-slate-50 dark:hover:bg-white/[0.03] transition-colors"
+                    tabIndex={0}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleOpenDrilldown(row.name); } }}
+                    className="cursor-pointer hover:bg-slate-50 dark:hover:bg-white/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-emerald-500/50 transition-colors"
                   >
                     <TableCell>
                       <div className="flex items-center gap-2">
