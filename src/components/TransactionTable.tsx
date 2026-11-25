@@ -369,7 +369,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
               placeholder="Search title, category, notes..."
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              className="pl-9 bg-slate-100 dark:bg-white/[0.04] border-slate-300 dark:border-white/[0.08] text-slate-800 dark:text-white/80 placeholder:text-slate-500 dark:text-white/25 focus-visible:ring-emerald-500/30"
+              className="pl-9 bg-slate-100 dark:bg-white/[0.04] border-slate-300 dark:border-white/[0.08] text-slate-800 dark:text-white/80 placeholder:text-slate-500 dark:text-white/60 focus-visible:ring-emerald-500/30"
             />
             {search && (
               <button
@@ -661,7 +661,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
 
                 {/* Quick presets */}
                 <div className="flex items-center gap-2 mt-3 pt-3 border-t border-slate-200 dark:border-white/[0.05]">
-                  <span className="text-[11px] font-medium text-slate-500 dark:text-white/25 uppercase tracking-wider">Presets:</span>
+                  <span className="text-[11px] font-medium text-slate-500 dark:text-white/60 uppercase tracking-wider">Presets:</span>
                   {[
                     { label: 'This Month', dateFrom: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().slice(0, 10), dateTo: '' },
                     { label: 'Last Month', dateFrom: new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).toISOString().slice(0, 10), dateTo: new Date(new Date().getFullYear(), new Date().getMonth(), 0).toISOString().slice(0, 10) },
@@ -682,7 +682,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                     size="sm"
                     variant="ghost"
                     onClick={() => { setDateFrom(''); setDateTo(''); setAmountMin(''); setAmountMax(''); setPage(1); }}
-                    className="h-6 text-[11px] px-2 text-slate-500 dark:text-white/25 hover:text-slate-600 dark:text-white/50 ml-auto"
+                    className="h-6 text-[11px] px-2 text-slate-500 dark:text-white/60 hover:text-slate-600 dark:text-white/50 ml-auto"
                   >
                     Clear
                   </Button>
@@ -999,7 +999,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                   <div className="shrink-0 text-right">
                     <p className="text-sm font-semibold text-slate-800 dark:text-white/80 tabular-nums whitespace-nowrap">{formatIdr(row.amount)}</p>
                     {showMonth && (
-                      <p className="text-[11px] text-slate-500 dark:text-white/30 truncate">{periodIdToMonth.get(row.period_id) || ''}</p>
+                      <p className="text-[11px] text-slate-500 dark:text-white/60 truncate">{periodIdToMonth.get(row.period_id) || ''}</p>
                     )}
                   </div>
                 </div>

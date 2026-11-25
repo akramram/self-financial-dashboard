@@ -245,7 +245,7 @@ export default function KseiCard({ data }: Props) {
               {tokenError}
             </p>
           )}
-          <p className="text-[11px] text-slate-500 dark:text-white/30 mt-1.5">
+          <p className="text-[11px] text-slate-500 dark:text-white/60 mt-1.5">
             DevTools AKSes → Network → request myportofolio → copy "Authorization: Bearer …"
           </p>
         </div>

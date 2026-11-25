@@ -643,7 +643,7 @@ export default function SpendingCalendar({ transactions, periods, categories }: 
 
         {/* Quick Intensity Filter Chips */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 text-xs">
-          <span className="text-slate-400 dark:text-white/30 text-[11px] whitespace-nowrap hidden sm:inline">Highlight:</span>
+          <span className="text-slate-400 dark:text-white/60 text-[11px] whitespace-nowrap hidden sm:inline">Highlight:</span>
           {(['all', 'high', 'medium', 'low', 'zero'] as const).map((filterKey) => {
             const isActive = intensityFilter === filterKey;
             const labels = {

@@ -885,7 +885,7 @@ export default function RecurringManager() {
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] text-slate-500 dark:text-white/30">Tgl {item.created_at || '-'}</span>
+                    <span className="text-[11px] text-slate-500 dark:text-white/60">Tgl {item.created_at || '-'}</span>
                     <div className="flex gap-2">
                       <button
                         onClick={() => startEdit(item)}

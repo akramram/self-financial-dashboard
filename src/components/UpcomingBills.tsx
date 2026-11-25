@@ -179,7 +179,7 @@ export default function UpcomingBills({ recurring, transactions, activePeriodId,
                     {b.type === 'cash' ? <Wallet className="w-3.5 h-3.5 text-mint-500" strokeWidth={1.8} /> : <CreditCard className="w-3.5 h-3.5 text-gold-400" strokeWidth={1.8} />}
                   </span>
                   <div className="min-w-0">
-                    <p className={`text-sm font-medium truncate ${b.paid ? 'text-slate-500 dark:text-white/35 line-through' : 'text-slate-800 dark:text-white/80'}`}>
+                    <p className={`text-sm font-medium truncate ${b.paid ? 'text-slate-500 dark:text-white/60 line-through' : 'text-slate-800 dark:text-white/80'}`}>
                       {b.title}
                       {b.oneOff && <span className="ml-1.5 px-1.5 py-0.5 rounded text-[11px] font-semibold uppercase tracking-wide bg-slate-200 dark:bg-white/[0.08] text-slate-500 dark:text-white/40 align-middle">one-off</span>}
                     </p>
@@ -215,7 +215,7 @@ export default function UpcomingBills({ recurring, transactions, activePeriodId,
         </AnimatePresence>
       </ul>
 
-      <p className="mt-2 text-[11px] text-slate-500 dark:text-white/25">Tap a bill to mark it paid / unpaid</p>
+      <p className="mt-2 text-[11px] text-slate-500 dark:text-white/60">Tap a bill to mark it paid / unpaid</p>
       <a href="/recurring" className="block mt-1.5 text-xs text-mint-500 hover:text-mint-400 no-underline">Manage recurring →</a>
     </div>
   );

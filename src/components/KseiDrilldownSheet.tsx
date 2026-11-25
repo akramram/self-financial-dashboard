@@ -259,7 +259,7 @@ function InstrumentRow({
         <p className="text-xs font-medium text-slate-700 dark:text-white/80 tabular-nums">
           {fmtIdr(instrument.value)}
         </p>
-        <p className="text-[11px] text-slate-500 dark:text-white/30 tabular-nums">
+        <p className="text-[11px] text-slate-500 dark:text-white/60 tabular-nums">
           {pct}%{isEquity && instrument.volume != null ? ` · ${instrument.volume.toLocaleString('id-ID')} lembar` : ''}
         </p>
       </div>
