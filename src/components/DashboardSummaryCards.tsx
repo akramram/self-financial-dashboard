@@ -155,7 +155,7 @@ export default function DashboardSummaryCards({ summaries, networth, activeMonth
               <div className="flex-1 min-w-0">
                 {/* Label row, similarity: same icon+label pattern across all 4 cards */}
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-slate-500 dark:text-slate-400">{card.icon}</span>
+                  <span className="text-slate-500 dark:text-slate-400" aria-hidden="true">{card.icon}</span>
                   <p className="text-sm font-medium text-slate-500 dark:text-slate-400 truncate">
                     {card.label}
                   </p>
@@ -169,7 +169,7 @@ export default function DashboardSummaryCards({ summaries, networth, activeMonth
                   <span
                     className={`inline-flex items-center gap-0.5 text-xs font-semibold ${
                       card.isPositive
-                        ? 'text-emerald-600 dark:text-emerald-400'
+                        ? 'text-emerald-700 dark:text-emerald-400'
                         : 'text-red-600 dark:text-red-400'
                     }`}
                   >
@@ -184,8 +184,8 @@ export default function DashboardSummaryCards({ summaries, networth, activeMonth
                     <span
                       className={`text-xs font-medium ${
                         card.isPositive
-                          ? 'text-emerald-500/70 dark:text-emerald-400/70'
-                          : 'text-red-500/70 dark:text-red-400/70'
+                          ? 'text-emerald-700 dark:text-emerald-400'
+                          : 'text-red-600 dark:text-red-400'
                       }`}
                     >
                       {card.deltaPct}
