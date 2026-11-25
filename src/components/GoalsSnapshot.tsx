@@ -91,9 +91,9 @@ export default function GoalsSnapshot() {
       ) : active.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-5 gap-2 text-center">
           <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-slate-200/60 dark:bg-white/[0.06]">
-            <Target className="w-5 h-5 text-slate-500 dark:text-white/40" strokeWidth={1.8} />
+            <Target className="w-5 h-5 text-slate-500 dark:text-white/50" strokeWidth={1.8} />
           </div>
-          <p className="text-xs text-slate-500 dark:text-white/40">No active goals yet</p>
+          <p className="text-xs text-slate-500 dark:text-white/50">No active goals yet</p>
           <a href="/goals" className="text-xs text-mint-500 hover:text-mint-400 no-underline">Set one up →</a>
         </div>
       ) : (
@@ -112,7 +112,7 @@ export default function GoalsSnapshot() {
                     <p className="text-sm font-medium text-slate-800 dark:text-white/85 truncate group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
                       {g.name}
                     </p>
-                    <p className="text-xs text-slate-500 dark:text-white/40 truncate">
+                    <p className="text-xs text-slate-500 dark:text-white/50 truncate">
                       {formatIdr(g.current_amount)} / {formatIdr(g.target_amount)}
                     </p>
                   </div>

@@ -410,7 +410,7 @@ export default function SpendingCalendar({ transactions, periods, categories }: 
       return 'bg-mint-500/20 text-mint-700 dark:text-mint-300 border-mint-500/40 shadow-sm';
     }
     if (total === 0) {
-      return 'bg-slate-100 dark:bg-white/[0.02] text-slate-500 dark:text-white/40 border-slate-200 dark:border-white/[0.06]';
+      return 'bg-slate-100 dark:bg-white/[0.02] text-slate-600 dark:text-white/50 border-slate-200 dark:border-white/[0.06]';
     }
     if (maxDaily === 0) {
       return 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/40';
@@ -492,7 +492,7 @@ export default function SpendingCalendar({ transactions, periods, categories }: 
             <span className="inline-block w-3 h-3 rounded-sm bg-coral-500/15 dark:bg-coral-500/25 border border-coral-400/40" />
             <span>Peak</span>
           </div>
-          <span className="hidden lg:inline text-[11px] text-slate-500 dark:text-white/40 pl-2 border-l border-slate-200 dark:border-white/[0.08]">
+          <span className="hidden lg:inline text-[11px] text-slate-500 dark:text-white/50 pl-2 border-l border-slate-200 dark:border-white/[0.08]">
             Tap day for details or right click to add
           </span>
         </div>
@@ -508,7 +508,7 @@ export default function SpendingCalendar({ transactions, periods, categories }: 
           <div className="text-lg md:text-xl font-bold text-slate-900 dark:text-white truncate">
             {formatIdr(metrics.totalSpend)}
           </div>
-          <div className="text-[11px] text-slate-500 dark:text-white/40 mt-1">
+          <div className="text-[11px] text-slate-500 dark:text-white/50 mt-1">
             {metrics.totalTxCount} transactions
           </div>
         </div>
@@ -521,7 +521,7 @@ export default function SpendingCalendar({ transactions, periods, categories }: 
           <div className="text-lg md:text-xl font-bold text-slate-900 dark:text-white truncate">
             {formatIdr(metrics.dailyAverage)}
           </div>
-          <div className="text-[11px] text-slate-500 dark:text-white/40 mt-1">
+          <div className="text-[11px] text-slate-500 dark:text-white/50 mt-1">
             across {metrics.totalDays} days
           </div>
         </div>
@@ -560,7 +560,7 @@ export default function SpendingCalendar({ transactions, periods, categories }: 
           <div className="text-lg md:text-xl font-bold text-slate-900 dark:text-white truncate">
             {formatIdr(metrics.weekendSpend)}
           </div>
-          <div className="text-[11px] text-slate-500 dark:text-white/40 mt-1">
+          <div className="text-[11px] text-slate-500 dark:text-white/50 mt-1">
             {metrics.weekendPct}% of total spend
           </div>
         </div>
@@ -573,7 +573,7 @@ export default function SpendingCalendar({ transactions, periods, categories }: 
           <div className="text-lg md:text-xl font-bold text-slate-900 dark:text-white">
             {metrics.daysWithSpend} <span className="text-xs font-normal text-slate-500 dark:text-white/50">/ {metrics.totalDays}</span>
           </div>
-          <div className="text-[11px] text-slate-500 dark:text-white/40 mt-1 truncate">
+          <div className="text-[11px] text-slate-500 dark:text-white/50 mt-1 truncate">
             avg {metrics.daysWithSpend > 0 ? formatIdr(metrics.activeDailyAverage) : 0}/act
           </div>
         </div>
@@ -676,7 +676,7 @@ export default function SpendingCalendar({ transactions, periods, categories }: 
           <h3 className="text-base font-semibold flex items-center gap-2 text-slate-900 dark:text-white">
             <CalendarDays className="w-4 h-4 text-mint-500" />
             Spending Heatmap: {periodLabel}
-            <span className="text-xs font-normal text-slate-500 dark:text-white/40">
+            <span className="text-xs font-normal text-slate-500 dark:text-white/50">
               ({selectedMonth} cycle)
             </span>
           </h3>
@@ -809,7 +809,7 @@ export default function SpendingCalendar({ transactions, periods, categories }: 
         <h4 className="text-sm font-semibold text-slate-800 dark:text-white/90 mb-3 flex items-center gap-2">
           <Calendar className="w-4 h-4 text-gold-500" />
           Day-of-Week Spending Rhythm
-          <span className="text-xs font-normal text-slate-500 dark:text-white/40">
+          <span className="text-xs font-normal text-slate-500 dark:text-white/50">
             (Distribution across days of week)
           </span>
         </h4>
@@ -977,7 +977,7 @@ export default function SpendingCalendar({ transactions, periods, categories }: 
               </Table>
             </div>
           ) : (
-            <div className="py-8 text-center text-sm text-slate-500 dark:text-white/40">
+            <div className="py-8 text-center text-sm text-slate-500 dark:text-white/50">
               No transactions recorded for this day.
             </div>
           )}

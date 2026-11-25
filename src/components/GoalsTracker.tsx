@@ -462,7 +462,7 @@ export default function GoalsTracker({ networth }: Props) {
         <div className="glass-card p-5">
           <div className="text-center">
               <div className="inline-flex p-4 rounded-full bg-slate-100 dark:bg-white/[0.05] mb-4">
-                <Target className="w-8 h-8 text-slate-500 dark:text-white/40" />
+                <Target className="w-8 h-8 text-slate-500 dark:text-white/50" />
               </div>
               <h3 className="text-lg font-semibold mb-1">No goals yet</h3>
               <p className="text-sm text-muted-foreground mb-4">

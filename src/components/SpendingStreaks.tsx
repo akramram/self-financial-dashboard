@@ -182,9 +182,9 @@ export default function SpendingStreaks() {
             <p className="text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-white/50">
               Current Streak
             </p>
-            <Flame className={`w-5 h-5 ${data.currentStreak > 0 ? 'text-coral-500/50' : 'text-slate-500 dark:text-white/40'}`} />
+            <Flame className={`w-5 h-5 ${data.currentStreak > 0 ? 'text-coral-500/50' : 'text-slate-500 dark:text-white/50'}`} />
           </div>
-          <p className={`text-4xl font-bold mt-3 ${data.currentStreak > 0 ? 'text-coral-500 dark:text-coral-400' : 'text-slate-500 dark:text-white/40'}`}>
+          <p className={`text-4xl font-bold mt-3 ${data.currentStreak > 0 ? 'text-coral-500 dark:text-coral-400' : 'text-slate-500 dark:text-white/50'}`}>
             {data.currentStreak}
             <span className="text-lg font-medium ml-1">day{data.currentStreak === 1 ? '' : 's'}</span>
           </p>
@@ -237,7 +237,7 @@ export default function SpendingStreaks() {
             <p className="text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-white/50">
               No-Spend (90d)
             </p>
-            <TrendingDown className="w-5 h-5 text-slate-500 dark:text-white/40" />
+            <TrendingDown className="w-5 h-5 text-slate-500 dark:text-white/50" />
           </div>
           <p className="text-4xl font-bold mt-3 text-slate-700 dark:text-white/70">
             {data.noSpendLast90}
@@ -317,7 +317,7 @@ export default function SpendingStreaks() {
                 <div key={d.dow}>
                   <div className="flex items-center justify-between text-xs mb-1">
                     <span className="font-medium text-slate-600 dark:text-white/60">{d.label}</span>
-                    <span className="text-slate-500 dark:text-white/40">
+                    <span className="text-slate-500 dark:text-white/50">
                       {d.spendDays} spend · <span className="text-emerald-600 dark:text-emerald-400">{d.noSpendDays} no-spend</span>
                     </span>
                   </div>
@@ -328,7 +328,7 @@ export default function SpendingStreaks() {
                         style={{ width: `${spendPct}%` }}
                       />
                     </div>
-                    <span className="text-[11px] text-slate-500 dark:text-white/40 w-16 text-right">
+                    <span className="text-[11px] text-slate-500 dark:text-white/50 w-16 text-right">
                       {d.avgPerSpendDay > 0 ? formatIdr(d.avgPerSpendDay) : '-'}
                     </span>
                   </div>
@@ -386,7 +386,7 @@ export default function SpendingStreaks() {
                   <div className="w-full bg-slate-200/60 dark:bg-white/[0.08] rounded-full h-1.5">
                     <div className="h-1.5 rounded-full bg-gold-400 dark:bg-gold-500/50 transition-all" style={{ width: `${Math.min(100, (b.progress.current / b.progress.target) * 100)}%` }} />
                   </div>
-                  <p className="text-[11px] text-slate-500 dark:text-white/40 mt-1">{b.progress.current} / {b.progress.target}</p>
+                  <p className="text-[11px] text-slate-500 dark:text-white/50 mt-1">{b.progress.current} / {b.progress.target}</p>
                 </div>
               )}
             </div>
@@ -419,7 +419,7 @@ export default function SpendingStreaks() {
 
       {/* ===== Explanation footer ===== */}
       <div className="bg-slate-100 dark:bg-white/[0.03] rounded-xl border border-slate-200 dark:border-white/[0.06] p-4 flex gap-3">
-        <Info className="w-4 h-4 text-slate-500 dark:text-white/40 flex-shrink-0 mt-0.5" />
+        <Info className="w-4 h-4 text-slate-500 dark:text-white/50 flex-shrink-0 mt-0.5" />
         <p className="text-xs text-slate-600 dark:text-white/50 leading-relaxed">
           <strong>How it works:</strong> A <em>no-spend day</em> is any calendar day with zero
           discretionary spending (cash or credit-card purchases). Credit-card

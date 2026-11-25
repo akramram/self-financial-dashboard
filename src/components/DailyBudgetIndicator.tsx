@@ -132,7 +132,7 @@ export default function DailyBudgetIndicator({ transactions, income, spent, acti
   return (
     <div>
       <div className="flex items-center gap-2 mb-3">
-        <CalendarDays className="w-4 h-4 text-slate-500 dark:text-white/40" strokeWidth={1.8} />
+        <CalendarDays className="w-4 h-4 text-slate-500 dark:text-white/50" strokeWidth={1.8} />
         <h3 className="text-base font-semibold text-slate-800 dark:text-white/80">Today's Budget</h3>
       </div>
 
@@ -144,17 +144,17 @@ export default function DailyBudgetIndicator({ transactions, income, spent, acti
         >
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-xs font-medium text-slate-500 dark:text-white/40 mb-1">
+              <p className="text-xs font-medium text-slate-500 dark:text-white/50 mb-1">
                 Daily Allowance
               </p>
               <p className="text-xl font-bold" style={{ color: colors.text }}>
                 {formatIdr(dailyAllowance)}
               </p>
-              <p className="text-[11px] text-slate-500 dark:text-white/40 mt-1">
+              <p className="text-[11px] text-slate-500 dark:text-white/50 mt-1">
                 {daysRemaining} day{daysRemaining !== 1 ? 's' : ''} left • {formatIdr(remaining)} remaining
               </p>
               {unpaidTotal > 0 && (
-                <p className="text-[11px] text-slate-500 dark:text-white/40">
+                <p className="text-[11px] text-slate-500 dark:text-white/50">
                   − {formatIdr(unpaidTotal)} unpaid
                 </p>
               )}
@@ -165,7 +165,7 @@ export default function DailyBudgetIndicator({ transactions, income, spent, acti
           {/* Today's progress */}
           <div className="mt-3">
             <div className="flex items-center justify-between mb-1">
-              <span className="text-[11px] text-slate-500 dark:text-white/40">Today</span>
+              <span className="text-[11px] text-slate-500 dark:text-white/50">Today</span>
               <span className="text-[11px] font-medium" style={{ color: colors.text }}>
                 {formatIdr(Math.abs(spentToday))} / {formatIdr(dailyAllowance)} ({pctToday}%)
               </span>
@@ -183,7 +183,7 @@ export default function DailyBudgetIndicator({ transactions, income, spent, acti
         <div className="flex flex-col gap-2 sm:w-56">
           <div className="rounded-lg p-3 bg-slate-100 dark:bg-white/[0.04]">
             <div className="flex items-baseline justify-between mb-2">
-              <p className="text-[11px] text-slate-500 dark:text-white/40">Last 7 Days</p>
+              <p className="text-[11px] text-slate-500 dark:text-white/50">Last 7 Days</p>
               <p className="text-[11px] text-slate-500 dark:text-white/60">line = allowance</p>
             </div>
             <div className="relative flex items-end gap-1 h-16">
@@ -218,7 +218,7 @@ export default function DailyBudgetIndicator({ transactions, income, spent, acti
             </div>
           </div>
           <div className="rounded-lg p-3 bg-slate-100 dark:bg-white/[0.04]">
-            <p className="text-[11px] text-slate-500 dark:text-white/40">
+            <p className="text-[11px] text-slate-500 dark:text-white/50">
               {status === 'over' ? 'Over by' : 'Left Today'}
             </p>
             <p className="text-sm font-bold" style={{ color: colors.text }}>
@@ -230,13 +230,13 @@ export default function DailyBudgetIndicator({ transactions, income, spent, acti
 
       {/* Tip for overspend */}
       {status === 'over' && (
-        <p className="mt-2 text-[11px] text-slate-500 dark:text-white/40 flex items-center gap-1">
+        <p className="mt-2 text-[11px] text-slate-500 dark:text-white/50 flex items-center gap-1">
           <TrendingDown className="w-3 h-3" style={{ color: '#ef4444' }} />
           Over today's budget, try to spend less tomorrow to compensate.
         </p>
       )}
       {status === 'warning' && (
-        <p className="mt-2 text-[11px] text-slate-500 dark:text-white/40 flex items-center gap-1">
+        <p className="mt-2 text-[11px] text-slate-500 dark:text-white/50 flex items-center gap-1">
           Approaching today's limit, consider postponing non-essential purchases.
         </p>
       )}

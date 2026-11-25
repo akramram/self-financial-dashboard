@@ -146,7 +146,7 @@ export default function UpcomingBills({ recurring, transactions, activePeriodId,
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-base font-semibold text-slate-800 dark:text-white/80">Upcoming Bills</h3>
         {unpaidTotal > 0 && (
-          <span className="text-xs text-slate-500 dark:text-white/40">
+          <span className="text-xs text-slate-500 dark:text-white/50">
             <span className="font-semibold text-coral-400">{formatIdr(unpaidTotal)}</span> pending
           </span>
         )}
@@ -181,12 +181,12 @@ export default function UpcomingBills({ recurring, transactions, activePeriodId,
                   <div className="min-w-0">
                     <p className={`text-sm font-medium truncate ${b.paid ? 'text-slate-500 dark:text-white/60 line-through' : 'text-slate-800 dark:text-white/80'}`}>
                       {b.title}
-                      {b.oneOff && <span className="ml-1.5 px-1.5 py-0.5 rounded text-[11px] font-semibold uppercase tracking-wide bg-slate-200 dark:bg-white/[0.08] text-slate-500 dark:text-white/40 align-middle">one-off</span>}
+                      {b.oneOff && <span className="ml-1.5 px-1.5 py-0.5 rounded text-[11px] font-semibold uppercase tracking-wide bg-slate-200 dark:bg-white/[0.08] text-slate-600 dark:text-white/50 align-middle">one-off</span>}
                     </p>
-                    <p className="text-[11px] text-slate-500 dark:text-white/40 flex items-center gap-1">
+                    <p className="text-[11px] text-slate-500 dark:text-white/50 flex items-center gap-1">
                       <CalendarClock className="w-3 h-3" />
                       due {b.dueDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                      {b.endLabel && <span className="text-slate-500 dark:text-white/40">· ends {b.endLabel}</span>}
+                      {b.endLabel && <span className="text-slate-500 dark:text-white/50">· ends {b.endLabel}</span>}
                     </p>
                   </div>
                 </div>
@@ -204,7 +204,7 @@ export default function UpcomingBills({ recurring, transactions, activePeriodId,
                     <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-gold-500/15 text-gold-400">{daysLeft === 0 ? 'TODAY' : `${daysLeft}d`}</span>
                   ) : (
                     <span className="flex items-center gap-1.5">
-                      <span className="px-2 py-0.5 rounded-full text-[11px] font-medium text-slate-500 dark:text-white/40">{daysLeft}d</span>
+                      <span className="px-2 py-0.5 rounded-full text-[11px] font-medium text-slate-500 dark:text-white/50">{daysLeft}d</span>
                       {toggleable && <Circle className="w-4 h-4 text-slate-300 dark:text-white/40" strokeWidth={1.8} />}
                     </span>
                   )}

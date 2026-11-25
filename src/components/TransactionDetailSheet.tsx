@@ -124,7 +124,7 @@ export default function TransactionDetailSheet({
               <DialogTitle className="text-lg font-semibold leading-snug break-words text-slate-900 dark:text-white">
                 {transaction.title}
               </DialogTitle>
-              <DialogDescription className="text-sm text-slate-500 dark:text-white/40">
+              <DialogDescription className="text-sm text-slate-500 dark:text-white/50">
                 {transaction.month}
               </DialogDescription>
             </div>
@@ -139,27 +139,27 @@ export default function TransactionDetailSheet({
           <p className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
             {formatIdr(transaction.amount)}
           </p>
-          <p className="text-xs text-slate-500 dark:text-white/40 mt-1">
+          <p className="text-xs text-slate-500 dark:text-white/50 mt-1">
             {transaction.currency}
           </p>
         </div>
 
         <div className="px-6 py-4 space-y-3">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-slate-500 dark:text-white/40">Category</span>
+            <span className="text-slate-500 dark:text-white/50">Category</span>
             <Badge variant="secondary">{transaction.category || '-'}</Badge>
           </div>
           <div className="flex items-center justify-between text-sm">
-            <span className="text-slate-500 dark:text-white/40">Payment Method</span>
+            <span className="text-slate-500 dark:text-white/50">Payment Method</span>
             <span className="font-medium text-slate-800 dark:text-white/80">{transaction.payment_method || '-'}</span>
           </div>
           <div className="flex items-center justify-between text-sm">
-            <span className="text-slate-500 dark:text-white/40">Date</span>
+            <span className="text-slate-500 dark:text-white/50">Date</span>
             <span className="font-medium text-slate-800 dark:text-white/80 text-right">{dateStr}{timeStr ? ` · ${timeStr}` : ''}</span>
           </div>
           {transaction.notes ? (
             <div className="flex items-start justify-between text-sm gap-4">
-              <span className="text-slate-500 dark:text-white/40 shrink-0">Notes</span>
+              <span className="text-slate-500 dark:text-white/50 shrink-0">Notes</span>
               <span className="text-slate-800 dark:text-white/80 text-right break-words">{transaction.notes}</span>
             </div>
           ) : null}

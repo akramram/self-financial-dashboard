@@ -134,7 +134,7 @@ export default function MonthlyReport({
           Belum ada transaksi di periode ini, jadi laporan belum bisa dibuat.{' '}
             <a href="/add" className="text-mint-600 dark:text-mint-400 font-medium hover:underline">Catat transaksi pertama</a> untuk melihat laporan bulanan.
         </p>
-        <p className="text-slate-500 dark:text-white/40 text-sm mt-2">
+        <p className="text-slate-500 dark:text-white/50 text-sm mt-2">
           Add transactions and net worth data first.
         </p>
       </div>
@@ -188,7 +188,7 @@ export default function MonthlyReport({
               Period: {reportSummary.start_date} – {reportSummary.end_date}
             </p>
           )}
-          <p className="text-xs text-slate-500 dark:text-white/40 mt-2 print:text-gray-400">
+          <p className="text-xs text-slate-500 dark:text-white/50 mt-2 print:text-gray-400">
             Generated: {generatedAt}
           </p>
         </div>
@@ -210,7 +210,7 @@ export default function MonthlyReport({
             <p className="text-2xl font-bold text-red-600 dark:text-red-400 print:text-red-700">
                 {formatIdr(totalOutcome)}
               </p>
-              <div className="text-xs text-slate-500 dark:text-white/40 mt-1 print:text-gray-500">
+              <div className="text-xs text-slate-500 dark:text-white/50 mt-1 print:text-gray-500">
                 <span className="inline-block mr-3">
                   Cash: {formatIdr(reportSummary.outcome.cash)}
                 </span>
@@ -425,7 +425,7 @@ export default function MonthlyReport({
                                 </Badge>
                               )
                             ) : (
-                              <span className="text-xs text-slate-500 dark:text-white/40">
+                              <span className="text-xs text-slate-500 dark:text-white/50">
                                 No limit
                               </span>
                             )}
@@ -676,7 +676,7 @@ export default function MonthlyReport({
           </div>
 
         {/* Footer */}
-        <div className="text-center text-xs text-slate-500 dark:text-white/40 pt-4 border-t border-slate-200 dark:border-white/[0.06] print:text-gray-500 print:border-gray-300">
+        <div className="text-center text-xs text-slate-500 dark:text-white/50 pt-4 border-t border-slate-200 dark:border-white/[0.06] print:text-gray-500 print:border-gray-300">
           <p>Financial Dashboard · Monthly Report · {generatedAt}</p>
         </div>
       </div>

@@ -546,21 +546,21 @@ export default function MerchantAnalysis({
       {/* Stats Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
         <div className="glass-card p-5">
-          <h3 className="text-xs font-medium text-slate-500 dark:text-slate-500 flex items-center gap-1.5 text-slate-800 dark:text-white/80">
+          <h3 className="text-xs font-medium flex items-center gap-1.5 text-slate-800 dark:text-white/80">
               <Store className="w-3.5 h-3.5" />
               Merchants
             </h3>
           <p className="text-2xl font-bold">{stats.totalMerchants}</p>
           </div>
         <div className="glass-card p-5">
-          <h3 className="text-xs font-medium text-slate-500 dark:text-slate-500 flex items-center gap-1.5 text-slate-800 dark:text-white/80">
+          <h3 className="text-xs font-medium flex items-center gap-1.5 text-slate-800 dark:text-white/80">
               <Hash className="w-3.5 h-3.5" />
               Transactions
             </h3>
           <p className="text-2xl font-bold">{stats.totalTransactions}</p>
           </div>
         <div className="glass-card p-5">
-          <h3 className="text-xs font-medium text-slate-500 dark:text-slate-500 flex items-center gap-1.5 text-slate-800 dark:text-white/80">
+          <h3 className="text-xs font-medium flex items-center gap-1.5 text-slate-800 dark:text-white/80">
               <BarChart3 className="w-3.5 h-3.5" />
               Total Spent
             </h3>
@@ -569,7 +569,7 @@ export default function MerchantAnalysis({
             </p>
           </div>
         <div className="glass-card p-5">
-          <h3 className="text-xs font-medium text-slate-500 dark:text-slate-500 flex items-center gap-1.5 text-slate-800 dark:text-white/80">
+          <h3 className="text-xs font-medium flex items-center gap-1.5 text-slate-800 dark:text-white/80">
               <TrendingUp className="w-3.5 h-3.5" />
               Avg / Merchant
             </h3>
@@ -578,7 +578,7 @@ export default function MerchantAnalysis({
             </p>
           </div>
         <div className="glass-card p-5">
-          <h3 className="text-xs font-medium text-slate-500 dark:text-slate-500 flex items-center gap-1.5 text-slate-800 dark:text-white/80">
+          <h3 className="text-xs font-medium flex items-center gap-1.5 text-slate-800 dark:text-white/80">
               <Store className="w-3.5 h-3.5" />
               Top Merchant
             </h3>
@@ -645,7 +645,7 @@ export default function MerchantAnalysis({
         {sortedMerchants.length === 0 ? (
             <div className="text-center py-12">
               <Store className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
-              <p className="text-slate-500 dark:text-slate-500 text-sm">
+              <p className="text-slate-500 dark:text-slate-400 text-sm">
                 Tidak ada merchant yang cocok dengan filter saat ini.
               </p>
             </div>

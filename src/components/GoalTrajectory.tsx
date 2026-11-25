@@ -285,7 +285,7 @@ function GoalTrajectoryRowCard({ goal, hasData }: { goal: GoalTrajectoryRow; has
       {/* Key metrics grid */}
       <div className="grid grid-cols-2 gap-x-3 gap-y-2 text-xs">
         <Metric
-          icon={<CalendarClock className="w-3.5 h-3.5 text-slate-500 dark:text-white/40" />}
+          icon={<CalendarClock className="w-3.5 h-3.5 text-slate-500 dark:text-white/50" />}
           label="Target tanggal"
           value={formatDate(goal.target_date)}
         />
@@ -304,12 +304,12 @@ function GoalTrajectoryRowCard({ goal, hasData }: { goal: GoalTrajectoryRow; has
           }
         />
         <Metric
-          icon={<Minus className="w-3.5 h-3.5 text-slate-500 dark:text-white/40" />}
+          icon={<Minus className="w-3.5 h-3.5 text-slate-500 dark:text-white/50" />}
           label="Selisih waktu"
           value={hasData ? formatDelta(goal.days_delta) : '-'}
         />
         <Metric
-          icon={<Gauge className="w-3.5 h-3.5 text-slate-500 dark:text-white/40" />}
+          icon={<Gauge className="w-3.5 h-3.5 text-slate-500 dark:text-white/50" />}
           label="Pace vs kebutuhan"
           value={hasData ? paceLabel : '-'}
           valueClassName={

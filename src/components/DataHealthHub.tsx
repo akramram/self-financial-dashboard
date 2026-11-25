@@ -83,7 +83,7 @@ function FindingCard({
                 <li key={i} className="text-xs text-slate-600 dark:text-white/50 break-words">{s}</li>
               ))}
               {hidden > 0 && (
-                <li className="text-xs text-slate-500 dark:text-white/40">dan {hidden} lainnya</li>
+                <li className="text-xs text-slate-500 dark:text-white/50">dan {hidden} lainnya</li>
               )}
             </ul>
           )}

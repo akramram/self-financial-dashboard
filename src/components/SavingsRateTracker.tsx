@@ -437,7 +437,7 @@ export default function SavingsRateTracker() {
   if (!data || periods.length === 0 || !focusedPeriod || !decomposition || !milestoneProgress) {
     return (
       <div className="glass-card p-10 text-center space-y-4" data-testid="savings-rate-empty">
-        <PiggyBank className="w-12 h-12 text-slate-400 dark:text-slate-500 mx-auto" />
+        <PiggyBank className="w-12 h-12 text-slate-400 dark:text-slate-400 mx-auto" />
         <div className="space-y-1">
           <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
             Belum Ada Data Savings Rate

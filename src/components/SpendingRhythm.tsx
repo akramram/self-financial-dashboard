@@ -237,7 +237,7 @@ export default function SpendingRhythm() {
       {/* ── Header summary cards ── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4">
-          <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-500 mb-1">
+          <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-1">
             <Calendar className="w-3.5 h-3.5" /> Transactions
           </div>
           <p className="text-2xl font-bold">{data.totalTx}</p>
@@ -245,7 +245,7 @@ export default function SpendingRhythm() {
         </div>
 
         <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4">
-          <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-500 mb-1">
+          <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-1">
             <TrendingUp className="w-3.5 h-3.5" /> Total Spend
           </div>
           <p className="text-2xl font-bold">{formatIdr(data.totalSpend)}</p>
@@ -286,7 +286,7 @@ export default function SpendingRhythm() {
                 <span className="text-xl flex-shrink-0">{ins.icon}</span>
                 <div>
                   <p className="text-sm font-medium text-slate-800 dark:text-slate-200">{ins.title}</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-500 mt-0.5">{ins.detail}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{ins.detail}</p>
                 </div>
               </div>
             ))}
@@ -344,15 +344,15 @@ export default function SpendingRhythm() {
             <p className="text-xs font-semibold text-mint-600 dark:text-mint-400 mb-3">💼 WEEKDAYS (Mon–Fri)</p>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-slate-500 dark:text-slate-500">Total Spend</span>
+                <span className="text-slate-500 dark:text-slate-400">Total Spend</span>
                 <span className="font-semibold">{formatIdr(wv.weekdaySpend)}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-slate-500 dark:text-slate-500">Transactions</span>
+                <span className="text-slate-500 dark:text-slate-400">Transactions</span>
                 <span className="font-semibold">{wv.weekdayTx}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-slate-500 dark:text-slate-500">Avg / Day</span>
+                <span className="text-slate-500 dark:text-slate-400">Avg / Day</span>
                 <span className="font-semibold">{formatIdr(wv.weekdayAvgPerDay)}</span>
               </div>
               <div className="pt-2 border-t border-mint-400/30">
@@ -372,15 +372,15 @@ export default function SpendingRhythm() {
             <p className="text-xs font-semibold text-coral-500 dark:text-coral-400 mb-3">🎉 WEEKENDS (Sat–Sun)</p>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-slate-500 dark:text-slate-500">Total Spend</span>
+                <span className="text-slate-500 dark:text-slate-400">Total Spend</span>
                 <span className="font-semibold">{formatIdr(wv.weekendSpend)}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-slate-500 dark:text-slate-500">Transactions</span>
+                <span className="text-slate-500 dark:text-slate-400">Transactions</span>
                 <span className="font-semibold">{wv.weekendTx}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-slate-500 dark:text-slate-500">Avg / Day</span>
+                <span className="text-slate-500 dark:text-slate-400">Avg / Day</span>
                 <span className="font-semibold">{formatIdr(wv.weekendAvgPerDay)}</span>
               </div>
               <div className="pt-2 border-t border-coral-400/30">

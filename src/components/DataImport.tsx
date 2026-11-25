@@ -653,7 +653,7 @@ export default function DataImport() {
             {/* Info card */}
             <div className="glass-card p-5 bg-mint-500/5 dark:bg-mint-500/10 border-mint-400/30 dark:border-mint-500/20">
               <p className="font-medium mb-1">📋 Import Format</p>
-                <p className="text-xs text-slate-500 dark:text-slate-500">
+                <p className="text-xs text-slate-500 dark:text-slate-400">
                   For <strong>transactions</strong>, required fields are: {requiredFields.map((f) => fieldMap[f]).join(', ')}.
                   The <strong>month</strong> field should be in "Month Year" format (e.g., "June 2026").
                   The <strong>type</strong> must be one of: cash, credit_expense, credit_payment.

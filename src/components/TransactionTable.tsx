@@ -364,20 +364,20 @@ export default function TransactionTable({ transactions, showMonth = true, perio
         <div className="flex flex-col sm:flex-row gap-3">
           {/* Search */}
           <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 dark:text-white/40 pointer-events-none" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 dark:text-white/50 pointer-events-none" />
             <Input
               aria-label="Search transactions"
               placeholder="Search title, category, notes..."
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              className="pl-9 bg-slate-100 dark:bg-white/[0.04] border-slate-300 dark:border-white/[0.08] text-slate-800 dark:text-white/80 placeholder:text-slate-500 dark:text-white/60 focus-visible:ring-emerald-500/30"
+              className="pl-9 bg-slate-100 dark:bg-white/[0.04] border-slate-300 dark:border-white/[0.08] text-slate-800 dark:text-white/80 placeholder:text-slate-600 dark:text-white/60 focus-visible:ring-emerald-500/30"
             />
             {search && (
               <button
                 type="button"
                 aria-label="Clear search"
                 onClick={() => { setSearch(''); setPage(1); }}
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-2 -m-2 text-slate-500 dark:text-white/40 hover:text-slate-600 dark:text-white/60"
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-2 -m-2 text-slate-500 dark:text-white/50 hover:text-slate-600 dark:text-white/60"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -538,7 +538,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                     ? value === 'unpaid'
                       ? 'bg-gold-500/15 border-gold-500/40 text-gold-600 dark:text-gold-400'
                       : 'bg-emerald-500/15 border-emerald-500/40 text-emerald-600 dark:text-emerald-400'
-                    : 'bg-slate-100 dark:bg-white/[0.04] border-slate-300 dark:border-white/[0.08] text-slate-500 dark:text-white/40 hover:text-slate-700 dark:hover:text-white/70'
+                    : 'bg-slate-100 dark:bg-white/[0.04] border-slate-300 dark:border-white/[0.08] text-slate-600 dark:text-white/50 hover:text-slate-700 dark:hover:text-white/70'
                 }`}
               >
                 <span aria-hidden="true" className={`w-1.5 h-1.5 rounded-full ${value === 'unpaid' ? 'bg-gold-400' : 'bg-emerald-400'}`} />
@@ -555,7 +555,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
             className={`gap-1.5 text-xs h-7 transition-colors ${
               advancedOpen || hasAdvancedFilters
                 ? 'text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/15'
-                : 'text-slate-500 dark:text-white/40 hover:text-slate-600 dark:text-white/60 hover:bg-slate-100 dark:bg-white/[0.04]'
+                : 'text-slate-500 hover:text-slate-600 dark:text-white/60 hover:bg-slate-100 dark:bg-white/[0.04]'
             }`}
           >
             <SlidersHorizontal className="w-3 h-3" />
@@ -610,7 +610,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                 <div className="flex flex-col sm:flex-row gap-4">
                   {/* Date range */}
                   <div className="flex-1">
-                    <label className="text-[11px] font-medium text-slate-500 dark:text-white/40 uppercase tracking-wider mb-2 block">
+                    <label className="text-[11px] font-medium text-slate-500 dark:text-white/50 uppercase tracking-wider mb-2 block">
                       Date Range
                     </label>
                     <div className="flex items-center gap-2">
@@ -621,7 +621,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                         onChange={(e) => { setDateFrom(e.target.value); setPage(1); }}
                         className="flex-1 bg-slate-100 dark:bg-white/[0.04] border-slate-300 dark:border-white/[0.08] text-slate-700 dark:text-white/70 text-xs h-8"
                       />
-                      <span className="text-slate-500 dark:text-white/40 text-xs">→</span>
+                      <span className="text-slate-500 dark:text-white/50 text-xs">→</span>
                       <Input
                         type="date"
                         aria-label="Filter date to"
@@ -634,12 +634,12 @@ export default function TransactionTable({ transactions, showMonth = true, perio
 
                   {/* Amount range */}
                   <div className="flex-1">
-                    <label className="text-[11px] font-medium text-slate-500 dark:text-white/40 uppercase tracking-wider mb-2 block">
+                    <label className="text-[11px] font-medium text-slate-500 dark:text-white/50 uppercase tracking-wider mb-2 block">
                       Amount Range
                     </label>
                     <div className="flex items-center gap-2">
                       <div className="relative flex-1">
-                        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 dark:text-white/40 text-xs">Rp</span>
+                        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 dark:text-white/50 text-xs">Rp</span>
                         <Input
                           type="number"
                           aria-label="Filter minimum amount (Rupiah)"
@@ -649,9 +649,9 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                           className="pl-8 bg-slate-100 dark:bg-white/[0.04] border-slate-300 dark:border-white/[0.08] text-slate-700 dark:text-white/70 text-xs h-8"
                         />
                       </div>
-                      <span className="text-slate-500 dark:text-white/40 text-xs">→</span>
+                      <span className="text-slate-500 dark:text-white/50 text-xs">→</span>
                       <div className="relative flex-1">
-                        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 dark:text-white/40 text-xs">Rp</span>
+                        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 dark:text-white/50 text-xs">Rp</span>
                         <Input
                           type="number"
                           aria-label="Filter maximum amount (Rupiah)"
@@ -679,7 +679,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                       size="sm"
                       variant="ghost"
                       onClick={() => { setDateFrom(preset.dateFrom); setDateTo(preset.dateTo); setPage(1); }}
-                      className="h-6 text-[11px] px-2 text-slate-500 dark:text-white/40 hover:text-slate-700 dark:text-white/70 hover:bg-slate-200/60 dark:bg-white/[0.06]"
+                      className="h-6 text-[11px] px-2 text-slate-500 hover:text-slate-700 dark:text-white/70 hover:bg-slate-200/60 dark:bg-white/[0.06]"
                     >
                       {preset.label}
                     </Button>
@@ -701,25 +701,25 @@ export default function TransactionTable({ transactions, showMonth = true, perio
 
       {/* ─── Summary Bar ────────────────────────────────────────── */}
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mb-4" aria-live="polite">
-        <p className="text-xs text-slate-500 dark:text-white/40">
+        <p className="text-xs text-slate-500 dark:text-white/50">
           <span className="text-slate-600 dark:text-white/60 font-semibold">{filtered.length.toLocaleString()}</span> transaction{filtered.length !== 1 ? 's' : ''}
           {filtered.length !== transactions.length && (
-            <span className="text-slate-500 dark:text-white/40"> / {transactions.length.toLocaleString()} total</span>
+            <span className="text-slate-500 dark:text-white/50"> / {transactions.length.toLocaleString()} total</span>
           )}
         </p>
         {filtered.length > 0 && (
           <>
-            <span className="text-xs text-slate-500 dark:text-white/40">
+            <span className="text-xs text-slate-500 dark:text-white/50">
               Outflow <span className="font-semibold text-slate-700 dark:text-white/80">{formatIdr(total)}</span>
             </span>
-            <span className="text-xs text-slate-500 dark:text-white/40">
+            <span className="text-xs text-slate-500 dark:text-white/50">
               Cash <span className="font-semibold text-mint-600 dark:text-mint-400">{formatIdr(cash)}</span>
             </span>
-            <span className="text-xs text-slate-500 dark:text-white/40">
+            <span className="text-xs text-slate-500 dark:text-white/50">
               Credit <span className="font-semibold text-coral-600 dark:text-coral-400">{formatIdr(credit)}</span>
             </span>
             {unpaidCount > 0 && (
-              <span className="text-xs text-slate-500 dark:text-white/40">
+              <span className="text-xs text-slate-500 dark:text-white/50">
                 Unpaid <span className="font-semibold text-gold-600 dark:text-gold-400">{unpaidCount} · {formatIdr(unpaid)}</span>
               </span>
             )}
@@ -756,7 +756,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
               </Button>
               <div className="flex-1" />
               <Button size="sm" variant="ghost" onClick={() => setSelected(new Set())}
-                className="h-8 text-xs text-slate-500 dark:text-white/40 hover:text-slate-700 dark:text-white/70"
+                className="h-8 text-xs text-slate-500 dark:text-white/50 hover:text-slate-700 dark:text-white/70"
               >
                 Deselect
               </Button>
@@ -805,14 +805,14 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                   aria-label="Select all"
                 />
               </TableHead>
-              <SortableHeader sortKey="paid" currentDirection={isSorted('paid')} onSort={toggleSort} className="text-slate-500 dark:text-white/40">Paid</SortableHeader>
-              {showMonth && <SortableHeader sortKey="month" currentDirection={isSorted('month')} onSort={toggleSort} className="text-slate-500 dark:text-white/40">Month</SortableHeader>}
-              <SortableHeader sortKey="title" currentDirection={isSorted('title')} onSort={toggleSort} className="text-slate-500 dark:text-white/40">Title</SortableHeader>
-              <SortableHeader sortKey="category" currentDirection={isSorted('category')} onSort={toggleSort} className="text-slate-500 dark:text-white/40">Category</SortableHeader>
-              <SortableHeader sortKey="date" currentDirection={isSorted('date')} onSort={toggleSort} className="text-slate-500 dark:text-white/40">Date</SortableHeader>
-              <SortableHeader sortKey="amount" currentDirection={isSorted('amount')} onSort={toggleSort} className="text-right text-slate-500 dark:text-white/40">Amount</SortableHeader>
-              <SortableHeader sortKey="type" currentDirection={isSorted('type')} onSort={toggleSort} className="text-slate-500 dark:text-white/40">Type</SortableHeader>
-              <TableHead className="text-slate-500 dark:text-white/40"></TableHead>
+              <SortableHeader sortKey="paid" currentDirection={isSorted('paid')} onSort={toggleSort} className="text-slate-500 dark:text-white/50">Paid</SortableHeader>
+              {showMonth && <SortableHeader sortKey="month" currentDirection={isSorted('month')} onSort={toggleSort} className="text-slate-500 dark:text-white/50">Month</SortableHeader>}
+              <SortableHeader sortKey="title" currentDirection={isSorted('title')} onSort={toggleSort} className="text-slate-500 dark:text-white/50">Title</SortableHeader>
+              <SortableHeader sortKey="category" currentDirection={isSorted('category')} onSort={toggleSort} className="text-slate-500 dark:text-white/50">Category</SortableHeader>
+              <SortableHeader sortKey="date" currentDirection={isSorted('date')} onSort={toggleSort} className="text-slate-500 dark:text-white/50">Date</SortableHeader>
+              <SortableHeader sortKey="amount" currentDirection={isSorted('amount')} onSort={toggleSort} className="text-right text-slate-500 dark:text-white/50">Amount</SortableHeader>
+              <SortableHeader sortKey="type" currentDirection={isSorted('type')} onSort={toggleSort} className="text-slate-500 dark:text-white/50">Type</SortableHeader>
+              <TableHead className="text-slate-500 dark:text-white/50"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -903,7 +903,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                         {row.category}
                       </Badge>
                     </TableCell>
-                    <TableCell className="py-2.5 text-slate-500 dark:text-white/40 text-xs whitespace-nowrap">{dateStr}</TableCell>
+                    <TableCell className="py-2.5 text-slate-500 dark:text-white/50 text-xs whitespace-nowrap">{dateStr}</TableCell>
                     <TableCell className="py-2.5 font-semibold text-right text-slate-800 dark:text-white/80 tabular-nums whitespace-nowrap">{formatIdr(row.amount)}</TableCell>
                     <TableCell className="py-2.5">
                       <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-semibold uppercase ${typeColorClass} ${typeBgClass}`}>
@@ -924,7 +924,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                         >
                           <CalendarClock aria-hidden="true" className="w-4 h-4" />
                         </button>
-                        <ChevronRight aria-hidden="true" className="w-4 h-4 text-slate-500 dark:text-white/40" />
+                        <ChevronRight aria-hidden="true" className="w-4 h-4 text-slate-500 dark:text-white/50" />
                       </div>
                     </TableCell>
                   </TableRow>
@@ -1000,7 +1000,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                         <NoteIndicator notes={row.notes} />
                       )}
                     </div>
-                    <p className="text-xs text-slate-500 dark:text-white/40 truncate">
+                    <p className="text-xs text-slate-500 dark:text-white/50 truncate">
                       {row.category} · {dateStr} · <span className={typeColorClass}>{typeLabel}</span>
                     </p>
                   </div>
@@ -1019,7 +1019,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
 
       {/* ─── Pagination ─────────────────────────────────────────── */}
       <div className="flex items-center justify-between mt-4" aria-live="polite">
-        <p className="text-xs text-slate-500 dark:text-white/40">
+        <p className="text-xs text-slate-500 dark:text-white/50">
           {filtered.length > 0
             ? `Showing ${(safePage - 1) * rowsPerPage + 1}–${Math.min(safePage * rowsPerPage, filtered.length)} of ${filtered.length}`
             : 'No results'}
@@ -1030,7 +1030,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
             variant="outline"
             onClick={() => setPage(1)}
             disabled={safePage <= 1}
-            className="min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0 h-7 md:h-7 text-xs border-slate-300 dark:border-white/[0.08] text-slate-500 dark:text-white/40 hover:bg-slate-200/60 dark:bg-white/[0.06] disabled:opacity-20"
+            className="min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0 h-7 md:h-7 text-xs border-slate-300 dark:border-white/[0.08] text-slate-500 dark:text-white/50 hover:bg-slate-200/60 dark:bg-white/[0.06] disabled:opacity-20"
           >
             First
           </Button>
@@ -1039,11 +1039,11 @@ export default function TransactionTable({ transactions, showMonth = true, perio
             variant="outline"
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={safePage <= 1}
-            className="min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0 h-7 md:h-7 text-xs border-slate-300 dark:border-white/[0.08] text-slate-500 dark:text-white/40 hover:bg-slate-200/60 dark:bg-white/[0.06] disabled:opacity-20"
+            className="min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0 h-7 md:h-7 text-xs border-slate-300 dark:border-white/[0.08] text-slate-500 dark:text-white/50 hover:bg-slate-200/60 dark:bg-white/[0.06] disabled:opacity-20"
           >
             Prev
           </Button>
-          <span className="text-xs text-slate-500 dark:text-white/40 min-w-[5rem] text-center tabular-nums">
+          <span className="text-xs text-slate-500 dark:text-white/50 min-w-[5rem] text-center tabular-nums">
             {safePage} <span className="text-slate-300 dark:text-white/15">/</span> {totalPages}
           </span>
           <Button
@@ -1051,7 +1051,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
             variant="outline"
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={safePage >= totalPages}
-            className="min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0 h-7 md:h-7 text-xs border-slate-300 dark:border-white/[0.08] text-slate-500 dark:text-white/40 hover:bg-slate-200/60 dark:bg-white/[0.06] disabled:opacity-20"
+            className="min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0 h-7 md:h-7 text-xs border-slate-300 dark:border-white/[0.08] text-slate-500 dark:text-white/50 hover:bg-slate-200/60 dark:bg-white/[0.06] disabled:opacity-20"
           >
             Next
           </Button>
@@ -1060,7 +1060,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
             variant="outline"
             onClick={() => setPage(totalPages)}
             disabled={safePage >= totalPages}
-            className="min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0 h-7 md:h-7 text-xs border-slate-300 dark:border-white/[0.08] text-slate-500 dark:text-white/40 hover:bg-slate-200/60 dark:bg-white/[0.06] disabled:opacity-20"
+            className="min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0 h-7 md:h-7 text-xs border-slate-300 dark:border-white/[0.08] text-slate-500 dark:text-white/50 hover:bg-slate-200/60 dark:bg-white/[0.06] disabled:opacity-20"
           >
             Last
           </Button>

@@ -142,7 +142,7 @@ export default function FintechSidebar({ balance, alerts: initialAlerts = 0 }: P
       className={`
         w-full flex items-center rounded-xl transition-all duration-150 no-underline
         ${collapsed ? 'justify-center px-0 py-3' : 'px-3 py-2.5 gap-3'}
-        ${isActive(item.path) ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-white/40 hover:text-slate-700 dark:hover:text-white/70 hover:bg-slate-100 dark:hover:bg-white/5'}
+        ${isActive(item.path) ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-white/50 hover:text-slate-700 dark:hover:text-white/70 hover:bg-slate-100 dark:hover:bg-white/5'}
       `}
       style={
         isActive(item.path)

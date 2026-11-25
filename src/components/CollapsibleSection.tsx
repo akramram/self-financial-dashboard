@@ -34,7 +34,7 @@ export default function CollapsibleSection({
             aria-expanded={!isCollapsed}
             aria-controls={`widget-content-${id}`}
           >
-            <span className="text-slate-500 dark:text-slate-500 transition-transform duration-200">
+            <span className="text-slate-500 dark:text-slate-400 transition-transform duration-200">
               {isCollapsed ? (
                 <ChevronRight className="w-4 h-4" />
               ) : (

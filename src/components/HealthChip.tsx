@@ -65,16 +65,16 @@ export default function HealthChip({ data, onClick }: HealthChipProps) {
             <span style={{ color }} className="shrink-0">
               <HeartPulse className="w-4 h-4" />
             </span>
-            <p className="text-xs font-medium text-slate-500 dark:text-white/40">Health</p>
+            <p className="text-xs font-medium text-slate-500 dark:text-white/50">Health</p>
           </div>
 
           <div className="flex items-baseline gap-1.5 mb-1.5">
             {loading ? (
-              <span className="text-lg font-bold text-slate-500 dark:text-white/40">—</span>
+              <span className="text-lg font-bold text-slate-500 dark:text-white/50">—</span>
             ) : (
               <>
                 <span className="text-lg font-bold text-slate-900 dark:text-white">{score ?? '—'}</span>
-                <span className="text-[11px] font-medium text-slate-500 dark:text-white/40">/100</span>
+                <span className="text-[11px] font-medium text-slate-500 dark:text-white/50">/100</span>
                 {health?.grade && (
                   <span className="text-[11px] font-semibold px-1.5 py-0.5 rounded-full" style={{ backgroundColor: `${color}1a`, color }}>
                     {health.grade}

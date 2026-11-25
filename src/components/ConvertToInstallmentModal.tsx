@@ -289,7 +289,7 @@ export default function ConvertToInstallmentModal({ open, transaction, onClose, 
                 className="h-9 pl-9 text-sm"
               />
             </div>
-            <p className="text-[11px] text-slate-500 dark:text-white/40">
+            <p className="text-[11px] text-slate-500 dark:text-white/50">
               Jika diisi, akan otomatis dibuatkan 1 item transaksi terpisah pada periode mulai cicilan.
             </p>
           </div>
@@ -322,7 +322,7 @@ export default function ConvertToInstallmentModal({ open, transaction, onClose, 
                     {periodInfo.startPeriod} → {periodInfo.endPeriod}
                   </span>
                 </div>
-                <div className="text-[10px] text-slate-500 dark:text-white/40">
+                <div className="text-[10px] text-slate-500 dark:text-white/50">
                   *Siklus gaji: tanggal 21 s/d 20 bulan berikutnya.
                 </div>
               </div>
@@ -361,7 +361,7 @@ export default function ConvertToInstallmentModal({ open, transaction, onClose, 
                   {formatIdr(calc.monthlyAmount)} / bln
                 </span>
               </div>
-              <div className="flex justify-between text-[11px] text-slate-500 dark:text-white/40 pt-0.5">
+              <div className="flex justify-between text-[11px] text-slate-500 dark:text-white/50 pt-0.5">
                 <span>Total dibayar ({months} bulan)</span>
                 <span className="tabular-nums">{formatIdr(calc.totalPaid)}</span>
               </div>

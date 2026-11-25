@@ -338,7 +338,7 @@ export default function YearlyReport({ summaries, categories }: Props) {
                     {topSpendingMonths.map((m, i) => (
                       <div key={m.month} className="flex justify-between items-center p-2 rounded-lg bg-slate-50 bg-slate-200/60 dark:bg-white/[0.06]">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs font-semibold text-slate-500 dark:text-white/40 w-4">#{i + 1}</span>
+                          <span className="text-xs font-semibold text-slate-500 dark:text-white/50 w-4">#{i + 1}</span>
                           <span className="text-sm font-medium">{m.month}</span>
                         </div>
                         <span className="text-sm font-semibold">{formatIdr(m.outcome.total)}</span>
@@ -356,7 +356,7 @@ export default function YearlyReport({ summaries, categories }: Props) {
                     {topSavingsMonths.map((m, i) => (
                       <div key={m.month} className="flex justify-between items-center p-2 rounded-lg bg-slate-50 bg-slate-200/60 dark:bg-white/[0.06]">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs font-semibold text-slate-500 dark:text-white/40 w-4">#{i + 1}</span>
+                          <span className="text-xs font-semibold text-slate-500 dark:text-white/50 w-4">#{i + 1}</span>
                           <span className="text-sm font-medium">{m.month}</span>
                         </div>
                         <span className={`text-sm font-semibold ${m.savings >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>

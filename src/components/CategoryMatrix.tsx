@@ -386,7 +386,7 @@ export default function CategoryMatrix({}: Props) {
       {/* Summary Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="glass-card p-5">
-          <h3 className="text-sm font-medium text-slate-500 dark:text-slate-500 text-slate-800 dark:text-white/80">
+          <h3 className="text-sm font-medium text-slate-800 dark:text-white/80">
               Most Consistent Categories
             </h3>
           <div className="space-y-2">
@@ -416,7 +416,7 @@ export default function CategoryMatrix({}: Props) {
           </div>
 
         <div className="glass-card p-5">
-          <h3 className="text-sm font-medium text-slate-500 dark:text-slate-500 text-slate-800 dark:text-white/80">
+          <h3 className="text-sm font-medium text-slate-800 dark:text-white/80">
               Fastest Rising Categories
             </h3>
           <div className="space-y-2">
@@ -445,7 +445,7 @@ export default function CategoryMatrix({}: Props) {
           </div>
 
         <div className="glass-card p-5">
-          <h3 className="text-sm font-medium text-slate-500 dark:text-slate-500 text-slate-800 dark:text-white/80">
+          <h3 className="text-sm font-medium text-slate-800 dark:text-white/80">
               Declining Categories
             </h3>
           <div className="space-y-2">

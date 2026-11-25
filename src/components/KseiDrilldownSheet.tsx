@@ -140,14 +140,14 @@ export default function KseiDrilldownSheet({
           <SheetTitle className="text-sm font-semibold text-slate-800 dark:text-white/90 truncate min-w-0">
             {typeLabel} · {fmtIdr(sliceAmount)}
           </SheetTitle>
-          <span className="ml-auto shrink-0 text-[11px] font-semibold px-1.5 py-0.5 rounded-full bg-slate-200/70 dark:bg-white/[0.06] text-slate-500 dark:text-white/50 tabular-nums">
+          <span className="ml-auto shrink-0 text-[11px] font-semibold px-1.5 py-0.5 rounded-full bg-slate-200/70 dark:bg-white/[0.06] text-slate-600 dark:text-white/50 tabular-nums">
             {slicePercent.toFixed(1).replace('.', ',')}%
           </span>
         </SheetHeader>
 
         <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-4 outline-none sidebar-scroll">
           {/* SheetDescription is USED (spec §6) — visible position line. */}
-          <SheetDescription className="flex items-center justify-between gap-2 pt-3 text-[11px] text-slate-500 dark:text-white/40">
+          <SheetDescription className="flex items-center justify-between gap-2 pt-3 text-[11px] text-slate-500 dark:text-white/50">
             <span>Posisi {fmtDate(snapshotDate)}</span>
             {staleDays != null && (
               <span
@@ -250,7 +250,7 @@ function InstrumentRow({
           {instrument.code}
         </p>
         {instrument.name && (
-          <p className="text-[11px] text-slate-500 dark:text-white/40 truncate">
+          <p className="text-[11px] text-slate-500 dark:text-white/50 truncate">
             {instrument.name}
           </p>
         )}

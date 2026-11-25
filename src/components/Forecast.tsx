@@ -476,7 +476,7 @@ export default function Forecast() {
             </div>
             <div className="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center justify-between">
               <span>Savings Rate: {f.eomSavings?.projectedSavingsRatePct ?? 0}%</span>
-              <span className="text-slate-500 dark:text-slate-500">Gaji: {formatIdr(f.income)}</span>
+              <span className="text-slate-500 dark:text-slate-400">Gaji: {formatIdr(f.income)}</span>
             </div>
           </div>
         </div>
