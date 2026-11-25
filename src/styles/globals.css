@@ -157,3 +157,14 @@ body:has(.dark) {
   background-attachment: fixed;
   background-color: hsl(228 57% 5%);
 }
+
+/* ── Mobile: respons tap instan di target interaktif ─────────────────────── */
+/* Reason: iOS Safari menahan ~300ms untuk mendeteksi double-tap-zoom;
+   manipulation menghapus delay tap tanpa mematikan pinch-zoom viewport. */
+button,
+a,
+[role='button'],
+label,
+select {
+  touch-action: manipulation;
+}
