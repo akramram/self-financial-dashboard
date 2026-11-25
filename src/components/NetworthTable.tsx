@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
+import { Wallet } from 'lucide-react';
 import type { NetworthRecord } from '../lib/data';
 import { formatIdr } from '../lib/utils';
 import { useSortState } from '../hooks/useSortState';
@@ -15,6 +16,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
+import EmptyState from './ui/empty-state';
 
 interface Props {
   networth: NetworthRecord[];
@@ -175,7 +177,7 @@ export default function NetworthTable({ networth }: Props) {
       {/* Mobile card list (<md) — mirrors TransactionTable/RecurringManager pattern (issue #265) */}
       <div className="md:hidden divide-y divide-slate-200 dark:divide-white/[0.05]">
         {sortedRows.length === 0 ? (
-          <div className="px-4 py-6 text-center text-sm text-muted-foreground">No networth records yet.</div>
+          <EmptyState icon={Wallet} message="No networth records yet." action={{ href: '/add', label: 'Add first record' }} className="px-4 py-6" />
         ) : (
           sortedRows.map((row) => {
             const yoy = yoyByMonth.get(row.month);

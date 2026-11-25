@@ -7,6 +7,7 @@ import { useConfirm } from './ConfirmDialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import EmptyState from './ui/empty-state';
 import {
   Table,
   TableBody,
@@ -199,7 +200,7 @@ export default function IncomeSettings() {
       {loading ? (
         <LoadingState label="Loading..." className="p-8" />
       ) : sortedIncomes.length === 0 ? (
-        <div className="p-8 text-center text-sm text-muted-foreground">No income entries yet.</div>
+        <EmptyState icon={Wallet} message="No income entries yet." hint="Isi formulir di atas untuk mencatat penghasilan bulan pertama." className="p-8" />
       ) : (
         <div className="hidden md:block rounded-xl border border-border/80 dark:border-white/[0.06] overflow-hidden">
           <Table>
