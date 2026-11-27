@@ -57,11 +57,16 @@ export const POST: APIRoute = async ({ request }) => {
       if (date && !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
         return new Response(JSON.stringify({ error: 'Date must be YYYY-MM-DD' }), { status: 400 });
       }
+      const time = edits.time != null ? String(edits.time) : undefined;
+      if (time && !/^\d{2}:\d{2}(:\d{2})?$/.test(time)) {
+        return new Response(JSON.stringify({ error: 'Time must be HH:mm' }), { status: 400 });
+      }
       const transactionId = approvePendingEmailTx(id, {
         title: edits.title ? String(edits.title).trim() : undefined,
         category: edits.category ? String(edits.category).trim() : undefined,
         amount,
         date,
+        time,
         payment_method: edits.payment_method ? String(edits.payment_method).trim() : undefined,
       });
       return new Response(JSON.stringify({ ok: true, transactionId, remaining: listPendingEmailTx().length }), {

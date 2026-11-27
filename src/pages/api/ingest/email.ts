@@ -77,6 +77,7 @@ export const POST: APIRoute = async ({ request }) => {
       message_id: messageId,
       subject: parsed.subject || String(msg?.subject || ''),
       tx_date: parsed.tx_date,
+      tx_time: parsed.tx_time,
       merchant: parsed.merchant,
       amount: parsed.amount,
       card_last4: parsed.card_last4,

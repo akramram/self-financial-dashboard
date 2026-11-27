@@ -248,6 +248,7 @@ export function initSchema() {
       source TEXT NOT NULL DEFAULT 'jenius',
       subject TEXT NOT NULL,
       tx_date TEXT NOT NULL,
+      tx_time TEXT NOT NULL DEFAULT '',
       merchant TEXT NOT NULL DEFAULT '',
       amount REAL NOT NULL,
       card_last4 TEXT NOT NULL DEFAULT '',
@@ -258,6 +259,29 @@ export function initSchema() {
     );
   `);
   db.exec(`CREATE INDEX IF NOT EXISTS idx_pending_email_status ON pending_email_tx(status, created_at)`);
+
+  // tx_time shipped after the first queue rows existed — add it in place and
+  // backfill from raw_excerpt (the email body is stored verbatim) so an
+  // already-queued row still shows its clock time. Idempotent: only fills ''.
+  const cols = db.prepare(`PRAGMA table_info(pending_email_tx)`).all() as Array<{ name: string }>;
+  if (!cols.some((c) => c.name === 'tx_time')) {
+    db.exec(`ALTER TABLE pending_email_tx ADD COLUMN tx_time TEXT NOT NULL DEFAULT ''`);
+  }
+  const missing = db
+    .prepare(`SELECT id, tx_date, raw_excerpt FROM pending_email_tx WHERE tx_time = '' OR tx_time IS NULL`)
+    .all() as Array<{ id: number; tx_date: string; raw_excerpt: string }>;
+  const setTime = db.prepare(`UPDATE pending_email_tx SET tx_time = ? WHERE id = ?`);
+  for (const row of missing) {
+    const numbered = row.raw_excerpt.match(
+      /\d{2}[\/\-.]\d{2}[\/\-.]\d{4}\s+(\d{1,2}):(\d{2})(?::(\d{2}))?/
+    );
+    const named = row.raw_excerpt.match(
+      /\d{1,2}\s+[A-Z]{3}[A-Za-z]*\s+\d{4}\s+(\d{1,2}):(\d{2})(?::(\d{2}))?/
+    );
+    const g = numbered || named;
+    if (!g) continue;
+    setTime.run(`${g[1].padStart(2, '0')}:${g[2]}:${g[3] || '00'}`, row.id);
+  }
 }
 
 // ─── Period helpers ─────────────────────────────────────────────────────────
@@ -4441,6 +4465,7 @@ export interface PendingEmailTx {
   source: string;
   subject: string;
   tx_date: string;
+  tx_time: string;
   merchant: string;
   amount: number;
   card_last4: string;
@@ -4456,6 +4481,7 @@ export function insertPendingEmailTx(row: {
   source?: string;
   subject: string;
   tx_date: string;
+  tx_time?: string;
   merchant: string;
   amount: number;
   card_last4?: string;
@@ -4463,14 +4489,15 @@ export function insertPendingEmailTx(row: {
 }): number | null {
   const res = db
     .prepare(
-      `INSERT OR IGNORE INTO pending_email_tx (message_id, source, subject, tx_date, merchant, amount, card_last4, raw_excerpt)
-       VALUES (@message_id, @source, @subject, @tx_date, @merchant, @amount, @card_last4, @raw_excerpt)`
+      `INSERT OR IGNORE INTO pending_email_tx (message_id, source, subject, tx_date, tx_time, merchant, amount, card_last4, raw_excerpt)
+       VALUES (@message_id, @source, @subject, @tx_date, @tx_time, @merchant, @amount, @card_last4, @raw_excerpt)`
     )
     .run({
       message_id: row.message_id,
       source: row.source || 'jenius',
       subject: row.subject,
       tx_date: row.tx_date,
+      tx_time: row.tx_time || '',
       merchant: row.merchant,
       amount: row.amount,
       card_last4: row.card_last4 || '',
@@ -4492,28 +4519,32 @@ export function getPendingEmailTx(id: number): PendingEmailTx | undefined {
 /** Confirm a queued email into `transactions` with the user's edits applied. */
 export function approvePendingEmailTx(
   id: number,
-  edits: { title?: string; category?: string; amount?: number; date?: string; payment_method?: string }
+  edits: { title?: string; category?: string; amount?: number; date?: string; time?: string; payment_method?: string }
 ): number {
   const row = getPendingEmailTx(id);
   if (!row) throw new Error('Pending transaction not found');
   if (row.status !== 'pending') throw new Error('Already resolved');
 
-  const date = edits.date || row.tx_date; // YYYY-MM-DD
-  const [y, m] = date.split('-').map(Number);
+  // Same semantics as useTransactionForm: created_time carries the REAL
+  // timestamp (day + clock from the email), while `date` is only the period
+  // marker (21st of that period) — daily grouping reads created_time.
+  const day = edits.date || row.tx_date; // YYYY-MM-DD
+  const time = (edits.time || row.tx_time || '00:00:00').slice(0, 8);
+  const [y, m] = day.split('-').map(Number);
   const month = `${MONTH_NAMES[m - 1]} ${y}`;
   const period_id = ensurePeriod(month);
 
   const txId = insertTransaction({
     period_id,
-    date,
+    date: `${y}-${String(m).padStart(2, '0')}-21`,
     title: edits.title || row.merchant || 'Transaksi Kartu Kredit Jenius',
     category: edits.category || 'Others',
     amount: edits.amount ?? row.amount,
     currency: 'IDR',
     type: 'credit_expense',
-    payment_method: edits.payment_method || 'Jenius CC',
+    payment_method: edits.payment_method || 'Credit',
     done: 1,
-    created_time: new Date().toISOString(),
+    created_time: new Date(`${day}T${time}:00`).toISOString(),
     notes: `email:${row.source}`,
   });
 
