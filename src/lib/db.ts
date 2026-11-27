@@ -235,6 +235,29 @@ export function initSchema() {
       PRIMARY KEY (snapshot_date, kind, code)
     );
   `);
+
+  // Jenius email ingest queue: parsed card-notification emails land here as
+  // 'pending' and stay OUT of `transactions` until the user confirms them in
+  // the EmailReviewModal (one card at a time on app open). message_id is the
+  // IMAP Message-ID and is UNIQUE — that is the whole dedup story, so the
+  // fetcher can re-scan the mailbox every run without double-inserting.
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS pending_email_tx (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      message_id TEXT NOT NULL UNIQUE,
+      source TEXT NOT NULL DEFAULT 'jenius',
+      subject TEXT NOT NULL,
+      tx_date TEXT NOT NULL,
+      merchant TEXT NOT NULL DEFAULT '',
+      amount REAL NOT NULL,
+      card_last4 TEXT NOT NULL DEFAULT '',
+      raw_excerpt TEXT NOT NULL DEFAULT '',
+      status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','approved','rejected')),
+      transaction_id INTEGER,
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
+  db.exec(`CREATE INDEX IF NOT EXISTS idx_pending_email_status ON pending_email_tx(status, created_at)`);
 }
 
 // ─── Period helpers ─────────────────────────────────────────────────────────
@@ -4400,4 +4423,107 @@ export function getMonthComparison(options?: {
     insights,
     categoryTransactions,
   };
+}
+
+// ─── Jenius email ingest queue ──────────────────────────────────────────────
+// Flow: scripts/jenius-email-ingest.py (IMAP, launchd every 5 min) → POST
+// /api/ingest/email → insertPendingEmailTx (pending) → EmailReviewModal
+// (app open) → approvePendingEmailTx (real insertTransaction) | reject.
+
+const MONTH_NAMES = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+];
+
+export interface PendingEmailTx {
+  id: number;
+  message_id: string;
+  source: string;
+  subject: string;
+  tx_date: string;
+  merchant: string;
+  amount: number;
+  card_last4: string;
+  raw_excerpt: string;
+  status: 'pending' | 'approved' | 'rejected';
+  transaction_id: number | null;
+  created_at: string;
+}
+
+/** Queue a parsed email. Returns the row id, or null when message_id was already seen. */
+export function insertPendingEmailTx(row: {
+  message_id: string;
+  source?: string;
+  subject: string;
+  tx_date: string;
+  merchant: string;
+  amount: number;
+  card_last4?: string;
+  raw_excerpt?: string;
+}): number | null {
+  const res = db
+    .prepare(
+      `INSERT OR IGNORE INTO pending_email_tx (message_id, source, subject, tx_date, merchant, amount, card_last4, raw_excerpt)
+       VALUES (@message_id, @source, @subject, @tx_date, @merchant, @amount, @card_last4, @raw_excerpt)`
+    )
+    .run({
+      message_id: row.message_id,
+      source: row.source || 'jenius',
+      subject: row.subject,
+      tx_date: row.tx_date,
+      merchant: row.merchant,
+      amount: row.amount,
+      card_last4: row.card_last4 || '',
+      raw_excerpt: row.raw_excerpt || '',
+    });
+  return res.changes ? Number(res.lastInsertRowid) : null;
+}
+
+export function listPendingEmailTx(): PendingEmailTx[] {
+  return db
+    .prepare(`SELECT * FROM pending_email_tx WHERE status = 'pending' ORDER BY tx_date ASC, id ASC`)
+    .all() as PendingEmailTx[];
+}
+
+export function getPendingEmailTx(id: number): PendingEmailTx | undefined {
+  return db.prepare('SELECT * FROM pending_email_tx WHERE id = ?').get(id) as PendingEmailTx | undefined;
+}
+
+/** Confirm a queued email into `transactions` with the user's edits applied. */
+export function approvePendingEmailTx(
+  id: number,
+  edits: { title?: string; category?: string; amount?: number; date?: string; payment_method?: string }
+): number {
+  const row = getPendingEmailTx(id);
+  if (!row) throw new Error('Pending transaction not found');
+  if (row.status !== 'pending') throw new Error('Already resolved');
+
+  const date = edits.date || row.tx_date; // YYYY-MM-DD
+  const [y, m] = date.split('-').map(Number);
+  const month = `${MONTH_NAMES[m - 1]} ${y}`;
+  const period_id = ensurePeriod(month);
+
+  const txId = insertTransaction({
+    period_id,
+    date,
+    title: edits.title || row.merchant || 'Transaksi Kartu Kredit Jenius',
+    category: edits.category || 'Others',
+    amount: edits.amount ?? row.amount,
+    currency: 'IDR',
+    type: 'credit_expense',
+    payment_method: edits.payment_method || 'Jenius CC',
+    done: 1,
+    created_time: new Date().toISOString(),
+    notes: `email:${row.source}`,
+  });
+
+  db.prepare(`UPDATE pending_email_tx SET status = 'approved', transaction_id = ? WHERE id = ?`).run(txId, id);
+  return txId;
+}
+
+export function rejectPendingEmailTx(id: number, reason = '') {
+  db.prepare(`UPDATE pending_email_tx SET status = 'rejected', raw_excerpt = raw_excerpt || ? WHERE id = ?`).run(
+    reason ? `\n[rejected: ${reason}]` : '',
+    id
+  );
 }
