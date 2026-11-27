@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Button } from '@/components/ui/button';
 import { useTransactionForm } from '../hooks/useTransactionForm';
 import TransactionFormFields from './TransactionFormFields';
+import QuickRepeatChips from './QuickRepeatChips';
 
 interface QuickAddTransactionModalProps {
   open: boolean;
@@ -129,6 +130,17 @@ export default function QuickAddTransactionModal({ open, onOpenChange, preset }:
           data-testid="quick-add-body"
           className="max-md:flex-1 max-md:overflow-y-auto max-md:min-h-0 px-5 pb-4 max-md:pb-20"
         >
+          <QuickRepeatChips
+            onPick={(pick) => {
+              ctrl.setTitle(pick.title);
+              ctrl.setCategory(pick.category ?? '');
+              // A picked chip is an explicit category choice: stop the title
+              // suggestion hook from overwriting it.
+              ctrl.setCategoryUserTouched(true);
+              if (pick.amount != null) ctrl.setAmount(String(pick.amount));
+              if (pick.type) ctrl.setType(pick.type as 'cash' | 'credit_expense' | 'credit_payment');
+            }}
+          />
           <TransactionFormFields ctrl={ctrl} variant="sheet" formId="quick-add-tx-form" />
         </div>
 
