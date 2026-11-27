@@ -3222,3 +3222,13 @@ Audit KUR-59/FIN-015+016: foundation shadcn + migrasi tabel & form ternyata suda
 - **Input numerik mobile (PR #428 + #429):** 46 input `type="number"` di 16 komponen → `type="text" inputMode="decimal"` (pola TransactionFormFields): keyboard numerik tetap muncul, spinner desktop hilang, wheel-scroll iOS tidak mengubah nilai. Follow-up #429: assert nilai test sinking-funds jadi string. Test scan `inputmode-decimal`.
 - **Testing:** suite hijau penuh **872 test / 107 files**; `npm run build` Complete tiap PR; deploy PM2 verified (status online, curl 200) per iterasi.
 - **Git workflow:** branch → PR #422–#429 merged satu per satu; log marathon `findash-r5.md` per iterasi.
+
+## 2026-11-27 — Inovasi harian: chip "Repeat" di sheet quick add
+
+### Hasil
+- Sheet quick add (FAB mobile, tab tengah, tombol dashboard) kini menampilkan maksimal 5 chip judul transaksi tersering dari `GET /api/title-presets` (judul, nominal, kategori, tipe biasanya). Satu tap mengisi semua field, jadi catat pengeluaran rutin (Kontrakan, Zakat, Internet) tanpa mengetik.
+- `QuickRepeatChips.tsx` baru: fetch sekali saat mount, buang judul kosong, sanitasi `type` ke 3 nilai sah, silent no-op saat fetch gagal/kosong (form tetap jalan). Tap target 44px, `aria-label` menyebut judul + nominal, kontras AA (`slate-700` light / `white/80` dark).
+- Kategori hasil pilih ditandai `categoryUserTouched` supaya hook saran judul tidak menimpa pilihan user.
+- **Testing:** `quick-repeat-chips.test.tsx` (4 test: render/filter, payload klik, kosong saat 500, prefill di modal). Suite **876 test / 108 files** hijau, `npm run build` Complete.
+- **Antislop:** tanpa warna baru, tanpa badge dekoratif; label "Repeat" 12px dengan ikon `aria-hidden`, chip hanya muncul bila ada data nyata.
+- **Git workflow:** branch `feat/innovation-quick-repeat-chips` → PR #432 merge; deploy PM2 (stop → delete → rm dist → build → start) + curl 200.
