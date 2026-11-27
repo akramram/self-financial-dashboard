@@ -1,6 +1,7 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
-import { Mail } from 'lucide-react';
+import { animate } from 'animejs';
+import { ChevronLeft, ChevronRight, Mail } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -12,13 +13,16 @@ import { formatIdr } from '../lib/utils';
  * EmailReviewModal — gates Jenius email transactions before they reach the
  * transaction list.
  *
- * Mounted once in Layout.astro's client root. On mount it asks
- * /api/pending-email; queued emails are shown ONE card at a time with every
- * field editable (name, category, amount, date, time, payment method).
- *   Simpan  → POST action=approve (the ONLY path that writes to `transactions`)
- *   Tolak   → POST action=reject
- *   Lewati  → next card, the email STAYS pending for later
- *   Nanti   → closes the dialog; the floating mail button (with count) reopens it
+ * Mounted once in Layout.astro's client root. Queued emails are walked ONE card
+ * at a time, pagination-style: Sebelumnya / Berikutnya buttons, arrow keys, or
+ * swiping the card left/right (anime.js drives the slide-out / slide-in).
+ *   Simpan            → POST action=approve (the ONLY write path into `transactions`)
+ *   Tolak             → POST action=reject
+ *   Berikutnya        → moves on WITHOUT resolving; the email stays pending
+ *   Nanti             → closes the dialog; the floating mail button (with count) reopens it
+ *
+ * `items` is the unresolved queue, so navigating never mutates server state and
+ * the badge count always equals what still needs a decision.
  */
 
 interface PendingItem {
@@ -33,6 +37,7 @@ interface PendingItem {
 }
 
 const DEFAULT_PAYMENT = 'Credit';
+const SWIPE_THRESHOLD = 70;
 
 export default function EmailReviewModal() {
   const [items, setItems] = useState<PendingItem[]>([]);
@@ -40,7 +45,6 @@ export default function EmailReviewModal() {
   const [index, setIndex] = useState(0);
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [skipped, setSkipped] = useState<number[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [form, setForm] = useState({
     title: '',
@@ -51,6 +55,9 @@ export default function EmailReviewModal() {
     payment_method: DEFAULT_PAYMENT,
   });
 
+  const cardRef = useRef<HTMLDivElement | null>(null);
+  const dragRef = useRef<{ active: boolean; x: number; dx: number }>({ active: false, x: 0, dx: 0 });
+
   const load = useCallback(async () => {
     try {
       const res = await fetch('/api/pending-email', { headers: { accept: 'application/json' } });
@@ -60,7 +67,6 @@ export default function EmailReviewModal() {
       setCategories(data.categories || []);
       setItems(list);
       setIndex(0);
-      setSkipped([]);
       setOpen(list.length > 0);
     } catch {
       /* offline — try again next open */
@@ -74,7 +80,6 @@ export default function EmailReviewModal() {
   }, [load]);
 
   const current = items[index];
-  const remaining = items.length - skipped.length;
 
   useEffect(() => {
     if (!current) return;
@@ -88,22 +93,49 @@ export default function EmailReviewModal() {
     });
   }, [current]);
 
-  /** Advance to the next card that has not been skipped; close when none is left. */
-  const advance = useCallback(
-    (skipId?: number) => {
-      const nextSkipped = skipId ? [...skipped, skipId] : skipped;
-      if (skipId) setSkipped(nextSkipped);
-      let i = index + 1;
-      while (i < items.length && nextSkipped.includes(items[i].id)) i++;
-      if (i >= items.length) {
-        setIndex(0);
-        setOpen(false);
+  /**
+   * Page to another card. The index switch is synchronous — the anime.js slide
+   * is cosmetic only, so a tab where requestAnimationFrame is throttled (hidden
+   * tab, reduced motion) still navigates instead of stalling mid-animation.
+   */
+  const navigate = useCallback(
+    (dir: -1 | 1) => {
+      const target = index + dir;
+      const inRange = target >= 0 && target < items.length;
+      if (!inRange) {
+        // edge of the queue → rubber-band the current card back into place
+        requestAnimationFrame(() => {
+          const el = cardRef.current;
+          if (el) animate(el, { x: 0, opacity: 1, duration: 220, ease: 'outQuad' });
+        });
         return;
       }
-      setIndex(i);
+      setIndex(target);
+      requestAnimationFrame(() => {
+        const el = cardRef.current;
+        if (!el) return;
+        el.style.transform = `translateX(${dir * 160}px)`;
+        el.style.opacity = '0';
+        animate(el, { x: 0, opacity: 1, duration: 260, ease: 'outQuad' });
+      });
     },
-    [index, items, skipped]
+    [index, items.length]
   );
+
+  /** Drop a resolved row from the local queue; close (and refresh) when empty. */
+  const resolve = useCallback((id: number, refresh: boolean) => {
+    requestAnimationFrame(() => {
+      const el = cardRef.current;
+      if (el) animate(el, { y: -36, opacity: 0, duration: 150, ease: 'inQuad' });
+    });
+    setItems((prev) => {
+      const next = prev.filter((it) => it.id !== id);
+      setIndex((i) => Math.min(i, Math.max(next.length - 1, 0)));
+      if (next.length === 0) setOpen(false);
+      return next;
+    });
+    if (refresh) window.location.reload(); // dashboard numbers changed
+  }, []);
 
   const submit = async (action: 'approve' | 'reject') => {
     if (!current) return;
@@ -136,9 +168,7 @@ export default function EmailReviewModal() {
         return;
       }
       toast.success(action === 'approve' ? 'Transaksi disimpan' : 'Email ditolak');
-      const wasLast = index + 1 >= items.length;
-      advance();
-      if (wasLast && action === 'approve') window.location.reload(); // refresh dashboard numbers
+      resolve(current.id, action === 'approve' && items.length === 1);
     } catch (e: any) {
       toast.error(e?.message || 'Gagal menyimpan');
     } finally {
@@ -146,30 +176,69 @@ export default function EmailReviewModal() {
     }
   };
 
+  // ── swipe: pointer drag on the card; anime.js snaps back or commits ──
+  const onPointerDown = (e: React.PointerEvent) => {
+    if (busy) return;
+    dragRef.current = { active: true, x: e.clientX, dx: 0 };
+    (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+  };
+
+  const onPointerMove = (e: React.PointerEvent) => {
+    const drag = dragRef.current;
+    const el = cardRef.current;
+    if (!drag.active || !el) return;
+    drag.dx = e.clientX - drag.x;
+    el.style.transform = `translateX(${drag.dx}px)`;
+    el.style.opacity = String(1 - Math.min(Math.abs(drag.dx) / 500, 0.45));
+  };
+
+  const endDrag = () => {
+    const drag = dragRef.current;
+    const el = cardRef.current;
+    if (!drag.active) return;
+    drag.active = false;
+    if (!el) return;
+    if (Math.abs(drag.dx) >= SWIPE_THRESHOLD) {
+      navigate(drag.dx < 0 ? 1 : -1); // swipe left → next, swipe right → prev
+    } else {
+      animate(el, { x: 0, opacity: 1, duration: 200, ease: 'outQuad' });
+    }
+    drag.dx = 0;
+  };
+
+  // arrow keys page through the queue (ignored while typing in a field)
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement)?.tagName?.toLowerCase();
+      if (tag === 'input' || tag === 'select' || tag === 'textarea') return;
+      if (e.key === 'ArrowLeft') { e.preventDefault(); navigate(-1); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); navigate(1); }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open, navigate]);
+
   const categoryOptions = useMemo(
     () => [...new Set([form.category, 'Others', ...categories].filter(Boolean))],
     [form.category, categories]
   );
 
   // Floating reopen button — shown whenever the dialog is dismissed but the
-  // queue still holds unresolved emails (Lewati / Nanti).
+  // queue still holds unresolved emails.
   if (!open) {
-    if (!loaded || remaining <= 0) return null;
+    if (!loaded || items.length === 0) return null;
     return (
       <button
         type="button"
-        onClick={() => {
-          const first = items.findIndex((it) => !skipped.includes(it.id));
-          setIndex(first < 0 ? 0 : first);
-          setOpen(true);
-        }}
+        onClick={() => setOpen(true)}
         className="fixed left-4 bottom-24 lg:bottom-6 z-40 flex items-center gap-2 rounded-full border border-border bg-background/95 px-4 py-3 text-sm font-medium shadow-lg backdrop-blur transition hover:bg-accent dark:border-white/10 dark:bg-navy-900/95 dark:hover:bg-white/10"
-        aria-label={`Buka konfirmasi transaksi email (${remaining})`}
+        aria-label={`Buka konfirmasi transaksi email (${items.length})`}
       >
         <Mail className="h-4 w-4" />
         <span className="hidden sm:inline">Konfirmasi</span>
         <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground">
-          {remaining}
+          {items.length}
         </span>
       </button>
     );
@@ -179,7 +248,7 @@ export default function EmailReviewModal() {
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) setOpen(false); }}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md overflow-hidden">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             Konfirmasi Transaksi
@@ -193,7 +262,14 @@ export default function EmailReviewModal() {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-3 py-2">
+        <div
+          ref={cardRef}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={endDrag}
+          onPointerCancel={endDrag}
+          className="grid touch-pan-y gap-3 py-2 select-none"
+        >
           <div className="grid gap-1.5">
             <Label htmlFor="er-title" className="text-xs text-muted-foreground">Nama</Label>
             <Input
@@ -265,14 +341,33 @@ export default function EmailReviewModal() {
           </p>
         </div>
 
+        <div className="flex items-center justify-between gap-2 border-t border-border pt-2 dark:border-white/10">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate(-1)}
+            disabled={busy || index === 0}
+            aria-label="Transaksi sebelumnya"
+          >
+            <ChevronLeft className="mr-1 h-4 w-4" /> Sebelumnya
+          </Button>
+          <span className="text-[11px] text-muted-foreground">geser kartu ← →</span>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate(1)}
+            disabled={busy || index >= items.length - 1}
+            aria-label="Transaksi berikutnya (tetap pending)"
+          >
+            Berikutnya <ChevronRight className="ml-1 h-4 w-4" />
+          </Button>
+        </div>
+
         <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-between">
           <Button variant="ghost" size="sm" onClick={() => setOpen(false)} disabled={busy}>
             Nanti
           </Button>
           <div className="flex flex-wrap justify-end gap-2">
-            <Button variant="secondary" size="sm" onClick={() => advance(current.id)} disabled={busy}>
-              Lewati
-            </Button>
             <Button variant="outline" size="sm" onClick={() => submit('reject')} disabled={busy}>
               Tolak
             </Button>
