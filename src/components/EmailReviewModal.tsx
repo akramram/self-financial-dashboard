@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { animate } from 'animejs';
-import { ChevronLeft, ChevronRight, Mail } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Mail, RefreshCw } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -45,6 +45,7 @@ export default function EmailReviewModal() {
   const [index, setIndex] = useState(0);
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [syncing, setSyncing] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [form, setForm] = useState({
     title: '',
@@ -176,6 +177,30 @@ export default function EmailReviewModal() {
     }
   };
 
+  /** Manual sync: run the IMAP fetcher now, then reload the queue. */
+  const syncEmail = useCallback(async () => {
+    setSyncing(true);
+    try {
+      const res = await fetch('/api/pending-email-sync', { method: 'POST' });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.ok) {
+        toast.error(data.error || 'Sync gagal');
+        return;
+      }
+      const fresh = await fetch('/api/pending-email', { headers: { accept: 'application/json' } });
+      const payload = fresh.ok ? await fresh.json() : { items: [], categories: [] };
+      const list: PendingItem[] = payload.items || [];
+      setCategories(payload.categories || []);
+      setItems(list);
+      setIndex(0);
+      toast.success(`Sync selesai · ${list.length} transaksi menunggu konfirmasi`);
+    } catch (e: any) {
+      toast.error(e?.message || 'Sync gagal');
+    } finally {
+      setSyncing(false);
+    }
+  }, []);
+
   // ── swipe: pointer drag on the card; anime.js snaps back or commits ──
   const onPointerDown = (e: React.PointerEvent) => {
     if (busy) return;
@@ -224,10 +249,11 @@ export default function EmailReviewModal() {
     [form.category, categories]
   );
 
-  // Floating reopen button — shown whenever the dialog is dismissed but the
-  // queue still holds unresolved emails.
+  // Floating entry point — always available once the queue is known, so a manual
+// sync is reachable even when nothing is pending. The badge only appears when
+// there is something to decide.
   if (!open) {
-    if (!loaded || items.length === 0) return null;
+    if (!loaded) return null;
     return (
       <button
         type="button"
@@ -237,14 +263,40 @@ export default function EmailReviewModal() {
       >
         <Mail className="h-4 w-4" />
         <span className="hidden sm:inline">Konfirmasi</span>
-        <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground">
-          {items.length}
-        </span>
+        {items.length > 0 && (
+          <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground">
+            {items.length}
+          </span>
+        )}
       </button>
     );
   }
 
-  if (!current) return null;
+  // Queue empty (all resolved, or nothing fetched yet) — keep the dialog usable
+  // so the user can sync manually instead of waiting for the 5-minute job.
+  if (!current) {
+    return (
+      <Dialog open={open} onOpenChange={(v) => { if (!v) setOpen(false); }}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Tidak ada transaksi menunggu</DialogTitle>
+            <DialogDescription className="text-xs">
+              Email Jenius dipindai otomatis tiap 5 menit. Pakai tombol di bawah untuk memindai sekarang.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end gap-2">
+            <Button variant="ghost" size="sm" onClick={() => setOpen(false)} disabled={syncing}>
+              Tutup
+            </Button>
+            <Button size="sm" onClick={syncEmail} disabled={syncing}>
+              <RefreshCw className={`mr-1 h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
+              {syncing ? 'Sync…' : 'Sync email'}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) setOpen(false); }}>
@@ -364,9 +416,22 @@ export default function EmailReviewModal() {
         </div>
 
         <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <Button variant="ghost" size="sm" onClick={() => setOpen(false)} disabled={busy}>
-            Nanti
-          </Button>
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="sm" onClick={() => setOpen(false)} disabled={busy || syncing}>
+              Nanti
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={syncEmail}
+              disabled={busy || syncing}
+              aria-label="Sync email sekarang"
+              title="Ambil email Jenius sekarang (tanpa menunggu jadwal 5 menit)"
+            >
+              <RefreshCw className={`mr-1 h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
+              {syncing ? 'Sync…' : 'Sync email'}
+            </Button>
+          </div>
           <div className="flex flex-wrap justify-end gap-2">
             <Button variant="outline" size="sm" onClick={() => submit('reject')} disabled={busy}>
               Tolak
