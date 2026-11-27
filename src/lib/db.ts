@@ -4529,10 +4529,15 @@ export function approvePendingEmailTx(
   // timestamp (day + clock from the email), while `date` is only the period
   // marker (21st of that period) — daily grouping reads created_time.
   const day = edits.date || row.tx_date; // YYYY-MM-DD
-  const time = (edits.time || row.tx_time || '00:00:00').slice(0, 8);
+  // `time` arrives as HH:mm from the modal, but stored rows carry HH:mm:ss —
+  // normalize to HH:mm before building the timestamp, otherwise the double
+  // seconds ("T10:25:00:00") makes Date() throw Invalid time value.
+  const hhmm = (edits.time || row.tx_time || '00:00').slice(0, 5);
   const [y, m] = day.split('-').map(Number);
   const month = `${MONTH_NAMES[m - 1]} ${y}`;
   const period_id = ensurePeriod(month);
+  const localTs = new Date(`${day}T${hhmm}:00`);
+  const created_time = isNaN(localTs.getTime()) ? new Date().toISOString() : localTs.toISOString();
 
   const txId = insertTransaction({
     period_id,
@@ -4544,7 +4549,7 @@ export function approvePendingEmailTx(
     type: 'credit_expense',
     payment_method: edits.payment_method || 'Credit',
     done: 1,
-    created_time: new Date(`${day}T${time}:00`).toISOString(),
+    created_time,
     notes: `email:${row.source}`,
   });
 

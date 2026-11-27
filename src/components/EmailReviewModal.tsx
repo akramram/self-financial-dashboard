@@ -64,7 +64,9 @@ export default function EmailReviewModal() {
       const res = await fetch('/api/pending-email', { headers: { accept: 'application/json' } });
       if (!res.ok) return; // not logged in / viewer → stay silent
       const data = await res.json();
-      const list: PendingItem[] = data.items || [];
+      const list: PendingItem[] = (data.items || []).filter(
+        (it: PendingItem & { status?: string }) => !it.status || it.status === 'pending'
+      );
       setCategories(data.categories || []);
       setItems(list);
       setIndex(0);
@@ -154,7 +156,7 @@ export default function EmailReviewModal() {
           category: form.category.trim() || 'Others',
           amount,
           date: form.date,
-          time: form.time || '00:00:00',
+          time: (form.time || '00:00').slice(0, 5),
           payment_method: form.payment_method.trim() || DEFAULT_PAYMENT,
         };
       }
@@ -257,7 +259,7 @@ export default function EmailReviewModal() {
     return (
       <button
         type="button"
-        onClick={() => setOpen(true)}
+        onClick={() => { setOpen(true); load(); }}
         className="fixed left-4 bottom-24 lg:bottom-6 z-40 flex items-center gap-2 rounded-full border border-border bg-background/95 px-4 py-3 text-sm font-medium shadow-lg backdrop-blur transition hover:bg-accent dark:border-white/10 dark:bg-navy-900/95 dark:hover:bg-white/10"
         aria-label={`Buka konfirmasi transaksi email (${items.length})`}
       >
