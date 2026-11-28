@@ -360,8 +360,8 @@ export default function EmailReviewModal() {
               <Label htmlFor="er-amount" className="text-xs text-muted-foreground">Harga</Label>
               <Input
                 id="er-amount"
-                type="number"
-                inputMode="numeric"
+                type="text"
+                inputMode="decimal"
                 value={form.amount}
                 onChange={(e) => setForm({ ...form, amount: e.target.value })}
               />

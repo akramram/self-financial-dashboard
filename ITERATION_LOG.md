@@ -3232,3 +3232,14 @@ Audit KUR-59/FIN-015+016: foundation shadcn + migrasi tabel & form ternyata suda
 - **Testing:** `quick-repeat-chips.test.tsx` (4 test: render/filter, payload klik, kosong saat 500, prefill di modal). Suite **876 test / 108 files** hijau, `npm run build` Complete.
 - **Antislop:** tanpa warna baru, tanpa badge dekoratif; label "Repeat" 12px dengan ikon `aria-hidden`, chip hanya muncul bila ada data nyata.
 - **Git workflow:** branch `feat/innovation-quick-repeat-chips` → PR #432 merge; deploy PM2 (stop → delete → rm dist → build → start) + curl 200.
+
+## 2026-11-28 — Inovasi harian: multi-select di daftar transaksi mobile
+
+### Hasil
+- Tabel transaksi desktop punya checkbox di header, tapi daftar kartu `<md` tidak punya permukaan seleksi sama sekali: bulk category, Mark Paid/Unpaid, dan bulk delete tidak bisa dijangkau dari HP. Kini ada tombol **Select** (44px, `aria-pressed`) di bar ringkasan; mode seleksi mengubah setiap kartu menjadi `role="checkbox"` + `aria-checked` sehingga tap/Enter/Spasi menandai baris, bukan membuka detail sheet.
+- Checkmark bulat 20px di kiri kartu (border `slate-500` light / `white/40` dark, isi `emerald-600` / `emerald-500`) dan baris terpilih diberi latar `emerald-500/[0.08]`. Tombol quick Paid/Unpaid disembunyikan saat mode seleksi supaya tidak ada perubahan status tanpa sengaja.
+- Bar aksi massal kini `flex-wrap` (tidak lagi mendorong tombol keluar layar di HP) dan mendapat **All on page**; Mark Paid/Unpaid/Delete disabled saat 0 baris terpilih. Pilihan kategori bulk memakai `categoryOptions` (termasuk kategori yatim yang belum ada di tabel `categories`). Mode keluar otomatis setelah aksi selesai atau lewat **Done**/**Deselect**.
+- **Bonus fix:** `EmailReviewModal` masih memakai `type="number"` (regresi dari PR #431) yang menggagalkan scan test `inputmode-decimal` → diganti `type="text" inputMode="decimal"`; guard `Number.isFinite` tetap menjaga nominal.
+- **Testing:** `tx-table-mobile-select.test.tsx` (4 test: toggle Select/Done, tap kartu menandai baris, quick Paid tersembunyi, All on page + reset). Suite **888 test / 110 files** hijau, `npm run build` Complete.
+- **Antislop:** tanpa warna baru, tanpa badge dekoratif, semua target tap ≥44px, kontras AA light+dark, mode seleksi hanya muncul saat diminta.
+- **Git workflow:** branch `feat/innovation-mobile-bulk-select` → PR → merge; deploy PM2 (stop → delete → rm dist → build → start) + curl.
