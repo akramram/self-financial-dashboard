@@ -24,6 +24,7 @@ Usage:
     ./scripts/jenius-email-ingest.py              # fetch + post
     ./scripts/jenius-email-ingest.py --dry-run    # print, do not post
     ./scripts/jenius-email-ingest.py --limit 5
+    ./scripts/jenius-email-ingest.py --lookback-days 1   # only today's window
 """
 
 import email
@@ -166,9 +167,12 @@ def main() -> int:
     limit = None
     if "--limit" in args:
         limit = int(args[args.index("--limit") + 1])
+    lookback_override = None
+    if "--lookback-days" in args:
+        lookback_override = int(args[args.index("--lookback-days") + 1])
 
     cfg = load_env()
-    lookback = int(cfg.get("LOOKBACK_DAYS", "7"))
+    lookback = lookback_override if lookback_override else int(cfg.get("LOOKBACK_DAYS", "7"))
     messages = fetch(cfg, lookback)
     if limit:
         messages = messages[-limit:]
