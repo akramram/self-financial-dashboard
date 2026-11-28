@@ -9,7 +9,7 @@ import SortableHeader from './SortableHeader';
 import EditTransactionDialog from './EditTransactionDialog';
 import TransactionDetailSheet from './TransactionDetailSheet';
 import ConvertToInstallmentModal from './ConvertToInstallmentModal';
-import { Search, SlidersHorizontal, Download, X, Filter, ChevronDown, ChevronRight, FileJson, FileSpreadsheet, CalendarClock } from 'lucide-react';
+import { Search, SlidersHorizontal, Download, X, Filter, ChevronDown, ChevronRight, FileJson, FileSpreadsheet, CalendarClock, Check } from 'lucide-react';
 import { useConfirm } from './ConfirmDialog';
 import { toast } from 'sonner';
 import { showDeleteUndoToast } from '../lib/undo';
@@ -127,6 +127,8 @@ export default function TransactionTable({ transactions, showMonth = true, perio
   const [installmentTx, setInstallmentTx] = useState<Transaction | null>(null);
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [bulkCategory, setBulkCategory] = useState<string>('');
+  // Mobile card list has no header checkbox row, so selection needs its own mode.
+  const [selectMode, setSelectMode] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const rowsPerPage = 25;
@@ -315,6 +317,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
       await deleteTransactionsBulkApi(Array.from(selected));
       setLocalTx(prev => prev.filter(t => !selected.has(t.id)));
       setSelected(new Set());
+      setSelectMode(false);
       showDeleteUndoToast(deleted, restored => setLocalTx(prev => [...prev, ...restored]));
       notifyDataChanged('transactions');
     } catch {
@@ -329,6 +332,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
       setLocalTx(prev => prev.map(t => selected.has(t.id) ? { ...t, category: bulkCategory } : t));
       setSelected(new Set());
       setBulkCategory('');
+      setSelectMode(false);
       toast.success(`${selected.size} transactions categorized as "${bulkCategory}"`);
       notifyDataChanged('transactions');
     } catch {
@@ -347,11 +351,25 @@ export default function TransactionTable({ transactions, showMonth = true, perio
       await updateTransactionsBulkApi(ids, { done });
       setLocalTx(prev => prev.map(t => ids.includes(t.id) ? { ...t, done } as Transaction : t));
       setSelected(new Set());
+      setSelectMode(false);
       toast.success(`${count} marked as ${done ? 'paid' : 'unpaid'}`);
       notifyDataChanged('transactions');
     } catch {
       toast.error(`Failed to mark as ${done ? 'paid' : 'unpaid'}`);
     }
+  };
+
+  const toggleRow = (id: number) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  const exitSelectMode = () => {
+    setSelectMode(false);
+    setSelected(new Set());
   };
 
   // ── Render ─────────────────────────────────────────────────────
@@ -725,11 +743,19 @@ export default function TransactionTable({ transactions, showMonth = true, perio
             )}
           </>
         )}
+        <button
+          type="button"
+          onClick={() => (selectMode ? exitSelectMode() : setSelectMode(true))}
+          aria-pressed={selectMode}
+          className="md:hidden ml-auto inline-flex items-center justify-center min-h-[44px] px-3 -my-1 rounded-md text-xs font-semibold text-slate-700 dark:text-white/70 border border-slate-300 dark:border-white/[0.08] hover:bg-slate-200/60 dark:hover:bg-white/[0.06] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/60"
+        >
+          {selectMode ? 'Done' : 'Select'}
+        </button>
       </div>
 
       {/* ─── Bulk Actions ───────────────────────────────────────── */}
       <AnimatePresence>
-        {selected.size > 0 && (
+        {(selectMode || selected.size > 0) && (
           <motion.div
             initial={{ height: 0, opacity: 0, marginBottom: 0 }}
             animate={{ height: 'auto', opacity: 1, marginBottom: 16 }}
@@ -737,15 +763,20 @@ export default function TransactionTable({ transactions, showMonth = true, perio
             transition={{ duration: 0.2 }}
             className="overflow-hidden"
           >
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
               <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">{selected.size} selected</span>
+              <Button size="sm" variant="ghost" onClick={() => setSelected(new Set(pageRows.map((r) => r.id)))}
+                className="md:hidden h-8 px-2 text-xs text-slate-600 dark:text-white/60 hover:bg-slate-200/60 dark:hover:bg-white/[0.06]"
+              >
+                All on page
+              </Button>
               <Select value={bulkCategory} onValueChange={setBulkCategory}>
-                <SelectTrigger className="w-[180px] h-8 text-xs bg-slate-100 dark:bg-white/[0.04] border-slate-300 dark:border-white/[0.08] text-slate-600 dark:text-white/60">
+                <SelectTrigger aria-label="Bulk category" className="w-[150px] sm:w-[180px] h-8 text-xs bg-slate-100 dark:bg-white/[0.04] border-slate-300 dark:border-white/[0.08] text-slate-600 dark:text-white/60">
                   <SelectValue placeholder="Change category..." />
                 </SelectTrigger>
                 <SelectContent className="bg-slate-100 dark:bg-navy-800 border-slate-300 dark:border-white/[0.08]">
-                  {categories.map((c) => (
-                    <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>
+                  {categoryOptions.map((name) => (
+                    <SelectItem key={name} value={name}>{name}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -754,8 +785,8 @@ export default function TransactionTable({ transactions, showMonth = true, perio
               >
                 Apply
               </Button>
-              <div className="flex-1" />
-              <Button size="sm" variant="ghost" onClick={() => setSelected(new Set())}
+              <div className="hidden sm:block flex-1" />
+              <Button size="sm" variant="ghost" onClick={exitSelectMode}
                 className="h-8 text-xs text-slate-500 dark:text-white/50 hover:text-slate-700 dark:text-white/70"
               >
                 Deselect
@@ -764,7 +795,8 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                 size="sm"
                 variant="ghost"
                 onClick={() => handleBulkPaid(true)}
-                className="h-8 text-xs text-emerald-700 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 hover:bg-emerald-500/10"
+                disabled={selected.size === 0}
+                className="h-8 text-xs text-emerald-700 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 hover:bg-emerald-500/10 disabled:opacity-40"
               >
                 Mark Paid
               </Button>
@@ -772,7 +804,8 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                 size="sm"
                 variant="ghost"
                 onClick={() => handleBulkPaid(false)}
-                className="h-8 text-xs text-gold-700 dark:text-gold-400 hover:text-gold-600 dark:hover:text-gold-300 hover:bg-gold-500/10"
+                disabled={selected.size === 0}
+                className="h-8 text-xs text-gold-700 dark:text-gold-400 hover:text-gold-600 dark:hover:text-gold-300 hover:bg-gold-500/10 disabled:opacity-40"
               >
                 Mark Unpaid
               </Button>
@@ -780,7 +813,8 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                 size="sm"
                 variant="ghost"
                 onClick={handleBulkDelete}
-                className="h-8 text-xs text-red-600 dark:text-red-400 hover:text-red-500 dark:hover:text-red-300 hover:bg-red-500/10"
+                disabled={selected.size === 0}
+                className="h-8 text-xs text-red-600 dark:text-red-400 hover:text-red-500 dark:hover:text-red-300 hover:bg-red-500/10 disabled:opacity-40"
               >
                 Delete {selected.size}
               </Button>
@@ -964,12 +998,33 @@ export default function TransactionTable({ transactions, showMonth = true, perio
               return (
                 <div
                   key={row.id}
-                  role="button"
+                  role={selectMode ? 'checkbox' : 'button'}
+                  aria-checked={selectMode ? selected.has(row.id) : undefined}
                   tabIndex={0}
-                  onClick={() => setDetailTx(row)}
-                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setDetailTx(row); } }}
-                  className="flex items-center gap-3 px-4 py-3 cursor-pointer active:bg-slate-100 dark:active:bg-white/[0.05] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-emerald-500/50 transition-colors"
+                  onClick={() => (selectMode ? toggleRow(row.id) : setDetailTx(row))}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      if (selectMode) toggleRow(row.id); else setDetailTx(row);
+                    }
+                  }}
+                  className={`flex items-center gap-3 px-4 py-3 cursor-pointer active:bg-slate-100 dark:active:bg-white/[0.05] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-emerald-500/50 transition-colors ${
+                    selectMode && selected.has(row.id) ? 'bg-emerald-500/[0.08]' : ''
+                  }`}
                 >
+                  {selectMode && (
+                    <span
+                      aria-hidden="true"
+                      className={`shrink-0 inline-flex h-5 w-5 items-center justify-center rounded-full border-2 transition-colors ${
+                        selected.has(row.id)
+                          ? 'border-emerald-600 bg-emerald-600 text-white dark:border-emerald-500 dark:bg-emerald-500 dark:text-navy-900'
+                          : 'border-slate-500 dark:border-white/40'
+                      }`}
+                    >
+                      {selected.has(row.id) && <Check className="h-3 w-3" strokeWidth={3} />}
+                    </span>
+                  )}
+                  {!selectMode && (
                   <button
                     onClick={async (e) => {
                       e.stopPropagation();
@@ -993,6 +1048,7 @@ export default function TransactionTable({ transactions, showMonth = true, perio
                   >
                     {row.done ? 'Paid' : 'Unpaid'}
                   </button>
+                  )}
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1">
                       <p className="text-sm font-medium text-slate-800 dark:text-white/80 truncate">{row.title}</p>
