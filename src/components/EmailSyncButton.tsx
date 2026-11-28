@@ -21,7 +21,7 @@ const KEY = 'jenius-recheck-days';
 
 export default function EmailSyncButton({ className = '' }: { className?: string }) {
   const [busy, setBusy] = useState(false);
-  const [days, setDays] = useState<number>(7);
+  const [days, setDays] = useState<number>(1);
   const [left, setLeft] = useState(0);
 
   useEffect(() => {
