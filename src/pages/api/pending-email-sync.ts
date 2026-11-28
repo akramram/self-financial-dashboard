@@ -16,12 +16,18 @@ import { listPendingEmailTx } from '../../lib/db';
 const SCRIPT = 'scripts/jenius-email-ingest.py';
 const TIMEOUT_MS = 90_000;
 
-export const POST: APIRoute = async () => {
+export const POST: APIRoute = async ({ request }) => {
   const scriptPath = resolve(process.cwd(), SCRIPT);
+
+  // Time filter: how far back to scan. 1 = today only, so a quick recheck does
+  // not re-read the whole mailbox history.
+  const body = await request.json().catch(() => ({} as any));
+  const days = Math.min(90, Math.max(1, Number(body?.days) || 7));
+  const argv = [scriptPath, '--lookback-days', String(days)];
 
   const result = await new Promise<{ code: number | null; out: string; err: string; timedOut: boolean }>(
     (done) => {
-      const child = spawn('python3', [scriptPath], { cwd: process.cwd() });
+      const child = spawn('python3', argv, { cwd: process.cwd() });
       let out = '';
       let err = '';
       let timedOut = false;
@@ -50,6 +56,7 @@ export const POST: APIRoute = async () => {
       JSON.stringify({
         ok: false,
         pending,
+        days,
         error: result.timedOut
           ? 'Sync timeout (>90s)'
           : result.err.trim() || result.out.trim() || `ingest exited ${result.code}`,
@@ -59,7 +66,7 @@ export const POST: APIRoute = async () => {
   }
 
   const lastLine = result.out.trim().split('\n').filter(Boolean).pop() || 'sync selesai';
-  return new Response(JSON.stringify({ ok: true, pending, message: lastLine }), {
+  return new Response(JSON.stringify({ ok: true, pending, days, message: lastLine }), {
     headers: { 'Content-Type': 'application/json' },
   });
 };

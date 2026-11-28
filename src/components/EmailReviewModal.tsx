@@ -135,17 +135,27 @@ export default function EmailReviewModal() {
 
   /** Drop a resolved row from the local queue; close (and refresh) when empty. */
   const resolve = useCallback((id: number, refresh: boolean) => {
-    requestAnimationFrame(() => {
-      const el = cardRef.current;
-      if (el) animate(el, { y: -36, opacity: 0, duration: 150, ease: 'inQuad' });
-    });
+    const el = cardRef.current;
+    if (el) animate(el, { y: -36, opacity: 0, duration: 150, ease: 'inQuad' });
     setItems((prev) => {
       const next = prev.filter((it) => it.id !== id);
       setIndex((i) => Math.min(i, Math.max(next.length - 1, 0)));
       if (next.length === 0) setOpen(false);
       return next;
     });
-    if (refresh) window.location.reload(); // dashboard numbers changed
+    if (refresh) {
+      window.location.reload(); // dashboard numbers changed
+      return;
+    }
+    // The outgoing animation leaves the card element at opacity 0; without this
+    // fade-in the next card renders blank until the user navigates again.
+    requestAnimationFrame(() => {
+      const node = cardRef.current;
+      if (!node) return;
+      node.style.transform = 'translateY(12px)';
+      node.style.opacity = '0';
+      animate(node, { y: 0, opacity: 1, duration: 260, ease: 'outQuad' });
+    });
   }, []);
 
   const submit = async (action: 'approve' | 'reject') => {
