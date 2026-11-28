@@ -124,3 +124,6 @@ data/ksei.json
 # never commit. Regenerate via scripts/ksei-capture-fixtures.sh.
 data/ksei-fixtures/
 node_modules
+
+# Jenius email ingest token (shared secret between cron script and /api/ingest)
+data/ingest.token

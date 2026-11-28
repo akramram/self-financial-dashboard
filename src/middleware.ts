@@ -4,6 +4,10 @@ import { validateSession, cleanExpiredSessions, type User } from './lib/auth';
 // Public paths that don't require auth
 const PUBLIC_PATHS = ['/login', '/api/auth/login', '/api/auth/me', '/api/auth/logout'];
 const PUBLIC_PREFIXES = ['/sw.js', '/manifest.json', '/favicon.svg', '/icons/', '/_astro/', '/data/', '/prototype-'];
+// Email-ingest bridge (/api/ingest/*) is called by a local IMAP cron script that
+// has no session cookie. It is gated by its own x-ingest-token check inside the
+// route (data/ingest.token), never by the cookie middleware.
+const PUBLIC_API_PREFIXES = ['/api/ingest/'];
 // Share-target landing is public: Android shares arrive as plain GETs without
 // a session cookie only when the PWA was resumed from background — the page
 // itself renders a read-only bridge and Quick Add still hits authed APIs.
@@ -32,6 +36,9 @@ export const onRequest = defineMiddleware(async ({ cookies, request, url, locals
 
   // API routes
   if (url.pathname.startsWith('/api/')) {
+    if (PUBLIC_API_PREFIXES.some((p) => url.pathname.startsWith(p))) {
+      return next();
+    }
     if (!user) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,

@@ -235,6 +235,53 @@ export function initSchema() {
       PRIMARY KEY (snapshot_date, kind, code)
     );
   `);
+
+  // Jenius email ingest queue: parsed card-notification emails land here as
+  // 'pending' and stay OUT of `transactions` until the user confirms them in
+  // the EmailReviewModal (one card at a time on app open). message_id is the
+  // IMAP Message-ID and is UNIQUE — that is the whole dedup story, so the
+  // fetcher can re-scan the mailbox every run without double-inserting.
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS pending_email_tx (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      message_id TEXT NOT NULL UNIQUE,
+      source TEXT NOT NULL DEFAULT 'jenius',
+      subject TEXT NOT NULL,
+      tx_date TEXT NOT NULL,
+      tx_time TEXT NOT NULL DEFAULT '',
+      merchant TEXT NOT NULL DEFAULT '',
+      amount REAL NOT NULL,
+      card_last4 TEXT NOT NULL DEFAULT '',
+      raw_excerpt TEXT NOT NULL DEFAULT '',
+      status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','approved','rejected')),
+      transaction_id INTEGER,
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
+  db.exec(`CREATE INDEX IF NOT EXISTS idx_pending_email_status ON pending_email_tx(status, created_at)`);
+
+  // tx_time shipped after the first queue rows existed — add it in place and
+  // backfill from raw_excerpt (the email body is stored verbatim) so an
+  // already-queued row still shows its clock time. Idempotent: only fills ''.
+  const cols = db.prepare(`PRAGMA table_info(pending_email_tx)`).all() as Array<{ name: string }>;
+  if (!cols.some((c) => c.name === 'tx_time')) {
+    db.exec(`ALTER TABLE pending_email_tx ADD COLUMN tx_time TEXT NOT NULL DEFAULT ''`);
+  }
+  const missing = db
+    .prepare(`SELECT id, tx_date, raw_excerpt FROM pending_email_tx WHERE tx_time = '' OR tx_time IS NULL`)
+    .all() as Array<{ id: number; tx_date: string; raw_excerpt: string }>;
+  const setTime = db.prepare(`UPDATE pending_email_tx SET tx_time = ? WHERE id = ?`);
+  for (const row of missing) {
+    const numbered = row.raw_excerpt.match(
+      /\d{2}[\/\-.]\d{2}[\/\-.]\d{4}\s+(\d{1,2}):(\d{2})(?::(\d{2}))?/
+    );
+    const named = row.raw_excerpt.match(
+      /\d{1,2}\s+[A-Z]{3}[A-Za-z]*\s+\d{4}\s+(\d{1,2}):(\d{2})(?::(\d{2}))?/
+    );
+    const g = numbered || named;
+    if (!g) continue;
+    setTime.run(`${g[1].padStart(2, '0')}:${g[2]}:${g[3] || '00'}`, row.id);
+  }
 }
 
 // ─── Period helpers ─────────────────────────────────────────────────────────
@@ -4400,4 +4447,119 @@ export function getMonthComparison(options?: {
     insights,
     categoryTransactions,
   };
+}
+
+// ─── Jenius email ingest queue ──────────────────────────────────────────────
+// Flow: scripts/jenius-email-ingest.py (IMAP, launchd every 5 min) → POST
+// /api/ingest/email → insertPendingEmailTx (pending) → EmailReviewModal
+// (app open) → approvePendingEmailTx (real insertTransaction) | reject.
+
+const MONTH_NAMES = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+];
+
+export interface PendingEmailTx {
+  id: number;
+  message_id: string;
+  source: string;
+  subject: string;
+  tx_date: string;
+  tx_time: string;
+  merchant: string;
+  amount: number;
+  card_last4: string;
+  raw_excerpt: string;
+  status: 'pending' | 'approved' | 'rejected';
+  transaction_id: number | null;
+  created_at: string;
+}
+
+/** Queue a parsed email. Returns the row id, or null when message_id was already seen. */
+export function insertPendingEmailTx(row: {
+  message_id: string;
+  source?: string;
+  subject: string;
+  tx_date: string;
+  tx_time?: string;
+  merchant: string;
+  amount: number;
+  card_last4?: string;
+  raw_excerpt?: string;
+}): number | null {
+  const res = db
+    .prepare(
+      `INSERT OR IGNORE INTO pending_email_tx (message_id, source, subject, tx_date, tx_time, merchant, amount, card_last4, raw_excerpt)
+       VALUES (@message_id, @source, @subject, @tx_date, @tx_time, @merchant, @amount, @card_last4, @raw_excerpt)`
+    )
+    .run({
+      message_id: row.message_id,
+      source: row.source || 'jenius',
+      subject: row.subject,
+      tx_date: row.tx_date,
+      tx_time: row.tx_time || '',
+      merchant: row.merchant,
+      amount: row.amount,
+      card_last4: row.card_last4 || '',
+      raw_excerpt: row.raw_excerpt || '',
+    });
+  return res.changes ? Number(res.lastInsertRowid) : null;
+}
+
+export function listPendingEmailTx(): PendingEmailTx[] {
+  return db
+    .prepare(`SELECT * FROM pending_email_tx WHERE status = 'pending' ORDER BY tx_date ASC, id ASC`)
+    .all() as PendingEmailTx[];
+}
+
+export function getPendingEmailTx(id: number): PendingEmailTx | undefined {
+  return db.prepare('SELECT * FROM pending_email_tx WHERE id = ?').get(id) as PendingEmailTx | undefined;
+}
+
+/** Confirm a queued email into `transactions` with the user's edits applied. */
+export function approvePendingEmailTx(
+  id: number,
+  edits: { title?: string; category?: string; amount?: number; date?: string; time?: string; payment_method?: string }
+): number {
+  const row = getPendingEmailTx(id);
+  if (!row) throw new Error('Pending transaction not found');
+  if (row.status !== 'pending') throw new Error('Already resolved');
+
+  // Same semantics as useTransactionForm: created_time carries the REAL
+  // timestamp (day + clock from the email), while `date` is only the period
+  // marker (21st of that period) — daily grouping reads created_time.
+  const day = edits.date || row.tx_date; // YYYY-MM-DD
+  // `time` arrives as HH:mm from the modal, but stored rows carry HH:mm:ss —
+  // normalize to HH:mm before building the timestamp, otherwise the double
+  // seconds ("T10:25:00:00") makes Date() throw Invalid time value.
+  const hhmm = (edits.time || row.tx_time || '00:00').slice(0, 5);
+  const [y, m] = day.split('-').map(Number);
+  const month = `${MONTH_NAMES[m - 1]} ${y}`;
+  const period_id = ensurePeriod(month);
+  const localTs = new Date(`${day}T${hhmm}:00`);
+  const created_time = isNaN(localTs.getTime()) ? new Date().toISOString() : localTs.toISOString();
+
+  const txId = insertTransaction({
+    period_id,
+    date: `${y}-${String(m).padStart(2, '0')}-21`,
+    title: edits.title || row.merchant || 'Transaksi Kartu Kredit Jenius',
+    category: edits.category || 'Others',
+    amount: edits.amount ?? row.amount,
+    currency: 'IDR',
+    type: 'credit_expense',
+    payment_method: edits.payment_method || 'Credit',
+    done: 1,
+    created_time,
+    notes: `email:${row.source}`,
+  });
+
+  db.prepare(`UPDATE pending_email_tx SET status = 'approved', transaction_id = ? WHERE id = ?`).run(txId, id);
+  return txId;
+}
+
+export function rejectPendingEmailTx(id: number, reason = '') {
+  db.prepare(`UPDATE pending_email_tx SET status = 'rejected', raw_excerpt = raw_excerpt || ? WHERE id = ?`).run(
+    reason ? `\n[rejected: ${reason}]` : '',
+    id
+  );
 }

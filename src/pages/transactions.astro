@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import TransactionTable from '../components/TransactionTable';
+import EmailSyncButton from '../components/EmailSyncButton';
 import { getTransactions, getAllPeriods } from '../lib/db';
 
 const transactions = getTransactions();
@@ -8,9 +9,12 @@ const periods = getAllPeriods().map((p: any) => ({ period_id: p.id, month: p.mon
 ---
 
 <Layout title="Transactions">
-  <div class="mb-6">
-    <h1 class="text-2xl font-bold">Transactions</h1>
-    <p class="text-slate-600 dark:text-white/60 text-sm">All cash and credit expenses</p>
+  <div class="mb-6 flex flex-wrap items-start justify-between gap-3">
+    <div>
+      <h1 class="text-2xl font-bold">Transactions</h1>
+      <p class="text-slate-600 dark:text-white/60 text-sm">All cash and credit expenses</p>
+    </div>
+    <EmailSyncButton client:load />
   </div>
 
   <div class="glass-card p-6">
