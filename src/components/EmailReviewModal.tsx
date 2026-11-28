@@ -82,6 +82,14 @@ export default function EmailReviewModal() {
     load();
   }, [load]);
 
+  // "Recheck email" buttons on the dashboard / transactions pages broadcast this
+  // so the queue re-reads without a full page reload.
+  useEffect(() => {
+    const onRefresh = () => load();
+    window.addEventListener('email-review-refresh', onRefresh);
+    return () => window.removeEventListener('email-review-refresh', onRefresh);
+  }, [load]);
+
   const current = items[index];
 
   useEffect(() => {

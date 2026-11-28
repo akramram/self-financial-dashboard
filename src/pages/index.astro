@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Dashboard from '../components/Dashboard';
+import EmailSyncButton from '../components/EmailSyncButton';
 import { getTransactions, getNetworth, getMonthlySummary, db } from '../lib/db';
 
 const transactions = getTransactions();
@@ -20,6 +21,9 @@ for (const s of summaries) {
 ---
 
 <Layout title="Dashboard">
+  <div class="mb-4 flex items-center justify-end">
+    <EmailSyncButton client:load />
+  </div>
   <Dashboard
     transactions={transactions}
     networth={networth}
